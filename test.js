@@ -143,9 +143,12 @@ vows.describe('Cookie Jar').addBatch({
   },
   "TTL with old expires": function() {
     var c = new Cookie();
-    var now = Date.now();
     c.setExpires('17 Oct 2010 00:00:00 GMT');
-    assert.ok(c.TTL(now) < 0);
+    assert.ok(c.TTL() < 0);
+  },
+  "default TTL is Infinite-future": function() {
+    var c = new Cookie();
+    assert.equal(c.TTL(), Infinity);
   },
 }).addBatch({
   "Parsing": {

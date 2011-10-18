@@ -302,9 +302,9 @@ Cookie.prototype.toString = function toString() {
 };
 
 Cookie.prototype.TTL = function TTL(now) {
-  /* S4.1.2.2 If a cookie has both the Max-Age and the Expires attribute, the
-   * Max- Age attribute has precedence and controls the expiration date of the
-   * cookie.
+  /* RFC6265 S4.1.2.2 If a cookie has both the Max-Age and the Expires
+   * attribute, the Max- Age attribute has precedence and controls the
+   * expiration date of the cookie.
    */
   if (this.maxAge != null) {
     return this.maxAge * 1000;
