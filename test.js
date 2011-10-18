@@ -228,4 +228,27 @@ vows.describe('Cookie Jar').addBatch({
       },
     },
   }
+}).addBatch({
+  "domain normalization": {
+    "simple": function() {
+      var c = new Cookie();
+      c.domain = "EXAMPLE.com";
+      assert.equal(c.canonicalizedDomain(), "example.com");
+    },
+    "extra dots": function() {
+      var c = new Cookie();
+      c.domain = ".EXAMPLE.com";
+      assert.equal(c.cdomain(), "example.com");
+    },
+    "weird trailing dot": function() {
+      var c = new Cookie();
+      c.domain = "EXAMPLE.ca.";
+      assert.equal(c.canonicalizedDomain(), "example.ca.");
+    },
+    "weird internal dots": function() {
+      var c = new Cookie();
+      c.domain = "EXAMPLE...ca.";
+      assert.equal(c.canonicalizedDomain(), "example...ca.");
+    },
+  }
 }).export(module);

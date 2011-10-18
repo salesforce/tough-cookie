@@ -331,6 +331,18 @@ Cookie.prototype.TTL = function TTL(now) {
   return Infinity;
 };
 
+// Mostly S5.1.2 and S5.2.3:
+Cookie.prototype.cdomain = 
+Cookie.prototype.canonicalizedDomain = function canonicalizedDomain() {
+
+  if (this.domain == null) return null;
+
+  var str = this.domain.replace(/^\./,''); // S4.1.2.3 & S5.2.3: ignore leading .
+  // TODO: RFC5890 normalization (IDNs and such). See S5.1.2.  For now there's
+  // no need to split it up into components.
+  return str.toLowerCase();
+};
+
 module.exports = {
   CookieJar: CookieJar,
   Cookie: Cookie,
