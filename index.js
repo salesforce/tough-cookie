@@ -145,7 +145,7 @@ function parseDate(str) {
         else if (0 <= year && year <= 69)
           year += 2000;
 
-        if (year <= 1601)
+        if (year < 1601)
           return; // 5. ... the year-value is less than 1601
 
         found_year = true;
