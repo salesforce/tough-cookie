@@ -16,7 +16,21 @@ Cookie.prototype.httpOnly = false;
 Cookie.prototype.extensions = null;
 
 
-var DATE_DELIM = /[\x09-\x09\x20-\x2F\x3B-\x40\x5B-\x60\x7B-\x7E]/;
+var DATE_DELIM = /[\x09\x20-\x2F\x3B-\x40\x5B-\x60\x7B-\x7E]/;
+
+// From RFC2616 S2.2:
+var TOKEN = /[\x21\x23-\x26\x2A\x2B\x2D\x2E\x30-\x39\x41-\x5A\x5E-\x7A\x7C\x7E]/;
+
+// FROM RFC6265 S4.1.1
+var COOKIE_OCTET  = /[\x21\x23-\x2B\x2D-\x3A\x3C-\x5B\x5D-\x7E]/;
+var COOKIE_OCTETS = /^[\x21\x23-\x2B\x2D-\x3A\x3C-\x5B\x5D-\x7E]+$/;
+var COOKIE_PAIR = new RegExp('^('+TOKEN.source+'+)=("?)('+COOKIE_OCTET.source+'+)\\2');
+
+// RFC6265 S4.1.1 defines extension-av as 'any CHAR except CTLs or ";"'
+// Note ';' is \x3B
+var NON_CTL_SEMICOLON = /[\x20-\x3A\x3C-\x7E]+/;
+var EXTENSION_AV = NON_CTL_SEMICOLON;
+var PATH_VALUE = NON_CTL_SEMICOLON;
 
 /* RFC6265 S5.1.1.5:
  * [fail if] the day-of-month-value is less than 1 or greater than 31
@@ -24,7 +38,7 @@ var DATE_DELIM = /[\x09-\x09\x20-\x2F\x3B-\x40\x5B-\x60\x7B-\x7E]/;
 var DAY_OF_MONTH = /^(0?[1-9]|[12][0-9]|3[01])$/;
 
 /* RFC6265 S5.1.1.5:
- * [fail if] 
+ * [fail if]
  * *  the hour-value is greater than 23,
  * *  the minute-value is greater than 59, or
  * *  the second-value is greater than 59.
@@ -44,8 +58,6 @@ var NUM_TO_DAY = [
 
 var YEAR = /^([1-9][0-9]{1,3})$/; // 2 to 4 digits (will check range when parsing)
 
-var COOKIE_OCTET  =  /[\x21\x23-\x2B\x2D-\x3A\x3C-\x5B\x5D-\x7E]/;
-var COOKIE_OCTETS = /^[\x21\x23-\x2B\x2D-\x3A\x3C-\x5B\x5D-\x7E]+$/;
 
 // RFC6265 S5.1.1 date parser:
 function parseDate(str) {
@@ -159,7 +171,79 @@ function formatDate(date) {
   return NUM_TO_DAY[date.getUTCDay()] + ', ' +
     d+' '+ NUM_TO_MONTH[date.getUTCMonth()] +' '+ date.getUTCFullYear() +' '+
     h+':'+m+':'+s+' GMT';
-};
+}
+
+Cookie.parse = parse;
+function parse(str) {
+  str = str.trim();
+  var result = COOKIE_PAIR.exec(str);
+  if (!result) return null;
+
+  var c = new Cookie();
+  c.key = result[1];
+  c.value = result[3]; // 2 is quotes-or-not
+
+  // chop off the cookie-pair
+  str = str.slice(result.index + result[0].length);
+  str = str.trim();
+  if (str.length === 0) return c;
+
+  /* RFC6265 S4.1.1 implies that there's just one of each kind of cookie-av (e.g.
+   * Expires) and that it's not a valid cookie if there's duplicates.
+   * Here, we overwrite the previous value.
+   */
+  var cookie_avs = str.split(/\s*;\s+/);
+  while (cookie_avs.length) {
+    var av = cookie_avs.shift();
+    if (av.length === 0) continue;
+
+    if (!EXTENSION_AV.test(av)) return null;
+
+    var av_parts = av.split('=',2);
+    var av_key = av_parts[0].toLowerCase();
+    var av_value = av_parts[1];
+
+    switch(av_key) {
+    case 'expires':
+      if (av_value == null) return null;
+      c.expires = parseDate(av_value);
+      if (c.expires == null) return null;
+      break;
+
+    case 'max-age':
+      if (av_value == null) return null;
+      c.maxAge = parseInt(av_value);
+      if (c.maxAge == null) return null;
+      break;
+
+    case 'secure':
+      if (av_value != null) return null; // can't have value
+      c.secure = true;
+      break;
+
+    case 'httponly':
+      if (av_value != null) return null; // can't have value
+      c.httpOnly = true;
+      break;
+
+    case 'path':
+      if (av_value == null) return null;
+      c.path = av_value.trim();
+      break;
+
+    case 'domain':
+      if (av_value == null) return null;
+      c.domain = av_value.trim();
+      break;
+
+    default:
+      c.extensions = c.extensions || [];
+      c.extensions.push(av);
+      break;
+    }
+  }
+  return c;
+}
 
 Cookie.prototype.validate = function validate() {
   if (!COOKIE_OCTETS.test(this.value))
@@ -168,6 +252,8 @@ Cookie.prototype.validate = function validate() {
     return false;
   if (this.maxAge != null && this.maxAge <= 0)
     return false; // "Max-Age=" non-zero-digit *DIGIT
+  if (this.path != null && !PATH_VALUE.test(this.path))
+    return false;
   return true;
 };
 
@@ -243,4 +329,5 @@ module.exports = {
   Cookie: Cookie,
   parseDate: parseDate,
   formatDate: formatDate,
+  parse: parse
 };

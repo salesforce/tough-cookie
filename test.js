@@ -144,4 +144,74 @@ vows.describe('Cookie Jar').addBatch({
     c.setExpires('17 Oct 2010 00:00:00 GMT');
     assert.ok(c.TTL(now) < 0);
   },
+}).addBatch({
+  "Parsing": {
+    "simple": {
+      topic: function() {
+        return Cookie.parse('a=bcd') || null;
+      },
+      "parsed": function(c) { assert.ok(c) },
+      "key": function(c) { assert.equal(c.key, 'a') },
+      "value": function(c) { assert.equal(c.value, 'bcd') },
+    },
+    "with expiry": {
+      topic: function() {
+        return Cookie.parse('a=bcd; Expires=Tue, 18 Oct 2011 07:05:03 GMT') || null;
+      },
+      "parsed": function(c) { assert.ok(c) },
+      "key": function(c) { assert.equal(c.key, 'a') },
+      "value": function(c) { assert.equal(c.value, 'bcd') },
+      "has expires": function(c) {
+        assert.ok(c.expires !== Infinity, 'expiry is infinite when it shouldn\'t be');
+        assert.equal(c.expires.getTime(), 1318921503000);
+      },
+    },
+    "with expiry and path": {
+      topic: function() {
+        return Cookie.parse('abc="xyzzy!"; Expires=Tue, 18 Oct 2011 07:05:03 GMT; Path=/aBc') || null;
+      },
+      "parsed": function(c) { assert.ok(c) },
+      "key": function(c) { assert.equal(c.key, 'abc') },
+      "value": function(c) { assert.equal(c.value, 'xyzzy!') },
+      "has expires": function(c) {
+        assert.ok(c.expires !== Infinity, 'expiry is infinite when it shouldn\'t be');
+        assert.equal(c.expires.getTime(), 1318921503000);
+      },
+      "has path": function(c) { assert.equal(c.path, '/aBc'); },
+      "no httponly or secure": function(c) {
+        assert.ok(!c.httpOnly);
+        assert.ok(!c.secure);
+      },
+    },
+    "with everything": {
+      topic: function() {
+        return Cookie.parse('abc="xyzzy!"; Expires=Tue, 18 Oct 2011 07:05:03 GMT; Path=/aBc; Domain=example.com; Secure; HTTPOnly; Max-Age=1234; Foo=Bar; Baz') || null;
+      },
+      "parsed": function(c) { assert.ok(c) },
+      "key": function(c) { assert.equal(c.key, 'abc') },
+      "value": function(c) { assert.equal(c.value, 'xyzzy!') },
+      "has expires": function(c) {
+        assert.ok(c.expires !== Infinity, 'expiry is infinite when it shouldn\'t be');
+        assert.equal(c.expires.getTime(), 1318921503000);
+      },
+      "has path": function(c) { assert.equal(c.path, '/aBc'); },
+      "has domain": function(c) { assert.equal(c.domain, 'example.com'); },
+      "has httponly": function(c) { assert.equal(c.httpOnly, true); },
+      "has secure": function(c) { assert.equal(c.secure, true); },
+      "has max-age": function(c) { assert.equal(c.maxAge, 1234); },
+      "has extensions": function(c) {
+        assert.ok(c.extensions);
+        assert.equal(c.extensions[0], 'Foo=Bar');
+        assert.equal(c.extensions[1], 'Baz');
+      },
+    },
+    "garbage": {
+      topic: function() {
+        return Cookie.parse("\x08") || null;
+      },
+      "doesn't parse": function(c) {
+        assert.equal(c,null);
+      },
+    },
+  }
 }).export(module);
