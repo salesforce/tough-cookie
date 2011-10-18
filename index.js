@@ -12,20 +12,21 @@ Cookie.prototype.domain = null;
 Cookie.prototype.secure = false;
 Cookie.prototype.httpOnly = false;
 
+
 var DATE_DELIM = /[\x09-\x09\x20-\x2F\x3B-\x40\x5B-\x60\x7B-\x7E]/;
 
-/* S5.1.1.5:
+/* RFC6265 S5.1.1.5:
  * [fail if] the day-of-month-value is less than 1 or greater than 31
  */
-var DAY_OF_MONTH = /^(0[1-9]|[12][0-9]|3[01])$/; 
+var DAY_OF_MONTH = /^(0?[1-9]|[12][0-9]|3[01])$/;
 
-/* S5.1.1.5:
+/* RFC6265 S5.1.1.5:
  * [fail if] 
  * *  the hour-value is greater than 23,
  * *  the minute-value is greater than 59, or
  * *  the second-value is greater than 59.
  */
-var TIME = /^(0[1-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/;
+var TIME = /^(0?[1-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/;
 
 var MONTH = /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)$/i;
 var MONTH_TO_NUM = {
@@ -37,6 +38,7 @@ var YEAR = /^([1-9][0-9]{1,3})$/; // 2 to 4 digits (will check range when parsin
 var COOKIE_OCTET  =  /[\x21\x23-\x2B\x2D-\x3A\x3C-\x5B\x5D-\x7E]/;
 var COOKIE_OCTETS = /^[\x21\x23-\x2B\x2D-\x3A\x3C-\x5B\x5D-\x7E]+$/;
 
+// RFC6265 S5.1.1 date parser:
 function parseDate(str) {
   if (!str) return;
   var found_time, found_dom, found_month, found_year;

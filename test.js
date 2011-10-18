@@ -11,8 +11,8 @@ function dateVows(table) {
   var keys = Object.keys(table).forEach(function(date) {
     var expect = table[date];
     theVows[date] = function() {
-      var got = cookiejar.parseDate(date) ? true : false;
-      assert.equal(got,expect,"DATE regexp test (TODO if null)")
+      var got = cookiejar.parseDate(date) ? 'valid' : 'invalid';
+      assert.equal(got, expect ? 'valid' : 'invalid')
     };
   });
   return { "date parsing": theVows }
@@ -27,6 +27,10 @@ vows.describe('Cookie Jar').addBatch({
   dateVows({
     "Wed, 09 Jun 2021 10:18:14 GMT": true,
     "Tue, 18 Oct 2011 07:42:42.123 GMT": true,
+    "18 Oct 2011 07:42:42 GMT": true,
+    "8 Oct 2011 7:42:42 GMT": true,
+    "8 Oct 2011 7:2:42 GMT": false,
+    "Oct 18 2011 07:42:42 GMT": true,
     "Tue Oct 18 2011 07:05:03 GMT+0000 (GMT)": true,
     "09 Jun 2021 10:18:14 GMT": true,
     "99 Jix 3038 48:86:72 ZMT": false,
