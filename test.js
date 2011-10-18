@@ -118,8 +118,10 @@ vows.describe('Cookie Jar').addBatch({
   },
   "TTL with zero max-age": function() {
     var c = new Cookie();
-    c.maxAge = 0;
+    c.key = 'a'; c.value = 'b';
+    c.maxAge = 0; // technically against the spec to be zero: "Max-Age=" non-zero-digit *DIGIT
     assert.equal(c.TTL(), 0);
+    assert.ok(!c.validate());
   },
   "TTL with max-age and expires": function() {
     var c = new Cookie();

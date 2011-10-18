@@ -2,8 +2,7 @@
 function CookieJar() {
 }
 
-function Cookie() {
-}
+function Cookie() { }
 Cookie.prototype.key = "";
 Cookie.prototype.value = "";
 
@@ -165,6 +164,8 @@ Cookie.prototype.validate = function validate() {
     return false;
   if (this.expires !== Infinity && !(this.expires instanceof Date) && !parseDate(this.expires))
     return false;
+  if (this.maxAge != null && this.maxAge <= 0)
+    return false; // "Max-Age=" non-zero-digit *DIGIT
   return true;
 };
 
