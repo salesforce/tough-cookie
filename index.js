@@ -60,6 +60,8 @@ function parseDate(str) {
   if (!tokens) return;
 
   var date = new Date();
+  date.setMilliseconds(0);
+
   for (var i=0; i<tokens.length; i++) {
     var token = tokens[i].trim();
     if (!token.length) continue;
