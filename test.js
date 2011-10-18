@@ -69,14 +69,14 @@ vows.describe('Cookie Jar').addBatch({
       var c = new Cookie();
       c.key = 'a';
       c.value = 'b';
-      c.setExpires("Tue, 18 Oct 2011 07:05:03 GMT");
+      c.setExpires("Oct 18 2011 07:05:03 GMT");
       return c;
     },
     "validates": function(c) {
       assert.ok(c.validate());
     },
     "to string": function(c) {
-      assert.equal(c.toString(), 'a=b; Expires=Tue, Oct 18 2011 07:05:03 GMT');
+      assert.equal(c.toString(), 'a=b; Expires=Tue, 18 Oct 2011 07:05:03 GMT');
     },
   },
 }).export(module);

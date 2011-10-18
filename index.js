@@ -32,6 +32,12 @@ var MONTH = /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)$/i;
 var MONTH_TO_NUM = {
   jan:0, feb:1, mar:2, apr:3, may:4, jun:5, jul:6, aug:7, sep:8, oct:9, nov:10, dec:11
 };
+var NUM_TO_MONTH = [
+  'Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'
+];
+var NUM_TO_DAY = [
+  'Sun','Mon','Tue','Wed','Thu','Fri','Sat'
+];
 
 var YEAR = /^([1-9][0-9]{1,3})$/; // 2 to 4 digits (will check range when parsing)
 
@@ -140,6 +146,16 @@ function parseDate(str) {
   return date;
 };
 
+function formatDate(date) {
+  var d = date.getUTCDate(); d = d > 10 ? d : '0'+d;
+  var h = date.getUTCHours(); h = h > 10 ? h : '0'+h;
+  var m = date.getUTCMinutes(); m = m > 10 ? m : '0'+m;
+  var s = date.getUTCSeconds(); s = s > 10 ? s : '0'+s;
+  return NUM_TO_DAY[date.getUTCDay()] + ', ' +
+    d+' '+ NUM_TO_MONTH[date.getUTCMonth()] +' '+ date.getUTCFullYear() +' '+
+    h+':'+m+':'+s+' GMT';
+};
+
 Cookie.prototype.validate = function validate() {
   if (!COOKIE_OCTETS.test(this.value))
     return false;
@@ -148,10 +164,11 @@ Cookie.prototype.validate = function validate() {
   return true;
 };
 
-Cookie.prototype.setExpires = function setExpires(str) {
-  this.expires = parseDate(str) || Infinity;
-  var sys = require('sys');
-  console.log(sys.inspect(this.expires));
+Cookie.prototype.setExpires = function setExpires(exp) {
+  if (exp instanceof Date)
+    this.expires = exp;
+  else
+    this.expires = parseDate(exp) || Infinity;
 };
 
 Cookie.prototype.toString = function toString() {
@@ -163,7 +180,10 @@ Cookie.prototype.toString = function toString() {
     str += '"' + this.value + '"';
 
   if (this.expires !== Infinity) {
-    str += '; Expires='+this.expires;
+    if (this.expires instanceof Date)
+      str += '; Expires='+formatDate(this.expires);
+    else
+      str += '; Expires='+this.expires;
   }
 
   return str;
@@ -173,4 +193,5 @@ module.exports = {
   CookieJar: CookieJar,
   Cookie: Cookie,
   parseDate: parseDate,
+  formatDate: formatDate,
 };
