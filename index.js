@@ -9,7 +9,7 @@ Cookie.prototype.value = "";
 
 // the order in which the RFC has them:
 Cookie.prototype.expires = Infinity;
-Cookie.prototype.maxAge = Infinity; // takes precedence over expires for TTL
+Cookie.prototype.maxAge = null; // takes precedence over expires for TTL
 Cookie.prototype.domain = null;
 Cookie.prototype.path = "/";
 Cookie.prototype.secure = false;
@@ -188,11 +188,34 @@ Cookie.prototype.toString = function toString() {
       str += '; Expires='+this.expires;
   }
 
-  if (this.maxAge !== Infinity) {
+  if (this.maxAge != null && this.maxAge !== Infinity) {
     str += '; Max-Age='+this.maxAge;
   }
 
   return str;
+};
+
+Cookie.prototype.TTL = function TTL(now) {
+  /* S4.1.2.2 If a cookie has both the Max-Age and the Expires attribute, the
+   * Max- Age attribute has precedence and controls the expiration date of the
+   * cookie.
+   */
+  if (this.maxAge != null) {
+    return this.maxAge * 1000;
+  }
+
+  if (this.expires !== Infinity) {
+    if (!(this.expires instanceof Date)) {
+      this.expires = parseDate(this.expires) || Infinity;
+    }
+
+    if (this.expires === Infinity)
+      return Infinity;
+
+    return this.expires.getTime() - (now || Date.now());
+  }
+
+  return Infinity;
 };
 
 module.exports = {

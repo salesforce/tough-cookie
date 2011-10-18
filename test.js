@@ -97,4 +97,33 @@ vows.describe('Cookie Jar').addBatch({
       assert.equal(c.toString(), 'a=b; Expires=Tue, 18 Oct 2011 07:05:03 GMT; Max-Age=12345');
     },
   },
+}).addBatch({
+  "TTL with max-age": function() {
+    var c = new Cookie();
+    c.maxAge = 123;
+    assert.equal(c.TTL(), 123000);
+  },
+  "TTL with zero max-age": function() {
+    var c = new Cookie();
+    c.maxAge = 0;
+    assert.equal(c.TTL(), 0);
+  },
+  "TTL with max-age and expires": function() {
+    var c = new Cookie();
+    c.maxAge = 123;
+    c.expires = new Date(Date.now()+9000);
+    assert.equal(c.TTL(), 123000);
+  },
+  "TTL with expires": function() {
+    var c = new Cookie();
+    var now = Date.now();
+    c.expires = new Date(now+9000);
+    assert.equal(c.TTL(now), 9000);
+  },
+  "TTL with old expires": function() {
+    var c = new Cookie();
+    var now = Date.now();
+    c.setExpires('17 Oct 2010 00:00:00 GMT');
+    assert.ok(c.TTL(now) < 0);
+  },
 }).export(module);
