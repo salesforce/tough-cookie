@@ -34,6 +34,8 @@ vows.describe('Cookie Jar').addBatch({
     "Tue Oct 18 2011 07:05:03 GMT+0000 (GMT)": true,
     "09 Jun 2021 10:18:14 GMT": true,
     "99 Jix 3038 48:86:72 ZMT": false,
+    '01 Jan 1970 00:00:00 GMT': true,
+    '01 Jan 1600 00:00:00 GMT': false, // before 1601
   })
 ).addBatch({
   "formatting a simple cookie": {
