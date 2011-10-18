@@ -11,7 +11,7 @@ Cookie.prototype.value = "";
 Cookie.prototype.expires = Infinity;
 Cookie.prototype.maxAge = null; // takes precedence over expires for TTL
 Cookie.prototype.domain = null;
-Cookie.prototype.path = "/";
+Cookie.prototype.path = null;
 Cookie.prototype.secure = false;
 Cookie.prototype.httpOnly = false;
 Cookie.prototype.extensions = null;
@@ -190,6 +190,19 @@ Cookie.prototype.toString = function toString() {
 
   if (this.maxAge != null && this.maxAge !== Infinity) {
     str += '; Max-Age='+this.maxAge;
+  }
+
+  if (this.domain)
+    str += '; Domain='+this.domain;
+  if (this.path)
+    str += '; Path='+this.path;
+
+  if (this.secure) str += '; Secure';
+  if (this.httpOnly) str += '; HttpOnly';
+  if (this.extensions) {
+    this.extensions.forEach(function(ext) {
+      str += '; '+ext;
+    });
   }
 
   return str;
