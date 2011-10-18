@@ -211,6 +211,14 @@ vows.describe('Cookie Jar').addBatch({
         assert.equal(c.extensions[1], 'Baz');
       },
     },
+    "trailing dot in domain": {
+      topic: function() {
+        return Cookie.parse("a=b; Domain=example.com.") || null;
+      },
+      "has a null domain": function(c) {
+        assert.equal(c.domain,null);
+      },
+    },
     "garbage": {
       topic: function() {
         return Cookie.parse("\x08") || null;

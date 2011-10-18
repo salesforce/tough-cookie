@@ -234,6 +234,13 @@ function parse(str) {
     case 'domain':
       if (av_value == null) return null;
       c.domain = av_value.trim();
+      if (c.domain.length === 0) c.domain = null; // S5.2.3 "if empty ... SHOULD ignore"
+      /*
+       * S4.1.2.3 "a trailing . if present will cause the user agent to ignore the attribute"
+       * XXX IMHO, this seems ambiguous. Especially since it doesn't use
+       * SHOULD/MUST wordage and is in a Non-normative section. Anyway, here it is:
+       */
+      if (c.domain.match(/\.$/)) c.domain = null;
       break;
 
     default:
