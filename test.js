@@ -79,4 +79,20 @@ vows.describe('Cookie Jar').addBatch({
       assert.equal(c.toString(), 'a=b; Expires=Tue, 18 Oct 2011 07:05:03 GMT');
     },
   },
+  "formatting with a max-age": {
+    topic: function() {
+      var c = new Cookie();
+      c.key = 'a';
+      c.value = 'b';
+      c.setExpires("Oct 18 2011 07:05:03 GMT");
+      c.maxAge = 12345;
+      return c;
+    },
+    "validates": function(c) {
+      assert.ok(c.validate()); // mabe this one *shouldn't*?
+    },
+    "to string": function(c) {
+      assert.equal(c.toString(), 'a=b; Expires=Tue, 18 Oct 2011 07:05:03 GMT; Max-Age=12345');
+    },
+  },
 }).export(module);

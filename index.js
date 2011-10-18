@@ -6,11 +6,15 @@ function Cookie() {
 }
 Cookie.prototype.key = "";
 Cookie.prototype.value = "";
+
+// the order in which the RFC has them:
 Cookie.prototype.expires = Infinity;
-Cookie.prototype.path = "/";
+Cookie.prototype.maxAge = Infinity; // takes precedence over expires for TTL
 Cookie.prototype.domain = null;
+Cookie.prototype.path = "/";
 Cookie.prototype.secure = false;
 Cookie.prototype.httpOnly = false;
+Cookie.prototype.extensions = null;
 
 
 var DATE_DELIM = /[\x09-\x09\x20-\x2F\x3B-\x40\x5B-\x60\x7B-\x7E]/;
@@ -165,10 +169,8 @@ Cookie.prototype.validate = function validate() {
 };
 
 Cookie.prototype.setExpires = function setExpires(exp) {
-  if (exp instanceof Date)
-    this.expires = exp;
-  else
-    this.expires = parseDate(exp) || Infinity;
+  if (exp instanceof Date) this.expires = exp;
+  else this.expires = parseDate(exp) || Infinity;
 };
 
 Cookie.prototype.toString = function toString() {
@@ -184,6 +186,10 @@ Cookie.prototype.toString = function toString() {
       str += '; Expires='+formatDate(this.expires);
     else
       str += '; Expires='+this.expires;
+  }
+
+  if (this.maxAge !== Infinity) {
+    str += '; Max-Age='+this.maxAge;
   }
 
   return str;
