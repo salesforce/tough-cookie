@@ -174,13 +174,17 @@ Cookie.prototype.setExpires = function setExpires(exp) {
   else this.expires = parseDate(exp) || Infinity;
 };
 
-Cookie.prototype.toString = function toString() {
-  var str = this.key + '=';
-
+// gives Cookie header format
+Cookie.prototype.cookieString = function cookieString() {
   if (COOKIE_OCTETS.test(this.value))
-    str += this.value;
+    return this.key+'='+this.value;
   else
-    str += '"' + this.value + '"';
+    return this.key+'="'+this.value+'"';
+};
+
+// gives Set-Cookie header format
+Cookie.prototype.toString = function toString() {
+  var str = this.cookieString();
 
   if (this.expires !== Infinity) {
     if (this.expires instanceof Date)

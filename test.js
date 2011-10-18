@@ -80,6 +80,9 @@ vows.describe('Cookie Jar').addBatch({
     "to string": function(c) {
       assert.equal(c.toString(), 'a=b; Expires=Tue, 18 Oct 2011 07:05:03 GMT');
     },
+    "to short string": function(c) {
+      assert.equal(c.cookieString(), 'a=b');
+    },
   },
   "formatting with a max-age": {
     topic: function() {
