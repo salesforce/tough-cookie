@@ -39,7 +39,7 @@ function dateVows(table) {
   return { "date parsing": theVows }
 };
 
-function domainMatchVows(table) {
+function matchVows(func,table) {
   var theVows = {};
   table.forEach(function(item) {
     var str = item[0];
@@ -47,7 +47,7 @@ function domainMatchVows(table) {
     var expect = item[2];
     var label = str+(expect?" matches ":" doesn't match ")+dom;
     theVows[label] = function() {
-      assert.equal(cookies.domainMatch(str,dom),expect);
+      assert.equal(func(str,dom),expect);
     };
   });
   return theVows;
@@ -307,7 +307,7 @@ vows.describe('Cookie Jar').addBatch({
     },
   }
 }).addBatch({
-  "Domain Match":domainMatchVows([
+  "Domain Match":matchVows(cookies.domainMatch, [
     // str,          dom,          expect
     ["example.com", "example.com", true],
     ["eXaMpLe.cOm", "ExAmPlE.CoM", true],
