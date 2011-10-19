@@ -20,9 +20,7 @@
  */
 
 var net = require('net');
-
-function CookieJar() {
-}
+var urlParse = require('url').parse;
 
 function Cookie() { }
 Cookie.prototype.key = "";
@@ -37,6 +35,10 @@ Cookie.prototype.secure = false;
 Cookie.prototype.httpOnly = false;
 Cookie.prototype.extensions = null;
 
+// set by the CookieJar:
+Cookie.prototype.hostOnly = null; // boolean when set
+Cookie.prototype.creation = null;
+Cookie.prototype.lastAccessed = null;
 
 var DATE_DELIM = /[\x09\x20-\x2F\x3B-\x40\x5B-\x60\x7B-\x7E]/;
 
@@ -533,6 +535,86 @@ Cookie.prototype.cdomain =
 Cookie.prototype.canonicalizedDomain = function canonicalizedDomain() {
   if (this.domain == null) return null;
   return canonicalDomain(this.domain);
+};
+
+
+
+function CookieJar() {
+  this.store = [];
+}
+CookieJar.prototype.store = null;
+CookieJar.prototype.rejectPublicSuffixes = true;
+
+// isHTTP: "is the call from an HTTP API?" (defaults to true if missing).
+// Affects the acceptance of 'HttpOnly' cookies.
+CookieJar.prototype.setCookie = function setCookie(cookie, url, isHTTP, cb) {
+  var context = (url instanceof Object) ? url : urlParse(url);
+  if (isHTTP instanceof Function) {
+    cb = isHTTP;
+    isHTTP = true;
+  }
+
+  // S5.3 step 1
+  if (!(cookie instanceof Cookie))
+    cookie = Cookie.parse(cookie, strict);
+  if (!cookie) return cb(new Error("Cookie failed to parse"));
+
+  // S5.3 step 2
+  var now = new Date();
+  cookie.creation = cookie.lastAccessed = now;
+
+  // S5.3 step 3: NOOP; persistent-flag and expiry-time are handled by
+  // isPersistent() and TTL(), respectively
+
+  // S5.3 step 4: NOOP; domain is null by default
+
+  // TODO S5.3 step 5: public suffixes
+  if (this.rejectPublicSuffixes) {
+  }
+
+  // S5.3 step 6:
+  if (cookie.domain) {
+    if (!domainMatch(context.hostname, cookie.domain))
+      return cb(new Error("Cookie not in this host's domain"));
+    else
+      cookie.hostOnly = false;
+  } else {
+    cookie.hostOnly = true;
+    cookie.domain = canonicalDomain(context.hostname);
+  }
+
+  // S5.3 step 7: "Otherwise, set the cookie's path to the default-path of the
+  // request-uri"
+  if (!cookie.path) {
+    cookie.path = defaultPath(context.pathname);
+  }
+
+  // S5.3 step 8: NOOP; secure attribute
+  // S5.3 step 9: NOOP; httpOnly attribute
+
+  // S5.3 step 10
+  if (!isHTTP && cookie.httpOnly) return cb(new Error("Cookie is HttpOnly and this isn't an HTTP API"));
+
+  this.storeCookie(cookie, isHTTP, cb);
+};
+
+// S5.3 step 11 and 12
+CookieJar.prototype.storeCookie = function storeCookie(cookie, isHTTP, cb) {
+  var lookupKey = cookie.key+" "+cookie.domain+" "+cookie.path;
+
+  // S5.3 step 11 - "If the cookie store contains a cookie with the same name,
+  // domain, and path as the newly created cookie:"
+  var oldCookie = this.store[lookupKey];
+  if (oldCookie) {
+    if (oldCookie.httpOnly && !isHTTP) // step 11.2
+      return cb(new Error("old Cookie is HttpOnly and this isn't an HTTP API"));
+    cookie.creation = oldCookie.creation; // step 11.3
+    this.store[lookupKey] = null; // step 11.4
+  }
+
+  this.store[lookupKey] = cookie; // step 12
+
+  cb(null, cookie);
 };
 
 module.exports = {

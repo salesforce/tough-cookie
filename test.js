@@ -418,4 +418,59 @@ vows.describe('Cookie Jar').addBatch({
     ["/dir/file","/dir",true],
     ["/directory","/dir",false],
   ])
+}).addBatch({
+  "CookieJar": {
+    "Setting a basic cookie": {
+      topic: function() {
+        var cj = new CookieJar();
+        var c = Cookie.parse("a=b; Domain=example.com; Path=/");
+        assert.strictEqual(c.hostOnly, null);
+        assert.strictEqual(c.creation, null);
+        assert.strictEqual(c.lastAccessed, null);
+        cj.setCookie(c, 'http://example.com/index.html', this.callback);
+      },
+      "works": function(c) { assert.instanceOf(c,Cookie) }, // C is for Cookie, good enough for me
+      "gets timestamped": function(c) {
+        assert.ok(c.creation);
+        assert.ok(c.lastAccessed);
+        assert.equal(c.creation, c.lastAccessed);
+        assert.equal(c.TTL(), Infinity);
+        assert.ok(!c.isPersistent());
+      },
+    },
+    "Setting a session cookie": {
+      topic: function() {
+        var cj = new CookieJar();
+        var c = Cookie.parse("a=b");
+        assert.strictEqual(c.path, null);
+        cj.setCookie(c, 'http://example.com/dir/index.html', this.callback);
+      },
+      "works": function(c) { assert.instanceOf(c,Cookie) },
+      "gets the domain": function(c) { assert.equal(c.domain, 'example.com') },
+      "gets the default path": function(c) { assert.equal(c.path, '/dir') },
+      "is 'hostOnly'": function(c) { assert.ok(c.hostOnly) },
+    },
+    "wrong domain cookie": {
+      topic: function() {
+        var cj = new CookieJar();
+        var c = Cookie.parse("a=b; Domain=fooxample.com; Path=/");
+        cj.setCookie(c, 'http://example.com/index.html', this.callback);
+      },
+      "fails": function(err,c) {
+        assert.ok(err.message.match(/domain/i));
+        assert.ok(!c);
+      },
+    },
+    "HttpOnly cookie over non-HTTP API": {
+      topic: function() {
+        var cj = new CookieJar();
+        var c = Cookie.parse("a=b; Domain=example.com; Path=/; HttpOnly");
+        cj.setCookie(c, 'http://example.com/index.html', false, this.callback);
+      },
+      "fails": function(err,c) {
+        assert.match(err.message, /HttpOnly/i);
+        assert.ok(!c);
+      },
+    },
+  }
 }).export(module);
