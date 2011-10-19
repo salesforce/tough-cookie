@@ -1,7 +1,5 @@
 [RFC6265](http://tools.ietf.org/html/rfc6265) Cookies for Node.js
 
-===
-
 # Synopsis
 
     var cookies = require('cookies');
@@ -56,8 +54,6 @@ Misc
   * Complete tests for `validate()`
   * RFC5890 canonicalization for domains in `cdomain()`
   * Cookie Semantics
-
-===
 
 # Copyright and License
 
