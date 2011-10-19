@@ -328,4 +328,14 @@ vows.describe('Cookie Jar').addBatch({
     ["/dir/file","/dir"],
     ["noslash","/"],
   ])
+}).addBatch({
+  "Path-Match": matchVows(cookies.pathMatch, [
+    // request, cookie, match
+    ["/","/",true],
+    ["/dir","/",true],
+    ["/","/dir",false],
+    ["/dir/file","/dir/",true],
+    ["/dir/file","/dir",true],
+    ["/directory","/dir",false],
+  ])
 }).export(module);
