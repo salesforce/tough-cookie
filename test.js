@@ -53,6 +53,19 @@ function domainMatchVows(table) {
   return theVows;
 }
 
+function defaultPathVows(table) {
+  var theVows = {};
+  table.forEach(function(item) {
+    var str = item[0];
+    var expect = item[1];
+    var label = str+" gives "+expect;
+    theVows[label] = function() {
+      assert.equal(cookies.defaultPath(str),expect);
+    };
+  });
+  return theVows;
+}
+
 vows.describe('Cookie Jar').addBatch({
   "all defined": function() {
     assert.ok(Cookie);
@@ -306,5 +319,13 @@ vows.describe('Cookie Jar').addBatch({
     ["www.subdom.example.com", "subdom.example.com", true],
     ["example.com", "example.com.", false], // RFC6265 S4.1.2.3
     ["192.168.0.1", "168.0.1", false], // S5.1.3 "The string is a host name"
+  ])
+}).addBatch({
+  "default-path": defaultPathVows([
+    [null,"/"],
+    ["/","/"],
+    ["/file","/"],
+    ["/dir/file","/dir"],
+    ["noslash","/"],
   ])
 }).export(module);
