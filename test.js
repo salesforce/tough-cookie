@@ -213,6 +213,7 @@ vows.describe('Cookie Jar').addBatch({
       "parsed": function(c) { assert.ok(c) },
       "key": function(c) { assert.equal(c.key, 'a') },
       "value": function(c) { assert.equal(c.value, 'bcd') },
+      "no extensions": function(c) { assert.ok(!c.extensions) },
     },
     "with expiry": {
       topic: function() {

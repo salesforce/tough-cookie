@@ -313,6 +313,8 @@ function parse(str, strict) {
   c.key = result[1]; // the regexp should trim() already
   c.value = result[3]; // [2] is quotes or empty-string
 
+  if (firstSemi === -1) return c;
+
   // S5.2.3 "unparsed-attributes consist of the remainder of the set-cookie-string
   // (including the %x3B (";") in question)." plus later on in the same section
   // "discard the first ";" and trim".
