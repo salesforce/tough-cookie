@@ -292,7 +292,6 @@ function pathMatch(reqPath,cookiePath) {
 Cookie.parse = parse;
 function parse(str, strict) {
   str = str.trim();
-   console.log('parse',str);
 
   // We use a regex to parse the "name-value-pair" part of S5.2
   var firstSemi = str.indexOf(';'); // S5.2 step 1
@@ -331,7 +330,6 @@ function parse(str, strict) {
     if (strict && !EXTENSION_AV.test(av)) return;
 
     var av_parts = av.split('=',2);
-     console.log(av_parts);
     var av_key = av_parts[0].trim().toLowerCase();
     var av_value = av_parts[1];
     if (av_value) av_value = av_value.trim();
