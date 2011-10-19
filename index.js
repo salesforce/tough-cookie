@@ -43,10 +43,14 @@ var DATE_DELIM = /[\x09\x20-\x2F\x3B-\x40\x5B-\x60\x7B-\x7E]/;
 // From RFC2616 S2.2:
 var TOKEN = /[\x21\x23-\x26\x2A\x2B\x2D\x2E\x30-\x39\x41-\x5A\x5E-\x7A\x7C\x7E]/;
 
-// FROM RFC6265 S4.1.1
+// From RFC6265 S4.1.1
+// note that it excludes \x3B ";"
 var COOKIE_OCTET  = /[\x21\x23-\x2B\x2D-\x3A\x3C-\x5B\x5D-\x7E]/;
 var COOKIE_OCTETS = /^[\x21\x23-\x2B\x2D-\x3A\x3C-\x5B\x5D-\x7E]+$/;
-var COOKIE_PAIR = new RegExp('^('+TOKEN.source+'+)=("?)('+COOKIE_OCTET.source+'+)\\2');
+
+// The name/key cannot be empty but the value can (S5.2):
+var COOKIE_PAIR_STRICT = new RegExp('^('+TOKEN.source+'+)=("?)('+COOKIE_OCTET.source+'*)\\2');
+var COOKIE_PAIR = /^([^=\s]+)\s*=\s*("?)\s*(.*)\s*\2/;
 
 // RFC6265 S4.1.1 defines extension-av as 'any CHAR except CTLs or ";"'
 // Note ';' is \x3B
@@ -286,73 +290,117 @@ function pathMatch(reqPath,cookiePath) {
 }
 
 Cookie.parse = parse;
-function parse(str) {
+function parse(str, strict) {
   str = str.trim();
-  var result = COOKIE_PAIR.exec(str);
-  if (!result) return null;
+   console.log('parse',str);
+
+  // We use a regex to parse the "name-value-pair" part of S5.2
+  var firstSemi = str.indexOf(';'); // S5.2 step 1
+  var pairRx = strict ? COOKIE_PAIR_STRICT : COOKIE_PAIR;
+  var result = pairRx.exec(firstSemi === -1 ? str : str.substr(0,firstSemi));
+
+  // Rx satisfies the "the name string is empty" and "lacks a %x3D ("=")"
+  // constraints as well as trimming any whitespace.
+  if (!result) return;
 
   var c = new Cookie();
-  c.key = result[1];
-  c.value = result[3]; // 2 is quotes-or-not
+  c.key = result[1]; // the regexp should trim() already
+  c.value = result[3]; // [2] is quotes or empty-string
 
-  // chop off the cookie-pair
-  str = str.slice(result.index + result[0].length);
-  str = str.trim();
-  if (str.length === 0) return c;
+  // S5.2.3 "unparsed-attributes consist of the remainder of the set-cookie-string
+  // (including the %x3B (";") in question)." plus later on in the same section
+  // "discard the first ";" and trim".
+  var unparsed = str.slice(firstSemi).replace(/^\s*;\s*/,'').trim();
 
-  /* RFC6265 S4.1.1 implies that there's just one of each kind of cookie-av (e.g.
-   * Expires) and that it's not a valid cookie if there's duplicates.
-   * Here, we overwrite the previous value.
+  // "If the unparsed-attributes string is empty, skip the rest of these
+  // steps."
+  if (unparsed.length === 0) return c;
+
+  /* 
+   * S5.2 says that when looping over the items "[p]rocess the attribute-name
+   * and attribute-value according to the requirements in the following
+   * subsections" for every item.  Plus, for many of the individual attributes
+   * in S5.3 it says to use the "attribute-value of the last attribute in the
+   * cookie-attribute-list".  Therefore, in this implementation, we overwrite
+   * the previous value.
    */
-  var cookie_avs = str.split(/\s*;\s+/);
+  var cookie_avs = unparsed.split(/\s*;\s+/);
   while (cookie_avs.length) {
     var av = cookie_avs.shift();
-    if (av.length === 0) continue;
 
-    if (!EXTENSION_AV.test(av)) return null;
+    if (strict && !EXTENSION_AV.test(av)) return;
 
     var av_parts = av.split('=',2);
-    var av_key = av_parts[0].toLowerCase();
+     console.log(av_parts);
+    var av_key = av_parts[0].trim().toLowerCase();
     var av_value = av_parts[1];
+    if (av_value) av_value = av_value.trim();
 
     switch(av_key) {
-    case 'expires':
-      if (av_value == null) return null;
-      c.expires = parseDate(av_value);
-      if (c.expires == null) return null;
+    case 'expires': // S5.2.1
+      if (!av_value) { if(strict){return}else{break} }
+      var exp = parseDate(av_value);
+      // "If the attribute-value failed to parse as a cookie date, ignore the
+      // cookie-av."
+      if (exp == null) { if(strict){return}else{break} }
+      c.expires = exp;
+      // over and underflow not realistically a concern: V8's getTime() seems to
+      // store something larger than a 32-bit time_t (even with 32-bit node)
       break;
 
-    case 'max-age':
-      if (av_value == null) return null;
-      c.maxAge = parseInt(av_value);
-      if (c.maxAge == null) return null;
+    case 'max-age': // S5.2.2
+      if (!av_value) { if(strict){return}else{break} }
+      // "If the first character of the attribute-value is not a DIGIT or a "-"
+      // character ...[or]... If the remainder of attribute-value contains a
+      // non-DIGIT character, ignore the cookie-av."
+      if (!/^-?[0-9]+$/.test(av_value)) { if(strict){return}else{break} }
+      var delta = parseInt(av_value);
+      if (strict && delta <= 0) return; // S4.1.1
+      // "If delta-seconds is less than or equal to zero (0), let expiry-time
+      // be the earliest representable date and time."
+      c.maxAge = (delta <= 0) ? -Infinity : delta;
       break;
 
-    case 'secure':
-      if (av_value != null) return null; // can't have value
+    case 'domain': // S5.2.3
+      // "If the attribute-value is empty, the behavior is undefined.  However,
+      // the user agent SHOULD ignore the cookie-av entirely."
+      if (!av_value) { if(strict){return}else{break} }
+      // S5.2.3 "Let cookie-domain be the attribute-value without the leading %x2E
+      // (".") character."
+      var domain = av_value.trim().replace(/^\./,'');
+      if (!domain) { if(strict){return}else{break} } // see "is empty" above
+      // "Convert the cookie-domain to lower case."
+      c.domain = domain.toLowerCase();
+      break;
+
+    case 'path': // S5.2.4
+      /*
+       * "If the attribute-value is empty or if the first character of the
+       * attribute-value is not %x2F ("/"):
+       *   Let cookie-path be the default-path.
+       * Otherwise:
+       *   Let cookie-path be the attribute-value."
+       *
+       * We'll represent the default-path as null since it depends on the
+       * context of the parsing.
+       */
+      if (!av_value || av_value.substr(0,1) != "/") { if(strict){return}else{break} }
+      c.path = av_value;
+      break;
+
+    case 'secure': // S5.2.5
+      /*
+       * "If the attribute-name case-insensitively matches the string "Secure",
+       * the user agent MUST append an attribute to the cookie-attribute-list
+       * with an attribute-name of Secure and an empty attribute-value."
+       */
+      if (av_value != null) { if(strict){return} }
       c.secure = true;
       break;
 
-    case 'httponly':
-      if (av_value != null) return null; // can't have value
+    case 'httponly': // S5.2.6 -- effectively the same as 'secure'
+      if (av_value != null) { if(strict){return} }
       c.httpOnly = true;
-      break;
-
-    case 'path':
-      if (av_value == null) return null;
-      c.path = av_value.trim();
-      break;
-
-    case 'domain':
-      if (av_value == null) return null;
-      c.domain = av_value.trim();
-      if (c.domain.length === 0) c.domain = null; // S5.2.3 "if empty ... SHOULD ignore"
-      /*
-       * S4.1.2.3 "a trailing . if present will cause the user agent to ignore the attribute"
-       * XXX IMHO, this seems ambiguous. Especially since it doesn't use
-       * SHOULD/MUST wordage and is in a Non-normative section. Anyway, here it is:
-       */
-      if (c.domain.match(/\.$/)) c.domain = null;
       break;
 
     default:
@@ -373,6 +421,10 @@ Cookie.prototype.validate = function validate() {
     return false; // "Max-Age=" non-zero-digit *DIGIT
   if (this.path != null && !PATH_VALUE.test(this.path))
     return false;
+  if (this.domain) {
+    if (this.domain.match(/\.$/))
+      return false; // S4.1.2.3 suggests that this is bad. domainMatch() tests confirm this
+  }
   return true;
 };
 

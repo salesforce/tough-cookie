@@ -19,13 +19,13 @@ Misc
 
   * parseDate(string) - parse a string into a Date.  Parses according to RFC6265
   * formatDate(date) - format a Date into a RFC1123 string
-  * parse(header) - alias for `Cookie.parse(header)`
+  * parse(header[,strict]) - alias for `Cookie.parse(header[,strict])`
 
 ## Cookie
 
 ### Class Methods
 
-  * parse(header) - parse single Cookie or Set-Cookie header into a `Cookie` object
+  * parse(header[,strict]) - parse single Cookie or Set-Cookie header into a `Cookie` object.  Returns `undefined` if the string can't be parsed.  If in strict mode, returns undefined if the cookie doesn't follow the guidelines in section 4 of RFC6265.
 
 ### Attributes
 

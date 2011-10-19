@@ -209,7 +209,7 @@ vows.describe('Cookie Jar').addBatch({
   "Parsing": {
     "simple": {
       topic: function() {
-        return Cookie.parse('a=bcd') || null;
+        return Cookie.parse('a=bcd',true) || null;
       },
       "parsed": function(c) { assert.ok(c) },
       "key": function(c) { assert.equal(c.key, 'a') },
@@ -217,7 +217,7 @@ vows.describe('Cookie Jar').addBatch({
     },
     "with expiry": {
       topic: function() {
-        return Cookie.parse('a=bcd; Expires=Tue, 18 Oct 2011 07:05:03 GMT') || null;
+        return Cookie.parse('a=bcd; Expires=Tue, 18 Oct 2011 07:05:03 GMT',true) || null;
       },
       "parsed": function(c) { assert.ok(c) },
       "key": function(c) { assert.equal(c.key, 'a') },
@@ -229,7 +229,7 @@ vows.describe('Cookie Jar').addBatch({
     },
     "with expiry and path": {
       topic: function() {
-        return Cookie.parse('abc="xyzzy!"; Expires=Tue, 18 Oct 2011 07:05:03 GMT; Path=/aBc') || null;
+        return Cookie.parse('abc="xyzzy!"; Expires=Tue, 18 Oct 2011 07:05:03 GMT; Path=/aBc',true) || null;
       },
       "parsed": function(c) { assert.ok(c) },
       "key": function(c) { assert.equal(c.key, 'abc') },
@@ -246,7 +246,7 @@ vows.describe('Cookie Jar').addBatch({
     },
     "with everything": {
       topic: function() {
-        return Cookie.parse('abc="xyzzy!"; Expires=Tue, 18 Oct 2011 07:05:03 GMT; Path=/aBc; Domain=example.com; Secure; HTTPOnly; Max-Age=1234; Foo=Bar; Baz') || null;
+        return Cookie.parse('abc="xyzzy!"; Expires=Tue, 18 Oct 2011 07:05:03 GMT; Path=/aBc; Domain=example.com; Secure; HTTPOnly; Max-Age=1234; Foo=Bar; Baz', true) || null;
       },
       "parsed": function(c) { assert.ok(c) },
       "key": function(c) { assert.equal(c.key, 'abc') },
@@ -266,21 +266,102 @@ vows.describe('Cookie Jar').addBatch({
         assert.equal(c.extensions[1], 'Baz');
       },
     },
+    "invalid expires": {
+      "strict": function() { assert.ok(!Cookie.parse("a=b; Expires=xyzzy", true)) },
+      "non-strict": function() {
+        var c = Cookie.parse("a=b; Expires=xyzzy");
+        assert.ok(c);
+        assert.equal(c.expires, Infinity);
+      },
+    },
+    "zero max-age": {
+      "strict": function() { assert.ok(!Cookie.parse("a=b; Max-Age=0", true)) },
+      "non-strict": function() {
+        var c = Cookie.parse("a=b; Max-Age=0");
+        assert.ok(c);
+        assert.equal(c.maxAge, -Infinity);
+      },
+    },
+    "negative max-age": {
+      "strict": function() { assert.ok(!Cookie.parse("a=b; Max-Age=-1", true)) },
+      "non-strict": function() {
+        var c = Cookie.parse("a=b; Max-Age=-1");
+        assert.ok(c);
+        assert.equal(c.maxAge, -Infinity);
+      },
+    },
+    "empty domain": {
+      "strict": function() { assert.ok(!Cookie.parse("a=b; domain=", true)) },
+      "non-strict": function() {
+        var c = Cookie.parse("a=b; domain=");
+        assert.ok(c);
+        assert.equal(c.domain, null);
+      },
+    },
+    "dot domain": {
+      "strict": function() { assert.ok(!Cookie.parse("a=b; domain=.", true)) },
+      "non-strict": function() {
+        var c = Cookie.parse("a=b; domain=.");
+        assert.ok(c);
+        assert.equal(c.domain, null);
+      },
+    },
+    "uppercase domain": {
+      "strict lowercases": function() {
+        var c = Cookie.parse("a=b; domain=EXAMPLE.COM");
+        assert.ok(c);
+        assert.equal(c.domain, 'example.com');
+      },
+      "non-strict lowercases": function() {
+        var c = Cookie.parse("a=b; domain=EXAMPLE.COM");
+        assert.ok(c);
+        assert.equal(c.domain, 'example.com');
+      },
+    },
     "trailing dot in domain": {
       topic: function() {
-        return Cookie.parse("a=b; Domain=example.com.") || null;
+        return Cookie.parse("a=b; Domain=example.com.", true) || null;
       },
-      "has a null domain": function(c) {
-        assert.equal(c.domain,null);
+      "has the domain": function(c) { assert.equal(c.domain,"example.com.") },
+      "but doesn't validate": function(c) { assert.equal(c.validate(),false) },
+    },
+    "empty path": {
+      "strict": function() { assert.ok(!Cookie.parse("a=b; path=", true)) },
+      "non-strict": function() {
+        var c = Cookie.parse("a=b; path=");
+        assert.ok(c);
+        assert.equal(c.path, null);
+      },
+    },
+    "no-slash path": {
+      "strict": function() { assert.ok(!Cookie.parse("a=b; path=xyzzy", true)) },
+      "non-strict": function() {
+        var c = Cookie.parse("a=b; path=xyzzy");
+        assert.ok(c);
+        assert.equal(c.path, null);
+      },
+    },
+    "secure-with-value": {
+      "strict": function() { assert.ok(!Cookie.parse("a=b; Secure=xyzzy", true)) },
+      "non-strict": function() {
+        var c = Cookie.parse("a=b; Secure=xyzzy");
+        assert.ok(c);
+        assert.equal(c.secure, true);
+      },
+    },
+    "httponly-with-value": {
+      "strict": function() { assert.ok(!Cookie.parse("a=b; HttpOnly=xyzzy", true)) },
+      "non-strict": function() {
+        var c = Cookie.parse("a=b; HttpOnly=xyzzy");
+        assert.ok(c);
+        assert.equal(c.httpOnly, true);
       },
     },
     "garbage": {
       topic: function() {
-        return Cookie.parse("\x08") || null;
+        return Cookie.parse("\x08", true) || null;
       },
-      "doesn't parse": function(c) {
-        assert.equal(c,null);
-      },
+      "doesn't parse": function(c) { assert.equal(c,null) },
     },
   }
 }).addBatch({
