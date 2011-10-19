@@ -331,6 +331,10 @@ Cookie.prototype.TTL = function TTL(now) {
   return Infinity;
 };
 
+Cookie.prototype.isSession = function isSession() {
+  return (this.expires === Infinity && this.maxAge == null);
+};
+
 // Mostly S5.1.2 and S5.2.3:
 Cookie.prototype.cdomain = 
 Cookie.prototype.canonicalizedDomain = function canonicalizedDomain() {

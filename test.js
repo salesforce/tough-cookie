@@ -146,9 +146,16 @@ vows.describe('Cookie Jar').addBatch({
     c.setExpires('17 Oct 2010 00:00:00 GMT');
     assert.ok(c.TTL() < 0);
   },
-  "default TTL is Infinite-future": function() {
-    var c = new Cookie();
-    assert.equal(c.TTL(), Infinity);
+  "default TTL": {
+    topic: function() {
+      return new Cookie();
+    },
+    "is Infinite-future": function(c) {
+      assert.equal(c.TTL(), Infinity);
+    },
+    "is a 'session' cookie": function(c) {
+      assert.ok(c.isSession());
+    },
   },
 }).addBatch({
   "Parsing": {
