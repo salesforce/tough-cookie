@@ -84,6 +84,11 @@ var NUM_TO_DAY = [
 
 var YEAR = /^([1-9][0-9]{1,3})$/; // 2 to 4 digits (will check range when parsing)
 
+var MAX_TIME = 2147483647000; // 31-bit max
+var MAX_DATE = new Date(CookieJar.MAX_TIME); // 31-bit max
+var MIN_TIME = 0; // 31-bit min
+var MIN_DATE = new Date(CookieJar.MIN_TIME); // 31-bit min
+
 
 // RFC6265 S5.1.1 date parser:
 function parseDate(str) {
@@ -470,10 +475,14 @@ Cookie.prototype.toString = function toString() {
   return str;
 };
 
+// TTL() partially replaces the "expiry-time" parts of S5.3 step 3 (setCookie()
+// elsewhere)
+// S5.3 says to give the "latest representable date" for which we use Infinity
 Cookie.prototype.TTL = function TTL(now) {
   /* RFC6265 S4.1.2.2 If a cookie has both the Max-Age and the Expires
-   * attribute, the Max- Age attribute has precedence and controls the
+   * attribute, the Max-Age attribute has precedence and controls the
    * expiration date of the cookie.
+   * (Concurs with S5.3 step 3)
    */
   if (this.maxAge != null) {
     return this.maxAge * 1000;
@@ -493,8 +502,30 @@ Cookie.prototype.TTL = function TTL(now) {
   return Infinity;
 };
 
-Cookie.prototype.isSession = function isSession() {
-  return (this.expires === Infinity && this.maxAge == null);
+// expiryTime() replaces the "expiry-time" parts of S5.3 step 3 (setCookie()
+// elsewhere)
+Cookie.prototype.expiryTime = function expiryTime(now) {
+  if (this.maxAge != null) {
+    var relativeTo = this.creation || now || new Date();
+    var age = (this.maxAge <= 0) ? -Infinity : this.maxAge*1000;
+    return relativeTo.getTime() + age;
+  }
+  if (this.expires === Infinity) return Infinity;
+  return this.expires.getTime();
+};
+
+// expiryDate() replaces the "expiry-time" parts of S5.3 step 3 (setCookie()
+// elsewhere), except it returns a Date
+Cookie.prototype.expiryDate = function expiryDate(now) {
+  var millisec = this.expiryTime(now);
+  if (millisec == Infinity) return MAX_DATE;
+  else if (millisec == -Infinity) return MIN_DATE;
+  else return new Date(millisec);
+};
+
+// This replaces the "persistent-flag" parts of S5.3 step 3
+Cookie.prototype.isPersistent = function isPersistent() {
+  return (this.maxAge != null || this.expires !== Infinity);
 };
 
 // Mostly S5.1.2 and S5.2.3:
