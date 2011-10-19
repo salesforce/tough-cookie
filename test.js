@@ -22,9 +22,9 @@
 var vows = require('vows');
 var assert = require('assert');
 
-var cookiejar = require('./index.js');
-var Cookie = cookiejar.Cookie;
-var CookieJar = cookiejar.CookieJar;
+var cookies = require('./index.js');
+var Cookie = cookies.Cookie;
+var CookieJar = cookies.CookieJar;
 
 
 function dateVows(table) {
@@ -32,12 +32,26 @@ function dateVows(table) {
   var keys = Object.keys(table).forEach(function(date) {
     var expect = table[date];
     theVows[date] = function() {
-      var got = cookiejar.parseDate(date) ? 'valid' : 'invalid';
+      var got = cookies.parseDate(date) ? 'valid' : 'invalid';
       assert.equal(got, expect ? 'valid' : 'invalid')
     };
   });
   return { "date parsing": theVows }
 };
+
+function domainMatchVows(table) {
+  var theVows = {};
+  table.forEach(function(item) {
+    var str = item[0];
+    var dom = item[1];
+    var expect = item[2];
+    var label = str+(expect?" matches ":" doesn't match ")+dom;
+    theVows[label] = function() {
+      assert.equal(cookies.domainMatch(str,dom),expect);
+    };
+  });
+  return theVows;
+}
 
 vows.describe('Cookie Jar').addBatch({
   "all defined": function() {
@@ -279,4 +293,18 @@ vows.describe('Cookie Jar').addBatch({
       assert.equal(c.canonicalizedDomain(), "example...ca.");
     },
   }
+}).addBatch({
+  "Domain Match":domainMatchVows([
+    // str,          dom,          expect
+    ["example.com", "example.com", true],
+    ["eXaMpLe.cOm", "ExAmPlE.CoM", true],
+    ["no.ca", "yes.ca", false],
+    ["wwwexample.com", "example.com", false],
+    ["www.example.com", "example.com", true],
+    ["example.com", "www.example.com", false],
+    ["www.subdom.example.com", "example.com", true],
+    ["www.subdom.example.com", "subdom.example.com", true],
+    ["example.com", "example.com.", false], // RFC6265 S4.1.2.3
+    ["192.168.0.1", "168.0.1", false], // S5.1.3 "The string is a host name"
+  ])
 }).export(module);
