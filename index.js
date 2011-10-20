@@ -22,24 +22,6 @@
 var net = require('net');
 var urlParse = require('url').parse;
 
-function Cookie() { }
-Cookie.prototype.key = "";
-Cookie.prototype.value = "";
-
-// the order in which the RFC has them:
-Cookie.prototype.expires = Infinity;
-Cookie.prototype.maxAge = null; // takes precedence over expires for TTL
-Cookie.prototype.domain = null;
-Cookie.prototype.path = null;
-Cookie.prototype.secure = false;
-Cookie.prototype.httpOnly = false;
-Cookie.prototype.extensions = null;
-
-// set by the CookieJar:
-Cookie.prototype.hostOnly = null; // boolean when set
-Cookie.prototype.creation = null;
-Cookie.prototype.lastAccessed = null;
-
 var DATE_DELIM = /[\x09\x20-\x2F\x3B-\x40\x5B-\x60\x7B-\x7E]/;
 
 // From RFC2616 S2.2:
@@ -299,7 +281,6 @@ function pathMatch(reqPath,cookiePath) {
   return false;
 }
 
-Cookie.parse = parse;
 function parse(str, strict) {
   str = str.trim();
 
@@ -421,6 +402,26 @@ function parse(str, strict) {
   }
   return c;
 }
+
+
+function Cookie() { }
+Cookie.parse = parse;
+Cookie.prototype.key = "";
+Cookie.prototype.value = "";
+
+// the order in which the RFC has them:
+Cookie.prototype.expires = Infinity;
+Cookie.prototype.maxAge = null; // takes precedence over expires for TTL
+Cookie.prototype.domain = null;
+Cookie.prototype.path = null;
+Cookie.prototype.secure = false;
+Cookie.prototype.httpOnly = false;
+Cookie.prototype.extensions = null;
+
+// set by the CookieJar:
+Cookie.prototype.hostOnly = null; // boolean when set
+Cookie.prototype.creation = null; // Date when set
+Cookie.prototype.lastAccessed = null; // Date when set
 
 Cookie.prototype.validate = function validate() {
   if (!COOKIE_OCTETS.test(this.value))
