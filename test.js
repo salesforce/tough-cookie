@@ -23,7 +23,7 @@ var vows = require('vows');
 var assert = require('assert');
 var async = require('async');
 
-var cookies = require('./index.js');
+var cookies = require('./lib/cookie');
 var Cookie = cookies.Cookie;
 var CookieJar = cookies.CookieJar;
 

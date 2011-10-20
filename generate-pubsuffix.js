@@ -44,7 +44,7 @@ function processList(lines) {
 
   pubSufTest();
 
-  var w = fs.createWriteStream('./pubsuffix.js',{
+  var w = fs.createWriteStream('./lib/pubsuffix.js',{
     flags: 'w',
     encoding: 'utf8',
     mode: 0644,
