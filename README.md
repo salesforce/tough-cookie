@@ -7,6 +7,13 @@
     var cookie = Cookie.parse(header);
     cookie.value = 'somethingdifferent';
     header = cookie.toString();
+    
+    var cookiejar = new cookies.CookieJar();
+    cookiejar.setCookie(cookie, 'http://currentdomain.example.com/path', cb);
+    // ...
+    cookiejar.getCookies('http://example.com/otherpath',function(err,cookies) {
+       res.headers['cookie'] = cookies.join('; ');
+    });
 
 Misc
 
@@ -29,17 +36,23 @@ Misc
 
 ### Attributes
 
-  * key - String
-  * value - String
-  * expires - Date
-  * maxAge - Number (seconds)
-  * domain - String
-  * path - String
-  * secure - boolean
-  * httpOnly - boolean
-  * extensions - Array
+  * key - String - the name or key of the cookie (default "")
+  * value - String - the value of the cookie (default "")
+  * expires - Date - if set, the `Expires=` attribute of the cookie (defaults to Infinity)
+  * maxAge - Number (seconds) - if set, the `Max-Age=` attribute _in seconds_ of the cookie.
+  * domain - String - the `Domain=` attribute of the cookie
+  * path - String - the `Path=` of the cookie
+  * secure - boolean - the `Secure` cookie flag
+  * httpOnly - boolean - the `HttpOnly` cookie flag
+  * extensions - Array - any unrecognized cookie attributes as strings (even if equal-signs inside)
+               
+After a cookie has been passed through `CookieJar.setCookie()` it will have the following additional attributes:
 
-#### Methods
+  * hostOnly - Boolean - is this a host-only cookie (i.e. no Domain field was set, but was instead implied)
+  * created - Date - when this cookie was added to the jar
+  * lastAccessed - Date (updated by `getCookies()`) - last time the cookie got accessed. Will affect cookie cleaning once implemented.
+
+### Methods
 
   * validate() - *IN PROGRESS* validate cookie fields against RFC6265.
   * setExpires(String) - sets the expiry based on a date-string.
@@ -48,12 +61,29 @@ Misc
   * TTL(now) - compute the TTL relative to `now` (milliseconds).  `Date.now()` is used by default.
   * canonicalizedDoman()/cdomain() - return the canonicalized domain field (*TODO* full RFC5890 normalization)
 
+## CookieJar
+
+### Attributes
+
+  * rejectPublicSuffixes - Boolean: reject cookies with domains like "com" and "co.uk" (default: `true`)
+                         
+### Methods
+
+Since eventually this module would like to support database/remote/etc. CookieJars, continuation passing style is used for CookieJar methods.
+
+  * setCookie(cookieOrString, currentUrl, options, cb(err,cookie)) - attempt to set the cookie in the cookie jar.  If the operation fails, an error will be given to the callback `cb`, otherwise the cookie (updated with some timestamps and other properties) is passed through.  The `options` object can be omitted, but you can set `{http:false}` to say that this is a non-HTTP API (affects `HttpOnly` cookies) and `{strict:true}` turn on some extra validity checks.
+                                                                   
+  * storeCookie(cookie, options, cb(err,cookie)) - called internally by setCookie.  This is likely to be the "hook" that fancy CookieJars override.
+                                                
+  * getCookies(currentUrl, options, cb(err,cookies)) - retrieve the list of cookies that apply to the current url.  The `options` object can be omitted.  If the url starts with `https:` or `wss:` then `{secure:true}` is implied for the options.  Disable this by passing `{secure:false}`.  If you want to simulate a non-HTTP API, pass the option `{http:false}`, otherwise it defaults to `true`.
+
 # Todo
 
   * Release to NPM
   * _full_ RFC5890/RFC5891 canonicalization for domains in `cdomain()`
     * the optional `punycode` requirement implements RFC3492, but RFC6265 requires RFC5891
   * better tests for `validate()`?
+  * getCookies sorting
 
 # Copyright and License
 
