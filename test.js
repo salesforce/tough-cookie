@@ -591,5 +591,62 @@ vows.describe('Cookie Jar').addBatch({
         assert.deepEqual(names, ['a','b','d','e']); // may break with sorting
       },
     },
-  }
+  },
+  "CookieJar setCookie errors": {
+    "public-suffix domain": {
+      topic: function(cj) {
+        var cj = new CookieJar();
+        cj.setCookie('i=9; Domain=kyoto.jp; Path=/','kyoto.jp',this.callback);
+      },
+      "errors": function(err,cookie) {
+        assert.ok(err);
+        assert.ok(!cookie);
+        assert.match(err.message, /public suffix/i);
+      },
+    },
+    "wrong domain": {
+      topic: function(cj) {
+        var cj = new CookieJar();
+        cj.setCookie('j=10; Domain=google.com; Path=/','google.ca',this.callback);
+      },
+      "errors": function(err,cookie) {
+        assert.ok(err);
+        assert.ok(!cookie);
+        assert.match(err.message, /not in this host's domain/i);
+      },
+    },
+    "old cookie is HttpOnly": {
+      topic: function(cj) {
+        var cb = this.callback;
+        var next = function (err,c) {
+          return cb(err,cj);
+        };
+        var cj = new CookieJar();
+        cj.setCookie('k=11; Domain=example.ca; Path=/; HttpOnly','http://example.ca',{http:true},next);
+      },
+      "initial cookie is set": function(err,cj) {
+        assert.ok(!err);
+      },
+      "but when trying to overwrite": {
+        topic: function(cj) {
+          var cb = this.callback;
+          cj.setCookie('k=12; Domain=example.ca; Path=/','http://example.ca',{http:false},function(err,c) {cb(null,err)});
+        },
+        "it's an error": function(err) {
+          assert.ok(err);
+        },
+        "then, checking the original": {
+          topic: function(ignored,cj) {
+            assert.ok(cj instanceof CookieJar);
+            cj.getCookies('http://example.ca',{http:true},this.callback);
+          },
+          "cookie has original value": function(err,cookies) {
+            assert.equal(err,null);
+            assert.length(cookies, 1);
+            assert.equal(cookies[0].value,11);
+          },
+        },
+      },
+    },
+  },
 }).export(module);
