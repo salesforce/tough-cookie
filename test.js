@@ -364,6 +364,19 @@ vows.describe('Cookie Jar').addBatch({
       },
       "doesn't parse": function(c) { assert.equal(c,null) },
     },
+    "public suffix domain": {
+      topic: function() {
+        return Cookie.parse("a=b; domain=kyoto.jp", true) || null;
+      },
+      "parses fine": function(c) {
+        assert.ok(c);
+        assert.equal(c.domain, 'kyoto.jp');
+      },
+      "but fails validation": function(c) {
+        assert.ok(c);
+        assert.ok(!c.validate());
+      },
+    }
   }
 }).addBatch({
   "domain normalization": {
@@ -545,6 +558,15 @@ vows.describe('Cookie Jar').addBatch({
     "then retrieving for http://example.com": {
       topic: function(cj,results) {
         cj.getCookies('http://example.com',this.callback);
+      },
+      "get a bunch of cookies": function(cookies) {
+        var names = cookies.map(function(c) {return c.key});
+        assert.deepEqual(names, ['a','b','e']); // may break with sorting
+      },
+    },
+    "then retrieving for http://EXAMPlE.com": {
+      topic: function(cj,results) {
+        cj.getCookies('http://EXAMPlE.com',this.callback);
       },
       "get a bunch of cookies": function(cookies) {
         var names = cookies.map(function(c) {return c.key});
