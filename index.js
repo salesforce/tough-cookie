@@ -214,14 +214,17 @@ function canonicalDomain(str) {
 }
 
 // S5.1.3 Domain Matching
-function domainMatch(str,domStr) {
+function domainMatch(str, domStr, canonicalize) {
+  if (canonicalize !== false) {
+    str = canonicalDomain(str);
+    domStr = canonicalDomain(domStr);
+  }
+
   /*
    * "The domain string and the string are identical. (Note that both the
    * domain string and the string will have been canonicalized to lower case at
    * this point)"
    */
-  str = canonicalDomain(str);
-  domStr = canonicalDomain(domStr);
   if (str == domStr) return true;
 
   /* "All of the following [three] conditions hold:" (order adjusted from the RFC) */
@@ -547,18 +550,20 @@ function CookieJar() {
 CookieJar.prototype.store = null;
 CookieJar.prototype.rejectPublicSuffixes = true;
 
-// isHTTP: "is the call from an HTTP API?" (defaults to true if missing).
-// Affects the acceptance of 'HttpOnly' cookies.
-CookieJar.prototype.setCookie = function setCookie(cookie, url, isHTTP, cb) {
+CookieJar.prototype.setCookie = function setCookie(cookie, url, options, cb) {
   var context = (url instanceof Object) ? url : urlParse(url);
-  if (isHTTP instanceof Function) {
-    cb = isHTTP;
-    isHTTP = true;
+  if (options instanceof Function) {
+    cb = options;
+    options = {};
   }
+  if (options.http === undefined)
+    options.http = true;
+  if (options.strict === undefined)
+    options.strict = false;
 
   // S5.3 step 1
   if (!(cookie instanceof Cookie))
-    cookie = Cookie.parse(cookie, strict);
+    cookie = Cookie.parse(cookie, options.strict);
   if (!cookie) return cb(new Error("Cookie failed to parse"));
 
   // S5.3 step 2
@@ -595,20 +600,20 @@ CookieJar.prototype.setCookie = function setCookie(cookie, url, isHTTP, cb) {
   // S5.3 step 9: NOOP; httpOnly attribute
 
   // S5.3 step 10
-  if (!isHTTP && cookie.httpOnly) return cb(new Error("Cookie is HttpOnly and this isn't an HTTP API"));
+  if (!options.http && cookie.httpOnly) return cb(new Error("Cookie is HttpOnly and this isn't an HTTP API"));
 
-  this.storeCookie(cookie, isHTTP, cb);
+  this.storeCookie(cookie, options, cb);
 };
 
 // S5.3 step 11 and 12
-CookieJar.prototype.storeCookie = function storeCookie(cookie, isHTTP, cb) {
+CookieJar.prototype.storeCookie = function storeCookie(cookie, options, cb) {
   var lookupKey = cookie.key+" "+cookie.domain+" "+cookie.path;
 
   // S5.3 step 11 - "If the cookie store contains a cookie with the same name,
   // domain, and path as the newly created cookie:"
   var oldCookie = this.store[lookupKey];
   if (oldCookie) {
-    if (oldCookie.httpOnly && !isHTTP) // step 11.2
+    if (oldCookie.httpOnly && !options.http) // step 11.2
       return cb(new Error("old Cookie is HttpOnly and this isn't an HTTP API"));
     cookie.creation = oldCookie.creation; // step 11.3
     this.store[lookupKey] = null; // step 11.4
