@@ -51,9 +51,9 @@ Misc
 # Todo
 
   * Release to NPM
-  * Complete tests for `validate()`
-  * RFC5890 canonicalization for domains in `cdomain()`
-  * Cookie Semantics
+  * _full_ RFC5890/RFC5891 canonicalization for domains in `cdomain()`
+    * the optional `punycode` requirement implements RFC3492, but RFC6265 requires RFC5891
+  * better tests for `validate()`?
 
 # Copyright and License
 
