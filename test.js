@@ -21,6 +21,7 @@
 
 var vows = require('vows');
 var assert = require('assert');
+var async = require('async');
 
 var cookies = require('./index.js');
 var Cookie = cookies.Cookie;
@@ -451,7 +452,7 @@ vows.describe('Cookie Jar').addBatch({
       "gets the default path": function(c) { assert.equal(c.path, '/dir') },
       "is 'hostOnly'": function(c) { assert.ok(c.hostOnly) },
     },
-    "wrong domain cookie": {
+    "Setting wrong domain cookie": {
       topic: function() {
         var cj = new CookieJar();
         var c = Cookie.parse("a=b; Domain=fooxample.com; Path=/");
@@ -462,15 +463,110 @@ vows.describe('Cookie Jar').addBatch({
         assert.ok(!c);
       },
     },
-    "HttpOnly cookie over non-HTTP API": {
+    "Setting HttpOnly cookie over non-HTTP API": {
       topic: function() {
         var cj = new CookieJar();
         var c = Cookie.parse("a=b; Domain=example.com; Path=/; HttpOnly");
-        cj.setCookie(c, 'http://example.com/index.html', false, this.callback);
+        cj.setCookie(c, 'http://example.com/index.html', {http:false}, this.callback);
       },
       "fails": function(err,c) {
         assert.match(err.message, /HttpOnly/i);
         assert.ok(!c);
+      },
+    },
+  },
+  "Cookie Jar retrieval": {
+    topic: function() {
+      var cj = new CookieJar();
+      var ex = 'http://example.com/index.html';
+      var tasks = [];
+      tasks.push(function(next) {
+        cj.setCookie('a=1; Domain=example.com; Path=/',ex,next);
+      });
+      tasks.push(function(next) {
+        cj.setCookie('b=2; Domain=example.com; Path=/; HttpOnly',ex,next);
+      });
+      tasks.push(function(next) {
+        cj.setCookie('c=3; Domain=example.com; Path=/; Secure',ex,next);
+      });
+      tasks.push(function(next) { // path
+        cj.setCookie('d=4; Domain=example.com; Path=/foo',ex,next);
+      });
+      tasks.push(function(next) { // host only
+        cj.setCookie('e=5',ex,next);
+      });
+      tasks.push(function(next) { // other domain
+        cj.setCookie('f=6; Domain=nodejs.org; Path=/','http://nodejs.org',next);
+      });
+      tasks.push(function(next) { // expired
+        cj.setCookie('g=7; Domain=example.com; Path=/; Expires=Tue, 18 Oct 2011 00:00:00 GMT',ex,next);
+      });
+      tasks.push(function(next) { // expired via Max-Age
+        cj.setCookie('h=8; Domain=example.com; Path=/; Max-Age=1',ex,next);
+      });
+      var cb = this.callback;
+      async.parallel(tasks, function(err,results){
+        setTimeout(function() {
+          cb(err,cj,results);
+        }, 2000);
+      });
+    },
+    "setup ok": function(err,cj,results) {
+      assert.ok(1);
+    },
+    "then retrieving for http://nodejs.org": {
+      topic: function(cj,results) {
+        cj.getCookies('http://nodejs.org',this.callback);
+      },
+      "get a nodejs cookie": function(cookies) {
+        assert.length(cookies, 1);
+        var cookie = cookies[0];
+        assert.equal(cookie.domain, 'nodejs.org');
+      },
+    },
+    "then retrieving for https://example.com": {
+      topic: function(cj,results) {
+        cj.getCookies('https://example.com',{secure:true},this.callback);
+      },
+      "get a secure example cookie with others": function(cookies) {
+        var names = cookies.map(function(c) {return c.key});
+        assert.deepEqual(names, ['a','b','c','e']); // may break with sorting
+      },
+    },
+    "then retrieving for https://example.com (missing options)": {
+      topic: function(cj,results) {
+        cj.getCookies('https://example.com',this.callback);
+      },
+      "get a secure example cookie with others": function(cookies) {
+        var names = cookies.map(function(c) {return c.key});
+        assert.deepEqual(names, ['a','b','c','e']); // may break with sorting
+      },
+    },
+    "then retrieving for http://example.com": {
+      topic: function(cj,results) {
+        cj.getCookies('http://example.com',this.callback);
+      },
+      "get a bunch of cookies": function(cookies) {
+        var names = cookies.map(function(c) {return c.key});
+        assert.deepEqual(names, ['a','b','e']); // may break with sorting
+      },
+    },
+    "then retrieving for http://example.com, non-HTTP": {
+      topic: function(cj,results) {
+        cj.getCookies('http://example.com',{http:false},this.callback);
+      },
+      "get a bunch of cookies": function(cookies) {
+        var names = cookies.map(function(c) {return c.key});
+        assert.deepEqual(names, ['a','e']); // may break with sorting
+      },
+    },
+    "then retrieving for http://example.com/foo/bar": {
+      topic: function(cj,results) {
+        cj.getCookies('http://example.com/foo/bar',this.callback);
+      },
+      "get a bunch of cookies": function(cookies) {
+        var names = cookies.map(function(c) {return c.key});
+        assert.deepEqual(names, ['a','b','d','e']); // may break with sorting
       },
     },
   }

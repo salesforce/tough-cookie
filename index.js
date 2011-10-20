@@ -518,6 +518,7 @@ Cookie.prototype.expiryTime = function expiryTime(now) {
     var age = (this.maxAge <= 0) ? -Infinity : this.maxAge*1000;
     return relativeTo.getTime() + age;
   }
+
   if (this.expires === Infinity) return Infinity;
   return this.expires.getTime();
 };
@@ -623,6 +624,84 @@ CookieJar.prototype.storeCookie = function storeCookie(cookie, options, cb) {
   this.store[lookupKey] = cookie; // step 12
 
   cb(null, cookie);
+};
+
+// RFC6365 S5.4
+CookieJar.prototype.getCookies = function getCookies(url, options, cb) {
+  var context = (url instanceof Object) ? url : urlParse(url);
+  if (options instanceof Function) {
+    cb = options;
+    options = {};
+  }
+
+  var host = canonicalDomain(context.hostname);
+  var path = context.pathname;
+
+  var secure = options.secure;
+  if (secure == null && context.protocol &&
+      (context.protocol == 'https:' || context.protocol == 'wss:'))
+  {
+    secure = true;
+  }
+
+  var http = options.http;
+  if (http == null) http = true;
+
+  var now = options.now || Date.now();
+
+  function matchingCookie(c,key) {
+    // "Either:
+    //   The cookie's host-only-flag is true and the canonicalized
+    //   request-host is identical to the cookie's domain.
+    // Or:
+    //   The cookie's host-only-flag is false and the canonicalized
+    //   request-host domain-matches the cookie's domain."
+    if (c.hostOnly) {
+      if (c.domain != host) return false;
+    } else {
+      if (!domainMatch(host, c.domain, false)) return false;
+    }
+
+    // "The request-uri's path path-matches the cookie's path."
+    if (!pathMatch(path, c.path))
+      return false;
+
+    // "If the cookie's secure-only-flag is true, then the request-uri's
+    // scheme must denote a "secure" protocol"
+    if (c.secure && !secure)
+      return false;
+
+    // "If the cookie's http-only-flag is true, then exclude the cookie if the
+    // cookie-string is being generated for a "non-HTTP" API"
+    if (http == false && c.httpOnly)
+      return false;
+
+    // deferred from S5.3
+    if (c.expiryTime() <= now) {
+      delete this.store[key];
+      return false;
+    }
+
+    return true;
+  }
+
+  var keys = Object.keys(this.store);
+  var len = keys.length;
+  var cookies = [];
+  for (var i=0; i<len; i++) {
+    var key = keys[i];
+    var c = this.store[key];
+    if (matchingCookie.call(this,c,key) === true)
+      cookies.push(c);
+  }
+
+  // TODO: SHOULD sorting of S5.4 part 2
+
+  // S5.4 part 3
+  var now = new Date();
+  cookies.forEach(function(c) { c.lastAccessed = now });
+
+  cb(null,cookies);
 };
 
 module.exports = {
