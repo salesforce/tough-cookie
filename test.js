@@ -23,10 +23,10 @@ var vows = require('vows');
 var assert = require('assert');
 var async = require('async');
 
-// NOTE use require("cookies") in your own code:
-var cookies = require('./lib/cookie');
-var Cookie = cookies.Cookie;
-var CookieJar = cookies.CookieJar;
+// NOTE use require("tough-cookie") in your own code:
+var tough = require('./lib/cookie');
+var Cookie = tough.Cookie;
+var CookieJar = tough.CookieJar;
 
 
 function dateVows(table) {
@@ -34,7 +34,7 @@ function dateVows(table) {
   var keys = Object.keys(table).forEach(function(date) {
     var expect = table[date];
     theVows[date] = function() {
-      var got = cookies.parseDate(date) ? 'valid' : 'invalid';
+      var got = tough.parseDate(date) ? 'valid' : 'invalid';
       assert.equal(got, expect ? 'valid' : 'invalid')
     };
   });
@@ -62,7 +62,7 @@ function defaultPathVows(table) {
     var expect = item[1];
     var label = str+" gives "+expect;
     theVows[label] = function() {
-      assert.equal(cookies.defaultPath(str),expect);
+      assert.equal(tough.defaultPath(str),expect);
     };
   });
   return theVows;
@@ -403,7 +403,7 @@ vows.describe('Cookie Jar').addBatch({
     },
   }
 }).addBatch({
-  "Domain Match":matchVows(cookies.domainMatch, [
+  "Domain Match":matchVows(tough.domainMatch, [
     // str,          dom,          expect
     ["example.com", "example.com", true],
     ["eXaMpLe.cOm", "ExAmPlE.CoM", true],
@@ -425,7 +425,7 @@ vows.describe('Cookie Jar').addBatch({
     ["noslash","/"],
   ])
 }).addBatch({
-  "Path-Match": matchVows(cookies.pathMatch, [
+  "Path-Match": matchVows(tough.pathMatch, [
     // request, cookie, match
     ["/","/",true],
     ["/dir","/",true],

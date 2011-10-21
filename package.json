@@ -1,8 +1,8 @@
 {
   "author": "Jeremy Stashewsky <jeremy@goinstant.com> (https://github.com/stash)",
-  "name": "cookies",
-  "description": "RFC6265 Cookies for node.js",
-  "keywords": "cookie cookies set-cookie cookiejar jar RFC6265 RFC2965",
+  "name": "tough-cookie",
+  "description": "RFC6265 Cookies and Cookie Jar for node.js",
+  "keywords": "HTTP cookie cookies set-cookie cookiejar jar RFC6265 RFC2965",
   "version": "0.9.0",
   "homepage": "https://github.com/goinstant/node-cookie",
   "repository": {

@@ -3,7 +3,7 @@
 # Synopsis
 
 ``` javascript
-var cookies = require('cookies'); // note: not 'cookie' or 'node-cookie'
+var cookies = require('tough-cookie'); // note: not 'cookie', 'cookies' or 'node-cookie'
 var Cookie = cookies.Cookie;
 var cookie = Cookie.parse(header);
 cookie.value = 'somethingdifferent';
@@ -21,16 +21,18 @@ cookiejar.getCookies('http://example.com/otherpath',function(err,cookies) {
 
 It's _so_ easy!
 
-`npm install cookies`
+`npm install tough-cookie`
 
 Requires `punycode`, which should get installed automatically for you.
+
+Why the name?  NPM modules `cookie`, `cookies` and `cookiejar` were already taken.
 
 # API
 
 cookies
 =======
 
-Functions on the `cookies` module you get from `require('cookies')`.  All can be used as pure functions and don't need to be "bound" to the `cookies` module.
+Functions on the module you get from `require('tough-cookie')`.  All can be used as pure functions and don't need to be "bound".
 
 parseDate(string)
 -----------------
