@@ -1,0 +1,29 @@
+{
+  "author": "Jeremy Stashewsky <jeremy@goinstant.com> (https://github.com/stash)",
+  "name": "cookie",
+  "description": "RFC6265 Cookies for node.js",
+  "keywords": "cookie cookies set-cookie cookiejar jar RFC6265 RFC2965",
+  "version": "0.9.0",
+  "homepage": "https://github.com/goinstant/node-cookie",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/goinstant/node-cookie.git"
+  },
+  "bugs": {
+    "url": "https://github.com/goinstant/node-cookie/issues"
+  },
+  "main": "./lib/cookie",
+  "scripts": {
+    "test": "vows test.js"
+  },
+  "engines": {
+    "node": ">=0.4.12"
+  },
+  "dependencies": {
+    "punycode": "https://github.com/goinstant/Node-PunyCode/tarball/master"
+  },
+  "devDependencies": {
+    "vows": ">=0.5.11",
+    "async": ">=0.1.12"
+  }
+}
