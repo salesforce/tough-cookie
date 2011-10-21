@@ -592,6 +592,14 @@ vows.describe('Cookie Jar').addBatch({
         assert.deepEqual(names, ['a','b','d','e']); // may break with sorting
       },
     },
+    "then retrieving for http://example.com as a string": {
+      topic: function(cj,results) {
+        cj.getCookieString('http://example.com',this.callback);
+      },
+      "get a single string": function(cookieHeader) {
+        assert.equal(cookieHeader, "a=1; b=2; e=5"); // may break with sorting
+      },
+    },
   },
   "CookieJar setCookie errors": {
     "public-suffix domain": {
