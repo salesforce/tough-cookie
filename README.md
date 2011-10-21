@@ -1,4 +1,6 @@
-[RFC6265](http://tools.ietf.org/html/rfc6265) Cookies for Node.js
+[RFC6265](http://tools.ietf.org/html/rfc6265) Cookies and CookieJar for Node.js
+
+![Tough Cookie](http://www.goinstant.com.s3.amazonaws.com/tough-cookie.jpg)
 
 # Synopsis
 
