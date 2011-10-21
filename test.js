@@ -649,4 +649,43 @@ vows.describe('Cookie Jar').addBatch({
       },
     },
   },
+}).addBatch({
+  "JSON": {
+    "serialization": {
+      topic: function() {
+        var c = Cookie.parse('alpha=beta; Domain=example.com; Path=/foo; Expires=Tue, 19 Jan 2038 03:14:07 GMT; HttpOnly');
+        return JSON.stringify(c);
+      },
+      "gives a string": function(str) {
+        assert.equal(typeof str, "string");
+      },
+      "date is in ISO format": function(str) {
+        assert.match(str, /"expires":"2038-01-19T03:14:07.000Z"/, 'expires is in ISO format');
+      },
+    },
+    "deserialization": {
+      topic: function() {
+        var json = '{"key":"alpha","value":"beta","domain":"example.com","path":"/foo","expires":"2038-01-19T03:14:07.000Z","httpOnly":true}';
+        return Cookie.fromJSON(json) || null;
+      },
+      "works": function(c) {
+        assert.ok(c);
+      },
+      "attributes": function(c) {
+        assert.equal(c.key, "alpha");
+        assert.equal(c.value, "beta");
+        assert.equal(c.domain, "example.com");
+        assert.equal(c.path, "/foo");
+        assert.strictEqual(c.httpOnly, true);
+        assert.strictEqual(c.secure, false);
+        assert.strictEqual(c.hostOnly, null);
+        assert.strictEqual(c.creation, null);
+        assert.strictEqual(c.lastAccessed, null);
+      },
+      "expires is a date object": function(c) {
+        assert.equal(typeof c.expires, "number"); // weird but true
+        assert.equal(c.expires, new Date(2147483647000));
+      },
+    }
+  }
 }).export(module);
