@@ -227,6 +227,8 @@ Accepts the same options as `.getCookies()` but passes a string suitable for a C
 
 # Copyright and License
 
+(tl;dr: MIT with some MPL/1.1)
+
 Copyright GoInstant, Inc. and other contributors. All rights reserved.
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to
@@ -246,3 +248,4 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
+Portions may be licensed under different licenses (in particular public-suffix.txt is MPL/1.1); please read the LICENSE file for full details.
