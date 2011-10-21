@@ -23,6 +23,7 @@ var vows = require('vows');
 var assert = require('assert');
 var async = require('async');
 
+// NOTE use require("cookies") in your own code:
 var cookies = require('./lib/cookie');
 var Cookie = cookies.Cookie;
 var CookieJar = cookies.CookieJar;
