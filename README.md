@@ -170,8 +170,9 @@ validates cookie attributes for semantic correctness.  Useful for "lint" checkin
 
 ``` javascript
 if (cookie.validate() === true) {
-  // it's good
+  // it's tasty
 } else {
+  // yuck!
 }
 ```
 
@@ -207,15 +208,14 @@ Retrieve the list of cookies that can be sent in a Cookie header for the current
 
 If an error is encountered, that's passed as `err` to the callback, otherwise an `Array` of `Cookie` objects is passed.
 
-To stringify the cookies:
-
-``` javascript
-res['cookie'] = cookies.map(function(c){return c.cookieString()})
-```
-
 The `options` object can be omitted.  If the url starts with `https:` or `wss:` then `{secure:true}` is implied for the options.  Disable this by passing `{secure:false}`.  If you want to simulate a non-HTTP API, pass the option `{http:false}`, otherwise it defaults to `true`.
 
 The `.lastAccessed` property of the returned cookies will have been updated.
+
+.getCookieString(...)
+---------------------
+
+Accepts the same options as `.getCookies()` but passes a string suitable for a Cookie header rather than an array to the callback.
 
 # TODO
 
