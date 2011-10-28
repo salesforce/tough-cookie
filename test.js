@@ -166,6 +166,23 @@ vows.describe('Cookie Jar').addBatch({
     c.extensions = ['MyExtension'];
     assert.equal(c.toString(), 'a=b; Expires=Tue, 18 Oct 2011 07:05:03 GMT; Max-Age=12345; Domain=example.com; Path=/foo; Secure; HttpOnly; MyExtension');
   },
+  "formatting a host-only cookie": {
+    topic: function() {
+      var c = new Cookie();
+      c.key = 'a';
+      c.value = 'b';
+      c.hostOnly = true;
+      c.domain = 'shouldnt-stringify.example.com';
+      c.path = '/should-stringify';
+      return c;
+    },
+    "validates": function(c) {
+      assert.ok(c.validate());
+    },
+    "to string": function(c) {
+      assert.equal(c.toString(), 'a=b; Path=/should-stringify');
+    },
+  },
 }).addBatch({
   "TTL with max-age": function() {
     var c = new Cookie();
