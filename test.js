@@ -617,6 +617,17 @@ vows.describe('Cookie Jar').addBatch({
         assert.equal(cookieHeader, "a=1; b=2; e=5"); // may break with sorting
       },
     },
+    "then retrieving for http://example.com as a set-cookie header": {
+      topic: function(cj,results) {
+        cj.getSetCookieStrings('http://example.com',this.callback);
+      },
+      "get a single string": function(cookieHeaders) {
+        assert.length(cookieHeaders, 3);
+        assert.equal(cookieHeaders[0], "a=1; Domain=example.com; Path=/");
+        assert.equal(cookieHeaders[1], "b=2; Domain=example.com; Path=/; HttpOnly");
+        assert.equal(cookieHeaders[2], "e=5; Path=/");
+      },
+    },
   },
   "CookieJar setCookie errors": {
     "public-suffix domain": {

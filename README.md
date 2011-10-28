@@ -219,7 +219,12 @@ The `.lastAccessed` property of the returned cookies will have been updated.
 .getCookieString(...)
 ---------------------
 
-Accepts the same options as `.getCookies()` but passes a string suitable for a Cookie header rather than an array to the callback.
+Accepts the same options as `.getCookies()` but passes a string suitable for a Cookie header rather than an array to the callback.  Simply maps the `Cookie` array via `.cookieString()`.
+
+.getSetCookieStrings(...)
+---------------------
+
+Accepts the same options as `.getCookies()` but passes an array of strings suitable for Set-Cookie headers (rather than an array of `Cookie`s) to the callback.  Simply maps the cookie array via `.toString()`.
 
 # TODO
 
