@@ -494,6 +494,17 @@ vows.describe('Cookie Jar').addBatch({
         assert.ok(!c);
       },
     },
+    "Setting sub-domain cookie": {
+      topic: function() {
+        var cj = new CookieJar();
+        var c = Cookie.parse("a=b; Domain=www.example.com; Path=/");
+        cj.setCookie(c, 'http://example.com/index.html', this.callback);
+      },
+      "fails": function(err,c) {
+        assert.ok(err.message.match(/domain/i));
+        assert.ok(!c);
+      },
+    },
     "Setting HttpOnly cookie over non-HTTP API": {
       topic: function() {
         var cj = new CookieJar();
