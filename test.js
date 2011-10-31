@@ -640,6 +640,36 @@ vows.describe('Cookie Jar').addBatch({
       },
     },
   },
+  "Repeated names": {
+    topic: function() {
+      var cb = this.callback;
+      var cj = new CookieJar();
+      var ex = 'http://www.example.com/';
+      var sc = cj.setCookie;
+      var tasks = [];
+      tasks.push(sc.bind(cj,'aaaa=xxxx',ex));
+      tasks.push(sc.bind(cj,'aaaa=1111; Domain=www.example.com',ex));
+      tasks.push(sc.bind(cj,'aaaa=2222; Domain=example.com',ex));
+      tasks.push(sc.bind(cj,'aaaa=3333; Domain=www.example.com; Path=/pathA',ex));
+      async.series(tasks,function(err,results) {
+        cb(err,{cj:cj, cookies:results});
+      });
+    },
+    "all got set": function(err,t) {
+      assert.length(t.cookies,4);
+    },
+    "then getting 'em back": {
+      topic: function(t) {
+        var cj = t.cj;
+        cj.getCookies('http://www.example.com/pathA',this.callback);
+      },
+      "there's just three": function (err,cookies) {
+        var vals = cookies.map(function(c) {return c.value});
+        // may break with sorting; sorting should put 3333 first due to longest path:
+        assert.deepEqual(vals, ['1111','2222','3333']);
+      }
+    },
+  },
   "CookieJar setCookie errors": {
     "public-suffix domain": {
       topic: function(cj) {
