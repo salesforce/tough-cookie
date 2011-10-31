@@ -82,6 +82,15 @@ fromJSON(string)
 
 alias for `Cookie.fromJSON(string)`
 
+getPublicSuffix(hostname)
+-------------------------
+
+Returns the public suffix of this hostname.  The public suffix is the shortest domain-name upon which a cookie can be set.  Returns `null` if the hostname cannot have cookies set for it.
+
+For example: `www.example.com` and `www.subdomain.example.com` both have public suffix `example.com`.
+
+For further information, see http://publicsuffix.org/.  This module derives its list from that site.
+
 Cookie
 ======
 
