@@ -447,6 +447,7 @@ vows.describe('Cookie Jar').addBatch({
     ["/","/",true],
     ["/dir","/",true],
     ["/","/dir",false],
+    ["/dir/","/dir/", true],
     ["/dir/file","/dir/",true],
     ["/dir/file","/dir",true],
     ["/directory","/dir",false],
@@ -796,5 +797,67 @@ vows.describe('Cookie Jar').addBatch({
         assert.equal(c.expires, new Date(2147483647000));
       },
     }
+  }
+}).addBatch({
+  "permuteDomain": {
+    "base case": {
+      topic: tough.permuteDomain.bind(null,'example.com'),
+      "got the domain": function(list) {
+        assert.deepEqual(list, ['example.com']);
+      },
+    },
+    "two levels": {
+      topic: tough.permuteDomain.bind(null,'foo.bar.example.com'),
+      "got three things": function(list) {
+        assert.deepEqual(list, ['example.com','bar.example.com','foo.bar.example.com']);
+      },
+    },
+    "invalid domain": {
+      topic: tough.permuteDomain.bind(null,'foo.bar.example.localduhmain'),
+      "got three things": function(list) {
+        assert.equal(list, null);
+      },
+    },
+  },
+  "permutePath": {
+    "base case": {
+      topic: tough.permutePath.bind(null,'/'),
+      "just slash": function(list) {
+        assert.deepEqual(list,['/']);
+      },
+    },
+    "single case": {
+      topic: tough.permutePath.bind(null,'/foo'),
+      "two things": function(list) {
+        assert.deepEqual(list,['/foo','/']);
+      },
+      "path matching": function(list) {
+        list.forEach(function(e) {
+          assert.ok(tough.pathMatch('/foo',e));
+        });
+      },
+    },
+    "double case": {
+      topic: tough.permutePath.bind(null,'/foo/bar'),
+      "four things": function(list) {
+        assert.deepEqual(list,['/foo/bar','/foo','/']);
+      },
+      "path matching": function(list) {
+        list.forEach(function(e) {
+          assert.ok(tough.pathMatch('/foo/bar',e));
+        });
+      },
+    },
+    "trailing slash": {
+      topic: tough.permutePath.bind(null,'/foo/bar/'),
+      "three things": function(list) {
+        assert.deepEqual(list,['/foo/bar','/foo','/']);
+      },
+      "path matching": function(list) {
+        list.forEach(function(e) {
+          assert.ok(tough.pathMatch('/foo/bar/',e));
+        });
+      },
+    },
   }
 }).export(module);
