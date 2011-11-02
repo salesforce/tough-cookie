@@ -68,6 +68,9 @@ function defaultPathVows(table) {
   return theVows;
 }
 
+var atNow = Date.now();
+function at(offset) { return {now: new Date(atNow+offset)} }
+
 vows.describe('Cookie Jar').addBatch({
   "all defined": function() {
     assert.ok(Cookie);
@@ -557,25 +560,25 @@ vows.describe('Cookie Jar').addBatch({
       var ex = 'http://example.com/index.html';
       var tasks = [];
       tasks.push(function(next) {
-        cj.setCookie('a=1; Domain=example.com; Path=/',ex,next);
+        cj.setCookie('a=1; Domain=example.com; Path=/',ex,at(0),next);
       });
       tasks.push(function(next) {
-        cj.setCookie('b=2; Domain=example.com; Path=/; HttpOnly',ex,next);
+        cj.setCookie('b=2; Domain=example.com; Path=/; HttpOnly',ex,at(1000),next);
       });
       tasks.push(function(next) {
-        cj.setCookie('c=3; Domain=example.com; Path=/; Secure',ex,next);
+        cj.setCookie('c=3; Domain=example.com; Path=/; Secure',ex,at(2000),next);
       });
       tasks.push(function(next) { // path
-        cj.setCookie('d=4; Domain=example.com; Path=/foo',ex,next);
+        cj.setCookie('d=4; Domain=example.com; Path=/foo',ex,at(3000),next);
       });
       tasks.push(function(next) { // host only
-        cj.setCookie('e=5',ex,next);
+        cj.setCookie('e=5',ex,at(4000),next);
       });
       tasks.push(function(next) { // other domain
-        cj.setCookie('f=6; Domain=nodejs.org; Path=/','http://nodejs.org',next);
+        cj.setCookie('f=6; Domain=nodejs.org; Path=/','http://nodejs.org',at(5000),next);
       });
       tasks.push(function(next) { // expired
-        cj.setCookie('g=7; Domain=example.com; Path=/; Expires=Tue, 18 Oct 2011 00:00:00 GMT',ex,next);
+        cj.setCookie('g=7; Domain=example.com; Path=/; Expires=Tue, 18 Oct 2011 00:00:00 GMT',ex,at(6000),next);
       });
       tasks.push(function(next) { // expired via Max-Age
         cj.setCookie('h=8; Domain=example.com; Path=/; Max-Age=1',ex,next);
@@ -584,7 +587,7 @@ vows.describe('Cookie Jar').addBatch({
       async.parallel(tasks, function(err,results){
         setTimeout(function() {
           cb(err,cj,results);
-        }, 2000);
+        }, 2000); // so that 'h=8' expires
       });
     },
     "setup ok": function(err,cj,results) {
@@ -681,15 +684,14 @@ vows.describe('Cookie Jar').addBatch({
       var ex = 'http://www.example.com/';
       var sc = cj.setCookie;
       var tasks = [];
-      var delay = function(next) { setTimeout(next,25) }
-      tasks.push(sc.bind(cj,'aaaa=xxxx',ex));
-      tasks.push(sc.bind(cj,'aaaa=1111; Domain=www.example.com',ex));
-      tasks.push(delay); // ensures 1111 sorts before 2222
-      tasks.push(sc.bind(cj,'aaaa=2222; Domain=example.com',ex));
-      tasks.push(sc.bind(cj,'aaaa=3333; Domain=www.example.com; Path=/pathA',ex));
+      var now = Date.now();
+      tasks.push(sc.bind(cj,'aaaa=xxxx',ex,at(0)));
+      tasks.push(sc.bind(cj,'aaaa=1111; Domain=www.example.com',ex,at(1000)));
+      tasks.push(sc.bind(cj,'aaaa=2222; Domain=example.com',ex,at(2000)));
+      tasks.push(sc.bind(cj,'aaaa=3333; Domain=www.example.com; Path=/pathA',ex,at(3000)));
       async.series(tasks,function(err,results) {
         results = results.filter(function(e) {return e !== undefined});
-        cb(err,{cj:cj, cookies:results});
+        cb(err,{cj:cj, cookies:results, now:now});
       });
     },
     "all got set": function(err,t) {
