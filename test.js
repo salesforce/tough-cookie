@@ -780,27 +780,28 @@ vows.describe('Cookie Jar').addBatch({
     },
     "deserialization": {
       topic: function() {
-        var json = '{"key":"alpha","value":"beta","domain":"example.com","path":"/foo","expires":"2038-01-19T03:14:07.000Z","httpOnly":true}';
+        var json = '{"key":"alpha","value":"beta","domain":"example.com","path":"/foo","expires":"2038-01-19T03:14:07.000Z","httpOnly":true,"lastAccessed":2000000000123}';
         return Cookie.fromJSON(json);
       },
       "works": function(c) {
         assert.ok(c);
       },
-      "attributes": function(c) {
-        assert.equal(c.key, "alpha");
-        assert.equal(c.value, "beta");
-        assert.equal(c.domain, "example.com");
-        assert.equal(c.path, "/foo");
-        assert.strictEqual(c.httpOnly, true);
-        assert.strictEqual(c.secure, false);
-        assert.strictEqual(c.hostOnly, null);
-        assert.strictEqual(c.creation, null);
-        assert.strictEqual(c.lastAccessed, null);
-      },
+      "key": function(c) { assert.equal(c.key, "alpha") },
+      "value": function(c) { assert.equal(c.value, "beta") },
+      "domain": function(c) { assert.equal(c.domain, "example.com") },
+      "path": function(c) { assert.equal(c.path, "/foo") },
+      "httpOnly": function(c) { assert.strictEqual(c.httpOnly, true) },
+      "secure": function(c) { assert.strictEqual(c.secure, false) },
+      "hostOnly": function(c) { assert.strictEqual(c.hostOnly, null) },
       "expires is a date object": function(c) {
-        assert.equal(typeof c.expires, "number"); // weird but true
-        assert.equal(c.expires, new Date(2147483647000));
+        assert.equal(c.expires.getTime(), 2147483647000);
       },
+      "lastAccessed is a date object": function(c) {
+        assert.equal(c.lastAccessed.getTime(), 2000000000123);
+      },
+      "creation defaulted": function(c) {
+        assert.ok(c.creation.getTime());
+      }
     },
     "null deserialization": {
       topic: function() {

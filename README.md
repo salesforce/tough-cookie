@@ -132,7 +132,7 @@ else
 Cookie.fromJSON(string)
 -----------------------
 
-Convert a JSON string to a `Cookie` object.  Mainly useful for parsing the dates in a `JSON.stringify()`-ed `Cookie`.
+Convert a JSON string to a `Cookie` object.  Does a `JSON.parse()` and converts the `.created`, `.lastAccessed` and `.expires` properties into `Date` objects.
 
 Properties
 ==========
