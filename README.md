@@ -91,6 +91,27 @@ For example: `www.example.com` and `www.subdomain.example.com` both have public 
 
 For further information, see http://publicsuffix.org/.  This module derives its list from that site.
 
+cookieCompare(a,b)
+------------------
+
+For use with `.sort()`, sorts a list of cookies into the recommended order given in the RFC (Section 5.4 step 2).  Longest `.path`s go first, then sorted oldest to youngest.
+
+``` javascript
+var cookies = [ /* unsorted array of Cookie objects */ ];
+cookies = cookies.sort(cookieCompare);
+```
+
+permuteDomain(domain)
+---------------------
+
+Generates a list of all possible domains that `domainMatch()` the parameter.  May be handy for implementing cookie stores.
+
+
+permutePath(path)
+-----------------
+
+Generates a list of all possible paths that `pathMatch()` the parameter.  May be handy for implementing cookie stores.
+
 Cookie
 ======
 
@@ -224,7 +245,7 @@ __REMOVED__ removed in lieu of the CookieStore API below
 
 Retrieve the list of cookies that can be sent in a Cookie header for the current url.
 
-If an error is encountered, that's passed as `err` to the callback, otherwise an `Array` of `Cookie` objects is passed.
+If an error is encountered, that's passed as `err` to the callback, otherwise an `Array` of `Cookie` objects is passed.  The array is sorted with `cookieCompare()` unless the `{sort:false}` option is given.
 
 The `options` object can be omitted.  If the url starts with `https:` or `wss:` then `{secure:true}` is implied for the options.  Disable this by passing `{secure:false}`.  If you want to simulate a non-HTTP API, pass the option `{http:false}`, otherwise it defaults to `true`.
 
@@ -236,7 +257,7 @@ The `.lastAccessed` property of the returned cookies will have been updated.
 Accepts the same options as `.getCookies()` but passes a string suitable for a Cookie header rather than an array to the callback.  Simply maps the `Cookie` array via `.cookieString()`.
 
 .getSetCookieStrings(...)
----------------------
+-------------------------
 
 Accepts the same options as `.getCookies()` but passes an array of strings suitable for Set-Cookie headers (rather than an array of `Cookie`s) to the callback.  Simply maps the cookie array via `.toString()`.
 
@@ -291,7 +312,6 @@ Pass an error ONLY if removing any existing cookies failed.
   * _full_ RFC5890/RFC5891 canonicalization for domains in `cdomain()`
     * the optional `punycode` requirement implements RFC3492, but RFC6265 requires RFC5891
   * better tests for `validate()`?
-  * getCookies sorting
 
 # Copyright and License
 
