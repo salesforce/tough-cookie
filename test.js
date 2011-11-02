@@ -490,13 +490,15 @@ vows.describe('Cookie Jar').addBatch({
         var cj = new CookieJar();
         var c = Cookie.parse("a=b; Domain=example.com; Path=/");
         assert.strictEqual(c.hostOnly, null);
-        assert.strictEqual(c.creation, null);
+        assert.instanceOf(c.creation, Date);
         assert.strictEqual(c.lastAccessed, null);
+        c.creation = new Date(Date.now()-10000);
         cj.setCookie(c, 'http://example.com/index.html', this.callback);
       },
       "works": function(c) { assert.instanceOf(c,Cookie) }, // C is for Cookie, good enough for me
       "gets timestamped": function(c) {
         assert.ok(c.creation);
+        assert.ok(Date.now() - c.creation.getTime() < 5000); // recently stamped
         assert.ok(c.lastAccessed);
         assert.equal(c.creation, c.lastAccessed);
         assert.equal(c.TTL(), Infinity);
@@ -549,7 +551,7 @@ vows.describe('Cookie Jar').addBatch({
       },
     },
   },
-  "Cookie Jar retrieval": {
+  "Cookie Jar store eight cookies": {
     topic: function() {
       var cj = new CookieJar();
       var ex = 'http://example.com/index.html';
@@ -604,7 +606,7 @@ vows.describe('Cookie Jar').addBatch({
       },
       "get a secure example cookie with others": function(cookies) {
         var names = cookies.map(function(c) {return c.key});
-        assert.deepEqual(names, ['a','b','c','e']); // may break with sorting
+        assert.deepEqual(names, ['a','b','c','e']);
       },
     },
     "then retrieving for https://example.com (missing options)": {
@@ -613,7 +615,7 @@ vows.describe('Cookie Jar').addBatch({
       },
       "get a secure example cookie with others": function(cookies) {
         var names = cookies.map(function(c) {return c.key});
-        assert.deepEqual(names, ['a','b','c','e']); // may break with sorting
+        assert.deepEqual(names, ['a','b','c','e']);
       },
     },
     "then retrieving for http://example.com": {
@@ -622,7 +624,7 @@ vows.describe('Cookie Jar').addBatch({
       },
       "get a bunch of cookies": function(cookies) {
         var names = cookies.map(function(c) {return c.key});
-        assert.deepEqual(names, ['a','b','e']); // may break with sorting
+        assert.deepEqual(names, ['a','b','e']);
       },
     },
     "then retrieving for http://EXAMPlE.com": {
@@ -631,7 +633,7 @@ vows.describe('Cookie Jar').addBatch({
       },
       "get a bunch of cookies": function(cookies) {
         var names = cookies.map(function(c) {return c.key});
-        assert.deepEqual(names, ['a','b','e']); // may break with sorting
+        assert.deepEqual(names, ['a','b','e']);
       },
     },
     "then retrieving for http://example.com, non-HTTP": {
@@ -640,7 +642,7 @@ vows.describe('Cookie Jar').addBatch({
       },
       "get a bunch of cookies": function(cookies) {
         var names = cookies.map(function(c) {return c.key});
-        assert.deepEqual(names, ['a','e']); // may break with sorting
+        assert.deepEqual(names, ['a','e']);
       },
     },
     "then retrieving for http://example.com/foo/bar": {
@@ -649,7 +651,7 @@ vows.describe('Cookie Jar').addBatch({
       },
       "get a bunch of cookies": function(cookies) {
         var names = cookies.map(function(c) {return c.key});
-        assert.deepEqual(names, ['a','b','d','e']); // may break with sorting
+        assert.deepEqual(names, ['d','a','b','e']);
       },
     },
     "then retrieving for http://example.com as a string": {
@@ -657,7 +659,7 @@ vows.describe('Cookie Jar').addBatch({
         cj.getCookieString('http://example.com',this.callback);
       },
       "get a single string": function(cookieHeader) {
-        assert.equal(cookieHeader, "a=1; b=2; e=5"); // may break with sorting
+        assert.equal(cookieHeader, "a=1; b=2; e=5");
       },
     },
     "then retrieving for http://example.com as a set-cookie header": {
@@ -679,11 +681,14 @@ vows.describe('Cookie Jar').addBatch({
       var ex = 'http://www.example.com/';
       var sc = cj.setCookie;
       var tasks = [];
+      var delay = function(next) { setTimeout(next,25) }
       tasks.push(sc.bind(cj,'aaaa=xxxx',ex));
       tasks.push(sc.bind(cj,'aaaa=1111; Domain=www.example.com',ex));
+      tasks.push(delay); // ensures 1111 sorts before 2222
       tasks.push(sc.bind(cj,'aaaa=2222; Domain=example.com',ex));
       tasks.push(sc.bind(cj,'aaaa=3333; Domain=www.example.com; Path=/pathA',ex));
       async.series(tasks,function(err,results) {
+        results = results.filter(function(e) {return e !== undefined});
         cb(err,{cj:cj, cookies:results});
       });
     },
@@ -698,7 +703,7 @@ vows.describe('Cookie Jar').addBatch({
       "there's just three": function (err,cookies) {
         var vals = cookies.map(function(c) {return c.value});
         // may break with sorting; sorting should put 3333 first due to longest path:
-        assert.deepEqual(vals, ['1111','2222','3333']);
+        assert.deepEqual(vals, ['3333','1111','2222']);
       }
     },
   },
