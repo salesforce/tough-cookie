@@ -192,6 +192,11 @@ if (cookie.validate() === true) {
 CookieJar
 =========
 
+Construction
+------------
+
+Simply use `new CookieJar()`.  If you'd like to use a custom store, pass that to the constructor otherwise a `MemoryCookieStore` will be created and used.
+
 Attributes
 ----------
 
@@ -212,7 +217,7 @@ The `options` object can be omitted.  Options are:
 .storeCookie(cookie, [{options},] cb(err,cookie))
 -------------------------------------------------
 
-called internally by setCookie.  This is likely to be the "hook" that fancy CookieJars override.
+__REMOVED__ removed in lieu of the CookieStore API below
                                                 
 .getCookies(currentUrl, [{options},] cb(err,cookies))
 -----------------------------------------------------
@@ -234,6 +239,51 @@ Accepts the same options as `.getCookies()` but passes a string suitable for a C
 ---------------------
 
 Accepts the same options as `.getCookies()` but passes an array of strings suitable for Set-Cookie headers (rather than an array of `Cookie`s) to the callback.  Simply maps the cookie array via `.toString()`.
+
+# CookieStore API
+
+The storage model for each `CookieJar` instance can be replaced with a custom implementation.  The default is `MemoryCookieStore` which can be found in the `lib/memstore.js` file.  The API uses continuation-passing-style to allow for asynchronous stores.
+
+All `domain` parameters will have been normalized before calling.
+
+The Cookie store must have all of the following methods.
+
+store.findCookie(domain, path, key, cb(err,cookie))
+---------------------------------------------------
+
+Retrieve a cookie with the given domain, path and key (a.k.a. name).  The RFC maintains that exactly one of these cookies should exist in a store.  If the store is using versioning, this means that the latest/newest such cookie should be returned.
+
+Callback takes an error and the resulting `Cookie` object.  If no cookie is found then `null` MUST be passed instead (i.e. not an error).
+
+store.findCookies(domain, path, cb(err,cookies))
+------------------------------------------------
+
+Locates cookies matching the given domain and path.  This is most often called in the context of `cookiejar.getCookies()` above.
+
+If no cookies are found, the callback MUST be passed an empty array.
+
+The resulting list will be checked for applicability to the current request according to the RFC (domain-match, path-match, http-only-flag, secure-flag, expiry, etc.), so it's OK to use an optimistic search algorithm when implementing this method.  However, the search algorithm used SHOULD try to find cookies that `domainMatch()` the domain and `pathMatch()` the path in order to limit the amount of checking that needs to be done.
+
+store.putCookie(cookie, cb(err))
+--------------------------------
+
+Adds a cookie to the store.  The implementation MUST replace any existing cookie with the same `.domain`, `.path`, and `.key` properties.  The cookie MUST not be modified; the caller will have already updated the `.creation` and `.lastAccessed` properties.
+
+Pass an error if the cookie cannot be stored.
+
+store.removeCookie(domain, path, key, cb(err))
+----------------------------------------------
+
+Remove a cookie from the store (see notes on `findCookie` about the uniqueness constraint).
+
+The implementation MUST NOT pass an error if the cookie doesn't exist; only pass an error due to the failure to remove an existing cookie.
+
+store.removeCookies(domain, path, cb(err))
+------------------------------------------
+
+Removes matching cookies from the store.  The `path` paramter is optional, and if missing means all paths in a domain should be removed.
+
+Pass an error ONLY if removing any existing cookies failed.
 
 # TODO
 
