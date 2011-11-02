@@ -781,7 +781,7 @@ vows.describe('Cookie Jar').addBatch({
     "deserialization": {
       topic: function() {
         var json = '{"key":"alpha","value":"beta","domain":"example.com","path":"/foo","expires":"2038-01-19T03:14:07.000Z","httpOnly":true}';
-        return Cookie.fromJSON(json) || null;
+        return Cookie.fromJSON(json);
       },
       "works": function(c) {
         assert.ok(c);
@@ -801,7 +801,15 @@ vows.describe('Cookie Jar').addBatch({
         assert.equal(typeof c.expires, "number"); // weird but true
         assert.equal(c.expires, new Date(2147483647000));
       },
-    }
+    },
+    "null deserialization": {
+      topic: function() {
+        return Cookie.fromJSON(null);
+      },
+      "is null": function(cookie) {
+        assert.equal(cookie,null);
+      },
+    },
   }
 }).addBatch({
   "permuteDomain": {
