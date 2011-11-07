@@ -235,6 +235,8 @@ vows.describe('Cookie Jar').addBatch({
       "parsed": function(c) { assert.ok(c) },
       "key": function(c) { assert.equal(c.key, 'a') },
       "value": function(c) { assert.equal(c.value, 'bcd') },
+      "no path": function(c) { assert.equal(c.path, null) },
+      "no domain": function(c) { assert.equal(c.domain, null) },
       "no extensions": function(c) { assert.ok(!c.extensions) },
     },
     "with expiry": {
@@ -507,6 +509,20 @@ vows.describe('Cookie Jar').addBatch({
         assert.equal(c.TTL(), Infinity);
         assert.ok(!c.isPersistent());
       },
+    },
+    "Setting a no-path cookie": {
+      topic: function() {
+        var cj = new CookieJar();
+        var c = Cookie.parse("a=b; Domain=example.com");
+        assert.strictEqual(c.hostOnly, null);
+        assert.instanceOf(c.creation, Date);
+        assert.strictEqual(c.lastAccessed, null);
+        c.creation = new Date(Date.now()-10000);
+        cj.setCookie(c, 'http://example.com/index.html', this.callback);
+      },
+      "domain": function(c) { assert.equal(c.domain, 'example.com') },
+      "path is /": function(c) { assert.equal(c.path, '/') },
+      "path was derived": function(c) { assert.strictEqual(c.pathIsDefault, true) },
     },
     "Setting a session cookie": {
       topic: function() {

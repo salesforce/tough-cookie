@@ -150,6 +150,7 @@ Properties
 After a cookie has been passed through `CookieJar.setCookie()` it will have the following additional attributes:
 
   * _hostOnly_ - boolean - is this a host-only cookie (i.e. no Domain field was set, but was instead implied)
+  * _pathIsDefault_ - boolean - if true, there was no Path field on the cookie and `defaultPath()` was used to derive one.
   * _created_ - `Date` - when this cookie was added to the jar
   * _lastAccessed_ - `Date` - last time the cookie got accessed. Will affect cookie cleaning once implemented.  Using `cookiejar.getCookies(...)` will update this attribute.
 
