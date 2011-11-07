@@ -234,6 +234,7 @@ The `options` object can be omitted.  Options are:
 
   * _http_ - boolean - default `true` - indicates if this is an HTTP or non-HTTP API.  Affects HttpOnly cookies.
   * _strict_ - boolean - default `false` - perform extra checks
+  * _ignoreError_ - boolean - default `false` - silently ignore things like parse errors and invalid domains.  CookieStore errors aren't ignored by this option.
                                                                    
 .storeCookie(cookie, [{options},] cb(err,cookie))
 -------------------------------------------------
