@@ -917,4 +917,34 @@ vows.describe('Cookie Jar').addBatch({
       },
     },
   }
+}).addBatch({
+  "Issue 1": {
+    topic: function() {
+      var cj = new CookieJar();
+      cj.setCookie('hello=world; path=/some/path/', 'http://domain/some/path/file', function(err,cookie) {
+        this.callback(err,{cj:cj, cookie:cookie});
+      }.bind(this));
+    },
+    "stored a cookie": function(t) {
+      assert.ok(t.cookie);
+    },
+    "cookie's path was modified to remove unnecessary slash": function(t) {
+      assert.equal(t.cookie.path, '/some/path');
+    },
+    "getting it back": {
+      topic: function(t) {
+        t.cj.getCookies('http://domain/some/path/file', function(err,cookies) {
+          this.callback(err, {cj:t.cj, cookies:cookies||[]});
+        }.bind(this));
+      },
+      "got one cookie": function(t) {
+        assert.length(t.cookies, 1);
+      },
+      "it's the right one": function(t) {
+        var c = t.cookies[0];
+        assert.equal(c.key, 'hello');
+        assert.equal(c.value, 'world');
+      },
+    }
+  }
 }).export(module);
