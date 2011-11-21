@@ -543,10 +543,10 @@ vows.describe('Cookie Jar').addBatch({
         var cj = new CookieJar();
         var c = Cookie.parse("a=b");
         assert.strictEqual(c.path, null);
-        cj.setCookie(c, 'http://example.com/dir/index.html', this.callback);
+        cj.setCookie(c, 'http://www.example.com/dir/index.html', this.callback);
       },
       "works": function(c) { assert.instanceOf(c,Cookie) },
-      "gets the domain": function(c) { assert.equal(c.domain, 'example.com') },
+      "gets the domain": function(c) { assert.equal(c.domain, 'www.example.com') },
       "gets the default path": function(c) { assert.equal(c.path, '/dir') },
       "is 'hostOnly'": function(c) { assert.ok(c.hostOnly) },
     },
