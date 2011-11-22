@@ -717,6 +717,15 @@ vows.describe('Cookie Jar').addBatch({
         assert.equal(cookieHeaders[2], "e=5; Path=/");
       },
     },
+    "then retrieving for http://www.example.com/": {
+      topic: function(cj,results) {
+        cj.getCookies('http://www.example.com/foo/bar',this.callback);
+      },
+      "get a bunch of cookies": function(cookies) {
+        var names = cookies.map(function(c) {return c.key});
+        assert.deepEqual(names, ['d','a','b']); // note lack of 'e'
+      },
+    },
   },
   "Repeated names": {
     topic: function() {
