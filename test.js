@@ -92,8 +92,18 @@ vows.describe('Cookie Jar').addBatch({
     '01 Jan 1600 00:00:00 GMT': false, // before 1601
     '01 Jan 1601 00:00:00 GMT': true,
     '10 Feb 81 13:00:00 GMT': true, // implicit year
+    'Thu, 01 Jan 1970 00:00:010 GMT': true, // strange time, non-strict OK
   })
 ).addBatch({
+  "strict date parse of Thu, 01 Jan 1970 00:00:010 GMT": {
+    topic: function() {
+      return tough.parseDate('Thu, 01 Jan 1970 00:00:010 GMT', true) ? true : false;
+    },
+    "invalid": function(date) {
+      assert.equal(date,false);
+    },
+  }
+}).addBatch({
   "formatting": {
     "a simple cookie": {
       topic: function() {

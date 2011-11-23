@@ -36,10 +36,10 @@ cookies
 
 Functions on the module you get from `require('tough-cookie')`.  All can be used as pure functions and don't need to be "bound".
 
-parseDate(string)
+parseDate(string[,strict])
 -----------------
 
-Parse a cookie date string into a `Date`.  Parses according to RFC6265 Section 5.1.1, not `Date.parse()`.
+Parse a cookie date string into a `Date`.  Parses according to RFC6265 Section 5.1.1, not `Date.parse()`.  If strict is set to true then leading/trailing non-seperator characters around the time part will cause the parsing to fail (e.g. "Thu, 01 Jan 1970 00:00:010 GMT" has an extra trailing zero but Chrome, an assumedly RFC-compliant browser, treats this as valid).
 
 formatDate(date)
 ----------------
