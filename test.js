@@ -196,10 +196,18 @@ vows.describe('Cookie Jar').addBatch({
   "TTL with zero max-age": function() {
     var c = new Cookie();
     c.key = 'a'; c.value = 'b';
-    c.maxAge = 0; // technically against the spec to be zero: "Max-Age=" non-zero-digit *DIGIT
+    c.maxAge = 0; // should be treated as "earliest representable"
     assert.equal(c.TTL(), 0);
     assert.equal(c.expiryTime(new Date(9000000)), -Infinity);
-    assert.ok(!c.validate());
+    assert.ok(!c.validate()); // not valid, really: non-zero-digit *DIGIT
+  },
+  "TTL with negative max-age": function() {
+    var c = new Cookie();
+    c.key = 'a'; c.value = 'b';
+    c.maxAge = -1; // should be treated as "earliest representable"
+    assert.equal(c.TTL(), 0);
+    assert.equal(c.expiryTime(new Date(9000000)), -Infinity);
+    assert.ok(!c.validate()); // not valid, really: non-zero-digit *DIGIT
   },
   "TTL with max-age and expires": function() {
     var c = new Cookie();
@@ -303,7 +311,7 @@ vows.describe('Cookie Jar').addBatch({
       "non-strict": function() {
         var c = Cookie.parse("a=b; Max-Age=0");
         assert.ok(c);
-        assert.equal(c.maxAge, -Infinity);
+        assert.equal(c.maxAge, 0);
       },
     },
     "negative max-age": {
@@ -311,7 +319,7 @@ vows.describe('Cookie Jar').addBatch({
       "non-strict": function() {
         var c = Cookie.parse("a=b; Max-Age=-1");
         assert.ok(c);
-        assert.equal(c.maxAge, -Infinity);
+        assert.equal(c.maxAge, -1);
       },
     },
     "empty domain": {
@@ -861,6 +869,81 @@ vows.describe('Cookie Jar').addBatch({
       },
       "is null": function(cookie) {
         assert.equal(cookie,null);
+      },
+    },
+  },
+  "expiry deserialization": {
+    "Infinity": {
+      topic: Cookie.fromJSON.bind(null, '{"expires":"Infinity"}'),
+      "is infinite": function(c) {
+        assert.strictEqual(c.expires, "Infinity");
+        assert.equal(c.expires, Infinity);
+      },
+    },
+  },
+  "maxAge serialization": {
+    topic: function() {
+      return function(toSet) {
+        var c = new Cookie();
+        c.key = 'foo'; c.value = 'bar';
+        c.setMaxAge(toSet);
+        return JSON.stringify(c);
+      };
+    },
+    "zero": {
+      topic: function(f) { return f(0) },
+      "looks good": function(str) {
+        assert.match(str, /"maxAge":0/);
+      },
+    },
+    "Infinity": {
+      topic: function(f) { return f(Infinity) },
+      "looks good": function(str) {
+        assert.match(str, /"maxAge":"Infinity"/);
+      },
+    },
+    "-Infinity": {
+      topic: function(f) { return f(-Infinity) },
+      "looks good": function(str) {
+        assert.match(str, /"maxAge":"-Infinity"/);
+      },
+    },
+    "null": {
+      topic: function(f) { return f(null) },
+      "looks good": function(str) {
+        assert.match(str, /"maxAge":null/);
+      },
+    },
+  },
+  "maxAge deserialization": {
+    "number": {
+      topic: Cookie.fromJSON.bind(null,'{"key":"foo","value":"bar","maxAge":123}'),
+      "is the number": function(c) {
+        assert.strictEqual(c.maxAge, 123);
+      },
+    },
+    "null": {
+      topic: Cookie.fromJSON.bind(null,'{"key":"foo","value":"bar","maxAge":null}'),
+      "is null": function(c) {
+        assert.strictEqual(c.maxAge, null);
+      },
+    },
+    "less than zero": {
+      topic: Cookie.fromJSON.bind(null,'{"key":"foo","value":"bar","maxAge":-123}'),
+      "is -123": function(c) {
+        assert.strictEqual(c.maxAge, -123);
+      },
+    },
+    "Infinity": {
+      topic: Cookie.fromJSON.bind(null,'{"key":"foo","value":"bar","maxAge":"Infinity"}'),
+      "is inf-as-string": function(c) {
+        assert.strictEqual(c.maxAge, "Infinity");
+      },
+    },
+    "-Infinity": {
+      topic: Cookie.fromJSON.bind(null,'{"key":"foo","value":"bar","maxAge":"-Infinity"}'),
+      "is inf-as-string": function(c) {
+        assert.strictEqual(c.maxAge, "-Infinity");
       },
     },
   }

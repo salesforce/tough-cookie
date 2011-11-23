@@ -139,8 +139,8 @@ Properties
 
   * _key_ - string - the name or key of the cookie (default "")
   * _value_ - string - the value of the cookie (default "")
-  * _expires_ - `Date` - if set, the `Expires=` attribute of the cookie (defaults to Infinity)
-  * _maxAge_ - seconds - if set, the `Max-Age=` attribute _in seconds_ of the cookie.
+  * _expires_ - `Date` - if set, the `Expires=` attribute of the cookie (defaults to the string `"Infinity"`). See `setExpires()`
+  * _maxAge_ - seconds - if set, the `Max-Age=` attribute _in seconds_ of the cookie.  May also be set to strings `"Infinity"` and `"-Infinity"` for non-expiry and immediate-expiry, respectively.  See `setMaxAge()`
   * _domain_ - string - the `Domain=` attribute of the cookie
   * _path_ - string - the `Path=` of the cookie
   * _secure_ - boolean - the `Secure` cookie flag
@@ -167,7 +167,12 @@ encode to a Cookie header value (i.e. the `.key` and `.value` properties joined 
 .setExpires(String)
 -------------------
 
-sets the expiry based on a date-string passed through `parseDate()`
+sets the expiry based on a date-string passed through `parseDate()`.  If parseDate returns `null` (i.e. can't parse this date string), `.expires` is set to `"Infinity"` (a string) is set.
+
+.setMaxAge(number)
+-------------------
+
+sets the maxAge in seconds.  Coerces `-Infinity` to `"-Infinity"` and `Infinity` to `"Infinity"` so it JSON serializes correctly.
 
 .expiryTime([now=Date.now()])
 -----------------------------
@@ -175,7 +180,7 @@ sets the expiry based on a date-string passed through `parseDate()`
 .expiryDate([now=Date.now()])
 -----------------------------
 
-Computes the absolute unix-epoch milliseconds that this cookie expires (or a `Date` object in the case of `expiryDate()`).  Note that in both cases `now` should be milliseconds.
+expiryTime() Computes the absolute unix-epoch milliseconds that this cookie expires. expiryDate() works similarly, except it returns a `Date` object.  Note that in both cases the `now` parameter should be milliseconds.
 
 Max-Age takes precedence over Expires (as per the RFC). The `.created` attribute -- or, by default, the `now` paramter -- is used to offset the `.maxAge` attribute.
 
@@ -183,10 +188,12 @@ If Expires (`.expires`) is set, that's returned.
 
 Otherwise, `expiryTime()` returns `Infinity` and `expiryDate()` returns a `Date` object for "Tue, 19 Jan 2038 03:14:07 GMT" (latest date that can be expressed by a 32-bit `time_t`; the common limit for most user-agents).
 
-.TTL(now)
+.TTL([now=Date.now()])
 ---------
 
-compute the TTL relative to `now` (milliseconds).  `Date.now()` is used by default.  The same precedence rules as for `expiryTime` apply.
+compute the TTL relative to `now` (milliseconds).  The same precedence rules as for `expiryTime`/`expiryDate` apply.
+
+The "number" `Infinity` is returned for cookies without an explicit expiry and `0` is returned if the cookie is expired.  Otherwise a time-to-live in milliseconds is returned.
 
 .canonicalizedDoman()
 ---------------------
