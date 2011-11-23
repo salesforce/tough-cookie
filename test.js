@@ -123,6 +123,17 @@ vows.describe('Cookie Jar').addBatch({
         assert.equal(c.toString(), 'a="beta gamma"');
       },
     },
+    "with an empty value and HttpOnly": {
+      topic: function() {
+        var c = new Cookie();
+        c.key = 'a';
+        c.httpOnly = true;
+        return c;
+      },
+      "to string": function(c) {
+        assert.equal(c.toString(), 'a=; HttpOnly');
+      }
+    },
     "with an expiry": {
       topic: function() {
         var c = new Cookie();
