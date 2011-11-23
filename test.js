@@ -956,4 +956,34 @@ vows.describe('Cookie Jar').addBatch({
       },
     }
   }
+}).addBatch({
+  "expiry option": {
+    topic: function() {
+      var cb = this.callback;
+      var cj = new CookieJar();
+      cj.setCookie('near=expiry; Domain=example.com; Path=/; Max-Age=1','http://www.example.com',at(-1), function(err,cookie) {
+
+        cb(err, {cj:cj, cookie:cookie});
+      });
+    },
+    "set the cookie": function(t) {
+      assert.ok(t.cookie, "didn't set?!");
+      assert.equal(t.cookie.key, 'near');
+    },
+    "then, retrieving": {
+      topic: function(t) {
+        var cb = this.callback;
+        setTimeout(function() {
+          t.cj.getCookies('http://www.example.com', {http:true, expire:false}, function(err,cookies) {
+            t.cookies = cookies;
+            cb(err,t);
+          });
+        },2000);
+      },
+      "got the cookie": function(t) {
+        assert.length(t.cookies, 1);
+        assert.equal(t.cookies[0].key, 'near');
+      },
+    }
+  }
 }).export(module);

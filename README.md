@@ -231,12 +231,16 @@ Since eventually this module would like to support database/remote/etc. CookieJa
 
 Attempt to set the cookie in the cookie jar.  If the operation fails, an error will be given to the callback `cb`, otherwise the cookie is passed through.  The cookie will have updated `.created`, `.lastAccessed` and `.hostOnly` properties.
 
-The `options` object can be omitted.  Options are:
+The `options` object can be omitted and can have the following properties:
 
   * _http_ - boolean - default `true` - indicates if this is an HTTP or non-HTTP API.  Affects HttpOnly cookies.
+  * _secure_ - boolean - autodetect from url - indicates if this is a "Secure" API.  If the currentUrl starts with `https:` or `wss:` then this is defaulted to `true`, otherwise `false`.
+  * _now_ - Date - default `new Date()` - what to use for the creation/access time of cookies
   * _strict_ - boolean - default `false` - perform extra checks
   * _ignoreError_ - boolean - default `false` - silently ignore things like parse errors and invalid domains.  CookieStore errors aren't ignored by this option.
-                                                                   
+
+As per the RFC, the `.hostOnly` property is set if there was no "Domain=" parameter in the cookie string (or `.domain` was null on the Cookie object).  The `.domain` property is set to the fully-qualified hostname of `currentUrl` in this case.  Matching this cookie requires an exact hostname match (not a `domainMatch` as per usual).
+
 .storeCookie(cookie, [{options},] cb(err,cookie))
 -------------------------------------------------
 
@@ -249,7 +253,12 @@ Retrieve the list of cookies that can be sent in a Cookie header for the current
 
 If an error is encountered, that's passed as `err` to the callback, otherwise an `Array` of `Cookie` objects is passed.  The array is sorted with `cookieCompare()` unless the `{sort:false}` option is given.
 
-The `options` object can be omitted.  If the url starts with `https:` or `wss:` then `{secure:true}` is implied for the options.  Disable this by passing `{secure:false}`.  If you want to simulate a non-HTTP API, pass the option `{http:false}`, otherwise it defaults to `true`.
+The `options` object can be omitted and can have the following properties:
+
+  * _http_ - boolean - default `true` - indicates if this is an HTTP or non-HTTP API.  Affects HttpOnly cookies.
+  * _secure_ - boolean - autodetect from url - indicates if this is a "Secure" API.  If the currentUrl starts with `https:` or `wss:` then this is defaulted to `true`, otherwise `false`.
+  * _now_ - Date - default `new Date()` - what to use for the creation/access time of cookies
+  * _expire_ - boolean - default `true` - perform expiry-time checking of cookies and asynchronously remove expired cookies from the store.  Using `false` will return expired cookies and **not** remove them from the store (which is useful for replaying Set-Cookie headers, potentially).
 
 The `.lastAccessed` property of the returned cookies will have been updated.
 
