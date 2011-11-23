@@ -94,98 +94,100 @@ vows.describe('Cookie Jar').addBatch({
     '10 Feb 81 13:00:00 GMT': true, // implicit year
   })
 ).addBatch({
-  "formatting a simple cookie": {
-    topic: function() {
-      var c = new Cookie();
-      c.key = 'a';
-      c.value = 'b';
-      return c;
+  "formatting": {
+    "a simple cookie": {
+      topic: function() {
+        var c = new Cookie();
+        c.key = 'a';
+        c.value = 'b';
+        return c;
+      },
+      "validates": function(c) {
+        assert.ok(c.validate());
+      },
+      "to string": function(c) {
+        assert.equal(c.toString(), 'a=b');
+      },
     },
-    "validates": function(c) {
-      assert.ok(c.validate());
+    "a cookie with spaces in the value": {
+      topic: function() {
+        var c = new Cookie();
+        c.key = 'a';
+        c.value = 'beta gamma';
+        return c;
+      },
+      "doesn't validate": function(c) {
+        assert.ok(!c.validate());
+      },
+      "to string": function(c) {
+        assert.equal(c.toString(), 'a="beta gamma"');
+      },
     },
-    "to string": function(c) {
-      assert.equal(c.toString(), 'a=b');
+    "with an expiry": {
+      topic: function() {
+        var c = new Cookie();
+        c.key = 'a';
+        c.value = 'b';
+        c.setExpires("Oct 18 2011 07:05:03 GMT");
+        return c;
+      },
+      "validates": function(c) {
+        assert.ok(c.validate());
+      },
+      "to string": function(c) {
+        assert.equal(c.toString(), 'a=b; Expires=Tue, 18 Oct 2011 07:05:03 GMT');
+      },
+      "to short string": function(c) {
+        assert.equal(c.cookieString(), 'a=b');
+      },
     },
-  },
-  "formatting a cookie with spaces in the value": {
-    topic: function() {
-      var c = new Cookie();
-      c.key = 'a';
-      c.value = 'beta gamma';
-      return c;
+    "with a max-age": {
+      topic: function() {
+        var c = new Cookie();
+        c.key = 'a';
+        c.value = 'b';
+        c.setExpires("Oct 18 2011 07:05:03 GMT");
+        c.maxAge = 12345;
+        return c;
+      },
+      "validates": function(c) {
+        assert.ok(c.validate()); // mabe this one *shouldn't*?
+      },
+      "to string": function(c) {
+        assert.equal(c.toString(), 'a=b; Expires=Tue, 18 Oct 2011 07:05:03 GMT; Max-Age=12345');
+      },
     },
-    "doesn't validate": function(c) {
-      assert.ok(!c.validate());
-    },
-    "to string": function(c) {
-      assert.equal(c.toString(), 'a="beta gamma"');
-    },
-  },
-  "formatting with an expiry": {
-    topic: function() {
-      var c = new Cookie();
-      c.key = 'a';
-      c.value = 'b';
-      c.setExpires("Oct 18 2011 07:05:03 GMT");
-      return c;
-    },
-    "validates": function(c) {
-      assert.ok(c.validate());
-    },
-    "to string": function(c) {
-      assert.equal(c.toString(), 'a=b; Expires=Tue, 18 Oct 2011 07:05:03 GMT');
-    },
-    "to short string": function(c) {
-      assert.equal(c.cookieString(), 'a=b');
-    },
-  },
-  "formatting with a max-age": {
-    topic: function() {
+    "with a bunch of things": function() {
       var c = new Cookie();
       c.key = 'a';
       c.value = 'b';
       c.setExpires("Oct 18 2011 07:05:03 GMT");
       c.maxAge = 12345;
-      return c;
+      c.domain = 'example.com';
+      c.path = '/foo';
+      c.secure = true;
+      c.httpOnly = true;
+      c.extensions = ['MyExtension'];
+      assert.equal(c.toString(), 'a=b; Expires=Tue, 18 Oct 2011 07:05:03 GMT; Max-Age=12345; Domain=example.com; Path=/foo; Secure; HttpOnly; MyExtension');
     },
-    "validates": function(c) {
-      assert.ok(c.validate()); // mabe this one *shouldn't*?
+    "a host-only cookie": {
+      topic: function() {
+        var c = new Cookie();
+        c.key = 'a';
+        c.value = 'b';
+        c.hostOnly = true;
+        c.domain = 'shouldnt-stringify.example.com';
+        c.path = '/should-stringify';
+        return c;
+      },
+      "validates": function(c) {
+        assert.ok(c.validate());
+      },
+      "to string": function(c) {
+        assert.equal(c.toString(), 'a=b; Path=/should-stringify');
+      },
     },
-    "to string": function(c) {
-      assert.equal(c.toString(), 'a=b; Expires=Tue, 18 Oct 2011 07:05:03 GMT; Max-Age=12345');
-    },
-  },
-  "formatting with a bunch of things": function() {
-    var c = new Cookie();
-    c.key = 'a';
-    c.value = 'b';
-    c.setExpires("Oct 18 2011 07:05:03 GMT");
-    c.maxAge = 12345;
-    c.domain = 'example.com';
-    c.path = '/foo';
-    c.secure = true;
-    c.httpOnly = true;
-    c.extensions = ['MyExtension'];
-    assert.equal(c.toString(), 'a=b; Expires=Tue, 18 Oct 2011 07:05:03 GMT; Max-Age=12345; Domain=example.com; Path=/foo; Secure; HttpOnly; MyExtension');
-  },
-  "formatting a host-only cookie": {
-    topic: function() {
-      var c = new Cookie();
-      c.key = 'a';
-      c.value = 'b';
-      c.hostOnly = true;
-      c.domain = 'shouldnt-stringify.example.com';
-      c.path = '/should-stringify';
-      return c;
-    },
-    "validates": function(c) {
-      assert.ok(c.validate());
-    },
-    "to string": function(c) {
-      assert.equal(c.toString(), 'a=b; Path=/should-stringify');
-    },
-  },
+  }
 }).addBatch({
   "TTL with max-age": function() {
     var c = new Cookie();
