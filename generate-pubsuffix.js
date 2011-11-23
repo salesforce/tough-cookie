@@ -75,7 +75,7 @@ function addToIndex(index,line) {
     prefix = RegExp.$1;
     line = line.slice(prefix.length);
   }
-  line = prefix + punycode.ToASCII(line);
+  line = prefix + punycode.toASCII(line);
  
   if (line.substr(0,1) == '!')
     index[line.substr(1)] = false;

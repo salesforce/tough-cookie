@@ -25,7 +25,7 @@ It's _so_ easy!
 
 `npm install tough-cookie`
 
-Requires `punycode`, which should get installed automatically for you.
+Requires `punycode`, which should get installed automatically for you.  Note that node.js v0.6.2+ bundles punycode by default.
 
 Why the name?  NPM modules `cookie`, `cookies` and `cookiejar` were already taken.
 
