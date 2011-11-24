@@ -306,9 +306,24 @@ The resulting list will be checked for applicability to the current request acco
 store.putCookie(cookie, cb(err))
 --------------------------------
 
-Adds a cookie to the store.  The implementation MUST replace any existing cookie with the same `.domain`, `.path`, and `.key` properties.  The cookie MUST not be modified; the caller will have already updated the `.creation` and `.lastAccessed` properties.
+Adds a new cookie to the store.  The implementation SHOULD replace any existing cookie with the same `.domain`, `.path`, and `.key` properties -- depending on the nature of the implementation, it's possible that between the call to `fetchCookie` and `putCookie` that a duplicate `putCookie` can occur.
+
+The `cookie` object MUST NOT be modified; the caller will have already updated the `.creation` and `.lastAccessed` properties.
 
 Pass an error if the cookie cannot be stored.
+
+store.updateCookie(oldCookie, newCookie, cb(err))
+-------------------------------------------------
+
+Update an existing cookie.  The implementation MUST update the `.value` for a cookie with the same `domain`, `.path` and `.key`.  The implementation SHOULD check that the old value in the store is equivalent to `oldCookie` - how the conflict is resolved is up to the store.
+
+The `.lastAccessed` property will always be different between the two objects and `.created` will always be the same.  Stores MAY ignore or defer the `.lastAccessed` change at the cost of affecting how cookies are sorted (or selected for deletion).
+
+Stores may wish to optimize changing the `.value` of the cookie in the store versus storing a new cookie.  If the implementation doesn't define this method a stub that calls `putCookie(newCookie,cb)` will be added to the store object.
+
+The `newCookie` and `oldCookie` objects MUST NOT be modified.
+
+Pass an error if the newCookie cannot be stored.
 
 store.removeCookie(domain, path, key, cb(err))
 ----------------------------------------------
