@@ -396,6 +396,14 @@ vows.describe('Cookie Jar').addBatch({
         assert.equal(c.path, null);
       },
     },
+    "trailing comma after path": {
+      "strict": function () { assert.ok(!Cookie.parse("a=b; path=/;", true)); },
+      "non-strict": function () { 
+        var c = Cookie.parse("a=b; path=/;");
+        assert.ok(c);
+        assert.equal(c.path, '/');
+      }
+    },
     "secure-with-value": {
       "strict": function() { assert.ok(!Cookie.parse("a=b; Secure=xyzzy", true)) },
       "non-strict": function() {
@@ -1091,5 +1099,34 @@ vows.describe('Cookie Jar').addBatch({
         assert.equal(t.cookies[0].key, 'near');
       },
     }
+  }
+}).addBatch({
+  "trailing comma in path set into cj": {
+    topic: function () {
+      var cb = this.callback;
+      var cj = new CookieJar();
+      cj.setCookie('broken_path=testme; path=/;','http://www.example.com',at(-1), function(err,cookie) {
+        cb(err, {cj:cj, cookie:cookie});
+      });
+    },
+    "set the cookie": function (t) {
+      assert.ok(t.cookie, "didn't set");
+      assert.equal(t.cookie.key, "broken_path");
+      assert.equal(t.cookie.value, 'testme');
+    },
+    "retrieve the cookie": {
+      topic: function (t) {
+        var cb = this.callback;
+        t.cj.getCookies('http://www.example.com', {}, function (err, cookies) {
+          t.cookies = cookies;
+          cb(err, t);
+        });
+      },
+      "got the cookie": function(t) {
+        assert.lengthOf(t.cookies, 1);
+        assert.equal(t.cookies[0].key, 'broken_path');
+        assert.equal(t.cookies[0].value, 'testme');
+      },    
+    },
   }
 }).export(module);
