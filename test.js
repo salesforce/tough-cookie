@@ -514,7 +514,7 @@ vows.describe('Cookie Jar').addBatch({
       return cookies;
     },
     "got": function(cookies) {
-      assert.length(cookies, 6);
+      assert.lengthOf(cookies, 6);
       var names = cookies.map(function(c) {return c.key});
       assert.deepEqual(names, ['e','f','c','d','a','b']);
     },
@@ -670,7 +670,7 @@ vows.describe('Cookie Jar').addBatch({
         cj.getCookies('http://nodejs.org',this.callback);
       },
       "get a nodejs cookie": function(cookies) {
-        assert.length(cookies, 1);
+        assert.lengthOf(cookies, 1);
         var cookie = cookies[0];
         assert.equal(cookie.domain, 'nodejs.org');
       },
@@ -742,7 +742,7 @@ vows.describe('Cookie Jar').addBatch({
         cj.getSetCookieStrings('http://example.com',this.callback);
       },
       "get a single string": function(cookieHeaders) {
-        assert.length(cookieHeaders, 3);
+        assert.lengthOf(cookieHeaders, 3);
         assert.equal(cookieHeaders[0], "a=1; Domain=example.com; Path=/");
         assert.equal(cookieHeaders[1], "b=2; Domain=example.com; Path=/; HttpOnly");
         assert.equal(cookieHeaders[2], "e=5; Path=/");
@@ -776,7 +776,7 @@ vows.describe('Cookie Jar').addBatch({
       });
     },
     "all got set": function(err,t) {
-      assert.length(t.cookies,4);
+      assert.lengthOf(t.cookies,4);
     },
     "then getting 'em back": {
       topic: function(t) {
@@ -840,7 +840,7 @@ vows.describe('Cookie Jar').addBatch({
           },
           "cookie has original value": function(err,cookies) {
             assert.equal(err,null);
-            assert.length(cookies, 1);
+            assert.lengthOf(cookies, 1);
             assert.equal(cookies[0].value,11);
           },
         },
@@ -1053,7 +1053,7 @@ vows.describe('Cookie Jar').addBatch({
         }.bind(this));
       },
       "got one cookie": function(t) {
-        assert.length(t.cookies, 1);
+        assert.lengthOf(t.cookies, 1);
       },
       "it's the right one": function(t) {
         var c = t.cookies[0];
@@ -1087,7 +1087,7 @@ vows.describe('Cookie Jar').addBatch({
         },2000);
       },
       "got the cookie": function(t) {
-        assert.length(t.cookies, 1);
+        assert.lengthOf(t.cookies, 1);
         assert.equal(t.cookies[0].key, 'near');
       },
     }
