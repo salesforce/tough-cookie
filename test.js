@@ -396,12 +396,23 @@ vows.describe('Cookie Jar').addBatch({
         assert.equal(c.path, null);
       },
     },
-    "trailing comma after path": {
-      "strict": function () { assert.ok(!Cookie.parse("a=b; path=/;", true)); },
-      "non-strict": function () { 
-        var c = Cookie.parse("a=b; path=/;");
-        assert.ok(c);
-        assert.equal(c.path, '/');
+    "trailing semi-colons after path": {
+      topic: function () {
+        return [
+          "a=b; path=/;",
+          "c=d;;;;"
+        ];
+      },
+      "strict": function (t) { 
+        assert.ok(!Cookie.parse(t[0], true)); 
+        assert.ok(!Cookie.parse(t[1], true));
+      },
+      "non-strict": function (t) { 
+        var c1 = Cookie.parse(t[0]);
+        var c2 = Cookie.parse(t[1]);
+        assert.ok(c1);
+        assert.ok(c2);
+        assert.equal(c1.path, '/');
       }
     },
     "secure-with-value": {
@@ -1101,18 +1112,37 @@ vows.describe('Cookie Jar').addBatch({
     }
   }
 }).addBatch({
-  "trailing comma in path set into cj": {
+  "trailing semi-colon set into cj": {
     topic: function () {
       var cb = this.callback;
       var cj = new CookieJar();
-      cj.setCookie('broken_path=testme; path=/;','http://www.example.com',at(-1), function(err,cookie) {
-        cb(err, {cj:cj, cookie:cookie});
+      var ex = 'http://www.example.com';
+      tasks = []
+      tasks.push(function(next) {
+        cj.setCookie('broken_path=testme; path=/;',ex,at(-1),next);
+      });
+      tasks.push(function(next) {
+        cj.setCookie('b=2; Path=/;;;;',ex,at(-1),next);
+      });
+      async.parallel(tasks, function (err, cookies) {
+        cb(null, {
+          cj: cj,
+          cookies: cookies
+        });
       });
     },
-    "set the cookie": function (t) {
-      assert.ok(t.cookie, "didn't set");
-      assert.equal(t.cookie.key, "broken_path");
-      assert.equal(t.cookie.value, 'testme');
+    "check number of cookies": function (t) {
+      assert.lengthOf(t.cookies, 2, "didn't set");
+    },
+    "check *broken_path* was set properly": function (t) {
+      assert.equal(t.cookies[0].key, "broken_path");
+      assert.equal(t.cookies[0].value, "testme");
+      assert.equal(t.cookies[0].path, "/");
+    },
+    "check *b* was set properly": function (t) {
+      assert.equal(t.cookies[1].key, "b");
+      assert.equal(t.cookies[1].value, "2");
+      assert.equal(t.cookies[1].path, "/");
     },
     "retrieve the cookie": {
       topic: function (t) {
@@ -1122,10 +1152,13 @@ vows.describe('Cookie Jar').addBatch({
           cb(err, t);
         });
       },
-      "got the cookie": function(t) {
-        assert.lengthOf(t.cookies, 1);
+      "get the cookie": function(t) {
+        assert.lengthOf(t.cookies, 2);
         assert.equal(t.cookies[0].key, 'broken_path');
         assert.equal(t.cookies[0].value, 'testme');
+        assert.equal(t.cookies[1].key, "b");
+        assert.equal(t.cookies[1].value, "2");
+        assert.equal(t.cookies[1].path, "/");
       },    
     },
   }
