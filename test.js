@@ -1162,4 +1162,29 @@ vows.describe('Cookie Jar').addBatch({
       },    
     },
   }
+}).addBatch({
+  "Constructor":{
+    topic: function () {
+      return new Cookie({
+        key: 'test',
+        value: 'b',
+        maxAge: 60
+      });
+    },
+    'check for key property': function (c) {
+      assert.ok(c);
+      assert.equal(c.key, 'test');
+    },
+    'check for value property': function (c) {
+      assert.equal(c.value, 'b');
+    },
+    'check for maxAge': function (c) {
+      assert.equal(c.maxAge, 60);
+    },
+    'check for default values for unspecified properties': function (c) {
+      assert.equal(c.expires, "Infinity");
+      assert.equal(c.secure, false);
+      assert.equal(c.httpOnly, false);
+    }
+  }
 }).export(module);
