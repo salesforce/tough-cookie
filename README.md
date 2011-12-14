@@ -154,6 +154,11 @@ After a cookie has been passed through `CookieJar.setCookie()` it will have the 
   * _created_ - `Date` - when this cookie was added to the jar
   * _lastAccessed_ - `Date` - last time the cookie got accessed. Will affect cookie cleaning once implemented.  Using `cookiejar.getCookies(...)` will update this attribute.
 
+Construction([{options}])
+------------
+
+Receives an options object that can contain any Cookie properties, uses the default for unspecified properties.
+
 .toString()
 -----------
 
@@ -221,10 +226,11 @@ if (cookie.validate() === true) {
 CookieJar
 =========
 
-Construction
+Construction([store = new MemoryCookieStore()][, rejectPublicSuffixes])
 ------------
 
 Simply use `new CookieJar()`.  If you'd like to use a custom store, pass that to the constructor otherwise a `MemoryCookieStore` will be created and used.
+
 
 Attributes
 ----------
@@ -341,7 +347,6 @@ Pass an error ONLY if removing any existing cookies failed.
 
 # TODO
 
-  * Release to NPM
   * _full_ RFC5890/RFC5891 canonicalization for domains in `cdomain()`
     * the optional `punycode` requirement implements RFC3492, but RFC6265 requires RFC5891
   * better tests for `validate()`?
