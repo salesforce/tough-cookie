@@ -244,7 +244,7 @@ vows.describe('Cookie Jar').addBatch({
     var now = Date.now();
     c.expires = new Date(now+9000);
     assert.equal(c.TTL(now), 9000);
-    assert.equal(c.expiryTime(), c.expires);
+    assert.equal(c.expiryTime(), c.expires.now());
   },
   "TTL with old expires": function() {
     var c = new Cookie();
