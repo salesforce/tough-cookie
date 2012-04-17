@@ -449,6 +449,24 @@ vows.describe('Cookie Jar').addBatch({
         assert.ok(c);
         assert.ok(!c.validate());
       },
+    },
+    "Ironically, Google 'GAPS' cookie has very little whitespace": {
+      topic: function() {
+        return Cookie.parse("GAPS=1:A1aaaaAaAAa1aaAaAaaAAAaaa1a11a:aaaAaAaAa-aaaA1-;Path=/;Expires=Thu, 17-Apr-2014 02:12:29 GMT;Secure;HttpOnly");
+      },
+      "parsed": function(c) { assert.ok(c) },
+      "key": function(c) { assert.equal(c.key, 'GAPS') },
+      "value": function(c) { assert.equal(c.value, '1:A1aaaaAaAAa1aaAaAaaAAAaaa1a11a:aaaAaAaAa-aaaA1-') },
+      "path": function(c) {
+        assert.notEqual(c.path, '/;Expires'); // BUG
+        assert.equal(c.path, '/');
+      },
+      "expires": function(c) {
+        assert.notEqual(c.expires, Infinity);
+        assert.equal(c.expires.getTime(), 1397700749000);
+      },
+      "secure": function(c) { assert.ok(c.secure) },
+      "httponly": function(c) { assert.ok(c.httpOnly) },
     }
   }
 }).addBatch({
