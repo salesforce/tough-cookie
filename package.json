@@ -3,7 +3,7 @@
   "name": "tough-cookie",
   "description": "RFC6265 Cookies and Cookie Jar for node.js",
   "keywords": "HTTP cookie cookies set-cookie cookiejar jar RFC6265 RFC2965",
-  "version": "0.9.9",
+  "version": "0.9.10",
   "homepage": "https://github.com/goinstant/node-cookie",
   "repository": {
     "type": "git",
