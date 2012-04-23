@@ -40,6 +40,8 @@
 // 
 // ***** END LICENSE BLOCK *****
 
+// ===BEGIN ICANN DOMAINS===
+
 // ac : http://en.wikipedia.org/wiki/.ac
 ac
 com.ac
@@ -236,7 +238,7 @@ urn.arpa
 as
 gov.as
 
-// asia: http://en.wikipedia.org/wiki/.asia
+// asia : http://en.wikipedia.org/wiki/.asia
 asia
 
 // at : http://en.wikipedia.org/wiki/.at
@@ -247,17 +249,31 @@ co.at
 gv.at
 or.at
 
-// http://www.info.at/
-biz.at
-info.at
-
-// priv.at : http://www.nic.priv.at/
-// Submitted by registry <lendl@nic.at> 2008-06-09
-priv.at
-
 // au : http://en.wikipedia.org/wiki/.au
-*.au
-// au geographical names (vic.au etc... are covered above)
+// http://www.auda.org.au/
+// 2LDs
+com.au
+net.au
+org.au
+edu.au
+gov.au
+csiro.au
+asn.au
+id.au
+// Historic 2LDs (closed to new registration, but sites still exist)
+info.au
+conf.au
+oz.au
+// CGDNs - http://www.cgdn.org.au/
+act.au
+nsw.au
+nt.au
+qld.au
+sa.au
+tas.au
+vic.au
+wa.au
+// 3LDs
 act.edu.au
 nsw.edu.au
 nt.edu.au
@@ -275,15 +291,6 @@ sa.gov.au
 tas.gov.au
 vic.gov.au
 wa.gov.au
-// CGDNs - http://www.aucd.org.au/
-act.au
-nsw.au
-nt.au
-qld.au
-sa.au
-tas.au
-vic.au
-wa.au
 
 // aw : http://en.wikipedia.org/wiki/.aw
 aw
@@ -615,11 +622,14 @@ gouv.ci
 
 // ck : http://en.wikipedia.org/wiki/.ck
 *.ck
+!www.ck
 
 // cl : http://en.wikipedia.org/wiki/.cl
 cl
 gov.cl
 gob.cl
+co.cl
+mil.cl
 
 // cm : http://en.wikipedia.org/wiki/.cm
 cm
@@ -693,33 +703,6 @@ web.co
 
 // com : http://en.wikipedia.org/wiki/.com
 com
-
-// CentralNic names : http://www.centralnic.com/names/domains
-// Confirmed by registry <gavin.brown@centralnic.com> 2008-06-09
-ar.com
-br.com
-cn.com
-de.com
-eu.com
-gb.com
-hu.com
-jpn.com
-kr.com
-no.com
-qc.com
-ru.com
-sa.com
-se.com
-uk.com
-us.com
-uy.com
-za.com
-
-// Requested by Yngve Pettersen <yngve@opera.com> 2009-11-26
-operaunite.com
-
-// Requested by Eduardo Vela <evn@google.com> 2010-09-06
-appspot.com
 
 // coop : http://en.wikipedia.org/wiki/.coop
 coop
@@ -870,8 +853,6 @@ fi
 // completely removed.
 // TODO: Check for updates (expected to be phased out around Q1/2009)
 aland.fi
-// iki.fi : Submitted by Hannu Aronsson <haa@iki.fi> 2009-11-05
-iki.fi
 
 // fj : http://en.wikipedia.org/wiki/.fj
 *.fj
@@ -1008,6 +989,7 @@ gs
 
 // gt : http://www.gt/politicas.html
 *.gt
+!www.gt
 
 // gu : http://gadao.gov.gu/registration.txt
 *.gu
@@ -1793,8 +1775,6 @@ gov.la
 per.la
 com.la
 org.la
-// see http://www.c.la/
-c.la
 
 // lb : http://en.wikipedia.org/wiki/.lb
 // Submitted by registry <randy@psg.com> 2008-06-17
@@ -1833,9 +1813,6 @@ ltd.lk
 assn.lk
 grp.lk
 hotel.lk
-
-// local : http://en.wikipedia.org/wiki/.local
-local
 
 // lr : http://psg.com/dns/lr/lr.txt
 // Submitted by registry <randy@psg.com> 2008-06-17
@@ -2637,16 +2614,6 @@ ne
 // net : http://en.wikipedia.org/wiki/.net
 net
 
-// CentralNic names : http://www.centralnic.com/names/domains
-// Submitted by registry <gavin.brown@centralnic.com> 2008-06-17
-gb.net
-se.net
-uk.net
-
-// ZaNiC names : http://www.za.net/
-// Confirmed by registry <hostmaster@nic.za.net> 2009-10-03
-za.net
-
 // nf : http://en.wikipedia.org/wiki/.nf
 nf
 com.nf
@@ -2679,9 +2646,6 @@ nl
 
 // BV.nl will be a registry for dutch BV's (besloten vennootschap)
 bv.nl
-
-// the co.nl domain is managed by CoDNS B.V. Added 2010-05-23.
-co.nl
 
 // no : http://www.norid.no/regelverk/index.en.html
 // The Norwegian registry has declined to notify us of updates. The web pages
@@ -3450,9 +3414,6 @@ våler.østfold.no
 valer.hedmark.no
 våler.hedmark.no
 
-// the co.no domain is managed by CoDNS B.V. Added 2010-05-23.
-co.no
-
 // np : http://www.mos.com.np/register.html
 *.np
 
@@ -3488,14 +3449,6 @@ nu
 
 // org : http://en.wikipedia.org/wiki/.org
 org
-
-// CentralNic names : http://www.centralnic.com/names/domains
-// Submitted by registry <gavin.brown@centralnic.com> 2008-06-17
-ae.org
-
-// ZaNiC names : http://www.za.net/
-// Confirmed by registry <hostmaster@nic.za.net> 2009-10-03
-za.org
 
 // pa : http://www.nic.pa/
 // Some additional second level "domains" resolve directly as hostnames, such as
@@ -3750,8 +3703,8 @@ poznan.pl
 wroc.pl
 zakopane.pl
 
-// co.pl : Mainseek Sp. z o.o. http://www.co.pl
-co.pl
+// pm : http://www.afnic.fr/medias/documents/AFNIC-naming-policy2012.pdf
+pm
 
 // pn : http://www.government.pn/PnRegistry/policies.htm
 pn
@@ -3822,8 +3775,16 @@ belau.pw
 // py : http://www.nic.py/faq_a.html#faq_b
 *.py
 
-// qa : http://www.qatar.net.qa/services/virtual.htm
-*.qa
+// qa : http://domains.qa/en/
+qa
+com.qa
+edu.qa
+gov.qa
+mil.qa
+name.qa
+net.qa
+org.qa
+sch.qa
 
 // re : http://www.afnic.re/obtenir/chartes/nommage-re/annexe-descriptifs
 re
@@ -4392,6 +4353,10 @@ zp.ua
 zhitomir.ua
 zt.ua
 
+// Private registries in .ua
+co.ua
+pp.ua
+
 // ug : http://www.registry.co.ug/
 ug
 co.ug
@@ -4720,6 +4685,9 @@ health.vn
 // list of 2nd level tlds ?
 vu
 
+// wf : http://www.afnic.fr/medias/documents/AFNIC-naming-policy2012.pdf
+wf
+
 // ws : http://en.wikipedia.org/wiki/.ws
 // http://samoanic.ws/index.dhtml
 ws
@@ -4728,6 +4696,9 @@ net.ws
 org.ws
 gov.ws
 edu.ws
+
+// yt : http://www.afnic.fr/medias/documents/AFNIC-naming-policy2012.pdf
+yt
 
 // IDN ccTLDs
 // Please sort by ISO 3166 ccTLD, then punicode string
@@ -4895,9 +4866,6 @@ xxx
 // ye : http://www.y.net.ye/services/domain_name.htm
 *.ye
 
-// yu : http://www.nic.yu/pravilnik-e.html
-*.yu
-
 // za : http://www.zadna.org.za/slds.html
 *.za
 
@@ -4907,7 +4875,77 @@ xxx
 // zw : http://en.wikipedia.org/wiki/.zw
 *.zw
 
-// DynDNS.com Dynamic DNS zones : http://www.dyndns.com/services/dns/dyndns/
+// ===END ICANN DOMAINS===
+// ===BEGIN PRIVATE DOMAINS===
+
+// info.at : http://www.info.at/
+biz.at
+info.at
+
+// priv.at : http://www.nic.priv.at/
+// Submitted by registry <lendl@nic.at> 2008-06-09
+priv.at
+
+// co.ca : http://registry.co.ca
+co.ca
+
+// CentralNic : http://www.centralnic.com/names/domains
+// Confirmed by registry <gavin.brown@centralnic.com> 2008-06-09
+ar.com
+br.com
+cn.com
+de.com
+eu.com
+gb.com
+gr.com
+hu.com
+jpn.com
+kr.com
+no.com
+qc.com
+ru.com
+sa.com
+se.com
+uk.com
+us.com
+uy.com
+za.com
+gb.net
+jp.net
+se.net
+uk.net
+ae.org
+us.org
+com.de
+
+// Opera Software, A.S.A.
+// Requested by Yngve Pettersen <yngve@opera.com> 2009-11-26
+operaunite.com
+
+// Google, Inc.
+// Requested by Eduardo Vela <evn@google.com> 2010-09-06
+appspot.com
+
+// iki.fi : Submitted by Hannu Aronsson <haa@iki.fi> 2009-11-05
+iki.fi
+
+// c.la : http://www.c.la/
+c.la
+
+// ZaNiC : http://www.za.net/
+// Confirmed by registry <hostmaster@nic.za.net> 2009-10-03
+za.net
+za.org
+
+// CoDNS B.V.
+// Added 2010-05-23.
+co.nl
+co.no
+
+// Mainseek Sp. z o.o. : http://www.co.pl/
+co.pl
+
+// DynDNS.com : http://www.dyndns.com/services/dns/dyndns/
 dyndns-at-home.com
 dyndns-at-work.com
 dyndns-blog.com
@@ -5187,3 +5225,5 @@ webhop.net
 webhop.org
 worse-than.tv
 writesthisblog.com
+
+// ===END PRIVATE DOMAINS===

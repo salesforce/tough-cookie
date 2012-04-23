@@ -55,7 +55,7 @@ function processList(lines) {
   w.write(" *                  DO NOT EDIT!                    *\n");
   w.write(" ****************************************************/\n\n");
 
-  w.write("module.exports.getPublicSuffix = ")
+  w.write("module.exports.getPublicSuffix = ");
   w.write(getPublicSuffix.toString());
   w.write(";\n\n");
 
@@ -70,7 +70,7 @@ function processList(lines) {
 }
 
 function addToIndex(index,line) {
-  var prefix = ''
+  var prefix = '';
   if (line.replace(/^(!|\*\.)/)) {
     prefix = RegExp.$1;
     line = line.slice(prefix.length);
@@ -111,7 +111,7 @@ function getPublicSuffix(domain) {
   domain = domain.toLowerCase();
   var parts = domain.split('.').reverse();
 
-  var suffix = ''
+  var suffix = '';
   var suffixLen = 0;
   for (var i=0; i<parts.length; i++) {
     var part = parts[i];
@@ -142,7 +142,8 @@ function getPublicSuffix(domain) {
 }
 
 function checkPublicSuffix(give,get) {
-  assert.equal(getPublicSuffix(give), get, give+' should be '+(get==null?'NULL':get));
+  var got = getPublicSuffix(give);
+  assert.equal(got, get, give+' should be '+(get==null?'NULL':get)+' but got '+got);
 }
 
 // pubSufTest() was converted to JavaScript from http://publicsuffix.org/list/test.txt
@@ -169,9 +170,9 @@ function pubSufTest() {
   checkPublicSuffix('a.b.example.example', null);
   // Listed, but non-Internet, TLD.
   checkPublicSuffix('local', null);
-  checkPublicSuffix('example.local', 'example.local');
-  checkPublicSuffix('b.example.local', 'example.local');
-  checkPublicSuffix('a.b.example.local', 'example.local');
+  checkPublicSuffix('example.local', null);
+  checkPublicSuffix('b.example.local', null);
+  checkPublicSuffix('a.b.example.local', null);
   // TLD with only 1 rule.
   checkPublicSuffix('biz', null);
   checkPublicSuffix('domain.biz', 'domain.biz');
