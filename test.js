@@ -491,6 +491,11 @@ vows.describe('Cookie Jar').addBatch({
       c.domain = "EXAMPLE...ca.";
       assert.equal(c.canonicalizedDomain(), "example...ca.");
     },
+    "IDN": function() {
+      var c = new Cookie();
+      c.domain = "δοκιμή.δοκιμή"; // "test.test" in greek
+      assert.equal(c.canonicalizedDomain(), "xn--jxalpdlp.xn--jxalpdlp");
+    }
   }
 }).addBatch({
   "Domain Match":matchVows(tough.domainMatch, [
