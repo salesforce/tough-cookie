@@ -1228,4 +1228,74 @@ vows.describe('Cookie Jar')
     }
   }
 })
+.addBatch({
+  "allPaths option": {
+    topic: function() {
+      var cj = new CookieJar();
+      var tasks = [];
+      tasks.push(cj.setCookie.bind(cj, 'nopath_dom=qq; Path=/; Domain=example.com', 'http://example.com', {}));
+      tasks.push(cj.setCookie.bind(cj, 'path_dom=qq; Path=/foo; Domain=example.com', 'http://example.com', {}));
+      tasks.push(cj.setCookie.bind(cj, 'nopath_host=qq; Path=/', 'http://www.example.com', {}));
+      tasks.push(cj.setCookie.bind(cj, 'path_host=qq; Path=/foo', 'http://www.example.com', {}));
+      tasks.push(cj.setCookie.bind(cj, 'other=qq; Path=/', 'http://other.example.com/', {}));
+      tasks.push(cj.setCookie.bind(cj, 'other2=qq; Path=/foo', 'http://other.example.com/foo', {}));
+      var cb = this.callback;
+      async.parallel(tasks, function(err,results) {
+        cb(err, {cj:cj, cookies: results});
+      });
+    },
+    "all set": function(t) {
+      assert.equal(t.cookies.length, 6);
+      assert.ok(t.cookies.every(function(c) { return !!c }));
+    },
+    "getting without allPaths": {
+      topic: function(t) {
+        var cb = this.callback;
+        var cj = t.cj;
+        cj.getCookies('http://www.example.com/', {}, function(err,cookies) {
+          cb(err, {cj:cj, cookies:cookies});
+        });
+      },
+      "found just two cookies": function(t) {
+        assert.equal(t.cookies.length, 2);
+      },
+      "all are path=/": function(t) {
+        assert.ok(t.cookies.every(function(c) { return c.path === '/' }));
+      },
+      "no 'other' cookies": function(t) {
+        assert.ok(!t.cookies.some(function(c) { return (/^other/).test(c.name) }));
+      },
+    },
+    "getting without allPaths for /foo": {
+      topic: function(t) {
+        var cb = this.callback;
+        var cj = t.cj;
+        cj.getCookies('http://www.example.com/foo', {}, function(err,cookies) {
+          cb(err, {cj:cj, cookies:cookies});
+        });
+      },
+      "found four cookies": function(t) {
+        assert.equal(t.cookies.length, 4);
+      },
+      "no 'other' cookies": function(t) {
+        assert.ok(!t.cookies.some(function(c) { return (/^other/).test(c.name) }));
+      },
+    },
+    "getting with allPaths:true": {
+      topic: function(t) {
+        var cb = this.callback;
+        var cj = t.cj;
+        cj.getCookies('http://www.example.com/', {allPaths:true}, function(err,cookies) {
+          cb(err, {cj:cj, cookies:cookies});
+        });
+      },
+      "found four cookies": function(t) {
+        assert.equal(t.cookies.length, 4);
+      },
+      "no 'other' cookies": function(t) {
+        assert.ok(!t.cookies.some(function(c) { return (/^other/).test(c.name) }));
+      },
+    },
+  }
+})
 .export(module);
