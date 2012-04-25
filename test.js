@@ -35,11 +35,11 @@ function dateVows(table) {
     var expect = table[date];
     theVows[date] = function() {
       var got = tough.parseDate(date) ? 'valid' : 'invalid';
-      assert.equal(got, expect ? 'valid' : 'invalid')
+      assert.equal(got, expect ? 'valid' : 'invalid');
     };
   });
-  return { "date parsing": theVows }
-};
+  return { "date parsing": theVows };
+}
 
 function matchVows(func,table) {
   var theVows = {};
@@ -71,12 +71,14 @@ function defaultPathVows(table) {
 var atNow = Date.now();
 function at(offset) { return {now: new Date(atNow+offset)} }
 
-vows.describe('Cookie Jar').addBatch({
+vows.describe('Cookie Jar')
+.addBatch({
   "all defined": function() {
     assert.ok(Cookie);
     assert.ok(CookieJar);
   },
-}).addBatch(
+})
+.addBatch(
   dateVows({
     "Wed, 09 Jun 2021 10:18:14 GMT": true,
     "Wed, 09 Jun 2021 22:18:14 GMT": true,
@@ -94,7 +96,8 @@ vows.describe('Cookie Jar').addBatch({
     '10 Feb 81 13:00:00 GMT': true, // implicit year
     'Thu, 01 Jan 1970 00:00:010 GMT': true, // strange time, non-strict OK
   })
-).addBatch({
+)
+.addBatch({
   "strict date parse of Thu, 01 Jan 1970 00:00:010 GMT": {
     topic: function() {
       return tough.parseDate('Thu, 01 Jan 1970 00:00:010 GMT', true) ? true : false;
@@ -103,7 +106,8 @@ vows.describe('Cookie Jar').addBatch({
       assert.equal(date,false);
     },
   }
-}).addBatch({
+})
+.addBatch({
   "formatting": {
     "a simple cookie": {
       topic: function() {
@@ -209,7 +213,8 @@ vows.describe('Cookie Jar').addBatch({
       },
     },
   }
-}).addBatch({
+})
+.addBatch({
   "TTL with max-age": function() {
     var c = new Cookie();
     c.maxAge = 123;
@@ -469,7 +474,8 @@ vows.describe('Cookie Jar').addBatch({
       "httponly": function(c) { assert.ok(c.httpOnly) },
     }
   }
-}).addBatch({
+})
+.addBatch({
   "domain normalization": {
     "simple": function() {
       var c = new Cookie();
@@ -497,7 +503,8 @@ vows.describe('Cookie Jar').addBatch({
       assert.equal(c.canonicalizedDomain(), "xn--jxalpdlp.xn--jxalpdlp");
     }
   }
-}).addBatch({
+})
+.addBatch({
   "Domain Match":matchVows(tough.domainMatch, [
     // str,          dom,          expect
     ["example.com", "example.com", true],
@@ -511,7 +518,8 @@ vows.describe('Cookie Jar').addBatch({
     ["example.com", "example.com.", false], // RFC6265 S4.1.2.3
     ["192.168.0.1", "168.0.1", false], // S5.1.3 "The string is a host name"
   ])
-}).addBatch({
+})
+.addBatch({
   "default-path": defaultPathVows([
     [null,"/"],
     ["/","/"],
@@ -519,7 +527,8 @@ vows.describe('Cookie Jar').addBatch({
     ["/dir/file","/dir"],
     ["noslash","/"],
   ])
-}).addBatch({
+})
+.addBatch({
   "Path-Match": matchVows(tough.pathMatch, [
     // request, cookie, match
     ["/","/",true],
@@ -530,7 +539,8 @@ vows.describe('Cookie Jar').addBatch({
     ["/dir/file","/dir",true],
     ["/directory","/dir",false],
   ])
-}).addBatch({
+})
+.addBatch({
   "Cookie Sorting": {
     topic: function() {
       var cookies = [];
@@ -561,7 +571,8 @@ vows.describe('Cookie Jar').addBatch({
       assert.deepEqual(names, ['e','f','c','d','a','b']);
     },
   }
-}).addBatch({
+})
+.addBatch({
   "CookieJar": {
     "Setting a basic cookie": {
       topic: function() {
@@ -834,7 +845,7 @@ vows.describe('Cookie Jar').addBatch({
   },
   "CookieJar setCookie errors": {
     "public-suffix domain": {
-      topic: function(cj) {
+      topic: function() {
         var cj = new CookieJar();
         cj.setCookie('i=9; Domain=kyoto.jp; Path=/','kyoto.jp',this.callback);
       },
@@ -845,7 +856,7 @@ vows.describe('Cookie Jar').addBatch({
       },
     },
     "wrong domain": {
-      topic: function(cj) {
+      topic: function() {
         var cj = new CookieJar();
         cj.setCookie('j=10; Domain=google.com; Path=/','google.ca',this.callback);
       },
@@ -856,7 +867,7 @@ vows.describe('Cookie Jar').addBatch({
       },
     },
     "old cookie is HttpOnly": {
-      topic: function(cj) {
+      topic: function() {
         var cb = this.callback;
         var next = function (err,c) {
           return cb(err,cj);
@@ -889,7 +900,8 @@ vows.describe('Cookie Jar').addBatch({
       },
     },
   },
-}).addBatch({
+})
+.addBatch({
   "JSON": {
     "serialization": {
       topic: function() {
@@ -900,7 +912,7 @@ vows.describe('Cookie Jar').addBatch({
         assert.equal(typeof str, "string");
       },
       "date is in ISO format": function(str) {
-        assert.match(str, /"expires":"2038-01-19T03:14:07.000Z"/, 'expires is in ISO format');
+        assert.match(str, /"expires":"2038-01-19T03:14:07\.000Z"/, 'expires is in ISO format');
       },
     },
     "deserialization": {
@@ -1012,7 +1024,8 @@ vows.describe('Cookie Jar').addBatch({
       },
     },
   }
-}).addBatch({
+})
+.addBatch({
   "permuteDomain": {
     "base case": {
       topic: tough.permuteDomain.bind(null,'example.com'),
@@ -1074,7 +1087,8 @@ vows.describe('Cookie Jar').addBatch({
       },
     },
   }
-}).addBatch({
+})
+.addBatch({
   "Issue 1": {
     topic: function() {
       var cj = new CookieJar();
@@ -1104,7 +1118,8 @@ vows.describe('Cookie Jar').addBatch({
       },
     }
   }
-}).addBatch({
+})
+.addBatch({
   "expiry option": {
     topic: function() {
       var cb = this.callback;
@@ -1134,13 +1149,14 @@ vows.describe('Cookie Jar').addBatch({
       },
     }
   }
-}).addBatch({
+})
+.addBatch({
   "trailing semi-colon set into cj": {
     topic: function () {
       var cb = this.callback;
       var cj = new CookieJar();
       var ex = 'http://www.example.com';
-      tasks = []
+      var tasks = [];
       tasks.push(function(next) {
         cj.setCookie('broken_path=testme; path=/;',ex,at(-1),next);
       });
@@ -1185,7 +1201,8 @@ vows.describe('Cookie Jar').addBatch({
       },    
     },
   }
-}).addBatch({
+})
+.addBatch({
   "Constructor":{
     topic: function () {
       return new Cookie({
@@ -1210,4 +1227,5 @@ vows.describe('Cookie Jar').addBatch({
       assert.equal(c.httpOnly, false);
     }
   }
-}).export(module);
+})
+.export(module);
