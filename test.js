@@ -95,6 +95,8 @@ vows.describe('Cookie Jar')
     '01 Jan 1601 00:00:00 GMT': true,
     '10 Feb 81 13:00:00 GMT': true, // implicit year
     'Thu, 01 Jan 1970 00:00:010 GMT': true, // strange time, non-strict OK
+    'Thu, 17-Apr-2014 02:12:29 GMT': true, // dashes
+    'Thu, 17-Apr-2014 02:12:29 UTC': true, // dashes and UTC
   })
 )
 .addBatch({
@@ -471,6 +473,22 @@ vows.describe('Cookie Jar')
         assert.equal(c.expires.getTime(), 1397700749000);
       },
       "secure": function(c) { assert.ok(c.secure) },
+      "httponly": function(c) { assert.ok(c.httpOnly) },
+    },
+    "lots of equal signs": {
+      topic: function() {
+        return Cookie.parse("queryPref=b=c&d=e; Path=/f=g; Expires=Thu, 17 Apr 2014 02:12:29 GMT; HttpOnly");
+      },
+      "parsed": function(c) { assert.ok(c) },
+      "key": function(c) { assert.equal(c.key, 'queryPref') },
+      "value": function(c) { assert.equal(c.value, 'b=c&d=e') },
+      "path": function(c) {
+        assert.equal(c.path, '/f=g');
+      },
+      "expires": function(c) {
+        assert.notEqual(c.expires, Infinity);
+        assert.equal(c.expires.getTime(), 1397700749000);
+      },
       "httponly": function(c) { assert.ok(c.httpOnly) },
     }
   }
