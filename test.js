@@ -217,8 +217,8 @@ vows.describe('Cookie Jar')
     "minutes are '10'": {
       topic: function() {
         var c = new Cookie();
-        c.key = 'regression';
-        c.value = 'test';
+        c.key = 'a';
+        c.value = 'b';
         c.expires = new Date(1284113410000);
         return c;
       },
@@ -226,7 +226,9 @@ vows.describe('Cookie Jar')
         assert.ok(c.validate());
       },
       "to string": function(c) {
-        assert.equal(c.toString(), 'a=b; Expires=Sat, 10 Sep 2012 10:10:10 GMT');
+        var str = c.toString();
+        assert.notEqual(str, 'a=b; Expires=Fri, 010 Sep 2010 010:010:010 GMT');
+        assert.equal(str, 'a=b; Expires=Fri, 10 Sep 2010 10:10:10 GMT');
       },
     }
   }
