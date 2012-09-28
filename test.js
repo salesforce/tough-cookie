@@ -410,11 +410,11 @@ vows.describe('Cookie Jar')
           "c=d;;;;"
         ];
       },
-      "strict": function (t) { 
-        assert.ok(!Cookie.parse(t[0], true)); 
+      "strict": function (t) {
+        assert.ok(!Cookie.parse(t[0], true));
         assert.ok(!Cookie.parse(t[1], true));
       },
-      "non-strict": function (t) { 
+      "non-strict": function (t) {
         var c1 = Cookie.parse(t[0]);
         var c2 = Cookie.parse(t[1]);
         assert.ok(c1);
@@ -1216,7 +1216,7 @@ vows.describe('Cookie Jar')
         assert.equal(t.cookies[1].key, "b");
         assert.equal(t.cookies[1].value, "2");
         assert.equal(t.cookies[1].path, "/");
-      },    
+      },
     },
   }
 })
