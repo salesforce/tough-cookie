@@ -552,6 +552,10 @@ vows.describe('Cookie Jar')
     ["www.subdom.example.com", "subdom.example.com", true],
     ["example.com", "example.com.", false], // RFC6265 S4.1.2.3
     ["192.168.0.1", "168.0.1", false], // S5.1.3 "The string is a host name"
+    [null, "example.com", null],
+    ["example.com", null, null],
+    [null, null, null],
+    [undefined, undefined, null],
   ])
 })
 .addBatch({
