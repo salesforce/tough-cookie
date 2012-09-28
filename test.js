@@ -214,6 +214,21 @@ vows.describe('Cookie Jar')
         assert.equal(c.toString(), 'a=b; Path=/should-stringify');
       },
     },
+    "minutes are '10'": {
+      topic: function() {
+        var c = new Cookie();
+        c.key = 'regression';
+        c.value = 'test';
+        c.expires = new Date(1284113410000);
+        return c;
+      },
+      "validates": function(c) {
+        assert.ok(c.validate());
+      },
+      "to string": function(c) {
+        assert.equal(c.toString(), 'a=b; Expires=Sat, 10 Sep 2012 10:10:10 GMT');
+      },
+    }
   }
 })
 .addBatch({
