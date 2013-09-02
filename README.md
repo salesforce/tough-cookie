@@ -124,7 +124,7 @@ Here's how to process the Set-Cookie header(s) on a node HTTP/HTTPS response:
 
 ``` javascript
 if (res.headers['set-cookie'] instanceof Array)
-  cookies = res.headers['set-cookie'].map(Cookie.parse);
+  cookies = res.headers['set-cookie'].map(function (c) { return (Cookie.parse(c)); });
 else
   cookies = [Cookie.parse(res.headers['set-cookie'])];
 ```
