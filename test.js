@@ -706,6 +706,20 @@ vows.describe('Cookie Jar')
         assert.equal(c.domain, 'example.com');
       },
     },
+    "Setting a sub-path cookie on a super-domain": {
+      topic: function() {
+        var cj = new CookieJar();
+        var c = Cookie.parse("a=b; Domain=example.com; Path=/subpath");
+        assert.strictEqual(c.hostOnly, null);
+        assert.instanceOf(c.creation, Date);
+        assert.strictEqual(c.lastAccessed, null);
+        c.creation = new Date(Date.now()-10000);
+        cj.setCookie(c, 'http://www.example.com/index.html', this.callback);
+      },
+      "domain is super-domain": function(c) { assert.equal(c.domain, 'example.com') },
+      "path is /subpath": function(c) { assert.equal(c.path, '/subpath') },
+      "path was NOT derived": function(c) { assert.strictEqual(c.pathIsDefault, null) },
+    },
     "Setting HttpOnly cookie over non-HTTP API": {
       topic: function() {
         var cj = new CookieJar();
