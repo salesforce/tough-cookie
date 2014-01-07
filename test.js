@@ -513,7 +513,7 @@ vows.describe('Cookie Jar')
         topic: function() {
           return Cookie.parse('a=one two three',true) || null;
         },
-        "did not parse": function(c) { assert.ok(!c) },
+        "did not parse": function(c) { assert.isNull(c) },
       },
       "non-strict": {
         topic: function() {
@@ -532,7 +532,7 @@ vows.describe('Cookie Jar')
         topic: function() {
           return Cookie.parse('a="one two three"',true) || null;
         },
-        "did not parse": function(c) { assert.ok(!c) },
+        "did not parse": function(c) { assert.isNull(c) },
       },
       "non-strict": {
         topic: function() {
@@ -551,7 +551,7 @@ vows.describe('Cookie Jar')
         topic: function() {
           return Cookie.parse('farbe=weiß',true) || null;
         },
-        "did not parse": function(c) { assert.ok(!c) },
+        "did not parse": function(c) { assert.isNull(c) },
       },
       "non-strict": {
         topic: function() {
