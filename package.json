@@ -1,5 +1,6 @@
 {
-  "author": "Jeremy Stashewsky <jeremy@goinstant.com> (https://github.com/stash)",
+  "author": "GoInstant Inc., a salesforce.com company",
+  "license": "MIT",
   "name": "tough-cookie",
   "description": "RFC6265 Cookies and Cookie Jar for node.js",
   "keywords": [
