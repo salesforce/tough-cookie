@@ -2,6 +2,9 @@
 
 ![Tough Cookie](http://www.goinstant.com.s3.amazonaws.com/tough-cookie.jpg)
 
+[![NPM Stats](https://nodei.co/npm/tough-cookie.png?downloads=true&stars=true)](https://npmjs.org/package/tough-cookie)
+![NPM Downloads](https://nodei.co/npm-dl/tough-cookie.png?months=9)
+
 # Synopsis
 
 ``` javascript
@@ -146,7 +149,7 @@ Properties
   * _secure_ - boolean - the `Secure` cookie flag
   * _httpOnly_ - boolean - the `HttpOnly` cookie flag
   * _extensions_ - `Array` - any unrecognized cookie attributes as strings (even if equal-signs inside)
-               
+
 After a cookie has been passed through `CookieJar.setCookie()` it will have the following additional attributes:
 
   * _hostOnly_ - boolean - is this a host-only cookie (i.e. no Domain field was set, but was instead implied)
@@ -236,7 +239,7 @@ Attributes
 ----------
 
   * _rejectPublicSuffixes_ - boolean - reject cookies with domains like "com" and "co.uk" (default: `true`)
-                         
+
 Since eventually this module would like to support database/remote/etc. CookieJars, continuation passing style is used for CookieJar methods.
 
 .setCookie(cookieOrString, currentUrl, [{options},] cb(err,cookie))
@@ -258,7 +261,7 @@ As per the RFC, the `.hostOnly` property is set if there was no "Domain=" parame
 -------------------------------------------------
 
 __REMOVED__ removed in lieu of the CookieStore API below
-                                                
+
 .getCookies(currentUrl, [{options},] cb(err,cookies))
 -----------------------------------------------------
 
