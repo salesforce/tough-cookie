@@ -135,8 +135,8 @@ vows.describe('Cookie Jar')
       "doesn't validate": function(c) {
         assert.ok(!c.validate());
       },
-      "to string": function(c) {
-        assert.equal(c.toString(), 'a="beta gamma"');
+      "'garbage in, garbage out'": function(c) {
+        assert.equal(c.toString(), 'a=beta gamma');
       },
     },
     "with an empty value and HttpOnly": {
@@ -507,7 +507,64 @@ vows.describe('Cookie Jar')
         assert.equal(c.expires.getTime(), 1397700749000);
       },
       "httponly": function(c) { assert.ok(c.httpOnly) },
-    }
+    },
+    "spaces in value": {
+      "strict": {
+        topic: function() {
+          return Cookie.parse('a=one two three',true) || null;
+        },
+        "did not parse": function(c) { assert.isNull(c) },
+      },
+      "non-strict": {
+        topic: function() {
+          return Cookie.parse('a=one two three',false) || null;
+        },
+        "parsed": function(c) { assert.ok(c) },
+        "key": function(c) { assert.equal(c.key, 'a') },
+        "value": function(c) { assert.equal(c.value, 'one two three') },
+        "no path": function(c) { assert.equal(c.path, null) },
+        "no domain": function(c) { assert.equal(c.domain, null) },
+        "no extensions": function(c) { assert.ok(!c.extensions) },
+      },
+    },
+    "quoted spaces in value": {
+      "strict": {
+        topic: function() {
+          return Cookie.parse('a="one two three"',true) || null;
+        },
+        "did not parse": function(c) { assert.isNull(c) },
+      },
+      "non-strict": {
+        topic: function() {
+          return Cookie.parse('a="one two three"',false) || null;
+        },
+        "parsed": function(c) { assert.ok(c) },
+        "key": function(c) { assert.equal(c.key, 'a') },
+        "value": function(c) { assert.equal(c.value, 'one two three') },
+        "no path": function(c) { assert.equal(c.path, null) },
+        "no domain": function(c) { assert.equal(c.domain, null) },
+        "no extensions": function(c) { assert.ok(!c.extensions) },
+      }
+    },
+    "non-ASCII in value": {
+      "strict": {
+        topic: function() {
+          return Cookie.parse('farbe=weiß',true) || null;
+        },
+        "did not parse": function(c) { assert.isNull(c) },
+      },
+      "non-strict": {
+        topic: function() {
+          return Cookie.parse('farbe=weiß',false) || null;
+        },
+        "parsed": function(c) { assert.ok(c) },
+        "key": function(c) { assert.equal(c.key, 'farbe') },
+        "value": function(c) { assert.equal(c.value, 'weiß') },
+        "no path": function(c) { assert.equal(c.path, null) },
+        "no domain": function(c) { assert.equal(c.domain, null) },
+        "no extensions": function(c) { assert.ok(!c.extensions) },
+      },
+    },
   }
 })
 .addBatch({

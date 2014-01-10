@@ -363,7 +363,7 @@ Pass an error ONLY if removing any existing cookies failed.
 
 (tl;dr: MIT with some MPL/1.1)
 
-Copyright GoInstant, Inc. and other contributors. All rights reserved.
+Copyright 2012- GoInstant, Inc. and other contributors. All rights reserved.
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to
 deal in the Software without restriction, including without limitation the
