@@ -1351,4 +1351,47 @@ vows.describe('Cookie Jar')
     },
   }
 })
+.addBatch({
+  "remove cookies": {
+    topic: function() {
+      var jar = new CookieJar();
+      var cookie = Cookie.parse("a=b; Domain=example.com; Path=/");
+      var cookie2 = Cookie.parse("a=b; Domain=foo.com; Path=/");
+      var cookie3 = Cookie.parse("foo=bar; Domain=foo.com; Path=/");
+      jar.setCookie(cookie, 'http://example.com/index.html', function(){});
+      jar.setCookie(cookie2, 'http://foo.com/index.html', function(){});
+      jar.setCookie(cookie3, 'http://foo.com/index.html', function(){});
+      return jar;
+    },
+    "all from matching domain": function(jar){
+      jar.store.removeCookies('example.com',null, function(err) {
+        assert(err == null);
+
+        jar.store.findCookies('example.com', null, function(err, cookies){
+          assert(err == null);
+          assert(cookies != null);
+          assert(cookies.length === 0, 'cookie was not removed');
+        });
+
+        jar.store.findCookies('foo.com', null, function(err, cookies){
+          assert(err == null);
+          assert(cookies != null);
+          assert(cookies.length === 2, 'cookies should not have been removed');
+        });
+      });
+    },
+    "from cookie store matching domain and key": function(jar){
+      jar.store.removeCookie('foo.com', '/', 'foo', function(err) {
+        assert(err == null);
+
+        jar.store.findCookies('foo.com', null, function(err, cookies){
+          assert(err == null);
+          assert(cookies != null);
+          assert(cookies.length === 1, 'cookie was not removed correctly');
+          assert(cookies[0].key === 'a', 'wrong cookie was removed');
+        });
+      });
+    }
+  }
+})
 .export(module);
