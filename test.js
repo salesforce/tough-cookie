@@ -1551,4 +1551,75 @@ vows.describe('Cookie Jar')
     },
   }
 })
+.addBatch({
+  "Synchronous API on async CookieJar": {
+    topic: function() {
+      return new tough.Store();
+    },
+    "setCookieSync": {
+      topic: function(store) {
+        var jar = new CookieJar(store);
+        try {
+          jar.setCookieSync("a=b", 'http://example.com/index.html');
+          return false;
+        } catch(e) {
+          return e;
+        }
+      },
+      "fails": function(err) {
+        assert.instanceOf(err, Error);
+        assert.equal(err.message,
+                     'CookieJar store is not synchronous; use async API instead.');
+      }
+    },
+    "getCookiesSync": {
+      topic: function(store) {
+        var jar = new CookieJar(store);
+        try {
+          jar.getCookiesSync('http://example.com/index.html');
+          return false;
+        } catch(e) {
+          return e;
+        }
+      },
+      "fails": function(err) {
+        assert.instanceOf(err, Error);
+        assert.equal(err.message,
+                     'CookieJar store is not synchronous; use async API instead.');
+      }
+    },
+    "getCookieStringSync": {
+      topic: function(store) {
+        var jar = new CookieJar(store);
+        try {
+          jar.getCookieStringSync('http://example.com/index.html');
+          return false;
+        } catch(e) {
+          return e;
+        }
+      },
+      "fails": function(err) {
+        assert.instanceOf(err, Error);
+        assert.equal(err.message,
+                     'CookieJar store is not synchronous; use async API instead.');
+      }
+    },
+    "getSetCookieStringsSync": {
+      topic: function(store) {
+        var jar = new CookieJar(store);
+        try {
+          jar.getSetCookieStringsSync('http://example.com/index.html');
+          return false;
+        } catch(e) {
+          return e;
+        }
+      },
+      "fails": function(err) {
+        assert.instanceOf(err, Error);
+        assert.equal(err.message,
+                     'CookieJar store is not synchronous; use async API instead.');
+      }
+    },
+  }
+})
 .export(module);
