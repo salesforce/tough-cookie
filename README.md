@@ -10,13 +10,13 @@
 # Synopsis
 
 ``` javascript
-var cookies = require('tough-cookie'); // note: not 'cookie', 'cookies' or 'node-cookie'
-var Cookie = cookies.Cookie;
+var tough = require('tough-cookie'); // note: not 'cookie', 'cookies' or 'node-cookie'
+var Cookie = tough.Cookie;
 var cookie = Cookie.parse(header);
 cookie.value = 'somethingdifferent';
 header = cookie.toString();
 
-var cookiejar = new cookies.CookieJar();
+var cookiejar = new tough.CookieJar();
 cookiejar.setCookie(cookie, 'http://currentdomain.example.com/path', cb);
 // ...
 cookiejar.getCookies('http://example.com/otherpath',function(err,cookies) {
@@ -36,8 +36,8 @@ Why the name?  NPM modules `cookie`, `cookies` and `cookiejar` were already take
 
 # API
 
-cookies
-=======
+tough
+=====
 
 Functions on the module you get from `require('tough-cookie')`.  All can be used as pure functions and don't need to be "bound".
 
@@ -259,6 +259,11 @@ The `options` object can be omitted and can have the following properties:
 
 As per the RFC, the `.hostOnly` property is set if there was no "Domain=" parameter in the cookie string (or `.domain` was null on the Cookie object).  The `.domain` property is set to the fully-qualified hostname of `currentUrl` in this case.  Matching this cookie requires an exact hostname match (not a `domainMatch` as per usual).
 
+.setCookieSync(cookieOrString, currentUrl, [{options}])
+-------------------------------------------------------
+
+Synchronous version of `setCookie`; only works with synchronous stores (e.g. the default `MemoryCookieStore`).
+
 .storeCookie(cookie, [{options},] cb(err,cookie))
 -------------------------------------------------
 
@@ -281,19 +286,41 @@ The `options` object can be omitted and can have the following properties:
 
 The `.lastAccessed` property of the returned cookies will have been updated.
 
+.getCookiesSync(currentUrl, [{options}])
+----------------------------------------
+
+Synchronous version of `getCookies`; only works with synchronous stores (e.g. the default `MemoryCookieStore`).
+
 .getCookieString(...)
 ---------------------
 
 Accepts the same options as `.getCookies()` but passes a string suitable for a Cookie header rather than an array to the callback.  Simply maps the `Cookie` array via `.cookieString()`.
 
+.getCookieStringSync(...)
+-------------------------
+
+Synchronous version of `getCookieString`; only works with synchronous stores (e.g. the default `MemoryCookieStore`).
+
 .getSetCookieStrings(...)
 -------------------------
 
-Accepts the same options as `.getCookies()` but passes an array of strings suitable for Set-Cookie headers (rather than an array of `Cookie`s) to the callback.  Simply maps the cookie array via `.toString()`.
+Returns an array of strings suitable for **Set-Cookie** headers. Accepts the same options as `.getCookies()`.  Simply maps the cookie array via `.toString()`.
+
+.getSetCookieStringsSync(...)
+-----------------------------
+
+Synchronous version of `getSetCookieStrings`; only works with synchronous stores (e.g. the default `MemoryCookieStore`).
+
+Store
+=====
+
+Base class for CookieJar stores.
 
 # CookieStore API
 
 The storage model for each `CookieJar` instance can be replaced with a custom implementation.  The default is `MemoryCookieStore` which can be found in the `lib/memstore.js` file.  The API uses continuation-passing-style to allow for asynchronous stores.
+
+Stores should inherit from the base `Store` class, which is available as `require('tough-cookie').Store`.  Stores are asynchronous by default, but if `store.synchronous` is set, then the `*Sync` methods on the CookieJar can be used.
 
 All `domain` parameters will have been normalized before calling.
 
