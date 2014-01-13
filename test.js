@@ -1469,4 +1469,86 @@ vows.describe('Cookie Jar')
     }
   }
 })
+.addBatch({
+  "Synchronous CookieJar": {
+    "setCookieSync": {
+      topic: function() {
+        var jar = new CookieJar();
+        var cookie = Cookie.parse("a=b; Domain=example.com; Path=/");
+        cookie = jar.setCookieSync(cookie, 'http://example.com/index.html');
+        return cookie;
+      },
+      "returns a copy of the cookie": function(cookie) {
+        assert.instanceOf(cookie, Cookie);
+      }
+    },
+
+    "setCookieSync strict parse error": {
+      topic: function() {
+        var jar = new CookieJar();
+        var opts = { strict: true };
+        try {
+          jar.setCookieSync("farbe=weiß", 'http://example.com/index.html', opts);
+          return false;
+        } catch (e) {
+          return e;
+        }
+      },
+      "throws the error": function(err) {
+        assert.instanceOf(err, Error);
+        assert.equal(err.message, "Cookie failed to parse");
+      }
+    },
+
+    "getCookiesSync": {
+      topic: function() {
+        var jar = new CookieJar();
+        var url = 'http://example.com/index.html';
+        jar.setCookieSync("a=b; Domain=example.com; Path=/", url);
+        jar.setCookieSync("c=d; Domain=example.com; Path=/", url);
+        return jar.getCookiesSync(url);
+      },
+      "returns the cookie array": function(err, cookies) {
+        assert.ok(!err);
+        assert.ok(Array.isArray(cookies));
+        assert.lengthOf(cookies, 2);
+        cookies.forEach(function(cookie) {
+          assert.instanceOf(cookie, Cookie);
+        });
+      }
+    },
+
+    "getCookieStringSync": {
+      topic: function() {
+        var jar = new CookieJar();
+        var url = 'http://example.com/index.html';
+        jar.setCookieSync("a=b; Domain=example.com; Path=/", url);
+        jar.setCookieSync("c=d; Domain=example.com; Path=/", url);
+        return jar.getCookieStringSync(url);
+      },
+      "returns the cookie header string": function(err, str) {
+        assert.ok(!err);
+        assert.typeOf(str, 'string');
+      }
+    },
+
+    "getSetCookieStringsSync": {
+      topic: function() {
+        var jar = new CookieJar();
+        var url = 'http://example.com/index.html';
+        jar.setCookieSync("a=b; Domain=example.com; Path=/", url);
+        jar.setCookieSync("c=d; Domain=example.com; Path=/", url);
+        return jar.getSetCookieStringsSync(url);
+      },
+      "returns the cookie header string": function(err, headers) {
+        assert.ok(!err);
+        assert.ok(Array.isArray(headers));
+        assert.lengthOf(headers, 2);
+        headers.forEach(function(header) {
+          assert.typeOf(header, 'string');
+        });
+      }
+    },
+  }
+})
 .export(module);
