@@ -18,7 +18,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-
+'use strict';
 var vows = require('vows');
 var assert = require('assert');
 var async = require('async');
@@ -31,7 +31,7 @@ var CookieJar = tough.CookieJar;
 
 function dateVows(table) {
   var theVows = { };
-  var keys = Object.keys(table).forEach(function(date) {
+  Object.keys(table).forEach(function(date) {
     var expect = table[date];
     theVows[date] = function() {
       var got = tough.parseDate(date) ? 'valid' : 'invalid';
@@ -69,7 +69,7 @@ function defaultPathVows(table) {
 }
 
 var atNow = Date.now();
-function at(offset) { return {now: new Date(atNow+offset)} }
+function at(offset) { return {now: new Date(atNow+offset)}; }
 
 vows.describe('Cookie Jar')
 .addBatch({
@@ -277,7 +277,7 @@ vows.describe('Cookie Jar')
     assert.ok(c.isPersistent());
   },
   "default TTL": {
-    topic: function() { return new Cookie() },
+    topic: function() { return new Cookie(); },
     "is Infinite-future": function(c) { assert.equal(c.TTL(), Infinity) },
     "is a 'session' cookie": function(c) { assert.ok(!c.isPersistent()) },
   },
@@ -826,10 +826,13 @@ vows.describe('Cookie Jar')
       });
     },
     "setup ok": function(err,cj,results) {
-      assert.ok(1);
+      assert.ok(!err);
+      assert.ok(cj);
+      assert.ok(results);
     },
     "then retrieving for http://nodejs.org": {
-      topic: function(cj,results) {
+      topic: function(cj,oldResults) {
+        assert.ok(oldResults);
         cj.getCookies('http://nodejs.org',this.callback);
       },
       "get a nodejs cookie": function(cookies) {
@@ -839,7 +842,8 @@ vows.describe('Cookie Jar')
       },
     },
     "then retrieving for https://example.com": {
-      topic: function(cj,results) {
+      topic: function(cj,oldResults) {
+        assert.ok(oldResults);
         cj.getCookies('https://example.com',{secure:true},this.callback);
       },
       "get a secure example cookie with others": function(cookies) {
@@ -848,7 +852,8 @@ vows.describe('Cookie Jar')
       },
     },
     "then retrieving for https://example.com (missing options)": {
-      topic: function(cj,results) {
+      topic: function(cj,oldResults) {
+        assert.ok(oldResults);
         cj.getCookies('https://example.com',this.callback);
       },
       "get a secure example cookie with others": function(cookies) {
@@ -857,7 +862,8 @@ vows.describe('Cookie Jar')
       },
     },
     "then retrieving for http://example.com": {
-      topic: function(cj,results) {
+      topic: function(cj,oldResults) {
+        assert.ok(oldResults);
         cj.getCookies('http://example.com',this.callback);
       },
       "get a bunch of cookies": function(cookies) {
@@ -866,7 +872,8 @@ vows.describe('Cookie Jar')
       },
     },
     "then retrieving for http://EXAMPlE.com": {
-      topic: function(cj,results) {
+      topic: function(cj,oldResults) {
+        assert.ok(oldResults);
         cj.getCookies('http://EXAMPlE.com',this.callback);
       },
       "get a bunch of cookies": function(cookies) {
@@ -875,7 +882,8 @@ vows.describe('Cookie Jar')
       },
     },
     "then retrieving for http://example.com, non-HTTP": {
-      topic: function(cj,results) {
+      topic: function(cj,oldResults) {
+        assert.ok(oldResults);
         cj.getCookies('http://example.com',{http:false},this.callback);
       },
       "get a bunch of cookies": function(cookies) {
@@ -884,7 +892,8 @@ vows.describe('Cookie Jar')
       },
     },
     "then retrieving for http://example.com/foo/bar": {
-      topic: function(cj,results) {
+      topic: function(cj,oldResults) {
+        assert.ok(oldResults);
         cj.getCookies('http://example.com/foo/bar',this.callback);
       },
       "get a bunch of cookies": function(cookies) {
@@ -893,7 +902,8 @@ vows.describe('Cookie Jar')
       },
     },
     "then retrieving for http://example.com as a string": {
-      topic: function(cj,results) {
+      topic: function(cj,oldResults) {
+        assert.ok(oldResults);
         cj.getCookieString('http://example.com',this.callback);
       },
       "get a single string": function(cookieHeader) {
@@ -901,7 +911,8 @@ vows.describe('Cookie Jar')
       },
     },
     "then retrieving for http://example.com as a set-cookie header": {
-      topic: function(cj,results) {
+      topic: function(cj,oldResults) {
+        assert.ok(oldResults);
         cj.getSetCookieStrings('http://example.com',this.callback);
       },
       "get a single string": function(cookieHeaders) {
@@ -912,7 +923,8 @@ vows.describe('Cookie Jar')
       },
     },
     "then retrieving for http://www.example.com/": {
-      topic: function(cj,results) {
+      topic: function(cj,oldResults) {
+        assert.ok(oldResults);
         cj.getCookies('http://www.example.com/foo/bar',this.callback);
       },
       "get a bunch of cookies": function(cookies) {
@@ -980,6 +992,7 @@ vows.describe('Cookie Jar')
       topic: function() {
         var cb = this.callback;
         var next = function (err,c) {
+          c = null;
           return cb(err,cj);
         };
         var cj = new CookieJar();
@@ -987,11 +1000,16 @@ vows.describe('Cookie Jar')
       },
       "initial cookie is set": function(err,cj) {
         assert.ok(!err);
+        assert.ok(cj);
       },
       "but when trying to overwrite": {
         topic: function(cj) {
           var cb = this.callback;
-          cj.setCookie('k=12; Domain=example.ca; Path=/','http://example.ca',{http:false},function(err,c) {cb(null,err)});
+          var next = function(err,c) {
+            c = null;
+            cb(null,err);
+          };
+          cj.setCookie('k=12; Domain=example.ca; Path=/','http://example.ca',{http:false},next);
         },
         "it's an error": function(err) {
           assert.ok(err);
