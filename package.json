@@ -13,7 +13,7 @@
     "RFC6265",
     "RFC2965"
   ],
-  "version": "0.12.0",
+  "version": "0.12.1",
   "homepage": "https://github.com/goinstant/tough-cookie",
   "repository": {
     "type": "git",
