@@ -474,6 +474,38 @@ vows.describe('Cookie Jar')
         assert.ok(!c.validate());
       },
     },
+    "public suffix foonet.net": {
+      "top level": {
+        topic: function() {
+          return Cookie.parse("a=b; domain=foonet.net") || null;
+        },
+        "parses and is valid": function(c) {
+          assert.ok(c);
+          assert.equal(c.domain, 'foonet.net');
+          assert.ok(c.validate());
+        },
+      },
+      "www": {
+        topic: function() {
+          return Cookie.parse("a=b; domain=www.foonet.net") || null;
+        },
+        "parses and is valid": function(c) {
+          assert.ok(c);
+          assert.equal(c.domain, 'www.foonet.net');
+          assert.ok(c.validate());
+        },
+      },
+      "with a dot": {
+        topic: function() {
+          return Cookie.parse("a=b; domain=.foonet.net") || null;
+        },
+        "parses and is valid": function(c) {
+          assert.ok(c);
+          assert.equal(c.domain, 'foonet.net');
+          assert.ok(c.validate());
+        },
+      },
+    },
     "Ironically, Google 'GAPS' cookie has very little whitespace": {
       topic: function() {
         return Cookie.parse("GAPS=1:A1aaaaAaAAa1aaAaAaaAAAaaa1a11a:aaaAaAaAa-aaaA1-;Path=/;Expires=Thu, 17-Apr-2014 02:12:29 GMT;Secure;HttpOnly");
@@ -980,7 +1012,7 @@ vows.describe('Cookie Jar')
     "wrong domain": {
       topic: function() {
         var cj = new CookieJar();
-        cj.setCookie('j=10; Domain=google.com; Path=/','google.ca',this.callback);
+        cj.setCookie('j=10; Domain=google.com; Path=/','http://google.ca',this.callback);
       },
       "errors": function(err,cookie) {
         assert.ok(err);
@@ -1025,6 +1057,18 @@ vows.describe('Cookie Jar')
             assert.equal(cookies[0].value,11);
           },
         },
+      },
+    },
+    "similar to public suffix": {
+      topic: function() {
+        var cj = new CookieJar();
+        var url = 'http://www.foonet.net';
+        assert.isTrue(cj.rejectPublicSuffixes);
+        cj.setCookie('l=13; Domain=foonet.net; Path=/',url,this.callback);
+      },
+      "doesn't error": function(err,cookie) {
+        assert.ok(!err);
+        assert.ok(cookie);
       },
     },
   },
