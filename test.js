@@ -769,7 +769,7 @@ vows.describe('Cookie Jar')
         cj.setCookie(c, 'http://example.com/index.html', this.callback);
       },
       "fails": function(err,c) {
-        assert.ok(err.message.match(/domain/i));
+        assert.match(err.message, /^Cookie not in this host's domain/i);
         assert.ok(!c);
       },
     },
@@ -780,7 +780,7 @@ vows.describe('Cookie Jar')
         cj.setCookie(c, 'http://example.com/index.html', this.callback);
       },
       "fails": function(err,c) {
-        assert.ok(err.message.match(/domain/i));
+        assert.ok(err.message.match(/^Cookie not in this host's domain/i));
         assert.ok(!c);
       },
     },
@@ -1057,18 +1057,6 @@ vows.describe('Cookie Jar')
             assert.equal(cookies[0].value,11);
           },
         },
-      },
-    },
-    "similar to public suffix": {
-      topic: function() {
-        var cj = new CookieJar();
-        var url = 'http://www.foonet.net';
-        assert.isTrue(cj.rejectPublicSuffixes);
-        cj.setCookie('l=13; Domain=foonet.net; Path=/',url,this.callback);
-      },
-      "doesn't error": function(err,cookie) {
-        assert.ok(!err);
-        assert.ok(cookie);
       },
     },
   },
@@ -1663,6 +1651,96 @@ vows.describe('Cookie Jar')
         assert.equal(err.message,
                      'CookieJar store is not synchronous; use async API instead.');
       }
+    },
+  }
+})
+.addBatch({
+  "issue 16": {
+    "similar to public suffix": {
+      topic: function() {
+        var cj = new CookieJar();
+        var url = 'http://www.foonet.net';
+        assert.isTrue(cj.rejectPublicSuffixes);
+        cj.setCookie('a=b; Domain=foonet.net; Path=/',url,this.callback);
+      },
+      "doesn't error": function(err,cookie) {
+        assert.ok(!err);
+        assert.ok(cookie);
+      },
+      "domain was parsed OK": function(err,cookie) {
+        assert.equal(cookie.domain, 'foonet.net');
+      },
+    },
+    "wacky leading dots": {
+      topic: function() {
+        var cj = new CookieJar();
+        var url = 'http://www.foonet.net';
+        assert.isTrue(cj.rejectPublicSuffixes);
+        cj.setCookie('a=b; Domain=...foonet.net; Path=/',url,this.callback);
+      },
+      "doesn't error": function(err,cookie) {
+        assert.ok(!err);
+        assert.ok(cookie);
+      },
+      "domain was parsed without leading dots": function(err,cookie) {
+        assert.equal(cookie.domain, 'foonet.net');
+      },
+    },
+    "even more wacky leading dots": {
+      topic: function() {
+        var cj = new CookieJar();
+        var url = 'http://...foonet.net';
+        assert.isTrue(cj.rejectPublicSuffixes);
+        cj.setCookie('a=b; Domain=...foonet.net; Path=/',url,this.callback);
+      },
+      "doesn't error": function(err,cookie) {
+        assert.ok(!err);
+        assert.ok(cookie);
+      },
+      "domain was parsed without leading dots": function(err,cookie) {
+        assert.equal(cookie.domain, 'foonet.net');
+      },
+    },
+    "unknown TLD": {
+      topic: function() {
+        var cj = new CookieJar();
+        var url = 'http://www.foonet.dev';
+        assert.isTrue(cj.rejectPublicSuffixes);
+        cj.setCookie('a=b; Domain=foonet.dev; Path=/',url,this.callback);
+      },
+      "doesn't error": function(err,cookie) {
+        console.log(err);
+        assert.ok(!err);
+        assert.ok(cookie);
+      },
+      "domain was parsed without leading dots": function(err,cookie) {
+        assert.equal(cookie.domain, 'foonet.dev');
+      },
+    },
+    "localhost cookie in non-localhost context": {
+      topic: function() {
+        var cj = new CookieJar();
+        var url = 'http://example.com'; // valid domain
+        assert.isTrue(cj.rejectPublicSuffixes);
+        cj.setCookie('a=b; Domain=localhost; Path=/',url,this.callback);
+      },
+      "errors": function(err,cookie) {
+        assert.match(err.message, /^Cookie not in this host's domain/i);
+        assert.ok(!cookie);
+      },
+    },
+    "localhost cookie in localhost context": {
+      topic: function() {
+        var cj = new CookieJar();
+        var url = 'http://localhost:3000'; // valid domain
+        assert.isTrue(cj.rejectPublicSuffixes);
+        cj.setCookie('a=b; Domain=localhost; Path=/',url,this.callback);
+      },
+      "is fine": function(err,cookie) {
+        assert.ok(!err);
+        assert.ok(cookie);
+        assert.equal(cookie.domain, 'localhost');
+      },
     },
   }
 })
