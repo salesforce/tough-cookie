@@ -24,7 +24,7 @@
   },
   "main": "./lib/cookie",
   "scripts": {
-    "test": "vows test/*"
+    "test": "vows test/*_test.js"
   },
   "engines": {
     "node": ">=0.4.12"
