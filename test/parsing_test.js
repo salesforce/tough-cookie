@@ -317,7 +317,7 @@ vows
         },
         "parsed": function(c) { assert.ok(c) },
         "key": function(c) { assert.equal(c.key, 'a') },
-        "value": function(c) { assert.equal(c.value, 'one two three') },
+        "value": function(c) { assert.equal(c.value, '"one two three"') },
         "no path": function(c) { assert.equal(c.path, null) },
         "no domain": function(c) { assert.equal(c.domain, null) },
         "no extensions": function(c) { assert.ok(!c.extensions) }
