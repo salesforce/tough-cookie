@@ -24,6 +24,7 @@ var vows = require('vows');
 var assert = require('assert');
 var fs = require('fs');
 var path = require('path');
+var url = require('url');
 var tough = require('../lib/cookie');
 var Cookie = tough.Cookie;
 var CookieJar = tough.CookieJar;
@@ -41,8 +42,14 @@ function setGetCookieVows() {
     theVows[testCase.test] = function () {
       var jar = new CookieJar();
       var setUrl = 'http://example.org/cookie-parser?' + testCase.test;
-      var queryUrl = testCase['sent-to'] || ('http://example.org/cookie-parser-result?' + testCase.test);
+      var queryUrl = testCase['sent-to'];
       var expected = testCase['sent'];
+
+      if (queryUrl)
+        queryUrl = url.resolve('http://example.org', queryUrl);
+
+      else
+        queryUrl = 'http://example.org/cookie-parser-result?' + testCase.test;
 
       testCase['received'].forEach(function (cookieStr) {
         jar.setCookieSync(cookieStr, setUrl, {ignoreError: true});
