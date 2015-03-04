@@ -41,21 +41,17 @@ function setGetCookieVows() {
   data.forEach(function (testCase) {
     theVows[testCase.test] = function () {
       var jar = new CookieJar();
-      var setUrl = 'http://example.org/cookie-parser?' + testCase.test;
-      var queryUrl = testCase['sent-to'];
       var expected = testCase['sent'];
-
-      if (queryUrl)
-        queryUrl = url.resolve('http://example.org', queryUrl);
-
-      else
-        queryUrl = 'http://example.org/cookie-parser-result?' + testCase.test;
+      var pageUrl = testCase['sent-to'] ?
+                    url.resolve('http://example.org', testCase['sent-to']) :
+                    'http://example.org/cookie-parser-result?' + testCase.test;
 
       testCase['received'].forEach(function (cookieStr) {
-        jar.setCookieSync(cookieStr, setUrl, {ignoreError: true});
+        jar.setCookieSync(cookieStr, pageUrl, {ignoreError: true});
       });
 
-      var actual = jar.getCookiesSync(queryUrl);
+      var actual = jar.getCookiesSync(pageUrl);
+      actual = actual.sort(tough.cookieCompare);
 
       assert.strictEqual(actual.length, expected.length);
 
