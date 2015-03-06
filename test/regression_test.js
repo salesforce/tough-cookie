@@ -46,9 +46,6 @@ vows
       "stored a cookie": function (t) {
         assert.ok(t.cookie);
       },
-      "cookie's path was modified to remove unnecessary slash": function (t) {
-        assert.equal(t.cookie.path, '/some/path');
-      },
       "getting it back": {
         topic: function (t) {
           t.cj.getCookies('http://domain/some/path/file', function (err, cookies) {

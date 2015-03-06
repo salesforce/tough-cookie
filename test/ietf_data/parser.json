@@ -5,10 +5,7 @@
       "foo=bar"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -17,10 +14,7 @@
       "foo=bar; Expires=Fri, 07 Aug 2019 08:04:19 GMT"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -30,10 +24,7 @@
       "foo2=bar2; Expires=Fri, 07 Aug 2017 08:04:19 GMT"
     ],
     "sent": [
-      {
-        "name": "foo2",
-        "value": "bar2"
-      }
+      { "name": "foo2", "value": "bar2" }
     ]
   },
   {
@@ -49,10 +40,7 @@
       "foo=bar; max-age=10000;"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -68,10 +56,7 @@
       "foo=bar; version=1;"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -80,10 +65,7 @@
       "foo=bar; version=1000;"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -92,10 +74,7 @@
       "foo=bar; customvalue=1000;"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -111,10 +90,7 @@
       "foo=bar; customvalue=\"1000 or more\";"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -123,10 +99,7 @@
       "foo=bar; customvalue=\"no trailing semicolon\""
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -136,10 +109,7 @@
       "foo=qux"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "qux"
-      }
+      { "name": "foo", "value": "qux" }
     ]
   },
   {
@@ -149,14 +119,8 @@
       "foo2=qux"
     ],
     "sent": [
-      {
-        "name": "foo1",
-        "value": "bar"
-      },
-      {
-        "name": "foo2",
-        "value": "qux"
-      }
+      { "name": "foo1", "value": "bar" },
+      { "name": "foo2", "value": "qux" }
     ]
   },
   {
@@ -166,14 +130,8 @@
       "z=y"
     ],
     "sent": [
-      {
-        "name": "a",
-        "value": "b"
-      },
-      {
-        "name": "z",
-        "value": "y"
-      }
+      { "name": "a", "value": "b" },
+      { "name": "z", "value": "y" }
     ]
   },
   {
@@ -183,14 +141,8 @@
       "a=b"
     ],
     "sent": [
-      {
-        "name": "z",
-        "value": "y"
-      },
-      {
-        "name": "a",
-        "value": "b"
-      }
+      { "name": "z", "value": "y" },
+      { "name": "a", "value": "b" }
     ]
   },
   {
@@ -199,10 +151,7 @@
       "z=y, a=b"
     ],
     "sent": [
-      {
-        "name": "z",
-        "value": "y, a=b"
-      }
+      { "name": "z", "value": "y, a=b" }
     ]
   },
   {
@@ -211,10 +160,7 @@
       "z=y; foo=bar, a=b"
     ],
     "sent": [
-      {
-        "name": "z",
-        "value": "y"
-      }
+      { "name": "z", "value": "y" }
     ]
   },
   {
@@ -223,10 +169,7 @@
       "foo=b;max-age=3600, c=d;path=/"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "b"
-      }
+      { "name": "foo", "value": "b" }
     ]
   },
   {
@@ -237,14 +180,8 @@
       "c=d"
     ],
     "sent": [
-      {
-        "name": "a",
-        "value": "b"
-      },
-      {
-        "name": "c",
-        "value": "d"
-      }
+      { "name": "a", "value": "b" },
+      { "name": "c", "value": "d" }
     ]
   },
   {
@@ -255,14 +192,8 @@
       "c=d"
     ],
     "sent": [
-      {
-        "name": "a",
-        "value": "b"
-      },
-      {
-        "name": "c",
-        "value": "d"
-      }
+      { "name": "a", "value": "b" },
+      { "name": "c", "value": "d" }
     ]
   },
   {
@@ -273,18 +204,9 @@
       "c=d"
     ],
     "sent": [
-      {
-        "name": "a",
-        "value": "b"
-      },
-      {
-        "name": "x",
-        "value": ""
-      },
-      {
-        "name": "c",
-        "value": "d"
-      }
+      { "name": "a", "value": "b" },
+      { "name": "x", "value": "" },
+      { "name": "c", "value": "d" }
     ]
   },
   {
@@ -315,7 +237,7 @@
     "test": "0026",
     "received": [
       "foo",
-      ""
+      "   "
     ],
     "sent": []
   },
@@ -331,7 +253,7 @@
     "test": "0028",
     "received": [
       "foo",
-      ""
+      "\t"
     ],
     "sent": []
   },
@@ -355,10 +277,7 @@
       "foo=bar; \"Secure\""
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -381,10 +300,7 @@
       "foo=bar; Secure qux"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -442,10 +358,7 @@
       "foo=bar; Path"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -454,10 +367,7 @@
       "foo=bar; Path="
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -466,10 +376,7 @@
       "foo=bar; Path=/"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -506,10 +413,7 @@
       "foo=bar; Path=/qux; Path=/"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -525,10 +429,7 @@
       "foo=bar; Path=/qux; Path=/cookie-parser-result"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -558,10 +459,7 @@
       "foo=\u6625\u8282\u56de\u5bb6\u8def\u00b7\u6625\u8fd0\u5b8c\u5168\u624b\u518c"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "\u6625\u8282\u56de\u5bb6\u8def\u00b7\u6625\u8fd0\u5b8c\u5168\u624b\u518c"
-      }
+      { "name": "foo", "value": "\u6625\u8282\u56de\u5bb6\u8def\u00b7\u6625\u8fd0\u5b8c\u5168\u624b\u518c" }
     ]
   },
   {
@@ -570,10 +468,7 @@
       "\u6625\u8282\u56de=\u5bb6\u8def\u00b7\u6625\u8fd0\u5b8c\u5168\u624b\u518c"
     ],
     "sent": [
-      {
-        "name": "\u6625\u8282\u56de",
-        "value": "\u5bb6\u8def\u00b7\u6625\u8fd0\u5b8c\u5168\u624b\u518c"
-      }
+      { "name": "\u6625\u8282\u56de", "value": "\u5bb6\u8def\u00b7\u6625\u8fd0\u5b8c\u5168\u624b\u518c" }
     ]
   },
   {
@@ -582,10 +477,7 @@
       "\u6625\u8282\u56de=\u5bb6\u8def\u00b7\u6625\u8fd0; \u5b8c\u5168\u624b\u518c"
     ],
     "sent": [
-      {
-        "name": "\u6625\u8282\u56de",
-        "value": "\u5bb6\u8def\u00b7\u6625\u8fd0"
-      }
+      { "name": "\u6625\u8282\u56de", "value": "\u5bb6\u8def\u00b7\u6625\u8fd0" }
     ]
   },
   {
@@ -594,10 +486,7 @@
       "foo=\"\u6625\u8282\u56de\u5bb6\u8def\u00b7\u6625\u8fd0\u5b8c\u5168\u624b\u518c\""
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "\"\u6625\u8282\u56de\u5bb6\u8def\u00b7\u6625\u8fd0\u5b8c\u5168\u624b\u518c\""
-      }
+      { "name": "foo", "value": "\"\u6625\u8282\u56de\u5bb6\u8def\u00b7\u6625\u8fd0\u5b8c\u5168\u624b\u518c\"" }
     ]
   },
   {
@@ -606,10 +495,7 @@
       "a=b"
     ],
     "sent": [
-      {
-        "name": "a",
-        "value": "b"
-      }
+      { "name": "a", "value": "b" }
     ]
   },
   {
@@ -618,10 +504,7 @@
       "aBc=\"zzz \"   ;"
     ],
     "sent": [
-      {
-        "name": "aBc",
-        "value": "\"zzz \""
-      }
+      { "name": "aBc", "value": "\"zzz \"" }
     ]
   },
   {
@@ -630,10 +513,7 @@
       "aBc=\"zzz \" ;"
     ],
     "sent": [
-      {
-        "name": "aBc",
-        "value": "\"zzz \""
-      }
+      { "name": "aBc", "value": "\"zzz \"" }
     ]
   },
   {
@@ -642,10 +522,7 @@
       "aBc=\"zz;pp\" ; ;"
     ],
     "sent": [
-      {
-        "name": "aBc",
-        "value": "\"zz"
-      }
+      { "name": "aBc", "value": "\"zz" }
     ]
   },
   {
@@ -654,10 +531,7 @@
       "aBc=\"zz ;"
     ],
     "sent": [
-      {
-        "name": "aBc",
-        "value": "\"zz"
-      }
+      { "name": "aBc", "value": "\"zz" }
     ]
   },
   {
@@ -666,10 +540,7 @@
       "aBc=\"zzz \"   \"ppp\"  ;"
     ],
     "sent": [
-      {
-        "name": "aBc",
-        "value": "\"zzz \"   \"ppp\""
-      }
+      { "name": "aBc", "value": "\"zzz \"   \"ppp\"" }
     ]
   },
   {
@@ -678,10 +549,7 @@
       "aBc=\"zzz \"   \"ppp\" ;"
     ],
     "sent": [
-      {
-        "name": "aBc",
-        "value": "\"zzz \"   \"ppp\""
-      }
+      { "name": "aBc", "value": "\"zzz \"   \"ppp\"" }
     ]
   },
   {
@@ -690,10 +558,7 @@
       "aBc=A\"B ;"
     ],
     "sent": [
-      {
-        "name": "aBc",
-        "value": "A\"B"
-      }
+      { "name": "aBc", "value": "A\"B" }
     ]
   },
   {
@@ -716,10 +581,7 @@
       "a=\"B"
     ],
     "sent": [
-      {
-        "name": "a",
-        "value": "\"B"
-      }
+      { "name": "a", "value": "\"B" }
     ]
   },
   {
@@ -735,34 +597,25 @@
       "ABC=;  path = /"
     ],
     "sent": [
-      {
-        "name": "ABC",
-        "value": ""
-      }
+      { "name": "ABC", "value": "" }
     ]
   },
   {
     "test": "CHROMIUM0014",
     "received": [
-      "A  = BC  ;foo;;;   bar"
+      "  A  = BC  ;foo;;;   bar"
     ],
     "sent": [
-      {
-        "name": "A",
-        "value": "BC"
-      }
+      { "name": "A", "value": "BC" }
     ]
   },
   {
     "test": "CHROMIUM0015",
     "received": [
-      "A=== BC  ;foo;;;   bar"
+      "  A=== BC  ;foo;;;   bar"
     ],
     "sent": [
-      {
-        "name": "A",
-        "value": "== BC"
-      }
+      { "name": "A", "value": "== BC" }
     ]
   },
   {
@@ -771,10 +624,7 @@
       "foo=\"zohNumRKgI0oxyhSsV3Z7D\"  ; expires=Sun, 18-Apr-2027 21:06:29 GMT ; path=/  ;  "
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "\"zohNumRKgI0oxyhSsV3Z7D\""
-      }
+      { "name": "foo", "value": "\"zohNumRKgI0oxyhSsV3Z7D\"" }
     ]
   },
   {
@@ -783,16 +633,13 @@
       "foo=zohNumRKgI0oxyhSsV3Z7D  ; expires=Sun, 18-Apr-2027 21:06:29 GMT ; path=/  ;  "
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "zohNumRKgI0oxyhSsV3Z7D"
-      }
+      { "name": "foo", "value": "zohNumRKgI0oxyhSsV3Z7D" }
     ]
   },
   {
     "test": "CHROMIUM0018",
     "received": [
-      ""
+      "    "
     ],
     "sent": []
   },
@@ -802,10 +649,7 @@
       "a=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     ],
     "sent": [
-      {
-        "name": "a",
-        "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-      }
+      { "name": "a", "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" }
     ]
   },
   {
@@ -821,10 +665,7 @@
       "foo=bar, baz=qux"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar, baz=qux"
-      }
+      { "name": "foo", "value": "bar, baz=qux" }
     ]
   },
   {
@@ -833,10 +674,7 @@
       "foo=\"bar, baz=qux\""
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "\"bar, baz=qux\""
-      }
+      { "name": "foo", "value": "\"bar, baz=qux\"" }
     ]
   },
   {
@@ -845,10 +683,7 @@
       "foo=bar; b,az=qux"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -857,10 +692,7 @@
       "foo=bar; baz=q,ux"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -869,10 +701,7 @@
       "foo=bar; Max-Age=50,399"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -881,10 +710,7 @@
       "foo=bar; Expires=Fri, 07 Aug 2019 08:04:19 GMT"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -893,234 +719,201 @@
       "foo=bar; Expires=Fri 07 Aug 2019 08:04:19 GMT, baz=qux"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
-    "test": "DISABLED-CHROMIUM0020",
+    "test": "DISABLED_CHROMIUM0020",
     "received": [
       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     ],
     "sent": []
   },
   {
-    "test": "DISABLED-CHROMIUM0022",
+    "test": "DISABLED_CHROMIUM0022",
     "received": [
       "AAA=BB\u0000ZYX"
     ],
     "sent": [
-      {
-        "name": "AAA",
-        "value": "BB"
-      }
+      { "name": "AAA", "value": "BB" }
     ]
   },
   {
-    "test": "DISABLED-CHROMIUM0023",
+    "test": "DISABLED_CHROMIUM0023",
     "received": [
       "AAA=BB\rZYX"
     ],
     "sent": [
-      {
-        "name": "AAA",
-        "value": "BB"
-      }
+      { "name": "AAA", "value": "BB" }
     ]
   },
   {
-    "test": "DISABLED-PATH0029",
+    "test": "DISABLED_PATH0029",
     "received": [
       "foo=bar; path=/cookie-parser-result/foo/bar"
     ],
+    "sent-to": "/cookie-parser-result/f%6Fo/bar?disabled-path0029",
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
-    ],
-    "sent-to": "/cookie-parser-result/f%6Fo/bar?disabled-path0029"
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
     "test": "DOMAIN0001",
     "received": [
       "foo=bar; domain=home.example.org"
     ],
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0001",
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
-    ],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0001"
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
     "test": "DOMAIN0002",
     "received": [
       "foo=bar; domain=home.example.org"
     ],
-    "sent": [],
-    "sent-to": "http://sibling.example.org:8888/cookie-parser-result?domain0002"
+    "sent-to": "http://sibling.example.org:8888/cookie-parser-result?domain0002",
+    "sent": []
   },
   {
     "test": "DOMAIN0003",
     "received": [
       "foo=bar; domain=.home.example.org"
     ],
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0003",
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
-    ],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0003"
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
     "test": "DOMAIN0004",
     "received": [
       "foo=bar; domain=home.example.org"
     ],
+    "sent-to": "http://subdomain.home.example.org:8888/cookie-parser-result?domain0004",
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
-    ],
-    "sent-to": "http://subdomain.home.example.org:8888/cookie-parser-result?domain0004"
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
     "test": "DOMAIN0005",
     "received": [
       "foo=bar; domain=.home.example.org"
     ],
+    "sent-to": "http://subdomain.home.example.org:8888/cookie-parser-result?domain0005",
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
-    ],
-    "sent-to": "http://subdomain.home.example.org:8888/cookie-parser-result?domain0005"
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
     "test": "DOMAIN0006",
     "received": [
       "foo=bar; domain=.home.example.org"
     ],
-    "sent": [],
-    "sent-to": "http://sibling.example.org:8888/cookie-parser-result?domain0006"
+    "sent-to": "http://sibling.example.org:8888/cookie-parser-result?domain0006",
+    "sent": []
   },
   {
     "test": "DOMAIN0007",
     "received": [
       "foo=bar; domain=sibling.example.org"
     ],
-    "sent": [],
-    "sent-to": "http://sibling.example.org:8888/cookie-parser-result?domain0007"
+    "sent-to": "http://sibling.example.org:8888/cookie-parser-result?domain0007",
+    "sent": []
   },
   {
     "test": "DOMAIN0008",
     "received": [
       "foo=bar; domain=.example.org"
     ],
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0008",
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
-    ],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0008"
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
     "test": "DOMAIN0009",
     "received": [
       "foo=bar; domain=example.org"
     ],
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0009",
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
-    ],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0009"
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
     "test": "DOMAIN0010",
     "received": [
       "foo=bar; domain=..home.example.org"
     ],
-    "sent": [],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0010"
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0010",
+    "sent": []
   },
   {
     "test": "DOMAIN0011",
     "received": [
       "foo=bar; domain=home..example.org"
     ],
-    "sent": [],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0011"
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0011",
+    "sent": []
   },
   {
     "test": "DOMAIN0012",
     "received": [
       "foo=bar; domain=  .home.example.org"
     ],
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0012",
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
-    ],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0012"
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
     "test": "DOMAIN0013",
     "received": [
       "foo=bar; domain=  .  home.example.org"
     ],
-    "sent": [],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0013"
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0013",
+    "sent": []
   },
   {
     "test": "DOMAIN0014",
     "received": [
       "foo=bar; domain=home.example.org."
     ],
-    "sent": [],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0014"
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0014",
+    "sent": []
   },
   {
     "test": "DOMAIN0015",
     "received": [
       "foo=bar; domain=home.example.org.."
     ],
-    "sent": [],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0015"
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0015",
+    "sent": []
   },
   {
     "test": "DOMAIN0016",
     "received": [
       "foo=bar; domain=home.example.org ."
     ],
-    "sent": [],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0016"
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0016",
+    "sent": []
   },
   {
     "test": "DOMAIN0017",
     "received": [
       "foo=bar; domain=.org"
     ],
-    "sent": [],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0017"
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0017",
+    "sent": []
   },
   {
     "test": "DOMAIN0018",
     "received": [
       "foo=bar; domain=.org."
     ],
-    "sent": [],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0018"
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0018",
+    "sent": []
   },
   {
     "test": "DOMAIN0019",
@@ -1128,17 +921,11 @@
       "foo=bar; domain=home.example.org",
       "foo2=bar2; domain=.home.example.org"
     ],
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0019",
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      },
-      {
-        "name": "foo2",
-        "value": "bar2"
-      }
-    ],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0019"
+      { "name": "foo", "value": "bar" },
+      { "name": "foo2", "value": "bar2" }
+    ]
   },
   {
     "test": "DOMAIN0020",
@@ -1146,25 +933,19 @@
       "foo2=bar2; domain=.home.example.org",
       "foo=bar; domain=home.example.org"
     ],
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0020",
     "sent": [
-      {
-        "name": "foo2",
-        "value": "bar2"
-      },
-      {
-        "name": "foo",
-        "value": "bar"
-      }
-    ],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0020"
+      { "name": "foo2", "value": "bar2" },
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
     "test": "DOMAIN0021",
     "received": [
       "foo=bar; domain=\"home.example.org\""
     ],
-    "sent": [],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0021"
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0021",
+    "sent": []
   },
   {
     "test": "DOMAIN0022",
@@ -1172,17 +953,11 @@
       "foo=bar; domain=home.example.org",
       "foo2=bar2; domain=.example.org"
     ],
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0022",
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      },
-      {
-        "name": "foo2",
-        "value": "bar2"
-      }
-    ],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0022"
+      { "name": "foo", "value": "bar" },
+      { "name": "foo2", "value": "bar2" }
+    ]
   },
   {
     "test": "DOMAIN0023",
@@ -1190,198 +965,165 @@
       "foo2=bar2; domain=.example.org",
       "foo=bar; domain=home.example.org"
     ],
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0023",
     "sent": [
-      {
-        "name": "foo2",
-        "value": "bar2"
-      },
-      {
-        "name": "foo",
-        "value": "bar"
-      }
-    ],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0023"
+      { "name": "foo2", "value": "bar2" },
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
     "test": "DOMAIN0024",
     "received": [
       "foo=bar; domain=.example.org; domain=home.example.org"
     ],
-    "sent": [],
-    "sent-to": "http://sibling.example.org:8888/cookie-parser-result?domain0024"
+    "sent-to": "http://sibling.example.org:8888/cookie-parser-result?domain0024",
+    "sent": []
   },
   {
     "test": "DOMAIN0025",
     "received": [
       "foo=bar; domain=home.example.org; domain=.example.org"
     ],
+    "sent-to": "http://sibling.example.org:8888/cookie-parser-result?domain0025",
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
-    ],
-    "sent-to": "http://sibling.example.org:8888/cookie-parser-result?domain0025"
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
     "test": "DOMAIN0026",
     "received": [
       "foo=bar; domain=home.eXaMpLe.org"
     ],
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0026",
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
-    ],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0026"
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
     "test": "DOMAIN0027",
     "received": [
       "foo=bar; domain=home.example.org:8888"
     ],
-    "sent": [],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0027"
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0027",
+    "sent": []
   },
   {
     "test": "DOMAIN0028",
     "received": [
       "foo=bar; domain=subdomain.home.example.org"
     ],
-    "sent": [],
-    "sent-to": "http://subdomain.home.example.org:8888/cookie-parser-result?domain0028"
+    "sent-to": "http://subdomain.home.example.org:8888/cookie-parser-result?domain0028",
+    "sent": []
   },
   {
     "test": "DOMAIN0029",
     "received": [
       "foo=bar"
     ],
-    "sent": [],
-    "sent-to": "http://subdomain.home.example.org:8888/cookie-parser-result?domain0029"
+    "sent-to": "http://subdomain.home.example.org:8888/cookie-parser-result?domain0029",
+    "sent": []
   },
   {
     "test": "DOMAIN0031",
     "received": [
       "foo=bar; domain=home.example.org; domain=.example.org"
     ],
+    "sent-to": "http://sibling.example.org:8888/cookie-parser-result?domain0031",
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
-    ],
-    "sent-to": "http://sibling.example.org:8888/cookie-parser-result?domain0031"
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
     "test": "DOMAIN0033",
     "received": [
       "foo=bar; domain=home.example.org"
     ],
+    "sent-to": "http://hoMe.eXaMplE.org:8888/cookie-parser-result?domain0033",
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
-    ],
-    "sent-to": "http://hoMe.eXaMplE.org:8888/cookie-parser-result?domain0033"
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
     "test": "DOMAIN0034",
     "received": [
       "foo=bar; domain=home.example.org; domain=home.example.com"
     ],
-    "sent": [],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0034"
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0034",
+    "sent": []
   },
   {
     "test": "DOMAIN0035",
     "received": [
       "foo=bar; domain=home.example.com; domain=home.example.org"
     ],
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0035",
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
-    ],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0035"
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
     "test": "DOMAIN0036",
     "received": [
       "foo=bar; domain=home.example.org; domain=home.example.com; domain=home.example.org"
     ],
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0036",
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
-    ],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0036"
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
     "test": "DOMAIN0037",
     "received": [
       "foo=bar; domain=home.example.com; domain=home.example.org; domain=home.example.com"
     ],
-    "sent": [],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0037"
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0037",
+    "sent": []
   },
   {
     "test": "DOMAIN0038",
     "received": [
       "foo=bar; domain=home.example.org; domain=home.example.org"
     ],
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0038",
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
-    ],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0038"
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
     "test": "DOMAIN0039",
     "received": [
       "foo=bar; domain=home.example.org; domain=example.org"
     ],
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0039",
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
-    ],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0039"
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
     "test": "DOMAIN0040",
     "received": [
       "foo=bar; domain=example.org; domain=home.example.org"
     ],
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0040",
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
-    ],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0040"
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
     "test": "DOMAIN0041",
     "received": [
       "foo=bar; domain=.sibling.example.org"
     ],
-    "sent": [],
-    "sent-to": "http://sibling.example.org:8888/cookie-parser-result?domain0041"
+    "sent-to": "http://sibling.example.org:8888/cookie-parser-result?domain0041",
+    "sent": []
   },
   {
     "test": "DOMAIN0042",
     "received": [
       "foo=bar; domain=.sibling.home.example.org"
     ],
-    "sent": [],
-    "sent-to": "http://sibling.home.example.org:8888/cookie-parser-result?domain0042"
+    "sent-to": "http://sibling.home.example.org:8888/cookie-parser-result?domain0042",
+    "sent": []
   },
   {
     "test": "MOZILLA0001",
@@ -1410,10 +1152,7 @@
       "foo=bar; max-age=60"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -1429,10 +1168,7 @@
       "foo=bar; max-age=60"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -1449,14 +1185,8 @@
       "foo1=bar; max-age=60"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      },
-      {
-        "name": "foo1",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" },
+      { "name": "foo1", "value": "bar" }
     ]
   },
   {
@@ -1467,10 +1197,7 @@
       "foo=differentvalue; max-age=0"
     ],
     "sent": [
-      {
-        "name": "foo1",
-        "value": "bar"
-      }
+      { "name": "foo1", "value": "bar" }
     ]
   },
   {
@@ -1482,10 +1209,7 @@
       "foo2=evendifferentvalue; max-age=0"
     ],
     "sent": [
-      {
-        "name": "foo1",
-        "value": "bar"
-      }
+      { "name": "foo1", "value": "bar" }
     ]
   },
   {
@@ -1502,10 +1226,7 @@
       "five; max-age=2.63,"
     ],
     "sent": [
-      {
-        "name": "test",
-        "value": "\"fubar! = foo"
-      }
+      { "name": "test", "value": "\"fubar! = foo" }
     ]
   },
   {
@@ -1536,7 +1257,7 @@
     "received": [
       "six",
       "seven",
-      "=eight"
+      " =eight"
     ],
     "sent": []
   },
@@ -1545,14 +1266,11 @@
     "received": [
       "six",
       "seven",
-      "=eight",
+      " =eight",
       "test=six"
     ],
     "sent": [
-      {
-        "name": "test",
-        "value": "six"
-      }
+      { "name": "test", "value": "six" }
     ]
   },
   {
@@ -1561,10 +1279,7 @@
       "a=bar"
     ],
     "sent": [
-      {
-        "name": "a",
-        "value": "bar"
-      }
+      { "name": "a", "value": "bar" }
     ]
   },
   {
@@ -1573,10 +1288,7 @@
       "1=bar"
     ],
     "sent": [
-      {
-        "name": "1",
-        "value": "bar"
-      }
+      { "name": "1", "value": "bar" }
     ]
   },
   {
@@ -1585,10 +1297,7 @@
       "$=bar"
     ],
     "sent": [
-      {
-        "name": "$",
-        "value": "bar"
-      }
+      { "name": "$", "value": "bar" }
     ]
   },
   {
@@ -1597,10 +1306,7 @@
       "!a=bar"
     ],
     "sent": [
-      {
-        "name": "!a",
-        "value": "bar"
-      }
+      { "name": "!a", "value": "bar" }
     ]
   },
   {
@@ -1609,10 +1315,7 @@
       "@a=bar"
     ],
     "sent": [
-      {
-        "name": "@a",
-        "value": "bar"
-      }
+      { "name": "@a", "value": "bar" }
     ]
   },
   {
@@ -1621,10 +1324,7 @@
       "#a=bar"
     ],
     "sent": [
-      {
-        "name": "#a",
-        "value": "bar"
-      }
+      { "name": "#a", "value": "bar" }
     ]
   },
   {
@@ -1633,10 +1333,7 @@
       "$a=bar"
     ],
     "sent": [
-      {
-        "name": "$a",
-        "value": "bar"
-      }
+      { "name": "$a", "value": "bar" }
     ]
   },
   {
@@ -1645,10 +1342,7 @@
       "%a=bar"
     ],
     "sent": [
-      {
-        "name": "%a",
-        "value": "bar"
-      }
+      { "name": "%a", "value": "bar" }
     ]
   },
   {
@@ -1657,10 +1351,7 @@
       "^a=bar"
     ],
     "sent": [
-      {
-        "name": "^a",
-        "value": "bar"
-      }
+      { "name": "^a", "value": "bar" }
     ]
   },
   {
@@ -1669,10 +1360,7 @@
       "&a=bar"
     ],
     "sent": [
-      {
-        "name": "&a",
-        "value": "bar"
-      }
+      { "name": "&a", "value": "bar" }
     ]
   },
   {
@@ -1681,10 +1369,7 @@
       "*a=bar"
     ],
     "sent": [
-      {
-        "name": "*a",
-        "value": "bar"
-      }
+      { "name": "*a", "value": "bar" }
     ]
   },
   {
@@ -1693,10 +1378,7 @@
       "(a=bar"
     ],
     "sent": [
-      {
-        "name": "(a",
-        "value": "bar"
-      }
+      { "name": "(a", "value": "bar" }
     ]
   },
   {
@@ -1705,10 +1387,7 @@
       ")a=bar"
     ],
     "sent": [
-      {
-        "name": ")a",
-        "value": "bar"
-      }
+      { "name": ")a", "value": "bar" }
     ]
   },
   {
@@ -1717,10 +1396,7 @@
       "-a=bar"
     ],
     "sent": [
-      {
-        "name": "-a",
-        "value": "bar"
-      }
+      { "name": "-a", "value": "bar" }
     ]
   },
   {
@@ -1729,10 +1405,7 @@
       "_a=bar"
     ],
     "sent": [
-      {
-        "name": "_a",
-        "value": "bar"
-      }
+      { "name": "_a", "value": "bar" }
     ]
   },
   {
@@ -1741,10 +1414,7 @@
       "+=bar"
     ],
     "sent": [
-      {
-        "name": "+",
-        "value": "bar"
-      }
+      { "name": "+", "value": "bar" }
     ]
   },
   {
@@ -1760,10 +1430,7 @@
       "a =bar"
     ],
     "sent": [
-      {
-        "name": "a",
-        "value": "bar"
-      }
+      { "name": "a", "value": "bar" }
     ]
   },
   {
@@ -1772,10 +1439,7 @@
       "\"a=bar"
     ],
     "sent": [
-      {
-        "name": "\"a",
-        "value": "bar"
-      }
+      { "name": "\"a", "value": "bar" }
     ]
   },
   {
@@ -1784,10 +1448,7 @@
       "\"a=b\"=bar"
     ],
     "sent": [
-      {
-        "name": "\"a",
-        "value": "b\"=bar"
-      }
+      { "name": "\"a", "value": "b\"=bar" }
     ]
   },
   {
@@ -1797,22 +1458,16 @@
       "\"a=qux"
     ],
     "sent": [
-      {
-        "name": "\"a",
-        "value": "qux"
-      }
+      { "name": "\"a", "value": "qux" }
     ]
   },
   {
     "test": "NAME0022",
     "received": [
-      "foo=bar"
+      "   foo=bar"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -1828,10 +1483,7 @@
       "$Version=1; foo=bar"
     ],
     "sent": [
-      {
-        "name": "$Version",
-        "value": "1"
-      }
+      { "name": "$Version", "value": "1" }
     ]
   },
   {
@@ -1847,10 +1499,7 @@
       "foo=bar    "
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -1859,10 +1508,7 @@
       "foo=bar    ;"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -1885,10 +1531,7 @@
       "foo bar=baz"
     ],
     "sent": [
-      {
-        "name": "foo bar",
-        "value": "baz"
-      }
+      { "name": "foo bar", "value": "baz" }
     ]
   },
   {
@@ -1914,46 +1557,40 @@
     "sent": []
   },
   {
-    "test": "OPTIONAL-DOMAIN0030",
+    "test": "OPTIONAL_DOMAIN0030",
     "received": [
       "foo=bar; domain="
     ],
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?optional-domain0030",
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
-    ],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?optional-domain0030"
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
-    "test": "OPTIONAL-DOMAIN0041",
+    "test": "OPTIONAL_DOMAIN0041",
     "received": [
       "foo=bar; domain=example.org; domain="
     ],
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?optional-domain0041",
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
-    ],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?optional-domain0041"
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
-    "test": "OPTIONAL-DOMAIN0042",
+    "test": "OPTIONAL_DOMAIN0042",
     "received": [
       "foo=bar; domain=foo.example.org; domain="
     ],
-    "sent": [],
-    "sent-to": "http://home.example.org:8888/cookie-parser-result?optional-domain0042"
+    "sent-to": "http://home.example.org:8888/cookie-parser-result?optional-domain0042",
+    "sent": []
   },
   {
-    "test": "OPTIONAL-DOMAIN0043",
+    "test": "OPTIONAL_DOMAIN0043",
     "received": [
       "foo=bar; domain=foo.example.org; domain="
     ],
-    "sent": [],
-    "sent-to": "http://subdomain.home.example.org:8888/cookie-parser-result?optional-domain0043"
+    "sent-to": "http://subdomain.home.example.org:8888/cookie-parser-result?optional-domain0043",
+    "sent": []
   },
   {
     "test": "ORDERING0001",
@@ -1965,25 +1602,13 @@
       "key=val4; domain=.example.org",
       "key=val5; domain=.example.org; path=/cookie-parser-result/foo"
     ],
+    "sent-to": "/cookie-parser-result/foo/baz?ordering0001",
     "sent": [
-      {
-        "name": "key",
-        "value": "val5"
-      },
-      {
-        "name": "key",
-        "value": "val1"
-      },
-      {
-        "name": "key",
-        "value": "val2"
-      },
-      {
-        "name": "key",
-        "value": "val4"
-      }
-    ],
-    "sent-to": "/cookie-parser-result/foo/baz?ordering0001"
+      { "name": "key", "value": "val5" },
+      { "name": "key", "value": "val1" },
+      { "name": "key", "value": "val2" },
+      { "name": "key", "value": "val4" }
+    ]
   },
   {
     "test": "PATH0001",
@@ -1992,14 +1617,8 @@
       "x=y; path=/cookie-parser-result"
     ],
     "sent": [
-      {
-        "name": "x",
-        "value": "y"
-      },
-      {
-        "name": "a",
-        "value": "b"
-      }
+      { "name": "x", "value": "y" },
+      { "name": "a", "value": "b" }
     ]
   },
   {
@@ -2009,14 +1628,8 @@
       "x=y; path=/"
     ],
     "sent": [
-      {
-        "name": "a",
-        "value": "b"
-      },
-      {
-        "name": "x",
-        "value": "y"
-      }
+      { "name": "a", "value": "b" },
+      { "name": "x", "value": "y" }
     ]
   },
   {
@@ -2026,14 +1639,8 @@
       "a=b; path=/cookie-parser-result"
     ],
     "sent": [
-      {
-        "name": "a",
-        "value": "b"
-      },
-      {
-        "name": "x",
-        "value": "y"
-      }
+      { "name": "a", "value": "b" },
+      { "name": "x", "value": "y" }
     ]
   },
   {
@@ -2043,14 +1650,8 @@
       "a=b; path=/"
     ],
     "sent": [
-      {
-        "name": "x",
-        "value": "y"
-      },
-      {
-        "name": "a",
-        "value": "b"
-      }
+      { "name": "x", "value": "y" },
+      { "name": "a", "value": "b" }
     ]
   },
   {
@@ -2067,10 +1668,7 @@
       "foo=qux; path=/cookie-parser-result/foo"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -2078,121 +1676,106 @@
     "received": [
       "foo=bar; path=/cookie-parser-result/foo"
     ],
+    "sent-to": "/cookie-parser-result/foo?path0007",
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
-    ],
-    "sent-to": "/cookie-parser-result/foo?path0007"
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
     "test": "PATH0008",
     "received": [
       "foo=bar; path=/cookie-parser-result/foo"
     ],
-    "sent": [],
-    "sent-to": "/cookie-parser-result/bar?path0008"
+    "sent-to": "/cookie-parser-result/bar?path0008",
+    "sent": []
   },
   {
     "test": "PATH0009",
     "received": [
       "foo=bar; path=/cookie-parser-result/foo/qux"
     ],
-    "sent": [],
-    "sent-to": "/cookie-parser-result/foo?path0009"
+    "sent-to": "/cookie-parser-result/foo?path0009",
+    "sent": []
   },
   {
     "test": "PATH0010",
     "received": [
       "foo=bar; path=/cookie-parser-result/foo/qux"
     ],
+    "sent-to": "/cookie-parser-result/foo/qux?path0010",
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
-    ],
-    "sent-to": "/cookie-parser-result/foo/qux?path0010"
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
     "test": "PATH0011",
     "received": [
       "foo=bar; path=/cookie-parser-result/foo/qux"
     ],
-    "sent": [],
-    "sent-to": "/cookie-parser-result/bar/qux?path0011"
+    "sent-to": "/cookie-parser-result/bar/qux?path0011",
+    "sent": []
   },
   {
     "test": "PATH0012",
     "received": [
       "foo=bar; path=/cookie-parser-result/foo/qux"
     ],
-    "sent": [],
-    "sent-to": "/cookie-parser-result/foo/baz?path0012"
+    "sent-to": "/cookie-parser-result/foo/baz?path0012",
+    "sent": []
   },
   {
     "test": "PATH0013",
     "received": [
       "foo=bar; path=/cookie-parser-result/foo/qux/"
     ],
-    "sent": [],
-    "sent-to": "/cookie-parser-result/foo/baz?path0013"
+    "sent-to": "/cookie-parser-result/foo/baz?path0013",
+    "sent": []
   },
   {
     "test": "PATH0014",
     "received": [
       "foo=bar; path=/cookie-parser-result/foo/qux/"
     ],
-    "sent": [],
-    "sent-to": "/cookie-parser-result/foo/qux?path0014"
+    "sent-to": "/cookie-parser-result/foo/qux?path0014",
+    "sent": []
   },
   {
     "test": "PATH0015",
     "received": [
       "foo=bar; path=/cookie-parser-result/foo/qux/"
     ],
+    "sent-to": "/cookie-parser-result/foo/qux/?path0015",
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
-    ],
-    "sent-to": "/cookie-parser-result/foo/qux/?path0015"
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
     "test": "PATH0016",
     "received": [
       "foo=bar; path=/cookie-parser-result/foo/"
     ],
+    "sent-to": "/cookie-parser-result/foo/qux?path0016",
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
-    ],
-    "sent-to": "/cookie-parser-result/foo/qux?path0016"
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
     "test": "PATH0017",
     "received": [
       "foo=bar; path=/cookie-parser-result/foo/"
     ],
+    "sent-to": "/cookie-parser-result/foo//qux?path0017",
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
-    ],
-    "sent-to": "/cookie-parser-result/foo//qux?path0017"
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
     "test": "PATH0018",
     "received": [
       "foo=bar; path=/cookie-parser-result/foo/"
     ],
-    "sent": [],
-    "sent-to": "/cookie-parser-result/fooqux?path0018"
+    "sent-to": "/cookie-parser-result/fooqux?path0018",
+    "sent": []
   },
   {
     "test": "PATH0019",
@@ -2200,10 +1783,7 @@
       "foo=bar; path"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -2212,10 +1792,7 @@
       "foo=bar; path="
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -2224,10 +1801,7 @@
       "foo=bar; path=/"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -2236,10 +1810,7 @@
       "foo=bar; path= /"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -2254,50 +1825,44 @@
     "received": [
       "foo=bar; path=/cookie-parser-result/foo/qux?"
     ],
-    "sent": [],
-    "sent-to": "/cookie-parser-result/foo/qux?path0024"
+    "sent-to": "/cookie-parser-result/foo/qux?path0024",
+    "sent": []
   },
   {
     "test": "PATH0025",
     "received": [
       "foo=bar; path=/cookie-parser-result/foo/qux#"
     ],
-    "sent": [],
-    "sent-to": "/cookie-parser-result/foo/qux?path0025"
+    "sent-to": "/cookie-parser-result/foo/qux?path0025",
+    "sent": []
   },
   {
     "test": "PATH0026",
     "received": [
       "foo=bar; path=/cookie-parser-result/foo/qux;"
     ],
+    "sent-to": "/cookie-parser-result/foo/qux?path0026",
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
-    ],
-    "sent-to": "/cookie-parser-result/foo/qux?path0026"
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
     "test": "PATH0027",
     "received": [
       "foo=bar; path=\"/cookie-parser-result/foo/qux;\""
     ],
+    "sent-to": "/cookie-parser-result/foo/qux?path0027",
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
-    ],
-    "sent-to": "/cookie-parser-result/foo/qux?path0027"
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
     "test": "PATH0028",
     "received": [
       "foo=bar; path=/cookie-parser-result/f%6Fo/bar"
     ],
-    "sent": [],
-    "sent-to": "/cookie-parser-result/foo/bar?path0028"
+    "sent-to": "/cookie-parser-result/foo/bar?path0028",
+    "sent": []
   },
   {
     "test": "PATH0029",
@@ -2306,10 +1871,7 @@
       "x=y; \tpath\t=\t/book\t"
     ],
     "sent": [
-      {
-        "name": "a",
-        "value": "b"
-      }
+      { "name": "a", "value": "b" }
     ]
   },
   {
@@ -2318,10 +1880,7 @@
       "foo=bar; path=/dog; path="
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -2337,17 +1896,11 @@
       "foo=bar; path=/cookie-parser-result",
       "foo=qux; path=/cookie-parser-result/"
     ],
+    "sent-to": "/cookie-parser-result/dog?path0032",
     "sent": [
-      {
-        "name": "foo",
-        "value": "qux"
-      },
-      {
-        "name": "foo",
-        "value": "bar"
-      }
-    ],
-    "sent-to": "/cookie-parser-result/dog?path0032"
+      { "name": "foo", "value": "qux" },
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
     "test": "VALUE0001",
@@ -2355,10 +1908,7 @@
       "foo=  bar"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   },
   {
@@ -2367,10 +1917,7 @@
       "foo=\"bar\""
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "\"bar\""
-      }
+      { "name": "foo", "value": "\"bar\"" }
     ]
   },
   {
@@ -2379,10 +1926,7 @@
       "foo=\"  bar \""
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "\"  bar \""
-      }
+      { "name": "foo", "value": "\"  bar \"" }
     ]
   },
   {
@@ -2391,10 +1935,7 @@
       "foo=\"bar;baz\""
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "\"bar"
-      }
+      { "name": "foo", "value": "\"bar" }
     ]
   },
   {
@@ -2403,22 +1944,16 @@
       "foo=\"bar=baz\""
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "\"bar=baz\""
-      }
+      { "name": "foo", "value": "\"bar=baz\"" }
     ]
   },
   {
     "test": "VALUE0006",
     "received": [
-      "foo\t=\tbar\t \t;\tttt"
+      "\tfoo\t=\tbar\t \t;\tttt"
     ],
     "sent": [
-      {
-        "name": "foo",
-        "value": "bar"
-      }
+      { "name": "foo", "value": "bar" }
     ]
   }
 ]
