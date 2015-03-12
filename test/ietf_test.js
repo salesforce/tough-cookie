@@ -71,7 +71,7 @@ function dateVows() {
   var theVows = {};
 
   [
-    './ietf_data/dates/bsd-examples.json',
+    //'./ietf_data/dates/bsd-examples.json',
     './ietf_data/dates/examples.json'
   ].forEach(function (filePath) {
       var data = readJson(filePath);
@@ -92,5 +92,5 @@ function dateVows() {
 vows
   .describe('IETF http state tests')
   .addBatch(setGetCookieVows())
-  //.addBatch(dateVows())
+  .addBatch(dateVows())
   .export(module);
