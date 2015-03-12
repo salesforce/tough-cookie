@@ -71,7 +71,7 @@ function dateVows() {
   var theVows = {};
 
   [
-    //'./ietf_data/dates/bsd-examples.json',
+    './ietf_data/dates/bsd-examples.json',
     './ietf_data/dates/examples.json'
   ].forEach(function (filePath) {
       var data = readJson(filePath);
