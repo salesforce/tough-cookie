@@ -53,7 +53,6 @@ vows
     '01 Jan 1600 00:00:00 GMT': false, // before 1601
     '01 Jan 1601 00:00:00 GMT': true,
     '10 Feb 81 13:00:00 GMT': true, // implicit year
-    'Thu, 01 Jan 1970 00:00:010 GMT': true, // strange time, non-strict OK
     'Thu, 17-Apr-2014 02:12:29 GMT': true, // dashes
     'Thu, 17-Apr-2014 02:12:29 UTC': true  // dashes and UTC
   }))
