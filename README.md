@@ -2,7 +2,7 @@
 
 ![Tough Cookie](http://www.goinstant.com.s3.amazonaws.com/tough-cookie.jpg)
 
-[![Build Status](https://travis-ci.org/inikulin/tough-cookie.png?branch=master)](https://travis-ci.org/inikulin/tough-cookie)
+[![Build Status](https://travis-ci.org/goinstant/node-cookie.png?branch=master)](https://travis-ci.org/goinstant/node-cookie)
 
 [![NPM Stats](https://nodei.co/npm/tough-cookie.png?downloads=true&stars=true)](https://npmjs.org/package/tough-cookie)
 ![NPM Downloads](https://nodei.co/npm-dl/tough-cookie.png?months=9)
