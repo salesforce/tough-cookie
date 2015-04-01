@@ -25,26 +25,24 @@ var assert = require('assert');
 var tough = require('../lib/cookie');
 var Cookie = tough.Cookie;
 
+function toKeyArray(cookies) {
+  return cookies.map(function (c) {
+    return c.key
+  });
+}
+
 vows
   .describe('Cookie sorting')
   .addBatch({
     "Cookie Sorting": {
       topic: function () {
         var cookies = [];
-        var now = Date.now();
         cookies.push(Cookie.parse("a=0; Domain=example.com"));
         cookies.push(Cookie.parse("b=1; Domain=www.example.com"));
         cookies.push(Cookie.parse("c=2; Domain=example.com; Path=/pathA"));
         cookies.push(Cookie.parse("d=3; Domain=www.example.com; Path=/pathA"));
         cookies.push(Cookie.parse("e=4; Domain=example.com; Path=/pathA/pathB"));
         cookies.push(Cookie.parse("f=5; Domain=www.example.com; Path=/pathA/pathB"));
-
-        // force a stable creation time consistent with the order above since
-        // some may have been created at now + 1ms.
-        var i = cookies.length;
-        cookies.forEach(function (cookie) {
-          cookie.creation = new Date(now - 100 * (i--));
-        });
 
         // weak shuffle:
         cookies = cookies.sort(function () {
@@ -56,10 +54,27 @@ vows
       },
       "got": function (cookies) {
         assert.lengthOf(cookies, 6);
-        var names = cookies.map(function (c) {
-          return c.key
+        assert.deepEqual(toKeyArray(cookies), ['e', 'f', 'c', 'd', 'a', 'b']);
+      }
+    }
+  })
+  .addBatch({
+    "Changing creation date affects sorting": {
+      topic: function () {
+        var cookies = [];
+        var now = Date.now();
+        cookies.push(Cookie.parse("a=0;"));
+        cookies.push(Cookie.parse("b=1;"));
+        cookies.push(Cookie.parse("c=2;"));
+
+        cookies.forEach(function (cookie, idx) {
+          cookie.creation = new Date(now - 100 * idx);
         });
-        assert.deepEqual(names, ['e', 'f', 'c', 'd', 'a', 'b']);
+
+        return cookies.sort(tough.cookieCompare);
+      },
+      "got": function (cookies) {
+        assert.deepEqual(toKeyArray(cookies), ['c', 'b', 'a']);
       }
     }
   })
