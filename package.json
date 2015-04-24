@@ -14,13 +14,13 @@
     "RFC2965"
   ],
   "version": "0.13.0",
-  "homepage": "https://github.com/goinstant/tough-cookie",
+  "homepage": "https://github.com/SalesforceEng/tough-cookie",
   "repository": {
     "type": "git",
-    "url": "git://github.com/goinstant/tough-cookie.git"
+    "url": "git://github.com/SalesforceEng/tough-cookie.git"
   },
   "bugs": {
-    "url": "https://github.com/goinstant/tough-cookie/issues"
+    "url": "https://github.com/SalesforceEng/tough-cookie/issues"
   },
   "main": "./lib/cookie",
   "scripts": {

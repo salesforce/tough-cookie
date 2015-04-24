@@ -1,8 +1,6 @@
-[RFC6265](http://tools.ietf.org/html/rfc6265) Cookies and CookieJar for Node.js
+[RFC6265](https://tools.ietf.org/html/rfc6265) Cookies and CookieJar for Node.js
 
-![Tough Cookie](http://www.goinstant.com.s3.amazonaws.com/tough-cookie.jpg)
-
-[![Build Status](https://travis-ci.org/goinstant/node-cookie.png?branch=master)](https://travis-ci.org/goinstant/node-cookie)
+[![Build Status](https://travis-ci.org/SalesforceEng/tough-cookie.png?branch=master)](https://travis-ci.org/SalesforceEng/tough-cookie)
 
 [![NPM Stats](https://nodei.co/npm/tough-cookie.png?downloads=true&stars=true)](https://npmjs.org/package/tough-cookie)
 ![NPM Downloads](https://nodei.co/npm-dl/tough-cookie.png?months=9)
