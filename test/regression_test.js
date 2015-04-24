@@ -125,4 +125,19 @@ vows
       }
     }
   })
+  .addBatch({
+    "tough-cookie throws exception on malformed URI (GH-32)": {
+      topic: function () {
+        var url = "http://www.example.com/?test=100%";
+        var cj = new CookieJar();
+
+        cj.setCookieSync("Test=Test", url);
+
+        return cj.getCookieStringSync(url);
+      },
+      "cookies are set": function (cookieStr) {
+        assert.strictEqual(cookieStr, "Test=Test");
+      }
+    }
+  })
   .export(module);
