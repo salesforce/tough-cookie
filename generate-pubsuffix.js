@@ -69,6 +69,9 @@ function processList(lines) {
   w.write(" *                  DO NOT EDIT!                    *\n");
   w.write(" ****************************************************/\n\n");
 
+  w.write('"use strict";\n\n');
+  w.write("var punycode = require('punycode');\n\n");
+
   w.write("module.exports.getPublicSuffix = ");
   w.write(getPublicSuffix.toString());
   w.write(";\n\n");
@@ -136,6 +139,15 @@ function getPublicSuffix(domain) {
   if (domain.match(/^\./)) {
     return null;
   }
+  var asciiDomain = punycode.toASCII(domain);
+  var converted = false;
+  if (asciiDomain !== domain) {
+    domain = asciiDomain;
+    converted = true;
+  }
+  if (index[domain]) {
+    return null;
+  }
 
   domain = domain.toLowerCase();
   var parts = domain.split('.').reverse();
@@ -156,15 +168,17 @@ function getPublicSuffix(domain) {
       suffixLen = i+1;
     }
 
-    suffix = '.'+part+suffix;
+    suffix = '.'+partstr;
   }
 
   if (index['*'+suffix]) { // *.domain exists (e.g. *.kyoto.jp for domain='kyoto.jp');
     return null;
   }
 
-  if (suffixLen && parts.length > suffixLen) {
-    return parts.slice(0,suffixLen+1).reverse().join('.');
+  suffixLen = suffixLen || 1;
+  if (parts.length > suffixLen) {
+    var publicSuffix = parts.slice(0,suffixLen+1).reverse().join('.');
+    return converted ? punycode.toUnicode(publicSuffix) : publicSuffix;
   }
 
   return null;
@@ -175,7 +189,7 @@ function checkPublicSuffix(give,get) {
   assert.equal(got, get, give+' should be '+(get==null?'NULL':get)+' but got '+got);
 }
 
-// pubSufTest() was converted to JavaScript from http://publicsuffix.org/list/test.txt
+// pubSufTest() was converted to JavaScript from http://mxr.mozilla.org/mozilla-central/source/netwerk/test/unit/data/test_psl.txt?raw=1
 function pubSufTest() {
   // For this function-scope and this function-scope ONLY:
   // Any copyright is dedicated to the Public Domain.
@@ -194,14 +208,14 @@ function pubSufTest() {
   checkPublicSuffix('.example.example', null);
   // Unlisted TLD.
   checkPublicSuffix('example', null);
-  checkPublicSuffix('example.example', null);
-  checkPublicSuffix('b.example.example', null);
-  checkPublicSuffix('a.b.example.example', null);
+  checkPublicSuffix('example.example', 'example.example');
+  checkPublicSuffix('b.example.example', 'example.example');
+  checkPublicSuffix('a.b.example.example', 'example.example');
   // Listed, but non-Internet, TLD.
-  checkPublicSuffix('local', null);
-  checkPublicSuffix('example.local', null);
-  checkPublicSuffix('b.example.local', null);
-  checkPublicSuffix('a.b.example.local', null);
+  //checkPublicSuffix('local', null);
+  //checkPublicSuffix('example.local', null);
+  //checkPublicSuffix('b.example.local', null);
+  //checkPublicSuffix('a.b.example.local', null);
   // TLD with only 1 rule.
   checkPublicSuffix('biz', null);
   checkPublicSuffix('domain.biz', 'domain.biz');
@@ -230,20 +244,22 @@ function pubSufTest() {
   checkPublicSuffix('test.ac.jp', 'test.ac.jp');
   checkPublicSuffix('www.test.ac.jp', 'test.ac.jp');
   checkPublicSuffix('kyoto.jp', null);
-  checkPublicSuffix('c.kyoto.jp', null);
-  checkPublicSuffix('b.c.kyoto.jp', 'b.c.kyoto.jp');
-  checkPublicSuffix('a.b.c.kyoto.jp', 'b.c.kyoto.jp');
-  checkPublicSuffix('pref.kyoto.jp', 'pref.kyoto.jp');  // Exception rule.
-  checkPublicSuffix('www.pref.kyoto.jp', 'pref.kyoto.jp');  // Exception rule.
-  checkPublicSuffix('city.kyoto.jp', 'city.kyoto.jp');  // Exception rule.
-  checkPublicSuffix('www.city.kyoto.jp', 'city.kyoto.jp');  // Exception rule.
+  checkPublicSuffix('test.kyoto.jp', 'test.kyoto.jp');
+  checkPublicSuffix('ide.kyoto.jp', null);
+  checkPublicSuffix('b.ide.kyoto.jp', 'b.ide.kyoto.jp');
+  checkPublicSuffix('a.b.ide.kyoto.jp', 'b.ide.kyoto.jp');
+  checkPublicSuffix('c.kobe.jp', null);
+  checkPublicSuffix('b.c.kobe.jp', 'b.c.kobe.jp');
+  checkPublicSuffix('a.b.c.kobe.jp', 'b.c.kobe.jp');
+  checkPublicSuffix('city.kobe.jp', 'city.kobe.jp');
+  checkPublicSuffix('www.city.kobe.jp', 'city.kobe.jp');
   // TLD with a wildcard rule and exceptions.
-  checkPublicSuffix('om', null);
-  checkPublicSuffix('test.om', null);
-  checkPublicSuffix('b.test.om', 'b.test.om');
-  checkPublicSuffix('a.b.test.om', 'b.test.om');
-  checkPublicSuffix('songfest.om', 'songfest.om');
-  checkPublicSuffix('www.songfest.om', 'songfest.om');
+  checkPublicSuffix('ck', null);
+  checkPublicSuffix('test.ck', null);
+  checkPublicSuffix('b.test.ck', 'b.test.ck');
+  checkPublicSuffix('a.b.test.ck', 'b.test.ck');
+  checkPublicSuffix('www.ck', 'www.ck');
+  checkPublicSuffix('www.www.ck', 'www.ck');
   // US K12.
   checkPublicSuffix('us', null);
   checkPublicSuffix('test.us', 'test.us');
@@ -254,6 +270,24 @@ function pubSufTest() {
   checkPublicSuffix('k12.ak.us', null);
   checkPublicSuffix('test.k12.ak.us', 'test.k12.ak.us');
   checkPublicSuffix('www.test.k12.ak.us', 'test.k12.ak.us');
-
-
+  // IDN labels.
+  checkPublicSuffix('食狮.com.cn', '食狮.com.cn');
+  checkPublicSuffix('食狮.公司.cn', '食狮.公司.cn');
+  checkPublicSuffix('www.食狮.公司.cn', '食狮.公司.cn');
+  checkPublicSuffix('shishi.公司.cn', 'shishi.公司.cn');
+  checkPublicSuffix('公司.cn', null);
+  checkPublicSuffix('食狮.中国', '食狮.中国');
+  checkPublicSuffix('www.食狮.中国', '食狮.中国');
+  checkPublicSuffix('shishi.中国', 'shishi.中国');
+  checkPublicSuffix('中国', null);
+  // Same as above, but punycoded.
+  checkPublicSuffix('xn--85x722f.com.cn', 'xn--85x722f.com.cn');
+  checkPublicSuffix('xn--85x722f.xn--55qx5d.cn', 'xn--85x722f.xn--55qx5d.cn');
+  checkPublicSuffix('www.xn--85x722f.xn--55qx5d.cn', 'xn--85x722f.xn--55qx5d.cn');
+  checkPublicSuffix('shishi.xn--55qx5d.cn', 'shishi.xn--55qx5d.cn');
+  checkPublicSuffix('xn--55qx5d.cn', null);
+  checkPublicSuffix('xn--85x722f.xn--fiqs8s', 'xn--85x722f.xn--fiqs8s');
+  checkPublicSuffix('www.xn--85x722f.xn--fiqs8s', 'xn--85x722f.xn--fiqs8s');
+  checkPublicSuffix('shishi.xn--fiqs8s', 'shishi.xn--fiqs8s');
+  checkPublicSuffix('xn--fiqs8s', null);
 }
