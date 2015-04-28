@@ -27,10 +27,7 @@
     "test": "vows test/*_test.js"
   },
   "engines": {
-    "node": ">=0.4.12"
-  },
-  "dependencies": {
-    "punycode": ">=0.2.0"
+    "node": ">=0.10.0"
   },
   "devDependencies": {
     "vows": "0.7.0",
