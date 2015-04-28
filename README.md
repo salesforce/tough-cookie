@@ -39,6 +39,8 @@ tough
 
 Functions on the module you get from `require('tough-cookie')`.  All can be used as pure functions and don't need to be "bound".
 
+**Note**: prior to 1.0.x, several of these functions took a `strict` parameter. This has since been removed from the API as it was no longer necessary.
+
 parseDate(string)
 -----------------
 
