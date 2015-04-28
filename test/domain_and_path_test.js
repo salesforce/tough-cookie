@@ -148,10 +148,10 @@ vows
           assert.deepEqual(list, ['example.com', 'bar.example.com', 'foo.bar.example.com']);
         }
       },
-      "invalid domain": {
+      "local domain": {
         topic: tough.permuteDomain.bind(null, 'foo.bar.example.localduhmain'),
         "got three things": function (list) {
-          assert.equal(list, null);
+          assert.deepEqual(list,  ['example.localduhmain', 'bar.example.localduhmain', 'foo.bar.example.localduhmain']);
         }
       }
     },
