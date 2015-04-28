@@ -154,7 +154,7 @@ vows
           "c=d;;;;"
         ];
       },
-      "non-strict": function (t) {
+      "strips semi-colons": function (t) {
         var c1 = Cookie.parse(t[0]);
         var c2 = Cookie.parse(t[1]);
         assert.ok(c1);
