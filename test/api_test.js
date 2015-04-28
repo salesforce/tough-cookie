@@ -247,22 +247,6 @@ vows
           assert.instanceOf(cookie, Cookie);
         }
       },
-      "setCookieSync strict parse error": {
-        topic: function () {
-          var jar = new CookieJar();
-          var opts = {strict: true};
-          try {
-            jar.setCookieSync("farbe=weiß", 'http://example.com/index.html', opts);
-            return false;
-          } catch (e) {
-            return e;
-          }
-        },
-        "throws the error": function (err) {
-          assert.instanceOf(err, Error);
-          assert.equal(err.message, "Cookie failed to parse");
-        }
-      },
       "getCookiesSync": {
         topic: function () {
           var jar = new CookieJar();
