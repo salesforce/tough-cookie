@@ -39,10 +39,10 @@ tough
 
 Functions on the module you get from `require('tough-cookie')`.  All can be used as pure functions and don't need to be "bound".
 
-parseDate(string[,strict])
+parseDate(string)
 -----------------
 
-Parse a cookie date string into a `Date`.  Parses according to RFC6265 Section 5.1.1, not `Date.parse()`.  If strict is set to true then leading/trailing non-seperator characters around the time part will cause the parsing to fail (e.g. "Thu, 01 Jan 1970 00:00:010 GMT" has an extra trailing zero but Chrome, an assumedly RFC-compliant browser, treats this as valid).
+Parse a cookie date string into a `Date`.  Parses according to RFC6265 Section 5.1.1, not `Date.parse()`.
 
 formatDate(date)
 ----------------
@@ -75,10 +75,10 @@ Answers "does the request-path path-match a given cookie-path?" as per RFC6265 S
 
 This is essentially a prefix-match where `cookiePath` is a prefix of `reqPath`.
 
-parse(header[,strict=false])
+parse(header)
 ----------------------------
 
-alias for `Cookie.parse(header[,strict])`
+alias for `Cookie.parse(header)`
 
 fromJSON(string)
 ----------------
@@ -118,10 +118,10 @@ Generates a list of all possible paths that `pathMatch()` the parameter.  May be
 Cookie
 ======
 
-Cookie.parse(header[,strict=false])
+Cookie.parse(header)
 -----------------------------------
 
-Parses a single Cookie or Set-Cookie HTTP header into a `Cookie` object.  Returns `undefined` if the string can't be parsed.  If in strict mode, returns `undefined` if the cookie doesn't follow the guidelines in section 4 of RFC6265.  Generally speaking, strict mode can be used to validate your own generated Set-Cookie headers, but acting as a client you want to be lenient and leave strict mode off.
+Parses a single Cookie or Set-Cookie HTTP header into a `Cookie` object.  Returns `undefined` if the string can't be parsed.
 
 Here's how to process the Set-Cookie header(s) on a node HTTP/HTTPS response:
 
@@ -252,7 +252,6 @@ The `options` object can be omitted and can have the following properties:
   * _http_ - boolean - default `true` - indicates if this is an HTTP or non-HTTP API.  Affects HttpOnly cookies.
   * _secure_ - boolean - autodetect from url - indicates if this is a "Secure" API.  If the currentUrl starts with `https:` or `wss:` then this is defaulted to `true`, otherwise `false`.
   * _now_ - Date - default `new Date()` - what to use for the creation/access time of cookies
-  * _strict_ - boolean - default `false` - perform extra checks
   * _ignoreError_ - boolean - default `false` - silently ignore things like parse errors and invalid domains.  CookieStore errors aren't ignored by this option.
 
 As per the RFC, the `.hostOnly` property is set if there was no "Domain=" parameter in the cookie string (or `.domain` was null on the Cookie object).  The `.domain` property is set to the fully-qualified hostname of `currentUrl` in this case.  Matching this cookie requires an exact hostname match (not a `domainMatch` as per usual).
