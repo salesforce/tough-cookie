@@ -28,8 +28,6 @@ It's _so_ easy!
 
 `npm install tough-cookie`
 
-Requires `punycode`, which should get installed automatically for you.  Note that node.js v0.6.2+ bundles punycode by default.
-
 Why the name?  NPM modules `cookie`, `cookies` and `cookiejar` were already taken.
 
 # API
@@ -378,12 +376,6 @@ store.removeCookies(domain, path, cb(err))
 Removes matching cookies from the store.  The `path` paramter is optional, and if missing means all paths in a domain should be removed.
 
 Pass an error ONLY if removing any existing cookies failed.
-
-# TODO
-
-  * _full_ RFC5890/RFC5891 canonicalization for domains in `cdomain()`
-    * the optional `punycode` requirement implements RFC3492, but RFC6265 requires RFC5891
-  * better tests for `validate()`?
 
 # Copyright and License
 
