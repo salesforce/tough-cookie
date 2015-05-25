@@ -373,9 +373,16 @@ The implementation MUST NOT pass an error if the cookie doesn't exist; only pass
 store.removeCookies(domain, path, cb(err))
 ------------------------------------------
 
-Removes matching cookies from the store.  The `path` paramter is optional, and if missing means all paths in a domain should be removed.
+Removes matching cookies from the store.  The `path` parameter is optional, and if missing means all paths in a domain should be removed.
 
 Pass an error ONLY if removing any existing cookies failed.
+
+MemoryCookieStore
+=================
+
+Inherits from Store.
+
+Just-in-memory CookieJar synchronous store implementation, used by default.
 
 # Copyright and License
 
