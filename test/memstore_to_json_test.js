@@ -42,6 +42,14 @@ var VERSION = require('../package.json').version;
 var domains = ['example.com','www.example.com','example.net'];
 var paths = ['/','/foo','/foo/bar'];
 
+var isInteger = Number.isInteger || function(value) {
+  // Node 0.10 (still supported) doesn't have Number.isInteger
+  // from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger
+  return typeof value === "number" &&
+    isFinite(value) &&
+    Math.floor(value) === value;
+};
+
 function setUp(context) {
   context.now = new Date();
   context.nowISO = context.now.toISOString();
@@ -51,16 +59,20 @@ function setUp(context) {
   context.jar = new CookieJar();
 
   context.totalCookies = 0;
-  for (var i = 0; i<domains.length; i++) {
-    domain = domains[i];
-    for (var j = 0; j<paths.length; j++) {
-      var path = paths[j];
+
+  // Do paths first since the MemoryCookieStore index is domain at the top
+  // level. This should cause the preservation of creation order in
+  // getAllCookies to be exercised.
+  for (var i = 0; i<paths.length; i++) {
+    var path = paths[i];
+    for (var j = 0; j<domains.length; j++) {
+      domain = domains[j];
       c = new Cookie({
         expires: context.expires,
         domain: domain,
         path: path,
         key: 'key',
-        value: 'value'+i+j
+        value: 'value'+j+i
       });
       context.jar.setCookieSync(c, 'http://'+domain+'/', {now: context.now});
       context.totalCookies++;
@@ -77,8 +89,6 @@ function setUp(context) {
     { expires: context.expires, key: 'honly', value: 'honly',
       hostOnly: true, domain: 'www.example.org' },
   ];
-  c = new Cookie({
-  });
 
   for (var i = 0; i<cornerCases.length; i++) {
     cornerCases[i].domain = cornerCases[i].domain || 'example.org';
@@ -89,8 +99,81 @@ function setUp(context) {
   }
 }
 
+function checkMetadata(serialized) {
+  assert.notEqual(serialized, null);
+  assert.isObject(serialized);
+  assert.equal(serialized.version, 'tough-cookie@'+VERSION);
+  assert.equal(serialized.storeType, 'MemoryCookieStore');
+  assert.typeOf(serialized.rejectPublicSuffixes, 'boolean');
+  assert.isArray(serialized.cookies);
+}
+
+var serializedCookiePropTypes = {
+  'key': 'string',
+  'value': 'string',
+  'expires': 'isoDate', // if "Infinity" it's supposed to be missing
+  'maxAge': 'intOrInf',
+  'domain': 'string',
+  'path': 'string',
+  'secure': 'boolean',
+  'httpOnly': 'boolean',
+  'extensions': 'array', // of strings, technically
+  'hostOnly': 'boolean',
+  'pathIsDefault': 'boolean',
+  'creation': 'isoDate',
+  'lastAccessed': 'isoDate'
+};
+
+function validateSerializedCookie(cookie) {
+  assert.isObject(cookie);
+  assert.isFalse(cookie instanceof Cookie);
+
+  Object.keys(cookie).forEach(function(prop) {
+    var type = serializedCookiePropTypes[prop];
+    switch(type) {
+    case 'string':
+    case 'boolean':
+    case 'array':
+    case 'number':
+      assert.typeOf(cookie[prop], type);
+      break;
+
+    case 'intOrInf':
+      if (cookie[prop] === 'Infinity' || cookie[prop] === '-Infinity') {
+        assert(true);
+      } else {
+        assert(isInteger(cookie[prop]),
+               "serialized property isn't integer: "+prop);
+      }
+      break;
+
+    case 'isoDate':
+      // rather than a regexp, assert it's parsable and equal
+      var parsed = Date.parse(cookie[prop]);
+      assert(parsed, 'could not parse serialized date property');
+      // assert.equals(cookie[prop], parsed.toISOString());
+      break;
+
+    default:
+      assert.fail("unexpected serialized property: "+prop);
+    }
+  });
+
+}
+
 vows
   .describe('CookieJar serialization')
+  .addBatch({
+    "Assumptions:": {
+      "serializableProperties all accounted for": function() {
+        var actualKeys = Cookie.serializableProperties.concat([]); // copy
+        actualKeys.sort();
+        var expectedKeys = Object.keys(serializedCookiePropTypes);
+        expectedKeys.sort();
+        assert.deepEqual(actualKeys, expectedKeys);
+      }
+    }
+  })
   .addBatch({
     "For Stores without getAllCookies": {
       topic: function() {
@@ -122,12 +205,69 @@ vows
     }
   })
   .addBatch({
-    "With a simple store": {
+    "With a small store": {
+      topic: function() {
+        var now = this.now = new Date();
+        this.jar = new CookieJar();
+        // domain cookie with custom extension
+        var cookie = Cookie.parse('sid=one; domain=example.com; path=/; fubar');
+        this.jar.setCookieSync(cookie, 'http://example.com/', {now: this.now});
+
+        cookie = Cookie.parse('sid=two; domain=example.net; path=/; fubar');
+        this.jar.setCookieSync(cookie, 'http://example.net/', {now: this.now});
+
+        return this.jar;
+      },
+
+      "serialize synchronously": {
+        topic: function(jar) {
+          return jar.serializeSync();
+        },
+        "it gives a serialization with the two cookies": function(data) {
+          checkMetadata(data);
+          assert.equal(data.cookies.length, 2);
+          data.cookies.forEach(function(cookie) {
+            validateSerializedCookie(cookie);
+          });
+        },
+        "then deserialize": {
+          topic: function(data) {
+            return CookieJar.deserializeSync(data);
+          },
+          "memstores are identical": function(newJar) {
+            assert.deepEqual(this.jar.store, newJar.store);
+          }
+        }
+      },
+
+      "serialize asynchronously": {
+        topic: function(jar) {
+          jar.serialize(this.callback);
+        },
+        "it gives a serialization with the two cookies": function(data) {
+          checkMetadata(data);
+          assert.equal(data.cookies.length, 2);
+          data.cookies.forEach(function(cookie) {
+            validateSerializedCookie(cookie);
+          });
+        },
+        "then deserialize": {
+          topic: function(data) {
+            CookieJar.deserialize(data, this.callback);
+          },
+          "memstores are identical": function(newJar) {
+            assert.deepEqual(this.jar.store, newJar.store);
+          }
+        }
+      }
+    }
+  })
+  .addBatch({
+    "With a moderately-sized store": {
       topic: function() {
         setUp(this);
         this.jar.serialize(this.callback);
       },
-
       "has expected metadata": function(err,jsonObj) {
         assert.isNull(err);
         assert.equal(jsonObj.version, 'tough-cookie@'+VERSION);
@@ -139,7 +279,7 @@ vows
         assert.equal(jsonObj.cookies.length, this.totalCookies);
 
         jsonObj.cookies.forEach(function(cookie) {
-          assert.isFalse(cookie instanceof Cookie);
+          validateSerializedCookie(cookie);
 
           if (cookie.key === 'key') {
             assert.match(cookie.value, /^value\d\d/);
@@ -148,7 +288,7 @@ vows
           if (cookie.key === 'infExp' || cookie.key === 'max') {
             assert.isUndefined(cookie.expires);
           } else {
-            assert.typeOf(cookie.expires, 'string');
+            assert.strictEqual(cookie.expires, this.expires.toISOString())
           }
 
           if (cookie.key === 'max') {
@@ -167,11 +307,10 @@ vows
             assert.isUndefined(cookie.httpOnly);
           }
 
-          // i.e., not Date objects
           assert.strictEqual(cookie.creation, this.nowISO);
           assert.strictEqual(cookie.lastAccessed, this.nowISO);
 
-        }.bind(this));
+        }, this);
       },
 
       "then taking it for a round-trip": {
@@ -179,15 +318,13 @@ vows
           CookieJar.deserialize(jsonObj, this.callback);
         },
         "memstore index is identical": function(err,newJar) {
-          assert.deepEqual(newJar.store.idx['example.org'],
-                           this.jar.store.idx['example.org']);
-          // assert.deepEqual(newJar.store.idx, this.jar.store.idx);
+          assert.deepEqual(newJar.store.idx, this.jar.store.idx);
         },
         "then spot-check retrieval": {
           topic: function(newJar) {
             newJar.getCookies('http://example.org/', this.callback);
           },
-          "gets expected infExp cookie": function(results) {
+          "gets expected cookies": function(results) {
             assert.isArray(results);
             assert.equal(results.length, 2);
 
@@ -200,7 +337,7 @@ vows
               } else if (cookie.key === 'max') {
                 assert.strictEqual(cookie.TTL(this.now), 3600*1000);
               } else {
-                assert.fail('Unexpected cookie key');
+                assert.fail('Unexpected cookie key: '+cookie.key);
               }
             }.bind(this));
           }
