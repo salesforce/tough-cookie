@@ -219,7 +219,7 @@ return the canonicalized `.domain` field.  This is lower-cased and punycode (RFC
 
 For convenience in using `JSON.serialize(cookie)`. Returns a plain-old `Object` that can be JSON-serialized.
 
-Any `Date` properties (i.e., `expires`, `created`, and `lastAccessed`) are exported in ISO format (`.toISOString()`).
+Any `Date` properties (i.e., `.expires`, `.creation`, and `.lastAccessed`) are exported in ISO format (`.toISOString()`).
 
 **NOTE**: Custom `Cookie` properties will be discarded. If you want a property to be serialized, add the property name to the `Cookie.serializableProperties` Array.
 
@@ -228,7 +228,7 @@ Cookie.fromJSON(strOrObj)
 
 Does the reverse of `cookie.toJSON()`. If passed a string, will `JSON.parse()` that first.
 
-Any `Date` properties (i.e., `expires`, `created`, and `lastAccessed`) are parsed via `Date.parse()`, not the tough-cookie `parseDate`, since it's JavaScript/JSON-y timestamps being handled at this layer.
+Any `Date` properties (i.e., `.expires`, `.creation`, and `.lastAccessed`) are parsed via `Date.parse()`, not the tough-cookie `parseDate`, since it's JavaScript/JSON-y timestamps being handled at this layer.
 
 Returns `null` upon JSON parsing error.
 
@@ -437,7 +437,7 @@ store.updateCookie(oldCookie, newCookie, cb(err))
 
 Update an existing cookie.  The implementation MUST update the `.value` for a cookie with the same `domain`, `.path` and `.key`.  The implementation SHOULD check that the old value in the store is equivalent to `oldCookie` - how the conflict is resolved is up to the store.
 
-The `.lastAccessed` property will always be different between the two objects (to the precision possible via JavaScript's clock).  Both `.created` and `.createdIndex` are guaranteed to be the same.  Stores MAY ignore or defer the `.lastAccessed` change at the cost of affecting how cookies are selected for automatic deletion (e.g., least-recently-used, which is up to the store to implement).
+The `.lastAccessed` property will always be different between the two objects (to the precision possible via JavaScript's clock).  Both `.creation` and `.creationIndex` are guaranteed to be the same.  Stores MAY ignore or defer the `.lastAccessed` change at the cost of affecting how cookies are selected for automatic deletion (e.g., least-recently-used, which is up to the store to implement).
 
 Stores may wish to optimize changing the `.value` of the cookie in the store versus storing a new cookie.  If the implementation doesn't define this method a stub that calls `putCookie(newCookie,cb)` will be added to the store object.
 
