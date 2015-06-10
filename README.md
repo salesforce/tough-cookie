@@ -8,7 +8,7 @@
 # Synopsis
 
 ``` javascript
-var tough = require('tough-cookie'); // note: not 'cookie', 'cookies' or 'node-cookie'
+var tough = require('tough-cookie');
 var Cookie = tough.Cookie;
 var cookie = Cookie.parse(header);
 cookie.value = 'somethingdifferent';
@@ -97,12 +97,18 @@ For further information, see http://publicsuffix.org/.  This module derives its 
 cookieCompare(a,b)
 ------------------
 
-For use with `.sort()`, sorts a list of cookies into the recommended order given in the RFC (Section 5.4 step 2).  Longest `.path`s go first, then sorted oldest to youngest.
+For use with `.sort()`, sorts a list of cookies into the recommended order given in the RFC (Section 5.4 step 2). The sort algorithm is, in order of precedence:
+
+* Longest `.path`
+* oldest `.creation` (which has a 1ms precision, same as `Date`)
+* lowest `.creationIndex` (to get beyond the 1ms precision)
 
 ``` javascript
 var cookies = [ /* unsorted array of Cookie objects */ ];
 cookies = cookies.sort(cookieCompare);
 ```
+
+**Note**: Since JavaScript's `Date` is limited to a 1ms precision, cookies within the same milisecond are entirely possible. This is especially true when using the `now` option to `.setCookie()`. The `.creationIndex` property is a per-process global counter, assigned during construction with `new Cookie()`. This preserves the spirit of the RFC sorting: older cookies go first. This works great for `MemoryCookieStore`, since `Set-Cookie` headers are parsed in order, but may not be so great for distributed systems. Sophisticated `Store`s may wish to set this to some other _logical clock_ such that if cookies A and B are created in the same millisecond, but cookie A is created before cookie B, then `A.creationIndex < B.creationIndex`. If you want to alter the global counter, which you probably _shouldn't_ do, it's stored in `Cookie.cookiesCreated`.
 
 permuteDomain(domain)
 ---------------------
@@ -132,11 +138,6 @@ else
   cookies = [Cookie.parse(res.headers['set-cookie'])];
 ```
 
-Cookie.fromJSON(string)
------------------------
-
-Convert a JSON string to a `Cookie` object.  Does a `JSON.parse()` and converts the `.created`, `.lastAccessed` and `.expires` properties into `Date` objects.
-
 Properties
 ==========
 
@@ -149,12 +150,14 @@ Properties
   * _secure_ - boolean - the `Secure` cookie flag
   * _httpOnly_ - boolean - the `HttpOnly` cookie flag
   * _extensions_ - `Array` - any unrecognized cookie attributes as strings (even if equal-signs inside)
+  * _creation_ - `Date` - when this cookie was constructed
+  * _creationIndex_ - number - set at construction, used to provide greater sort precision (please see `cookieCompare(a,b)` for a full explanation)
 
 After a cookie has been passed through `CookieJar.setCookie()` it will have the following additional attributes:
 
   * _hostOnly_ - boolean - is this a host-only cookie (i.e. no Domain field was set, but was instead implied)
   * _pathIsDefault_ - boolean - if true, there was no Path field on the cookie and `defaultPath()` was used to derive one.
-  * _created_ - `Date` - when this cookie was added to the jar
+  * _creation_ - `Date` - **modified** from construction to when the cookie was added to the jar
   * _lastAccessed_ - `Date` - last time the cookie got accessed. Will affect cookie cleaning once implemented.  Using `cookiejar.getCookies(...)` will update this attribute.
 
 Construction([{options}])
@@ -190,7 +193,7 @@ sets the maxAge in seconds.  Coerces `-Infinity` to `"-Infinity"` and `Infinity`
 
 expiryTime() Computes the absolute unix-epoch milliseconds that this cookie expires. expiryDate() works similarly, except it returns a `Date` object.  Note that in both cases the `now` parameter should be milliseconds.
 
-Max-Age takes precedence over Expires (as per the RFC). The `.created` attribute -- or, by default, the `now` paramter -- is used to offset the `.maxAge` attribute.
+Max-Age takes precedence over Expires (as per the RFC). The `.creation` attribute -- or, by default, the `now` paramter -- is used to offset the `.maxAge` attribute.
 
 If Expires (`.expires`) is set, that's returned.
 
@@ -211,6 +214,29 @@ The "number" `Infinity` is returned for cookies without an explicit expiry and `
 
 return the canonicalized `.domain` field.  This is lower-cased and punycode (RFC3490) encoded if the domain has any non-ASCII characters.
 
+.toJSON()
+---------
+
+For convenience in using `JSON.serialize(cookie)`. Returns a plain-old `Object` that can be JSON-serialized.
+
+Any `Date` properties (i.e., `.expires`, `.creation`, and `.lastAccessed`) are exported in ISO format (`.toISOString()`).
+
+**NOTE**: Custom `Cookie` properties will be discarded. In tough-cookie 1.x, since there was no `.toJSON` method explicitly defined, all enumerable properties were captured. If you want a property to be serialized, add the property name to the `Cookie.serializableProperties` Array.
+
+Cookie.fromJSON(strOrObj)
+-----------------
+
+Does the reverse of `cookie.toJSON()`. If passed a string, will `JSON.parse()` that first.
+
+Any `Date` properties (i.e., `.expires`, `.creation`, and `.lastAccessed`) are parsed via `Date.parse()`, not the tough-cookie `parseDate`, since it's JavaScript/JSON-y timestamps being handled at this layer.
+
+Returns `null` upon JSON parsing error.
+
+.clone()
+--------
+
+Does a deep clone of this cookie, exactly implemented as `Cookie.fromJSON(cookie.toJSON())`.
+
 .validate()
 -----------
 
@@ -229,7 +255,7 @@ if (cookie.validate() === true) {
 CookieJar
 =========
 
-Construction([store = new MemoryCookieStore()][, rejectPublicSuffixes])
+Construction([store],[rejectPublicSuffixes])
 ------------
 
 Simply use `new CookieJar()`.  If you'd like to use a custom store, pass that to the constructor otherwise a `MemoryCookieStore` will be created and used.
@@ -245,14 +271,14 @@ Since eventually this module would like to support database/remote/etc. CookieJa
 .setCookie(cookieOrString, currentUrl, [{options},] cb(err,cookie))
 -------------------------------------------------------------------
 
-Attempt to set the cookie in the cookie jar.  If the operation fails, an error will be given to the callback `cb`, otherwise the cookie is passed through.  The cookie will have updated `.created`, `.lastAccessed` and `.hostOnly` properties.
+Attempt to set the cookie in the cookie jar.  If the operation fails, an error will be given to the callback `cb`, otherwise the cookie is passed through.  The cookie will have updated `.creation`, `.lastAccessed` and `.hostOnly` properties.
 
 The `options` object can be omitted and can have the following properties:
 
   * _http_ - boolean - default `true` - indicates if this is an HTTP or non-HTTP API.  Affects HttpOnly cookies.
   * _secure_ - boolean - autodetect from url - indicates if this is a "Secure" API.  If the currentUrl starts with `https:` or `wss:` then this is defaulted to `true`, otherwise `false`.
   * _now_ - Date - default `new Date()` - what to use for the creation/access time of cookies
-  * _ignoreError_ - boolean - default `false` - silently ignore things like parse errors and invalid domains.  CookieStore errors aren't ignored by this option.
+  * _ignoreError_ - boolean - default `false` - silently ignore things like parse errors and invalid domains.  `Store` errors aren't ignored by this option.
 
 As per the RFC, the `.hostOnly` property is set if there was no "Domain=" parameter in the cookie string (or `.domain` was null on the Cookie object).  The `.domain` property is set to the fully-qualified hostname of `currentUrl` in this case.  Matching this cookie requires an exact hostname match (not a `domainMatch` as per usual).
 
@@ -279,7 +305,7 @@ The `options` object can be omitted and can have the following properties:
   * _secure_ - boolean - autodetect from url - indicates if this is a "Secure" API.  If the currentUrl starts with `https:` or `wss:` then this is defaulted to `true`, otherwise `false`.
   * _now_ - Date - default `new Date()` - what to use for the creation/access time of cookies
   * _expire_ - boolean - default `true` - perform expiry-time checking of cookies and asynchronously remove expired cookies from the store.  Using `false` will return expired cookies and **not** remove them from the store (which is useful for replaying Set-Cookie headers, potentially).
-  * _allPaths_ - boolean - default `false` - if `true`, do not scope cookies by path. The default uses RFC-compliant path scoping. **Note**: may not be supported by the CookieStore `fetchCookies` function (the default MemoryCookieStore supports it).
+  * _allPaths_ - boolean - default `false` - if `true`, do not scope cookies by path. The default uses RFC-compliant path scoping. **Note**: may not be supported by the underlying store (the default `MemoryCookieStore` supports it).
 
 The `.lastAccessed` property of the returned cookies will have been updated.
 
@@ -308,16 +334,72 @@ Returns an array of strings suitable for **Set-Cookie** headers. Accepts the sam
 
 Synchronous version of `getSetCookieStrings`; only works with synchronous stores (e.g. the default `MemoryCookieStore`).
 
+.serialize(cb(err,serializedObject))
+--------------------------
+
+Serialize the Jar if the underlying store supports `.getAllCookies`.
+
+**NOTE**: Custom `Cookie` properties will be discarded. If you want a property to be serialized, add the property name to the `Cookie.serializableProperties` Array.
+
+See [Serialization Format].
+
+.serializeSync()
+----------------
+
+Sync version of .serialize
+
+.toJSON()
+---------
+
+Alias of .serializeSync() for the convenience of `JSON.stringify(cookiejar)`.
+
+CookieJar.deserialize(serialized, [store], cb(err,object))
+----------------------------------------------------------
+
+A new Jar is created and the serialized Cookies are added to the underlying store. Each `Cookie` is added via `store.putCookie` in the order in which they appear in the serialization.
+
+The `store` argument is optional, but should be an instance of `Store`. By default, a new instance of `MemoryCookieStore` is created.
+
+As a convenience, if `serialized` is a string, it is passed through `JSON.parse` first. If that throws an error, this is passed to the callback.
+
+CookieJar.deserializeSync(serialized, [store])
+----------------------------------------------
+
+Sync version of `.deserialize`.  _Note_ that the `store` must be synchronous for this to work.
+
+CookieJar.fromJSON(string)
+--------------------------
+
+Alias of `.deserializeSync` to provide consistency with `Cookie.fromJSON()`.
+
+.clone([store,]cb(err,newJar))
+------------------------------
+
+Produces a deep clone of this jar. Modifications to the original won't affect the clone, and vice versa.
+
+The `store` argument is optional, but should be an instance of `Store`. By default, a new instance of `MemoryCookieStore` is created. Transferring between store types is supported so long as the source implements `.getAllCookies()` and the destination implements `.putCookie()`.
+
+.cloneSync([store])
+-------------------
+
+Synchronous version of `.clone`, returning a new `CookieJar` instance.
+
+The `store` argument is optional, but must be a _synchronous_ `Store` instance if specified. If not passed, a new instance of `MemoryCookieStore` is used.
+
+The _source_ and _destination_ must both be synchronous `Store`s. If one or both stores are asynchronous, use `.clone` instead. Recall that `MemoryCookieStore` supports both synchronous and asynchronous API calls.
+
 Store
 =====
 
-Base class for CookieJar stores.
+Base class for CookieJar stores. Available as `tough.Store`.
 
 # CookieStore API
 
 The storage model for each `CookieJar` instance can be replaced with a custom implementation.  The default is `MemoryCookieStore` which can be found in the `lib/memstore.js` file.  The API uses continuation-passing-style to allow for asynchronous stores.
 
-Stores should inherit from the base `Store` class, which is available as `require('tough-cookie').Store`.  Stores are asynchronous by default, but if `store.synchronous` is set, then the `*Sync` methods on the CookieJar can be used.
+Stores should inherit from the base `Store` class, which is available as `require('tough-cookie').Store`.
+
+Stores are asynchronous by default, but if `store.synchronous` is set to `true`, then the `*Sync` methods on the of the containing `CookieJar` can be used (however, the continuation-passing style
 
 All `domain` parameters will have been normalized before calling.
 
@@ -355,7 +437,7 @@ store.updateCookie(oldCookie, newCookie, cb(err))
 
 Update an existing cookie.  The implementation MUST update the `.value` for a cookie with the same `domain`, `.path` and `.key`.  The implementation SHOULD check that the old value in the store is equivalent to `oldCookie` - how the conflict is resolved is up to the store.
 
-The `.lastAccessed` property will always be different between the two objects and `.created` will always be the same.  Stores MAY ignore or defer the `.lastAccessed` change at the cost of affecting how cookies are sorted (or selected for deletion).
+The `.lastAccessed` property will always be different between the two objects (to the precision possible via JavaScript's clock).  Both `.creation` and `.creationIndex` are guaranteed to be the same.  Stores MAY ignore or defer the `.lastAccessed` change at the cost of affecting how cookies are selected for automatic deletion (e.g., least-recently-used, which is up to the store to implement).
 
 Stores may wish to optimize changing the `.value` of the cookie in the store versus storing a new cookie.  If the implementation doesn't define this method a stub that calls `putCookie(newCookie,cb)` will be added to the store object.
 
@@ -377,12 +459,49 @@ Removes matching cookies from the store.  The `path` parameter is optional, and 
 
 Pass an error ONLY if removing any existing cookies failed.
 
+store.getAllCookies(cb(err, cookies))
+-------------------------------------
+
+Produces an `Array` of all cookies during `jar.serialize()`. The items in the array can be true `Cookie` objects or generic `Object`s with the [Serialization Format] data structure.
+
+Cookies SHOULD be returned in creation order to preserve sorting via `compareCookies()`. For reference, `MemoryCookieStore` will sort by `.creationIndex` since it uses true `Cookie` objects internally. If you don't return the cookies in creation order, they'll still be sorted by creation time, but this only has a precision of 1ms.  See `compareCookies` for more detail.
+
+Pass an error if retrieval fails.
+
 MemoryCookieStore
 =================
 
-Inherits from Store.
+Inherits from `Store`.
 
-Just-in-memory CookieJar synchronous store implementation, used by default.
+Just-in-memory CookieJar synchronous store implementation, used by default. Usable with both the synchronous
+
+# Serialization Format
+
+**NOTE**: if you want to have custom `Cookie` properties serialized, add the property name to `Cookie.serializableProperties`.
+
+```js
+  {
+    // The version of tough-cookie that serialized this jar.
+    version: 'tough-cookie@1.x.y',
+
+    // add the store type, to make humans happy:
+    storeType: 'MemoryCookieStore',
+
+    // CookieJar configuration:
+    rejectPublicSuffixes: true,
+    // ... future items go here
+
+    // Gets filled from jar.store.getAllCookies():
+    cookies: [
+      {
+        key: 'string',
+        value: 'string',
+        // ...
+        /* other Cookie.serializableProperties go here */
+      }
+    ]
+  }
+```
 
 # Copyright and License
 
