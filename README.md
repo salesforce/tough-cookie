@@ -32,61 +32,51 @@ Why the name?  NPM modules `cookie`, `cookies` and `cookiejar` were already take
 
 # API
 
-tough
-=====
+## tough
 
 Functions on the module you get from `require('tough-cookie')`.  All can be used as pure functions and don't need to be "bound".
 
 **Note**: prior to 1.0.x, several of these functions took a `strict` parameter. This has since been removed from the API as it was no longer necessary.
 
-parseDate(string)
------------------
+### `parseDate(string)`
 
 Parse a cookie date string into a `Date`.  Parses according to RFC6265 Section 5.1.1, not `Date.parse()`.
 
-formatDate(date)
-----------------
+### `formatDate(date)`
 
 Format a Date into a RFC1123 string (the RFC6265-recommended format).
 
-canonicalDomain(str)
---------------------
+### `canonicalDomain(str)`
 
 Transforms a domain-name into a canonical domain-name.  The canonical domain-name is a trimmed, lowercased, stripped-of-leading-dot and optionally punycode-encoded domain-name (Section 5.1.2 of RFC6265).  For the most part, this function is idempotent (can be run again on its output without ill effects).
 
-domainMatch(str,domStr[,canonicalize=true])
--------------------------------------------
+### `domainMatch(str,domStr[,canonicalize=true])`
 
 Answers "does this real domain match the domain in a cookie?".  The `str` is the "current" domain-name and the `domStr` is the "cookie" domain-name.  Matches according to RFC6265 Section 5.1.3, but it helps to think of it as a "suffix match".
 
 The `canonicalize` parameter will run the other two paramters through `canonicalDomain` or not.
 
-defaultPath(path)
------------------
+### `defaultPath(path)`
 
 Given a current request/response path, gives the Path apropriate for storing in a cookie.  This is basically the "directory" of a "file" in the path, but is specified by Section 5.1.4 of the RFC.
 
 The `path` parameter MUST be _only_ the pathname part of a URI (i.e. excludes the hostname, query, fragment, etc.).  This is the `.pathname` property of node's `uri.parse()` output.
 
-pathMatch(reqPath,cookiePath)
------------------------------
+### `pathMatch(reqPath,cookiePath)`
 
 Answers "does the request-path path-match a given cookie-path?" as per RFC6265 Section 5.1.4.  Returns a boolean.
 
 This is essentially a prefix-match where `cookiePath` is a prefix of `reqPath`.
 
-parse(header)
-----------------------------
+### `parse(header)`
 
 alias for `Cookie.parse(header)`
 
-fromJSON(string)
-----------------
+### `fromJSON(string)`
 
 alias for `Cookie.fromJSON(string)`
 
-getPublicSuffix(hostname)
--------------------------
+### `getPublicSuffix(hostname)`
 
 Returns the public suffix of this hostname.  The public suffix is the shortest domain-name upon which a cookie can be set.  Returns `null` if the hostname cannot have cookies set for it.
 
@@ -94,8 +84,7 @@ For example: `www.example.com` and `www.subdomain.example.com` both have public 
 
 For further information, see http://publicsuffix.org/.  This module derives its list from that site.
 
-cookieCompare(a,b)
-------------------
+### `cookieCompare(a,b)`
 
 For use with `.sort()`, sorts a list of cookies into the recommended order given in the RFC (Section 5.4 step 2). The sort algorithm is, in order of precedence:
 
@@ -110,22 +99,20 @@ cookies = cookies.sort(cookieCompare);
 
 **Note**: Since JavaScript's `Date` is limited to a 1ms precision, cookies within the same milisecond are entirely possible. This is especially true when using the `now` option to `.setCookie()`. The `.creationIndex` property is a per-process global counter, assigned during construction with `new Cookie()`. This preserves the spirit of the RFC sorting: older cookies go first. This works great for `MemoryCookieStore`, since `Set-Cookie` headers are parsed in order, but may not be so great for distributed systems. Sophisticated `Store`s may wish to set this to some other _logical clock_ such that if cookies A and B are created in the same millisecond, but cookie A is created before cookie B, then `A.creationIndex < B.creationIndex`. If you want to alter the global counter, which you probably _shouldn't_ do, it's stored in `Cookie.cookiesCreated`.
 
-permuteDomain(domain)
----------------------
+### `permuteDomain(domain)`
 
 Generates a list of all possible domains that `domainMatch()` the parameter.  May be handy for implementing cookie stores.
 
-
-permutePath(path)
------------------
+### `permutePath(path)`
 
 Generates a list of all possible paths that `pathMatch()` the parameter.  May be handy for implementing cookie stores.
 
-Cookie
-======
 
-Cookie.parse(header)
------------------------------------
+## Cookie
+
+Exported via `tough.Cookie`.
+
+### `Cookie.parse(header)`
 
 Parses a single Cookie or Set-Cookie HTTP header into a `Cookie` object.  Returns `undefined` if the string can't be parsed.
 
@@ -138,8 +125,9 @@ else
   cookies = [Cookie.parse(res.headers['set-cookie'])];
 ```
 
-Properties
-==========
+### Properties
+
+Cookie object properties:
 
   * _key_ - string - the name or key of the cookie (default "")
   * _value_ - string - the value of the cookie (default "")
@@ -160,36 +148,29 @@ After a cookie has been passed through `CookieJar.setCookie()` it will have the 
   * _creation_ - `Date` - **modified** from construction to when the cookie was added to the jar
   * _lastAccessed_ - `Date` - last time the cookie got accessed. Will affect cookie cleaning once implemented.  Using `cookiejar.getCookies(...)` will update this attribute.
 
-Construction([{options}])
-------------
+### `Cookie([{properties}])`
 
-Receives an options object that can contain any Cookie properties, uses the default for unspecified properties.
+Receives an options object that can contain any of the above Cookie properties, uses the default for unspecified properties.
 
-.toString()
------------
+### `.toString()`
 
 encode to a Set-Cookie header value.  The Expires cookie field is set using `formatDate()`, but is omitted entirely if `.expires` is `Infinity`.
 
-.cookieString()
----------------
+### `.cookieString()`
 
 encode to a Cookie header value (i.e. the `.key` and `.value` properties joined with '=').
 
-.setExpires(String)
--------------------
+### `.setExpires(String)`
 
 sets the expiry based on a date-string passed through `parseDate()`.  If parseDate returns `null` (i.e. can't parse this date string), `.expires` is set to `"Infinity"` (a string) is set.
 
-.setMaxAge(number)
--------------------
+### `.setMaxAge(number)`
 
 sets the maxAge in seconds.  Coerces `-Infinity` to `"-Infinity"` and `Infinity` to `"Infinity"` so it JSON serializes correctly.
 
-.expiryTime([now=Date.now()])
------------------------------
+### `.expiryTime([now=Date.now()])`
 
-.expiryDate([now=Date.now()])
------------------------------
+### `.expiryDate([now=Date.now()])`
 
 expiryTime() Computes the absolute unix-epoch milliseconds that this cookie expires. expiryDate() works similarly, except it returns a `Date` object.  Note that in both cases the `now` parameter should be milliseconds.
 
@@ -199,23 +180,19 @@ If Expires (`.expires`) is set, that's returned.
 
 Otherwise, `expiryTime()` returns `Infinity` and `expiryDate()` returns a `Date` object for "Tue, 19 Jan 2038 03:14:07 GMT" (latest date that can be expressed by a 32-bit `time_t`; the common limit for most user-agents).
 
-.TTL([now=Date.now()])
----------
+### `.TTL([now=Date.now()])`
 
 compute the TTL relative to `now` (milliseconds).  The same precedence rules as for `expiryTime`/`expiryDate` apply.
 
 The "number" `Infinity` is returned for cookies without an explicit expiry and `0` is returned if the cookie is expired.  Otherwise a time-to-live in milliseconds is returned.
 
-.canonicalizedDoman()
----------------------
+### `.canonicalizedDoman()`
 
-.cdomain()
-----------
+### `.cdomain()`
 
 return the canonicalized `.domain` field.  This is lower-cased and punycode (RFC3490) encoded if the domain has any non-ASCII characters.
 
-.toJSON()
----------
+### `.toJSON()`
 
 For convenience in using `JSON.serialize(cookie)`. Returns a plain-old `Object` that can be JSON-serialized.
 
@@ -223,8 +200,7 @@ Any `Date` properties (i.e., `.expires`, `.creation`, and `.lastAccessed`) are e
 
 **NOTE**: Custom `Cookie` properties will be discarded. In tough-cookie 1.x, since there was no `.toJSON` method explicitly defined, all enumerable properties were captured. If you want a property to be serialized, add the property name to the `Cookie.serializableProperties` Array.
 
-Cookie.fromJSON(strOrObj)
------------------
+### `Cookie.fromJSON(strOrObj)`
 
 Does the reverse of `cookie.toJSON()`. If passed a string, will `JSON.parse()` that first.
 
@@ -232,13 +208,11 @@ Any `Date` properties (i.e., `.expires`, `.creation`, and `.lastAccessed`) are p
 
 Returns `null` upon JSON parsing error.
 
-.clone()
---------
+### `.clone()`
 
 Does a deep clone of this cookie, exactly implemented as `Cookie.fromJSON(cookie.toJSON())`.
 
-.validate()
------------
+### `.validate()`
 
 Status: *IN PROGRESS*. Works for a few things, but is by no means comprehensive.
 
@@ -252,24 +226,24 @@ if (cookie.validate() === true) {
 }
 ```
 
-CookieJar
-=========
 
-Construction([store],[rejectPublicSuffixes])
-------------
+## CookieJar
+
+Exported via `tough.CookieJar`.
+
+### `CookieJar([store],[rejectPublicSuffixes])`
 
 Simply use `new CookieJar()`.  If you'd like to use a custom store, pass that to the constructor otherwise a `MemoryCookieStore` will be created and used.
 
+### Properties
 
-Attributes
-----------
+CookieJar object properties:
 
   * _rejectPublicSuffixes_ - boolean - reject cookies with domains like "com" and "co.uk" (default: `true`)
 
 Since eventually this module would like to support database/remote/etc. CookieJars, continuation passing style is used for CookieJar methods.
 
-.setCookie(cookieOrString, currentUrl, [{options},] cb(err,cookie))
--------------------------------------------------------------------
+### `.setCookie(cookieOrString, currentUrl, [{options},] cb(err,cookie))`
 
 Attempt to set the cookie in the cookie jar.  If the operation fails, an error will be given to the callback `cb`, otherwise the cookie is passed through.  The cookie will have updated `.creation`, `.lastAccessed` and `.hostOnly` properties.
 
@@ -282,18 +256,11 @@ The `options` object can be omitted and can have the following properties:
 
 As per the RFC, the `.hostOnly` property is set if there was no "Domain=" parameter in the cookie string (or `.domain` was null on the Cookie object).  The `.domain` property is set to the fully-qualified hostname of `currentUrl` in this case.  Matching this cookie requires an exact hostname match (not a `domainMatch` as per usual).
 
-.setCookieSync(cookieOrString, currentUrl, [{options}])
--------------------------------------------------------
+### `.setCookieSync(cookieOrString, currentUrl, [{options}])`
 
 Synchronous version of `setCookie`; only works with synchronous stores (e.g. the default `MemoryCookieStore`).
 
-.storeCookie(cookie, [{options},] cb(err,cookie))
--------------------------------------------------
-
-__REMOVED__ removed in lieu of the CookieStore API below
-
-.getCookies(currentUrl, [{options},] cb(err,cookies))
------------------------------------------------------
+### `.getCookies(currentUrl, [{options},] cb(err,cookies))`
 
 Retrieve the list of cookies that can be sent in a Cookie header for the current url.
 
@@ -309,33 +276,27 @@ The `options` object can be omitted and can have the following properties:
 
 The `.lastAccessed` property of the returned cookies will have been updated.
 
-.getCookiesSync(currentUrl, [{options}])
-----------------------------------------
+### `.getCookiesSync(currentUrl, [{options}])`
 
 Synchronous version of `getCookies`; only works with synchronous stores (e.g. the default `MemoryCookieStore`).
 
-.getCookieString(...)
----------------------
+### `.getCookieString(...)`
 
 Accepts the same options as `.getCookies()` but passes a string suitable for a Cookie header rather than an array to the callback.  Simply maps the `Cookie` array via `.cookieString()`.
 
-.getCookieStringSync(...)
--------------------------
+### `.getCookieStringSync(...)`
 
 Synchronous version of `getCookieString`; only works with synchronous stores (e.g. the default `MemoryCookieStore`).
 
-.getSetCookieStrings(...)
--------------------------
+### `.getSetCookieStrings(...)`
 
 Returns an array of strings suitable for **Set-Cookie** headers. Accepts the same options as `.getCookies()`.  Simply maps the cookie array via `.toString()`.
 
-.getSetCookieStringsSync(...)
------------------------------
+### `.getSetCookieStringsSync(...)`
 
 Synchronous version of `getSetCookieStrings`; only works with synchronous stores (e.g. the default `MemoryCookieStore`).
 
-.serialize(cb(err,serializedObject))
---------------------------
+### `.serialize(cb(err,serializedObject))`
 
 Serialize the Jar if the underlying store supports `.getAllCookies`.
 
@@ -343,18 +304,15 @@ Serialize the Jar if the underlying store supports `.getAllCookies`.
 
 See [Serialization Format].
 
-.serializeSync()
-----------------
+### `.serializeSync()`
 
 Sync version of .serialize
 
-.toJSON()
----------
+### `.toJSON()`
 
 Alias of .serializeSync() for the convenience of `JSON.stringify(cookiejar)`.
 
-CookieJar.deserialize(serialized, [store], cb(err,object))
-----------------------------------------------------------
+### `CookieJar.deserialize(serialized, [store], cb(err,object))`
 
 A new Jar is created and the serialized Cookies are added to the underlying store. Each `Cookie` is added via `store.putCookie` in the order in which they appear in the serialization.
 
@@ -362,25 +320,21 @@ The `store` argument is optional, but should be an instance of `Store`. By defau
 
 As a convenience, if `serialized` is a string, it is passed through `JSON.parse` first. If that throws an error, this is passed to the callback.
 
-CookieJar.deserializeSync(serialized, [store])
-----------------------------------------------
+### `CookieJar.deserializeSync(serialized, [store])`
 
 Sync version of `.deserialize`.  _Note_ that the `store` must be synchronous for this to work.
 
-CookieJar.fromJSON(string)
---------------------------
+### `CookieJar.fromJSON(string)`
 
 Alias of `.deserializeSync` to provide consistency with `Cookie.fromJSON()`.
 
-.clone([store,]cb(err,newJar))
-------------------------------
+### `.clone([store,]cb(err,newJar))`
 
 Produces a deep clone of this jar. Modifications to the original won't affect the clone, and vice versa.
 
 The `store` argument is optional, but should be an instance of `Store`. By default, a new instance of `MemoryCookieStore` is created. Transferring between store types is supported so long as the source implements `.getAllCookies()` and the destination implements `.putCookie()`.
 
-.cloneSync([store])
--------------------
+### `.cloneSync([store])`
 
 Synchronous version of `.clone`, returning a new `CookieJar` instance.
 
@@ -388,12 +342,11 @@ The `store` argument is optional, but must be a _synchronous_ `Store` instance i
 
 The _source_ and _destination_ must both be synchronous `Store`s. If one or both stores are asynchronous, use `.clone` instead. Recall that `MemoryCookieStore` supports both synchronous and asynchronous API calls.
 
-Store
-=====
+## Store
 
 Base class for CookieJar stores. Available as `tough.Store`.
 
-# CookieStore API
+## Store API
 
 The storage model for each `CookieJar` instance can be replaced with a custom implementation.  The default is `MemoryCookieStore` which can be found in the `lib/memstore.js` file.  The API uses continuation-passing-style to allow for asynchronous stores.
 
@@ -405,15 +358,13 @@ All `domain` parameters will have been normalized before calling.
 
 The Cookie store must have all of the following methods.
 
-store.findCookie(domain, path, key, cb(err,cookie))
----------------------------------------------------
+### `store.findCookie(domain, path, key, cb(err,cookie))`
 
 Retrieve a cookie with the given domain, path and key (a.k.a. name).  The RFC maintains that exactly one of these cookies should exist in a store.  If the store is using versioning, this means that the latest/newest such cookie should be returned.
 
 Callback takes an error and the resulting `Cookie` object.  If no cookie is found then `null` MUST be passed instead (i.e. not an error).
 
-store.findCookies(domain, path, cb(err,cookies))
-------------------------------------------------
+### `store.findCookies(domain, path, cb(err,cookies))`
 
 Locates cookies matching the given domain and path.  This is most often called in the context of `cookiejar.getCookies()` above.
 
@@ -423,8 +374,7 @@ The resulting list will be checked for applicability to the current request acco
 
 As of version 0.9.12, the `allPaths` option to `cookiejar.getCookies()` above will cause the path here to be `null`.  If the path is `null`, path-matching MUST NOT be performed (i.e. domain-matching only).
 
-store.putCookie(cookie, cb(err))
---------------------------------
+### `store.putCookie(cookie, cb(err))`
 
 Adds a new cookie to the store.  The implementation SHOULD replace any existing cookie with the same `.domain`, `.path`, and `.key` properties -- depending on the nature of the implementation, it's possible that between the call to `fetchCookie` and `putCookie` that a duplicate `putCookie` can occur.
 
@@ -432,8 +382,7 @@ The `cookie` object MUST NOT be modified; the caller will have already updated t
 
 Pass an error if the cookie cannot be stored.
 
-store.updateCookie(oldCookie, newCookie, cb(err))
--------------------------------------------------
+### `store.updateCookie(oldCookie, newCookie, cb(err))`
 
 Update an existing cookie.  The implementation MUST update the `.value` for a cookie with the same `domain`, `.path` and `.key`.  The implementation SHOULD check that the old value in the store is equivalent to `oldCookie` - how the conflict is resolved is up to the store.
 
@@ -445,22 +394,19 @@ The `newCookie` and `oldCookie` objects MUST NOT be modified.
 
 Pass an error if the newCookie cannot be stored.
 
-store.removeCookie(domain, path, key, cb(err))
-----------------------------------------------
+### `store.removeCookie(domain, path, key, cb(err))`
 
 Remove a cookie from the store (see notes on `findCookie` about the uniqueness constraint).
 
 The implementation MUST NOT pass an error if the cookie doesn't exist; only pass an error due to the failure to remove an existing cookie.
 
-store.removeCookies(domain, path, cb(err))
-------------------------------------------
+### `store.removeCookies(domain, path, cb(err))`
 
 Removes matching cookies from the store.  The `path` parameter is optional, and if missing means all paths in a domain should be removed.
 
 Pass an error ONLY if removing any existing cookies failed.
 
-store.getAllCookies(cb(err, cookies))
--------------------------------------
+### `store.getAllCookies(cb(err, cookies))`
 
 Produces an `Array` of all cookies during `jar.serialize()`. The items in the array can be true `Cookie` objects or generic `Object`s with the [Serialization Format] data structure.
 
@@ -468,12 +414,11 @@ Cookies SHOULD be returned in creation order to preserve sorting via `compareCoo
 
 Pass an error if retrieval fails.
 
-MemoryCookieStore
-=================
+## MemoryCookieStore
 
 Inherits from `Store`.
 
-Just-in-memory CookieJar synchronous store implementation, used by default. Usable with both the synchronous
+A just-in-memory CookieJar synchronous store implementation, used by default. Despite being a synchronous implementation, it's usable with both the synchronous and asynchronous forms of the `CookieJar` API.
 
 # Serialization Format
 
