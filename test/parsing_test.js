@@ -289,6 +289,39 @@ vows
       "no path": function(c) { assert.equal(c.path, null) },
       "no domain": function(c) { assert.equal(c.domain, null) },
       "no extensions": function(c) { assert.ok(!c.extensions) }
+    },
+    "empty key": {
+      topic: function() {
+        return Cookie.parse('=abc', { loose: true }) || null;
+      },
+      "parsed": function(c) { assert.ok(c) },
+      "key": function(c) { assert.equal(c.key, '') },
+      "value": function(c) { assert.equal(c.value, 'abc') },
+      "no path": function(c) { assert.equal(c.path, null) },
+      "no domain": function(c) { assert.equal(c.domain, null) },
+      "no extensions": function(c) { assert.ok(!c.extensions) }
+    },
+    "non-existent key": {
+      topic: function() {
+        return Cookie.parse('abc', { loose: true }) || null;
+      },
+      "parsed": function(c) { assert.ok(c) },
+      "key": function(c) { assert.equal(c.key, '') },
+      "value": function(c) { assert.equal(c.value, 'abc') },
+      "no path": function(c) { assert.equal(c.path, null) },
+      "no domain": function(c) { assert.equal(c.domain, null) },
+      "no extensions": function(c) { assert.ok(!c.extensions) }
+    },
+    "weird format": {
+      topic: function() {
+        return Cookie.parse('=foo=bar', { loose: true }) || null;
+      },
+      "parsed": function(c) { assert.ok(c) },
+      "key": function(c) { assert.equal(c.key, 'foo') },
+      "value": function(c) { assert.equal(c.value, 'bar') },
+      "no path": function(c) { assert.equal(c.path, null) },
+      "no domain": function(c) { assert.equal(c.domain, null) },
+      "no extensions": function(c) { assert.ok(!c.extensions) }
     }
   })
   .export(module);
