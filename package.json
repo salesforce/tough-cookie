@@ -56,7 +56,7 @@
     "node": ">=0.10.0"
   },
   "devDependencies": {
-    "async": ">=0.1.12",
+    "async": "^1.4.2",
     "vows": "^0.8.1"
   }
 }
