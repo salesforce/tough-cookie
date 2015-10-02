@@ -369,4 +369,40 @@ vows
       }
     }
   })
+  .addBatch({
+    "loose option": {
+      "cookie jar with loose": {
+        topic: function () {
+          var jar = new CookieJar();
+          try {
+            var url = 'http://example.com/index.html';
+            jar.setCookieSync("=b", url, { loose: true });
+            return jar.getCookieStringSync(url);
+          } catch (e) {
+            return e;
+          }
+        },
+        "fails": function (err, val) {
+          assert.equal(err, null);
+          assert.equal(val, 'b');
+        }
+      },
+      "cookie jar without loose": {
+        topic: function () {
+          var jar = new CookieJar();
+          try {
+            var url = 'http://example.com/index.html';
+            jar.setCookieSync("=b", url);
+            return jar.getCookieStringSync(url);
+          } catch (e) {
+            return e;
+          }
+        },
+        "fails": function (err) {
+          assert.instanceOf(err, Error);
+          assert.equal(err.message, 'Cookie failed to parse');
+        }
+      }
+    }
+  })
   .export(module);
