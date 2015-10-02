@@ -68,9 +68,9 @@ Answers "does the request-path path-match a given cookie-path?" as per RFC6265 S
 
 This is essentially a prefix-match where `cookiePath` is a prefix of `reqPath`.
 
-### `parse(header)`
+### `parse(cookieString[, options])`
 
-alias for `Cookie.parse(header)`
+alias for `Cookie.parse(cookieString[, options])`
 
 ### `fromJSON(string)`
 
@@ -112,15 +112,21 @@ Generates a list of all possible paths that `pathMatch()` the parameter.  May be
 
 Exported via `tough.Cookie`.
 
-### `Cookie.parse(header)`
+### `Cookie.parse(cookieString[, options])`
 
 Parses a single Cookie or Set-Cookie HTTP header into a `Cookie` object.  Returns `undefined` if the string can't be parsed.
+
+The options parameter is not required and currently has only one property:
+
+  * _loose_ - boolean - if `true` enable parsing of key-less cookies like `=abc` and `=`, which are not RFC-compliant.
+
+If options is not an object, it is ignored, which means you can use `Array#map` with it.
 
 Here's how to process the Set-Cookie header(s) on a node HTTP/HTTPS response:
 
 ``` javascript
 if (res.headers['set-cookie'] instanceof Array)
-  cookies = res.headers['set-cookie'].map(function (c) { return (Cookie.parse(c)); });
+  cookies = res.headers['set-cookie'].map(Cookie.parse);
 else
   cookies = [Cookie.parse(res.headers['set-cookie'])];
 ```
