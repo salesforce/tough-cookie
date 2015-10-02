@@ -374,35 +374,52 @@ vows
       "cookie jar with loose": {
         topic: function () {
           var jar = new CookieJar();
-          try {
-            var url = 'http://example.com/index.html';
-            jar.setCookieSync("=b", url, { loose: true });
-            return jar.getCookieStringSync(url);
-          } catch (e) {
-            return e;
-          }
+          var url = 'http://example.com/index.html';
+          return jar.setCookieSync("=b", url, { loose: true });
         },
-        "fails": function (err, val) {
+        "succeeds": function(err, c) {
           assert.equal(err, null);
-          assert.equal(val, 'b');
+          assert(c);
+          assert.equal(c.value, 'b');
         }
       },
       "cookie jar without loose": {
         topic: function () {
           var jar = new CookieJar();
-          try {
-            var url = 'http://example.com/index.html';
-            jar.setCookieSync("=b", url);
-            return jar.getCookieStringSync(url);
-          } catch (e) {
-            return e;
-          }
+          var url = 'http://example.com/index.html';
+          return jar.setCookieSync("=b", url);
         },
-        "fails": function (err) {
+        "fails": function(err, c) {
           assert.instanceOf(err, Error);
           assert.equal(err.message, 'Cookie failed to parse');
         }
-      }
+      },
+      "map doesn't default to loose": {
+        topic: function () {
+          var some = [
+            '=a;domain=example.com', // index 0, falsey
+            '=b;domain=example.com', // index 1, truthy
+            'c=d;domain=example.com', // index 2, truthy
+          ];
+          return some.map(Cookie.parse);
+        },
+        "parses": function(err, val) {
+          assert.equal(err, null);
+          assert.isArray(val);
+          assert.lengthOf(val, 3);
+        },
+        "doesn't parse first cookie loose": function(val) {
+          assert.isUndefined(val[0]);
+        },
+        "doesn't parse second cookie loose": function(val) {
+          assert.isUndefined(val[1]);
+        },
+        "parses third cookie normally": function(val) {
+          assert.instanceOf(val[2], Cookie);
+          assert.equal(val[2].key, 'c');
+          assert.equal(val[2].value, 'd');
+        },
+      },
     }
   })
   .export(module);
