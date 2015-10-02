@@ -1,5 +1,35 @@
 {
-  "author": "Jeremy Stashewsky <jstashewsky@salesforce.com>",
+  "author": {
+    "name": "Jeremy Stashewsky",
+    "email": "jstashewsky@salesforce.com",
+    "website": "https://github.com/stash"
+  },
+  "contributors": [
+    {
+      "name": "Alexander Savin",
+      "website": "https://github.com/apsavin"
+    },
+    {
+      "name": "Ian Livingstone",
+      "website": "https://github.com/ianlivingstone"
+    },
+    {
+      "name": "Ivan Nikulin",
+      "website": "https://github.com/inikulin"
+    },
+    {
+      "name": "Lalit Kapoor",
+      "website": "https://github.com/lalitkapoor"
+    },
+    {
+      "name": "Sam Thompson",
+      "website": "https://github.com/sambthompson"
+    },
+    {
+      "name": "Sebastian Mayr",
+      "website": "https://github.com/Sebmaster"
+    }
+  ],
   "license": "BSD-3-Clause",
   "name": "tough-cookie",
   "description": "RFC6265 Cookies and Cookie Jar for node.js",
@@ -23,14 +53,18 @@
     "url": "https://github.com/SalesforceEng/tough-cookie/issues"
   },
   "main": "./lib/cookie",
+  "files": [
+    "lib"
+  ],
   "scripts": {
+    "suffixup": "curl -o public_suffix_list.dat https://publicsuffix.org/list/public_suffix_list.dat && ./generate-pubsuffix.js",
     "test": "vows test/*_test.js"
   },
   "engines": {
     "node": ">=0.10.0"
   },
   "devDependencies": {
-    "async": ">=0.1.12",
+    "async": "^1.4.2",
     "vows": "^0.8.1"
   }
 }
