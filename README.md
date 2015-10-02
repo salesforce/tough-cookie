@@ -456,7 +456,7 @@ A just-in-memory CookieJar synchronous store implementation, used by default. De
 
 # Copyright and License
 
-(tl;dr: BSD-3-Clause with some MPL/1.1)
+(tl;dr: BSD-3-Clause with some MPL/2.0)
 
 ```text
  Copyright (c) 2015, Salesforce.com, Inc.
@@ -489,4 +489,4 @@ A just-in-memory CookieJar synchronous store implementation, used by default. De
  POSSIBILITY OF SUCH DAMAGE.
 ```
 
-Portions may be licensed under different licenses (in particular public-suffix.txt is MPL/1.1); please read the LICENSE file for full details.
+Portions may be licensed under different licenses (in particular `public_suffix_list.dat` is MPL/2.0); please read that file and the LICENSE file for full details.
