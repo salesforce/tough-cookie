@@ -49,6 +49,9 @@
     "url": "https://github.com/SalesforceEng/tough-cookie/issues"
   },
   "main": "./lib/cookie",
+  "files": [
+    "lib"
+  ],
   "scripts": {
     "test": "vows test/*_test.js"
   },
