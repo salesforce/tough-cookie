@@ -465,4 +465,19 @@ vows
       }
     }
   })
+  .addBatch({
+    "Loose Mode": {
+      topic: function () {
+        var cj = new CookieJar(null, {looseMode: true});
+        cj.setCookieSync("FooBar", 'http://www.foonet.net', {});
+        return cj;
+      },
+      "parses loose cookies": function (cj) {
+        var cookies = cj.getCookiesSync('http://www.foonet.net');
+        assert.strictEqual(cookies.length, 1);
+        assert.strictEqual(cookies[0].key, '');
+        assert.strictEqual(cookies[0].value, 'FooBar');
+      }
+    }
+  })
   .export(module);
