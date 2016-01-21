@@ -235,7 +235,15 @@ vows
             return CookieJar.deserializeSync(data);
           },
           "memstores are identical": function(newJar) {
-            assert.deepEqual(this.jar.store, newJar.store);
+            assert.deepEqual(newJar.store, this.jar.store);
+          }
+        },
+        "then deserialize again": {
+          topic: function(data) {
+            return CookieJar.deserializeSync(data);
+          },
+          "memstores are still identical": function(newJar) {
+            assert.deepEqual(newJar.store, this.jar.store);
           }
         }
       },
