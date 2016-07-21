@@ -61,7 +61,7 @@
     "test": "vows test/*_test.js"
   },
   "engines": {
-    "node": ">=0.10.0"
+    "node": ">=4.0"
   },
   "devDependencies": {
     "async": "^1.4.2",
