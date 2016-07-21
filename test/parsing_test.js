@@ -322,6 +322,19 @@ vows
       "no path": function(c) { assert.equal(c.path, null) },
       "no domain": function(c) { assert.equal(c.domain, null) },
       "no extensions": function(c) { assert.ok(!c.extensions) }
+    },
+    "way too many semicolons followed by non-semicolon": {
+      topic: function() {
+        // takes abnormally long due to semi-catastrophic regexp backtracking
+        var str = 'foo=bar' + (';'.repeat(65535)) + ' domain=example.com';
+        return Cookie.parse(str) || null;
+      },
+      "parsed": function(c) { assert.ok(c) },
+      "key": function(c) { assert.equal(c.key, 'foo') },
+      "value": function(c) { assert.equal(c.value, 'bar') },
+      "no path": function(c) { assert.equal(c.path, null) },
+      "no domain": function(c) { assert.equal(c.domain, 'example.com') },
+      "no extensions": function(c) { assert.ok(!c.extensions) }
     }
   })
   .export(module);
