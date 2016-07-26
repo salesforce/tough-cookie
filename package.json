@@ -61,10 +61,11 @@
     "test": "vows test/*_test.js"
   },
   "engines": {
-    "node": ">=4.0"
+    "node": ">=0.8"
   },
   "devDependencies": {
     "async": "^1.4.2",
+    "string.prototype.repeat": "^0.2.0",
     "vows": "^0.8.1"
   }
 }
