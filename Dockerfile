@@ -7,8 +7,10 @@ mkdir /home/cookie && \
 groupadd -r cookie && useradd -r -g cookie cookie && \
 usermod -a -G sudo cookie && \
 chown -R cookie:cookie /home/cookie && \
-echo "syntax on" >> /home/cookie/.vimrc && \
+chmod -R a+w /usr/local/lib/node_modules && \
+chmod -R a+w /usr/local/bin
 WORKDIR /home/cookie
 USER cookie
+RUN npm link istanbul
 ENV term=xterm-256color
 

@@ -3,6 +3,8 @@ node_modules/
 .*.sw[nmop]
 npm-debug.log
 .npm
+.bashrc
+.profile
 .viminfo
 .vimrc
 .bash_history
