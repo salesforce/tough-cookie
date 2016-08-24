@@ -58,13 +58,15 @@
   ],
   "scripts": {
     "suffixup": "curl -o public_suffix_list.dat https://publicsuffix.org/list/public_suffix_list.dat && ./generate-pubsuffix.js",
-    "test": "vows test/*_test.js"
+    "test": "vows test/*_test.js",
+    "coverage": "node node_modules/istanbul/lib/cli.js cover vows test/*_test.js"
   },
   "engines": {
     "node": ">=0.8"
   },
   "devDependencies": {
     "async": "^1.4.2",
+    "istanbul": "^0.4.4",
     "string.prototype.repeat": "^0.2.0",
     "vows": "^0.8.1"
   }

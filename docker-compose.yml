@@ -1,0 +1,14 @@
+#
+# Docker Composition for installing, building and developing
+# tough-cookie in the latest Node environment. Please see 
+# our Dockerfile for more details.
+#
+version: '2'
+services:
+  toughcookie:
+    build: .
+    volumes:
+      - .:/home/cookie
+    tty: true
+    stdin_open: true
+    command: "/bin/bash"
