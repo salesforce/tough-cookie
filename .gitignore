@@ -12,3 +12,4 @@ tough-cookie.iml
 tough-cookie.ipr
 tough-cookie.iws
 coverage
+docker-compose.override.yml
