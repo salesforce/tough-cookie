@@ -11,6 +11,6 @@ chmod -R a+w /usr/local/lib/node_modules && \
 chmod -R a+w /usr/local/bin
 WORKDIR /home/cookie
 USER cookie
-RUN npm link istanbul
+RUN npm install -g istanbul
 ENV term=xterm-256color
 
