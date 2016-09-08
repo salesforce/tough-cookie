@@ -2,3 +2,14 @@
 node_modules/
 .*.sw[nmop]
 npm-debug.log
+.npm
+.bashrc
+.profile
+.viminfo
+.vimrc
+.bash_history
+tough-cookie.iml
+tough-cookie.ipr
+tough-cookie.iws
+coverage
+docker-compose.override.yml

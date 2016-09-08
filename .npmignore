@@ -1,0 +1,9 @@
+docker-compose.yml
+Dockerfile
+docker-compose.override.yml
+.bashrc
+.profile
+.viminfo
+.vimrc
+.bash_history
+coverage
