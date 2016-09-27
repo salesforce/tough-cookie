@@ -2,3 +2,4 @@
 node_modules/
 .*.sw[nmop]
 npm-debug.log
+docker-compose.override.yml
