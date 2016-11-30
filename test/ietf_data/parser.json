@@ -1005,7 +1005,9 @@
       "foo=bar; domain=home.example.org:8888"
     ],
     "sent-to": "http://home.example.org:8888/cookie-parser-result?domain0027",
-    "sent": []
+    "sent": [
+      { "name": "foo", "value": "bar" }
+    ]
   },
   {
     "test": "DOMAIN0028",

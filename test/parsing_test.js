@@ -131,6 +131,11 @@ vows
       assert.ok(c);
       assert.equal(c.domain, 'example.com');
     },
+    "port in domain": function() {
+      var c = Cookie.parse("a=b; domain=example.com:80");
+      assert.ok(c);
+      assert.equal(c.domain, 'example.com');
+    },
     "trailing dot in domain": {
       topic: function() {
         return Cookie.parse("a=b; Domain=example.com.", true) || null;
