@@ -36,6 +36,9 @@ var assert = require('assert');
 var tough = require('../lib/cookie');
 var Cookie = tough.Cookie;
 
+var LOTS_OF_SEMICOLONS = ';'.repeat(65535);
+var LOTS_OF_SPACES = ' '.repeat(65535);
+
 vows
   .describe('Parsing')
   .addBatch({
@@ -327,7 +330,7 @@ vows
     "way too many semicolons followed by non-semicolon": {
       topic: function() {
         // takes abnormally long due to semi-catastrophic regexp backtracking
-        var str = 'foo=bar' + (';'.repeat(65535)) + ' domain=example.com';
+        var str = 'foo=bar' + LOTS_OF_SEMICOLONS + ' domain=example.com';
         return Cookie.parse(str) || null;
       },
       "parsed": function(c) { assert.ok(c) },
@@ -336,6 +339,114 @@ vows
       "no path": function(c) { assert.equal(c.path, null) },
       "no domain": function(c) { assert.equal(c.domain, 'example.com') },
       "no extensions": function(c) { assert.ok(!c.extensions) }
+    },
+    "way too many spaces": {
+      topic: function() {
+        // takes abnormally long due to semi-catastrophic regexp backtracking
+        var str1 = "x" + LOTS_OF_SPACES + "x";
+        var str2 = "x x";
+        var t0 = Date.now();
+        var cookie1 = Cookie.parse(str1) || null;
+        var t1 = Date.now();
+        var cookie2 = Cookie.parse(str2) || null;
+        var t2 = Date.now();
+        return { cookie1: cookie1, cookie2: cookie2, dt1: t1-t0, dt2: t2-t1 };
+      },
+      "large one doesn't parse": function(c) { assert.equal(c.cookie1, null) },
+      "small one doesn't parse": function(c) { assert.equal(c.cookie2, null) },
+      "takes about the same time for each": function(c) {
+        var long1 = c.dt1 + 1; // avoid 0ms
+        var short2 = c.dt2 + 1; // avoid 0ms
+        var ratio = Math.abs(long1 / short2);
+        assert.lesser(ratio, 250); // if broken, goes 2000-4000x
+      }
+    },
+    "way too many spaces with value": {
+      topic: function() {
+        // takes abnormally long due to semi-catastrophic regexp backtracking
+        var str1 = "x" + LOTS_OF_SPACES + "=x";
+        var str2 = "x =x";
+        var t0 = Date.now();
+        var cookie1 = Cookie.parse(str1) || null;
+        var t1 = Date.now();
+        var cookie2 = Cookie.parse(str2) || null;
+        var t2 = Date.now();
+        return { cookie1: cookie1, cookie2: cookie2, dt1: t1-t0, dt2: t2-t1 };
+      },
+      "large one parses": function(c) {
+        assert.ok(c.cookie1);
+        assert.equal(c.cookie1.key, "x");
+        assert.equal(c.cookie1.value, "x");
+      },
+      "small one parses": function(c) {
+        assert.ok(c.cookie2)
+        assert.equal(c.cookie2.key, "x");
+        assert.equal(c.cookie2.value, "x");
+      },
+      "takes about the same time for each": function(c) {
+        var long1 = c.dt1 + 1; // avoid 0ms
+        var short2 = c.dt2 + 1; // avoid 0ms
+        var ratio = Math.abs(long1 / short2);
+        assert.lesser(ratio, 250); // if broken, goes 2000-4000x
+      }
+    },
+    "way too many spaces in loose mode": {
+      topic: function() {
+        // takes abnormally long due to semi-catastrophic regexp backtracking
+        var str1 = "x" + LOTS_OF_SPACES + "x";
+        var str2 = "x x";
+        var t0 = Date.now();
+        var cookie1 = Cookie.parse(str1, {loose:true}) || null;
+        var t1 = Date.now();
+        var cookie2 = Cookie.parse(str2, {loose:true}) || null;
+        var t2 = Date.now();
+        return { cookie1: cookie1, cookie2: cookie2, dt1: t1-t0, dt2: t2-t1 };
+      },
+      "large one parses": function(c) {
+        assert.ok(c.cookie1);
+        assert.equal(c.cookie1.key, "");
+        assert.equal(c.cookie1.value, "x" + LOTS_OF_SPACES + "x");
+      },
+      "small one parses": function(c) {
+        assert.ok(c.cookie2)
+        assert.equal(c.cookie2.key, "");
+        assert.equal(c.cookie2.value, "x x");
+      },
+      "takes about the same time for each": function(c) {
+        var long1 = c.dt1 + 1; // avoid 0ms
+        var short2 = c.dt2 + 1; // avoid 0ms
+        var ratio = Math.abs(long1 / short2);
+        assert.lesser(ratio, 250); // if broken, goes 2000-4000x
+      }
+    },
+    "way too many spaces with value in loose mode": {
+      topic: function() {
+        // takes abnormally long due to semi-catastrophic regexp backtracking
+        var str1 = "x" + LOTS_OF_SPACES + "=x";
+        var str2 = "x =x";
+        var t0 = Date.now();
+        var cookie1 = Cookie.parse(str1, {loose:true}) || null;
+        var t1 = Date.now();
+        var cookie2 = Cookie.parse(str2, {loose:true}) || null;
+        var t2 = Date.now();
+        return { cookie1: cookie1, cookie2: cookie2, dt1: t1-t0, dt2: t2-t1 };
+      },
+      "large one parses": function(c) {
+        assert.ok(c.cookie1);
+        assert.equal(c.cookie1.key, "x");
+        assert.equal(c.cookie1.value, "x");
+      },
+      "small one parses": function(c) {
+        assert.ok(c.cookie2)
+        assert.equal(c.cookie2.key, "x");
+        assert.equal(c.cookie2.value, "x");
+      },
+      "takes about the same time for each": function(c) {
+        var long1 = c.dt1 + 1; // avoid 0ms
+        var short2 = c.dt2 + 1; // avoid 0ms
+        var ratio = Math.abs(long1 / short2);
+        assert.lesser(ratio, 250); // if broken, goes 2000-4000x
+      }
     }
   })
   .export(module);
