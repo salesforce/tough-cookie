@@ -33,6 +33,7 @@
 var vows = require('vows');
 var assert = require('assert');
 var tough = require('../lib/cookie');
+require('string.prototype.repeat'); // polyfill
 
 function dateVows(table) {
   var theVows = {};
@@ -52,7 +53,7 @@ function dateVows(table) {
   return {"date parsing": theVows};
 }
 
-var TOO_MANY_XS = 'x'.repeat(65535);
+var TOO_MANY_XS = String("x").repeat(65535);
 
 vows
   .describe('Date')
