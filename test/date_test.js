@@ -39,12 +39,20 @@ function dateVows(table) {
   Object.keys(table).forEach(function (date) {
     var expect = table[date];
     theVows[date] = function () {
-      var got = tough.parseDate(date) ? 'valid' : 'invalid';
-      assert.equal(got, expect ? 'valid' : 'invalid');
+      var got = tough.parseDate(date) ? true : false;
+      if (expect && !got) {
+        assert.ok(false, "expected valid date but was invalid");
+      } else if (!expect && got) {
+        assert.ok(false, "expected invalid date but was valid");
+      } else {
+        assert.ok(true);
+      }
     };
   });
   return {"date parsing": theVows};
 }
+
+var TOO_MANY_XS = 'x'.repeat(65535);
 
 vows
   .describe('Date')
@@ -55,6 +63,7 @@ vows
     "18 Oct 2011 07:42:42 GMT": true,
     "8 Oct 2011 7:42:42 GMT": true,
     "8 Oct 2011 7:2:42 GMT": true,
+    "8 Oct 2011 7:2:2 GMT": true,
     "Oct 18 2011 07:42:42 GMT": true,
     "Tue Oct 18 2011 07:05:03 GMT+0000 (GMT)": true,
     "09 Jun 2021 10:18:14 GMT": true,
@@ -64,15 +73,50 @@ vows
     '01 Jan 1601 00:00:00 GMT': true,
     '10 Feb 81 13:00:00 GMT': true, // implicit year
     'Thu, 17-Apr-2014 02:12:29 GMT': true, // dashes
-    'Thu, 17-Apr-2014 02:12:29 UTC': true  // dashes and UTC
+    'Thu, 17-Apr-2014 02:12:29 UTC': true,  // dashes and UTC
+
+    // garbage after parts:
+    "Wedxxx, 09 Jun 2021 10:18:14 GMT": true, // day of week doesn't matter
+    "Wed, 09e9 Jun 2021 10:18:14 GMT": true, // garbage after day ignored
+    "Wed, 09 Junxxx 2021 10:18:14 GMT": true, // prefix match on month
+    "Wed, 09 Jun 2021e9 10:18:14 GMT": true, // garbage after year OK
+    "Wed, 09 Jun 2021 10e9:18:14 GMT": false, // can't have garbage after HH
+    "Wed, 09 Jun 2021 10:18e9:14 GMT": false, // can't have garbage after MM
+    "Wed, 09 Jun 2021 10:18:14e9 GMT": true, // garbage after SS ignored
+
+    // extra digit in time parts:
+    "Thu, 01 Jan 1970 000:00:01 GMT": false,
+    "Thu, 01 Jan 1970 00:000:01 GMT": false,
+    "Thu, 01 Jan 1970 00:00:010 GMT": false,
+
+    "": false
   }))
   .addBatch({
-    "strict date parse of Thu, 01 Jan 1970 00:00:010 GMT": {
+    "reDos hr": {
       topic: function () {
-        return tough.parseDate('Thu, 01 Jan 1970 00:00:010 GMT', true) ? true : false;
+        var str = "Wed, 09 Jun 2021 10" + TOO_MANY_XS + ":18:14 GMT";
+        return tough.parseDate(str, true) ? true : false;
       },
       "invalid": function (date) {
         assert.equal(date, false);
+      }
+    },
+    "reDos min": {
+      topic: function () {
+        var str = "Wed, 09 Jun 2021 10:18" + TOO_MANY_XS + ":14 GMT";
+        return tough.parseDate(str, true) ? true : false;
+      },
+      "invalid": function (date) {
+        assert.equal(date, false);
+      }
+    },
+    "reDos sec": {
+      topic: function () {
+        var str = "Wed, 09 Jun 2021 10:18:14" + TOO_MANY_XS + " GMT";
+        return tough.parseDate(str, true) ? true : false;
+      },
+      "valid": function (date) {
+        assert.equal(date, true);
       }
     }
   })
