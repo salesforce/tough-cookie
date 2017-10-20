@@ -1,0 +1,28 @@
+{
+  "extends": "eslint:recommended",
+  "env": {
+    "node": true
+  },
+  "globals": {},
+  "rules": {
+    "no-debugger": 0,
+    "strict": [
+      2,
+      "global"
+    ],
+    "no-bitwise": 2,
+    "curly": 2,
+    "no-eval": 2,
+    "wrap-iife": [
+      2,
+      "any"
+    ],
+    "no-use-before-define": 0,
+    "no-caller": 2,
+    "no-undef": 2,
+    "no-unused-vars": 2,
+    "no-empty": 2,
+    "no-new": 2,
+    "no-extra-semi": 2
+  }
+}

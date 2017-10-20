@@ -65,6 +65,7 @@
   },
   "devDependencies": {
     "async": "^1.4.2",
+    "eslint": "^4.9.0",
     "string.prototype.repeat": "^0.2.0",
     "vows": "^0.8.1"
   },
