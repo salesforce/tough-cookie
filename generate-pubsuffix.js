@@ -31,7 +31,6 @@
  */
 'use strict';
 var fs = require('fs');
-var assert = require('assert');
 var punycode = require('punycode');
 
 fs.readFile('./public_suffix_list.dat', 'utf8', function(err,string) {
@@ -68,8 +67,9 @@ function processList(lines) {
   w.write(" *                  DO NOT EDIT!                    *\n");
   w.write(" ****************************************************/\n\n");
 
-  w.write('"use strict";\n\n');
+  w.write('"use strict";\n');
   w.write("var punycode = require('punycode');\n\n");
+  w.write('var index;\n');
 
   w.write("module.exports.getPublicSuffix = ");
   w.write(getPublicSuffix.toString());
@@ -77,7 +77,7 @@ function processList(lines) {
 
   w.write("// The following generated structure is used under the MPL version 2.0\n");
   w.write("// See public-suffix.txt for more information\n\n");
-  w.write("var index = module.exports.index = Object.freeze(\n");
+  w.write("index = module.exports.index = Object.freeze(\n");
   w.write(JSON.stringify(index));
   w.write(");\n\n");
   w.write("// END of automatically generated file\n");

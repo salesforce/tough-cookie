@@ -46,7 +46,6 @@ vows
   .addBatch({
     "Assumptions:": {
       ".creationIndex is set during construction": function() {
-        var now = new Date();
         var c1 = new Cookie();
         var c2 = new Cookie();
         assert.isNumber(c1.creationIndex);

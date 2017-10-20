@@ -13,16 +13,33 @@
     "no-bitwise": 2,
     "curly": 2,
     "no-eval": 2,
+    "no-implied-eval": 2,
     "wrap-iife": [
       2,
       "any"
     ],
-    "no-use-before-define": 0,
+    "no-use-before-define": [
+      2,
+      { "functions": false }
+    ],
     "no-caller": 2,
     "no-undef": 2,
     "no-unused-vars": 2,
     "no-empty": 2,
     "no-new": 2,
-    "no-extra-semi": 2
+    "no-extra-semi": 2,
+    "no-obj-calls": 2,
+    "no-implicit-globals": 2,
+    "no-shadow-restricted-names": 2,
+    "default-case": 2,
+    "no-alert": 2,
+    "no-multi-str": 2,
+    "no-self-compare": 2,
+    "callback-return": 2,
+    "handle-callback-err": 2,
+    "radix": [
+      2,
+      "always"
+    ]
   }
 }

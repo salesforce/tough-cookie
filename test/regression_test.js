@@ -34,7 +34,6 @@ var vows = require('vows');
 var assert = require('assert');
 var async = require('async');
 var tough = require('../lib/cookie');
-var Cookie = tough.Cookie;
 var CookieJar = tough.CookieJar;
 
 var atNow = Date.now();
@@ -87,6 +86,9 @@ vows
           cj.setCookie('b=2; Path=/;;;;', ex, at(-1), next);
         });
         async.parallel(tasks, function (err, cookies) {
+          if (err) {
+            return cb(err);
+          }
           cb(null, {
             cj: cj,
             cookies: cookies

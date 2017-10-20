@@ -371,6 +371,7 @@ vows
         });
       },
       "all got set": function (err, t) {
+        assert(!err);
         assert.lengthOf(t.cookies, 4);
       },
       "then getting 'em back": {
@@ -379,6 +380,7 @@ vows
           cj.getCookies('http://www.example.com/pathA', this.callback);
         },
         "there's just three": function (err, cookies) {
+          assert(!err);
           var vals = cookies.map(function (c) {
             return c.value
           });
@@ -415,11 +417,8 @@ vows
       "old cookie is HttpOnly": {
         topic: function () {
           var cb = this.callback;
-          var next = function (err, c) {
-            c = null;
-            return cb(err, cj);
-          };
           var cj = new CookieJar();
+          var next = function (err, c) { cb(err, cj) }; // eslint-disable-line no-unused-vars
           cj.setCookie('k=11; Domain=example.ca; Path=/; HttpOnly', 'http://example.ca', {http: true}, next);
         },
         "initial cookie is set": function (err, cj) {
@@ -429,10 +428,7 @@ vows
         "but when trying to overwrite": {
           topic: function (cj) {
             var cb = this.callback;
-            var next = function (err, c) {
-              c = null;
-              cb(null, err);
-            };
+            var next = function (err, c) { cb(null, err) }; // eslint-disable-line no-unused-vars
             cj.setCookie('k=12; Domain=example.ca; Path=/', 'http://example.ca', {http: false}, next);
           },
           "it's an error": function (err) {

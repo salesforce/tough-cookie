@@ -392,6 +392,7 @@ vows
         "fails": function(err, c) {
           assert.instanceOf(err, Error);
           assert.equal(err.message, 'Cookie failed to parse');
+          assert(!c);
         }
       },
       "map doesn't default to loose": {

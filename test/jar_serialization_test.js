@@ -90,7 +90,7 @@ function setUp(context) {
       hostOnly: true, domain: 'www.example.org' },
   ];
 
-  for (var i = 0; i<cornerCases.length; i++) {
+  for (i = 0; i<cornerCases.length; i++) {
     cornerCases[i].domain = cornerCases[i].domain || 'example.org';
     cornerCases[i].path = '/';
     c = new Cookie(cornerCases[i]);
@@ -207,7 +207,7 @@ vows
   .addBatch({
     "With a small store": {
       topic: function() {
-        var now = this.now = new Date();
+        this.now = new Date();
         this.jar = new CookieJar();
         // domain cookie with custom extension
         var cookie = Cookie.parse('sid=one; domain=example.com; path=/; fubar');
@@ -326,6 +326,7 @@ vows
           CookieJar.deserialize(jsonObj, this.callback);
         },
         "memstore index is identical": function(err,newJar) {
+          assert(!err);
           assert.deepEqual(newJar.store.idx, this.jar.store.idx);
         },
         "then spot-check retrieval": {
