@@ -3,3 +3,5 @@ node_modules/
 .*.sw[nmop]
 npm-debug.log
 docker-compose.override.yml
+.nyc_output
+coverage
