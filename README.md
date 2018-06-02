@@ -198,7 +198,7 @@ compute the TTL relative to `now` (milliseconds).  The same precedence rules as 
 
 The "number" `Infinity` is returned for cookies without an explicit expiry and `0` is returned if the cookie is expired.  Otherwise a time-to-live in milliseconds is returned.
 
-### `.canonicalizedDoman()`
+### `.canonicalizedDomain()`
 
 ### `.cdomain()`
 
