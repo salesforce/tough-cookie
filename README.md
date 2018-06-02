@@ -354,6 +354,14 @@ The `store` argument is optional, but must be a _synchronous_ `Store` instance i
 
 The _source_ and _destination_ must both be synchronous `Store`s. If one or both stores are asynchronous, use `.clone` instead. Recall that `MemoryCookieStore` supports both synchronous and asynchronous API calls.
 
+### `.removeAllCookies(cb(err))`
+
+Removes all cookies from the jar.
+
+### `.removeAllCookiesSync()`
+
+Sync version of `.removeAllCookies()`
+
 ## Store
 
 Base class for CookieJar stores. Available as `tough.Store`.
@@ -417,6 +425,10 @@ The implementation MUST NOT pass an error if the cookie doesn't exist; only pass
 Removes matching cookies from the store.  The `path` parameter is optional, and if missing means all paths in a domain should be removed.
 
 Pass an error ONLY if removing any existing cookies failed.
+
+### `.removeAllCookies(cb(err))`
+
+Removes all cookies from the store.
 
 ### `store.getAllCookies(cb(err, cookies))`
 
