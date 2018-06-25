@@ -57,7 +57,7 @@ Transforms a domain-name into a canonical domain-name.  The canonical domain-nam
 
 Answers "does this real domain match the domain in a cookie?".  The `str` is the "current" domain-name and the `domStr` is the "cookie" domain-name.  Matches according to RFC6265 Section 5.1.3, but it helps to think of it as a "suffix match".
 
-The `canonicalize` parameter will run the other two paramters through `canonicalDomain` or not.
+The `canonicalize` parameter will run the other two parameters through `canonicalDomain` or not.
 
 ### `defaultPath(path)`
 
@@ -186,7 +186,7 @@ sets the maxAge in seconds.  Coerces `-Infinity` to `"-Infinity"` and `Infinity`
 
 expiryTime() Computes the absolute unix-epoch milliseconds that this cookie expires. expiryDate() works similarly, except it returns a `Date` object.  Note that in both cases the `now` parameter should be milliseconds.
 
-Max-Age takes precedence over Expires (as per the RFC). The `.creation` attribute -- or, by default, the `now` paramter -- is used to offset the `.maxAge` attribute.
+Max-Age takes precedence over Expires (as per the RFC). The `.creation` attribute -- or, by default, the `now` parameter -- is used to offset the `.maxAge` attribute.
 
 If Expires (`.expires`) is set, that's returned.
 
