@@ -57,6 +57,7 @@
     "lib"
   ],
   "scripts": {
+    "version": "genversion lib/version.js && git add lib/version.js",
     "test": "vows test/*_test.js",
     "cover": "nyc --reporter=lcov --reporter=html vows test/*_test.js"
   },
@@ -65,6 +66,7 @@
   },
   "devDependencies": {
     "async": "^1.4.2",
+    "genversion": "^2.1.0",
     "nyc": "^11.6.0",
     "string.prototype.repeat": "^0.2.0",
     "vows": "^0.8.1"
