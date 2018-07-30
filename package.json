@@ -67,10 +67,10 @@
     "async": "^1.4.2",
     "nyc": "^11.6.0",
     "string.prototype.repeat": "^0.2.0",
-    "vows": "^0.8.1"
+    "vows": "^0.8.2"
   },
   "dependencies": {
-    "psl": "^1.1.24",
+    "psl": "^1.1.28",
     "punycode": "^1.4.1"
   }
 }
