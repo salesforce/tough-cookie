@@ -37,7 +37,6 @@ var Cookie = tough.Cookie;
 var CookieJar = tough.CookieJar;
 var Store = tough.Store;
 var MemoryCookieStore = tough.MemoryCookieStore;
-var VERSION = require('../package.json').version;
 
 var domains = ['example.com','www.example.com','example.net'];
 var paths = ['/','/foo','/foo/bar'];
@@ -102,7 +101,7 @@ function setUp(context) {
 function checkMetadata(serialized) {
   assert.notEqual(serialized, null);
   assert.isObject(serialized);
-  assert.equal(serialized.version, 'tough-cookie@'+VERSION);
+  assert.equal(serialized.version, 'tough-cookie@'+tough.version);
   assert.equal(serialized.storeType, 'MemoryCookieStore');
   assert.typeOf(serialized.rejectPublicSuffixes, 'boolean');
   assert.isArray(serialized.cookies);
@@ -332,7 +331,7 @@ vows
       },
       "has expected metadata": function(err,jsonObj) {
         assert.isNull(err);
-        assert.equal(jsonObj.version, 'tough-cookie@'+VERSION);
+        assert.equal(jsonObj.version, 'tough-cookie@'+tough.version);
         assert.isTrue(jsonObj.rejectPublicSuffixes);
         assert.equal(jsonObj.storeType, 'MemoryCookieStore');
       },
