@@ -43,7 +43,7 @@
     "RFC6265",
     "RFC2965"
   ],
-  "version": "2.3.4",
+  "version": "2.4.4-1",
   "homepage": "https://github.com/salesforce/tough-cookie",
   "repository": {
     "type": "git",
@@ -57,18 +57,22 @@
     "lib"
   ],
   "scripts": {
-    "suffixup": "curl -o public_suffix_list.dat https://publicsuffix.org/list/public_suffix_list.dat && ./generate-pubsuffix.js",
-    "test": "vows test/*_test.js"
+    "version": "genversion lib/version.js && git add lib/version.js",
+    "test": "vows test/*_test.js",
+    "cover": "nyc --reporter=lcov --reporter=html vows test/*_test.js"
   },
   "engines": {
     "node": ">=0.8"
   },
   "devDependencies": {
     "async": "^1.4.2",
+    "genversion": "^2.1.0",
+    "nyc": "^11.6.0",
     "string.prototype.repeat": "^0.2.0",
-    "vows": "^0.8.1"
+    "vows": "^0.8.2"
   },
   "dependencies": {
+    "psl": "^1.1.28",
     "punycode": "^1.4.1"
   }
 }

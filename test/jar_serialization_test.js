@@ -37,7 +37,6 @@ var Cookie = tough.Cookie;
 var CookieJar = tough.CookieJar;
 var Store = tough.Store;
 var MemoryCookieStore = tough.MemoryCookieStore;
-var VERSION = require('../package.json').version;
 
 var domains = ['example.com','www.example.com','example.net'];
 var paths = ['/','/foo','/foo/bar'];
@@ -102,7 +101,7 @@ function setUp(context) {
 function checkMetadata(serialized) {
   assert.notEqual(serialized, null);
   assert.isObject(serialized);
-  assert.equal(serialized.version, 'tough-cookie@'+VERSION);
+  assert.equal(serialized.version, 'tough-cookie@'+tough.version);
   assert.equal(serialized.storeType, 'MemoryCookieStore');
   assert.typeOf(serialized.rejectPublicSuffixes, 'boolean');
   assert.isArray(serialized.cookies);
@@ -185,7 +184,7 @@ vows
       "Cannot call toJSON": function(jar) {
         assert.throws(function() {
           jar.toJSON();
-        }, 'getAllCookies is not implemented (therefore jar cannot be serialized)');
+        }, /^Error: getAllCookies is not implemented \(therefore jar cannot be serialized\)$/);
       }
     }
   })
@@ -200,7 +199,7 @@ vows
       "Cannot call toJSON": function(jar) {
         assert.throws(function() {
           jar.toJSON();
-        }, 'CookieJar store is not synchronous; use async API instead.');
+        }, /^Error: CookieJar store is not synchronous; use async API instead\.$/);
       }
     }
   })
@@ -271,6 +270,60 @@ vows
     }
   })
   .addBatch({
+    "With a small store for cloning": {
+      topic: function() {
+        var now = this.now = new Date();
+        this.jar = new CookieJar();
+        // domain cookie with custom extension
+        var cookie = Cookie.parse('sid=three; domain=example.com; path=/; cloner');
+        this.jar.setCookieSync(cookie, 'http://example.com/', {now: this.now});
+
+        cookie = Cookie.parse('sid=four; domain=example.net; path=/; cloner');
+        this.jar.setCookieSync(cookie, 'http://example.net/', {now: this.now});
+
+        return this.jar;
+      },
+
+      "when cloned asynchronously": {
+        topic: function(jar) {
+          this.newStore = new MemoryCookieStore();
+          jar.clone(this.newStore, this.callback);
+        },
+
+        "memstore is same": function(newJar) {
+          assert.deepEqual(this.jar.store, newJar.store);
+          assert.equal(this.newStore, newJar.store); // same object
+        }
+      },
+
+      "when cloned synchronously": {
+        topic: function(jar) {
+          this.newStore = new MemoryCookieStore();
+          return jar.cloneSync(this.newStore);
+        },
+
+        "cloned memstore is same": function(newJar) {
+          assert.deepEqual(this.jar.store, newJar.store);
+          assert.equal(this.newStore, newJar.store); // same object
+        }
+      },
+
+      "when attempting to synchornously clone to an async store": {
+        topic: function(jar) {
+          var newStore = new MemoryCookieStore();
+          newStore.synchronous = false;
+          return newStore;
+        },
+        "throws an error": function(newStore) {
+          var jar = this.jar;
+          assert.throws(function() {
+            jar.cloneSync(newStore);
+          }, /^Error: CookieJar clone destination store is not synchronous; use async API instead\.$/);
+        }
+      }
+    }
+  })
+  .addBatch({
     "With a moderately-sized store": {
       topic: function() {
         setUp(this);
@@ -278,7 +331,7 @@ vows
       },
       "has expected metadata": function(err,jsonObj) {
         assert.isNull(err);
-        assert.equal(jsonObj.version, 'tough-cookie@'+VERSION);
+        assert.equal(jsonObj.version, 'tough-cookie@'+tough.version);
         assert.isTrue(jsonObj.rejectPublicSuffixes);
         assert.equal(jsonObj.storeType, 'MemoryCookieStore');
       },

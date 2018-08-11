@@ -52,6 +52,11 @@ vows
     }
   })
   .addBatch({
+    "Version": function () {
+      assert.equal(tough.version, require('../package.json').version);
+    }
+  })
+  .addBatch({
     "Constructor": {
       topic: function () {
         return new Cookie({
