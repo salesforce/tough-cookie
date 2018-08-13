@@ -314,15 +314,13 @@ vows
           jar.setCookieSync(cookie3, 'http://foo.com/index.html');
 
           jar.removeAllCookiesSync();
-          
-          return jar;
+
+          jar.store.getAllCookies(this.callback)
         },
-        "no cookies in the jar": function (jar) {
-          jar.store.getAllCookies(function(err, cookies) {
-            assert(err == null);
-            assert(cookies != null);
-            assert(cookies.length === 0, 'cookies were not removed')
-          });
+        "no cookies in the jar": function (err, cookies) {
+          assert(err == null);
+          assert(cookies != null);
+          assert(cookies.length === 0, 'cookies were not removed')
         }
       }
     }
