@@ -358,6 +358,8 @@ The _source_ and _destination_ must both be synchronous `Store`s. If one or both
 
 Removes all cookies from the jar.
 
+This is a new backwards-compatible feature of `tough-cookie` version 2.5, so not all Stores will implement it efficiently. For Stores that do not implement `removeAllCookies`, the fallback is to call `removeCookie` after `getAllCookies`. If `getAllCookies` fails or isn't implemented in the Store, that error is returned. If one or more of the `removeCookie` calls fail, only the first error is returned.
+
 ### `.removeAllCookiesSync()`
 
 Sync version of `.removeAllCookies()`
@@ -428,21 +430,27 @@ Pass an error ONLY if removing any existing cookies failed.
 
 ### `.removeAllCookies(cb(err))`
 
-Removes all cookies from the store.
+_Optional_. Removes all cookies from the store.
+
+Pass an error if one or more cookies can't be removed.
+
+**Note**: New method as of `tough-cookie` version 2.5, so not all Stores will implement this, plus some stores may choose not to implement this.
 
 ### `store.getAllCookies(cb(err, cookies))`
 
-Produces an `Array` of all cookies during `jar.serialize()`. The items in the array can be true `Cookie` objects or generic `Object`s with the [Serialization Format] data structure.
+_Optional_. Produces an `Array` of all cookies during `jar.serialize()`. The items in the array can be true `Cookie` objects or generic `Object`s with the [Serialization Format] data structure.
 
 Cookies SHOULD be returned in creation order to preserve sorting via `compareCookies()`. For reference, `MemoryCookieStore` will sort by `.creationIndex` since it uses true `Cookie` objects internally. If you don't return the cookies in creation order, they'll still be sorted by creation time, but this only has a precision of 1ms.  See `compareCookies` for more detail.
 
 Pass an error if retrieval fails.
 
+**Note**: not all Stores can implement this due to technical limitations, so it is optional.
+
 ## MemoryCookieStore
 
 Inherits from `Store`.
 
-A just-in-memory CookieJar synchronous store implementation, used by default. Despite being a synchronous implementation, it's usable with both the synchronous and asynchronous forms of the `CookieJar` API.
+A just-in-memory CookieJar synchronous store implementation, used by default. Despite being a synchronous implementation, it's usable with both the synchronous and asynchronous forms of the `CookieJar` API. Supports serialization, `getAllCookies`, and `removeAllCookies`.
 
 ## Community Cookie Stores
 
