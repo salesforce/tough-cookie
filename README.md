@@ -428,7 +428,7 @@ Removes matching cookies from the store.  The `path` parameter is optional, and 
 
 Pass an error ONLY if removing any existing cookies failed.
 
-### `.removeAllCookies(cb(err))`
+### `store.removeAllCookies(cb(err))`
 
 _Optional_. Removes all cookies from the store.
 
