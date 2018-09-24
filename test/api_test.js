@@ -252,6 +252,7 @@ vows
           assert.instanceOf(cookie, Cookie);
         }
       },
+
       "getCookiesSync": {
         topic: function () {
           var jar = new CookieJar();
@@ -299,6 +300,27 @@ vows
           headers.forEach(function (header) {
             assert.typeOf(header, 'string');
           });
+        }
+      },
+
+      "removeAllCookiesSync": {
+        topic: function () {
+          var jar = new CookieJar();
+          var cookie1 = Cookie.parse("a=b; Domain=example.com; Path=/");
+          var cookie2 = Cookie.parse("a=b; Domain=foo.com; Path=/");
+          var cookie3 = Cookie.parse("foo=bar; Domain=foo.com; Path=/");
+          jar.setCookieSync(cookie1, 'http://example.com/index.html');
+          jar.setCookieSync(cookie2, 'http://foo.com/index.html');
+          jar.setCookieSync(cookie3, 'http://foo.com/index.html');
+
+          jar.removeAllCookiesSync();
+
+          jar.store.getAllCookies(this.callback)
+        },
+        "no cookies in the jar": function (err, cookies) {
+          assert(err == null);
+          assert(cookies != null);
+          assert(cookies.length === 0, 'cookies were not removed')
         }
       }
     }
@@ -367,6 +389,22 @@ vows
           }
         },
         "fails": function (err) {
+          assert.instanceOf(err, Error);
+          assert.equal(err.message,
+            'CookieJar store is not synchronous; use async API instead.');
+        }
+      },
+      "removeAllCookies": {
+        topic: function(store) {
+          var jar = new CookieJar(store);
+          try {
+            jar.removeAllCookiesSync();
+            return false;
+          } catch (e) {
+            return e
+          }
+        },
+        "fails": function(err) {
           assert.instanceOf(err, Error);
           assert.equal(err.message,
             'CookieJar store is not synchronous; use async API instead.');
