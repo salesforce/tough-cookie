@@ -29,13 +29,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 'use strict';
+var util = require('util');
 var vows = require('vows');
 var assert = require('assert');
 var async = require('async');
 var tough = require('../lib/cookie');
 var Cookie = tough.Cookie;
 var CookieJar = tough.CookieJar;
-
+var Store = tough.Store;
+var MemoryCookieStore = tough.MemoryCookieStore;
 
 var atNow = Date.now();
 
@@ -236,6 +238,95 @@ vows
             assert(cookies[0].key === 'a', 'wrong cookie was removed');
           });
         });
+      }
+    }
+  })
+  .addBatch({
+    "Remove All cookies": {
+      "With a store that doesn't implement removeAllCookies": {
+        topic: function () {
+          var stats = { put: 0, getAll: 0, remove: 0 };
+          function StoreWithoutRemoveAll() {
+            Store.call(this);
+            this.cookies = [];
+          }
+          util.inherits(StoreWithoutRemoveAll, Store);
+          StoreWithoutRemoveAll.prototype.synchronous = true;
+          StoreWithoutRemoveAll.prototype.cookies = [];
+          StoreWithoutRemoveAll.prototype.findCookie = function(domain, path, key, cb) {
+            return cb(null,null);
+          };
+          StoreWithoutRemoveAll.prototype.findCookies = function(domain, path, key, cb) {
+            return cb(null,[]);
+          };
+          StoreWithoutRemoveAll.prototype.putCookie = function(cookie, cb) {
+            stats.put++;
+            this.cookies.push(cookie);
+            return cb(null);
+          };
+          StoreWithoutRemoveAll.prototype.getAllCookies = function(cb) {
+            stats.getAll++;
+            return cb(null, this.cookies.slice());
+          };
+          StoreWithoutRemoveAll.prototype.removeCookie = function(domain, path, key, cb) {
+            stats.remove++;
+            return cb(null, null);
+          };
+
+          assert(StoreWithoutRemoveAll.prototype.removeAllCookies === Store.prototype.removeAllCookies);
+
+          var jar = new CookieJar(new StoreWithoutRemoveAll());
+          jar.setCookieSync("a=b", 'http://example.com/index.html');
+          jar.setCookieSync("c=d", 'http://example.org/index.html');
+          var cb = this.callback;
+          jar.removeAllCookies(function(err) {
+            return cb(err,stats);
+          });
+        },
+        "Cookies are removed one-by-one": function (err, stats) {
+          assert.equal(err, null);
+          assert.equal(stats.put, 2);
+          assert.equal(stats.getAll, 1);
+          assert.equal(stats.remove, 2);
+        }
+      },
+      "With a store that does implement removeAllCookies": {
+        topic: function () {
+          var stats = { getAll: 0, remove: 0, removeAll: 0 };
+          function MemoryStoreExtension() {
+            MemoryCookieStore.call(this);
+            this.cookies = [];
+          }
+          util.inherits(MemoryStoreExtension, MemoryCookieStore);
+          MemoryStoreExtension.prototype.getAllCookies = function(cb) {
+            stats.getAll++;
+            MemoryCookieStore.prototype.getAllCookies.call(this, cb);
+          };
+          MemoryStoreExtension.prototype.removeCookie = function(domain, path, key, cb) {
+            stats.remove++;
+            MemoryCookieStore.prototype.removeCookie.call(this, domain, path, key, cb);
+          };
+          MemoryStoreExtension.prototype.removeAllCookies = function(cb) {
+            stats.removeAll++;
+            MemoryCookieStore.prototype.removeAllCookies.call(this, cb);
+          };
+
+          var jar = new CookieJar(new MemoryStoreExtension());
+          jar.setCookieSync("a=b", 'http://example.com/index.html');
+          jar.setCookieSync("c=d", 'http://example.org/index.html');
+          var cb = this.callback;
+          this.jar = jar;
+          jar.removeAllCookies(function(err) {
+            return cb(err,stats);
+          });
+        },
+        "Cookies are removed as batch": function (err, stats) {
+          assert.equal(err, null);
+          assert.equal(stats.getAll, 0);
+          assert.equal(stats.remove, 0);
+          assert.equal(stats.removeAll, 1);
+          assert.deepEqual(this.jar.store.idx, {});
+        }
       }
     }
   })
