@@ -480,4 +480,65 @@ vows
       }
     }
   })
+  .addBatch({
+    "Remove all cookies": {
+      topic: function () {
+        var jar = new CookieJar();
+        var cookie1 = Cookie.parse("a=b; Domain=example.com; Path=/");
+        var cookie2 = Cookie.parse("a=b; Domain=foo.com; Path=/");
+        var cookie3 = Cookie.parse("foo=bar; Domain=foo.com; Path=/");
+        jar.setCookie(cookie1, 'http://example.com/index.html', function () {});
+        jar.setCookie(cookie2, 'http://foo.com/index.html', function () {});
+        jar.setCookie(cookie3, 'http://foo.com/index.html', function () {});
+
+        var cb = this.callback;
+        jar.removeAllCookies(function (err) {
+          cb(err, jar);
+        });
+      },
+      "no errors": function (err, jar) {
+        assert(err == null);
+      },
+      "load cookies from the jar": {
+        topic: function(jar) {
+          jar.store.getAllCookies(this.callback);
+        },
+        "no cookies in the jar": function(err, cookies) {
+          assert(err == null);
+          assert(cookies != null);
+          assert(cookies.length === 0, 'cookies were not removed');
+        }
+      }
+    },
+    "Remove all cookies (the underlying store does not support removeAllCookies)": {
+      topic: function () {
+        var jar = new CookieJar();
+        jar.store.removeAllCookies = undefined;
+        var cookie1 = Cookie.parse("a=b; Domain=example.com; Path=/");
+        var cookie2 = Cookie.parse("a=b; Domain=foo.com; Path=/");
+        var cookie3 = Cookie.parse("foo=bar; Domain=foo.com; Path=/");
+        jar.setCookie(cookie1, 'http://example.com/index.html', function () {});
+        jar.setCookie(cookie2, 'http://foo.com/index.html', function () {});
+        jar.setCookie(cookie3, 'http://foo.com/index.html', function () {});
+
+        var cb = this.callback;
+        jar.removeAllCookies(function (err) {
+          cb(err, jar);
+        });
+      },
+      "no errors": function (err, jar) {
+        assert(err == null);
+      },
+      "load cookies from the jar": {
+        topic: function(jar) {
+          jar.store.getAllCookies(this.callback);
+        },
+        "no cookies in the jar": function(err, cookies) {
+          assert(err == null);
+          assert(cookies != null);
+          assert(cookies.length === 0, 'cookies were not removed');
+        }
+      }
+    }
+  })
   .export(module);
