@@ -82,7 +82,7 @@ vows
         assert.ok(!c.secure);
       }
     },
-    "with everything": {
+    "with most things": {
       topic: function() {
         return Cookie.parse('abc="xyzzy!"; Expires=Tue, 18 Oct 2011 07:05:03 GMT; Path=/aBc; Domain=example.com; Secure; HTTPOnly; Max-Age=1234; Foo=Bar; Baz') || null;
       },
@@ -98,6 +98,7 @@ vows
       "has httponly": function(c) { assert.equal(c.httpOnly, true); },
       "has secure": function(c) { assert.equal(c.secure, true); },
       "has max-age": function(c) { assert.equal(c.maxAge, 1234); },
+      "has same-site 'none'": function(c) { assert.equal(c.sameSite, "none") },
       "has extensions": function(c) {
         assert.ok(c.extensions);
         assert.equal(c.extensions[0], 'Foo=Bar');
@@ -447,6 +448,33 @@ vows
         var ratio = Math.abs(long1 / short2);
         assert.lesser(ratio, 250); // if broken, goes 2000-4000x
       }
-    }
+    },
+
+    "same-site": {
+      "lax": {
+        topic: function() {
+          return Cookie.parse('abc=xyzzy; SameSite=Lax') || null;
+        },
+        "parsed": function(c) { assert.ok(c) },
+        "is lax (lowercased)": function(c) { assert.equal(c.sameSite, "lax") },
+        "no extensions": function(c) { assert.equal(c.extensions, null) }
+      },
+      "strict": {
+        topic: function() {
+          return Cookie.parse('abc=xyzzy; SameSite=StRiCt') || null;
+        },
+        "parsed": function(c) { assert.ok(c) },
+        "is strict (lowercased)": function(c) { assert.equal(c.sameSite, "strict") },
+        "no extensions": function(c) { assert.equal(c.extensions, null) }
+      },
+      "other": {
+        topic: function() {
+          return Cookie.parse('abc=xyzzy; SameSite=example.com') || null;
+        },
+        "parsed": function(c) { assert.ok(c) },
+        "is falsey": function(c) { assert.equal(c.sameSite, "none") },
+        "no extensions": function(c) { assert.equal(c.extensions, null) }
+      }
+    },
   })
   .export(module);
