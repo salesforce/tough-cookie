@@ -46,9 +46,9 @@ vows
         var options = {};
 
         [
-          'modify=authorized; SameSite=strict',
-          'view=okay; SameSite=lax',
-          'ambient=whatever' // none
+          'strict=authorized; SameSite=strict',
+          'lax=okay; SameSite=lax',
+          'normal=whatever' // none
         ].forEach(function(str) {
           jar.setCookieSync(Cookie.parse(str), url, options);
         });
@@ -56,7 +56,7 @@ vows
       },
       "when making a same-site request": {
         topic: function(jar) {
-          jar.getCookies(this.url, {sameSite: 'strict'}, this.callback);
+          jar.getCookies(this.url, {sameSiteContext: 'strict'}, this.callback);
         },
         "all three cookies are returned": function(cookies) {
           assert.equal(cookies.length, 3);
@@ -64,26 +64,26 @@ vows
       },
       "when making a lax request": {
         topic: function(jar) {
-          jar.getCookies(this.url, {sameSite: 'lax'}, this.callback);
+          jar.getCookies(this.url, {sameSiteContext: 'lax'}, this.callback);
         },
         "only two cookies are returned": function(cookies) {
           assert.equal(cookies.length, 2);
         },
         "the strict one is omitted": function(cookies) {
           cookies.forEach(function(c) {
-            assert.notEqual(c.key, 'modify');
+            assert.notEqual(c.key, 'strict');
           });
         }
       },
       "when making a cross-origin request": {
         topic: function(jar) {
-          jar.getCookies(this.url, {sameSite: 'none'}, this.callback);
+          jar.getCookies(this.url, {sameSiteContext: 'none'}, this.callback);
         },
         "only one cookie is returned": function(cookies) {
           assert.equal(cookies.length, 1);
         },
         "and it's the one without same-site": function(cookies) {
-          assert.equal(cookies[0].key, 'ambient');
+          assert.equal(cookies[0].key, 'normal');
         }
       },
       "when making an unqualified request": {
@@ -93,6 +93,102 @@ vows
         "all three cookies are returned": function(cookies) {
           assert.equal(cookies.length, 3);
         }
+      },
+    }
+  })
+  .addBatch({
+    "Testing setting cookies": {
+      topic: function() {
+        var url = 'http://example.com/index.html';
+        var cookies = {
+          strict: Cookie.parse('strict=authorized; SameSite=strict'),
+          lax: Cookie.parse('lax=okay; SameSite=lax'),
+          normal: Cookie.parse('normal=whatever') // none
+        };
+        var jar = new CookieJar();
+        this.callSetCookie = function(which, options, cb) {
+          return jar.setCookie(cookies[which], url, options, cb);
+        };
+        return null;
+      },
+      "from same-site context": {
+        topic: function() {
+          return { isCrossOrigin: false };
+        },
+        "for strict cookie": {
+          topic: function(options) {
+            this.callSetCookie('strict', options, this.callback);
+          },
+          "is fine": function(err, ignored) { ignored = null; assert.isNull(err); }
+        },
+        "for lax cookie": {
+          topic: function(options) {
+            this.callSetCookie('lax', options, this.callback);
+          },
+          "is fine": function(err, ignored) { ignored = null; assert.isNull(err); }
+        },
+        "for normal cookie": {
+          topic: function(options) {
+            this.callSetCookie('normal', options, this.callback);
+          },
+          "is fine": function(err, ignored) { ignored = null; assert.isNull(err); }
+        },
+      },
+
+      "from cross-origin context": {
+        topic: function() {
+          return { isCrossOrigin: true };
+        },
+        "for strict cookie": {
+          topic: function(options) {
+            this.callSetCookie('strict', options, this.callback);
+          },
+          "is not allowed": function(err, ignored) {
+            ignored = null;
+            assert.ok(err instanceof Error);
+            assert.equal(err.message, "Cookie is SameSite but this is a cross-origin request");
+          }
+        },
+        "for lax cookie": {
+          topic: function(options) {
+            this.callSetCookie('lax', options, this.callback);
+          },
+          "is not allowed": function(err, ignored) {
+            ignored = null;
+            assert.ok(err instanceof Error);
+            assert.equal(err.message, "Cookie is SameSite but this is a cross-origin request");
+          }
+        },
+        "for normal cookie": {
+          topic: function(options) {
+            this.callSetCookie('normal', options, this.callback);
+          },
+          "is fine": function(err, ignored) { ignored = null; assert.isNull(err); }
+        },
+      },
+
+      "from undefined context": {
+        topic: function() {
+          return {};
+        },
+        "for strict cookie": {
+          topic: function(options) {
+            this.callSetCookie('strict', options, this.callback);
+          },
+          "is fine": function(err, ignored) { ignored = null; assert.isNull(err); }
+        },
+        "for lax cookie": {
+          topic: function(options) {
+            this.callSetCookie('lax', options, this.callback);
+          },
+          "is fine": function(err, ignored) { ignored = null; assert.isNull(err); }
+        },
+        "for normal cookie": {
+          topic: function(options) {
+            this.callSetCookie('normal', options, this.callback);
+          },
+          "is fine": function(err, ignored) { ignored = null; assert.isNull(err); }
+        },
       },
     }
   })
