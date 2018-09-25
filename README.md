@@ -149,6 +149,7 @@ Cookie object properties:
   * _path_ - string - the `Path=` of the cookie
   * _secure_ - boolean - the `Secure` cookie flag
   * _httpOnly_ - boolean - the `HttpOnly` cookie flag
+  * _sameSite_ - string - the `SameSite` cookie attribute (from [RFC6265bis]); must be one of `none`, `lax`, or `strict`
   * _extensions_ - `Array` - any unrecognized cookie attributes as strings (even if equal-signs inside)
   * _creation_ - `Date` - when this cookie was constructed
   * _creationIndex_ - number - set at construction, used to provide greater sort precision (please see `cookieCompare(a,b)` for a full explanation)
@@ -265,6 +266,7 @@ The `options` object can be omitted and can have the following properties:
   * _secure_ - boolean - autodetect from url - indicates if this is a "Secure" API.  If the currentUrl starts with `https:` or `wss:` then this is defaulted to `true`, otherwise `false`.
   * _now_ - Date - default `new Date()` - what to use for the creation/access time of cookies
   * _ignoreError_ - boolean - default `false` - silently ignore things like parse errors and invalid domains.  `Store` errors aren't ignored by this option.
+  * _sameSiteContext_ - string - default unset - if `none`, will reject cookies that have a `SameSite=Strict` or `SameSite=Lax` attribute. If `ignoreError` is not set, this means an Error will be raised. See [SameSite Cookies] below.
 
 As per the RFC, the `.hostOnly` property is set if there was no "Domain=" parameter in the cookie string (or `.domain` was null on the Cookie object).  The `.domain` property is set to the fully-qualified hostname of `currentUrl` in this case.  Matching this cookie requires an exact hostname match (not a `domainMatch` as per usual).
 
@@ -285,6 +287,7 @@ The `options` object can be omitted and can have the following properties:
   * _now_ - Date - default `new Date()` - what to use for the creation/access time of cookies
   * _expire_ - boolean - default `true` - perform expiry-time checking of cookies and asynchronously remove expired cookies from the store.  Using `false` will return expired cookies and **not** remove them from the store (which is useful for replaying Set-Cookie headers, potentially).
   * _allPaths_ - boolean - default `false` - if `true`, do not scope cookies by path. The default uses RFC-compliant path scoping. **Note**: may not be supported by the underlying store (the default `MemoryCookieStore` supports it).
+  * _sameSiteContext_ - string - default unset - Set this to `'none'`, `'lax'` or `'strict'` to enforce SameSite cookies upon retrival. See [SameSite Cookies] below.
 
 The `.lastAccessed` property of the returned cookies will have been updated.
 
@@ -490,6 +493,32 @@ These are some Store implementations authored and maintained by the community. T
     ]
   }
 ```
+
+# RFC6265bis
+
+Support for RFC6265bis revision 02 is being developed. Since this is a bit of an omnibus revision to the RFC6252, support is broken up into the functional areas.
+
+## Leave Secure Cookies Alone
+
+Not yet supported.
+
+This change makes it so that if a cookie is sent from the server to the client with a `Secure` attribute, the channel must also be secure or the cookie is ignored.
+
+## SameSite Cookies
+
+Supported.
+
+This change makes it possible for servers, and supporting clients, to mitigate certain types of CSRF attacks by disallowing `SameSite` cookies from being sent cross-origin.
+
+In order to support SameSite cookies, you must provide a `sameSiteContext` option to _both_ `setCookie` and `getCookies`:
+
+1. If the request is on the same "site for cookies" (see the RFC draft), pass `sameSiteContext: 'strict'`.
+2. If the request is from another site, _but_ is directly because of navigation by the user, e.g., `<link type=prefetch>` or `<a href="...">`, pass `sameSiteContext: 'lax'`. (See RFC for fine details; this is just a summary).
+3. Otherwise, pass `sameSiteContext: 'none'` (this indicates a cross-origin request). **Note**: if you leave this option off, SameSite won't be enforced!
+
+## Cookie Prefixes
+
+Not yet supported.
 
 # Copyright and License
 
