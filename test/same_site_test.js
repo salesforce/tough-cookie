@@ -192,4 +192,26 @@ vows
       },
     }
   })
+  .addBatch({
+    "Canonicalized strings": {
+      topic: function() {
+        var url = 'http://example.com/index.html';
+        var cookies = {
+          strict: Cookie.parse('strict=1; SameSite=STRict'),
+          lax: Cookie.parse('lax=1; SameSite=LAx'),
+          normal: Cookie.parse('normal=1') // none
+        };
+        return cookies;
+      },
+      "strict is 'Strict'": function(cookies) {
+        assert.equal(cookies.strict.toString(), 'strict=1; SameSite=Strict');
+      },
+      "lax is 'Lax'": function(cookies) {
+        assert.equal(cookies.lax.toString(), 'lax=1; SameSite=Lax');
+      },
+      "normal is omitted": function(cookies) {
+        assert.equal(cookies.normal.toString(), 'normal=1');
+      },
+    }
+  })
   .export(module);
