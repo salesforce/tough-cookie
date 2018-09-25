@@ -113,7 +113,7 @@ vows
       },
       "from same-site context": {
         topic: function() {
-          return { isCrossOrigin: false };
+          return { sameSiteContext: 'strict' };
         },
         "for strict cookie": {
           topic: function(options) {
@@ -137,7 +137,7 @@ vows
 
       "from cross-origin context": {
         topic: function() {
-          return { isCrossOrigin: true };
+          return { sameSiteContext: 'none' };
         },
         "for strict cookie": {
           topic: function(options) {
