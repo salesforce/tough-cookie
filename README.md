@@ -473,7 +473,7 @@ These are some Store implementations authored and maintained by the community. T
 
 # Copyright and License
 
-(tl;dr: BSD-3-Clause with some MPL/2.0)
+BSD-3-Clause:
 
 ```text
  Copyright (c) 2015, Salesforce.com, Inc.
