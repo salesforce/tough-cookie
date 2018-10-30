@@ -186,7 +186,7 @@ vows
       },
       "trailing slash": {
         topic: tough.permutePath.bind(null, '/foo/bar/'),
-        "three things": function (list) {
+        "four things": function (list) {
           assert.deepEqual(list, ['/foo/bar/', '/foo/bar', '/foo', '/']);
         },
         "path matching": function (list) {
