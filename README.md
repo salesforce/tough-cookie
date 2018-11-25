@@ -266,7 +266,7 @@ The `options` object can be omitted and can have the following properties:
   * _secure_ - boolean - autodetect from url - indicates if this is a "Secure" API.  If the currentUrl starts with `https:` or `wss:` then this is defaulted to `true`, otherwise `false`.
   * _now_ - Date - default `new Date()` - what to use for the creation/access time of cookies
   * _ignoreError_ - boolean - default `false` - silently ignore things like parse errors and invalid domains.  `Store` errors aren't ignored by this option.
-  * _sameSiteContext_ - string - default unset - if `none`, will reject cookies that have a `SameSite=Strict` or `SameSite=Lax` attribute. If `ignoreError` is not set, this means an Error will be raised. See [SameSite Cookies] below.
+  * _sameSiteContext_ - string - default unset - set to `'none'`, `'lax'`, or `'strict'` See [SameSite Cookies] below.
 
 As per the RFC, the `.hostOnly` property is set if there was no "Domain=" parameter in the cookie string (or `.domain` was null on the Cookie object).  The `.domain` property is set to the fully-qualified hostname of `currentUrl` in this case.  Matching this cookie requires an exact hostname match (not a `domainMatch` as per usual).
 
@@ -510,11 +510,16 @@ Supported.
 
 This change makes it possible for servers, and supporting clients, to mitigate certain types of CSRF attacks by disallowing `SameSite` cookies from being sent cross-origin.
 
-In order to support SameSite cookies, you must provide a `sameSiteContext` option to _both_ `setCookie` and `getCookies`:
+On the Cookie object itself, you can get/set the `sameSite` attribute, which will be serialized into the `SameSite=` cookie attribute. When unset or `undefined`, no `SameSite=` attribute will be serialized. The valid values of this attribute are `'none'`, `'lax'`, or `'strict'`.
 
-1. If the request is on the same "site for cookies" (see the RFC draft), pass `sameSiteContext: 'strict'`.
-2. If the request is from another site, _but_ is directly because of navigation by the user, e.g., `<link type=prefetch>` or `<a href="...">`, pass `sameSiteContext: 'lax'`. (See RFC for fine details; this is just a summary).
-3. Otherwise, pass `sameSiteContext: 'none'` (this indicates a cross-origin request). **Note**: if you leave this option off, SameSite won't be enforced!
+In order to support SameSite cookies, you must provide a `sameSiteContext` option to _both_ `setCookie` and `getCookies`. Valid values for this option are just like for the Cookie object, but have particular meanings:
+
+1. `'strict'` mode - If the request is on the same "site for cookies" (see the RFC draft for what this means), pass this option to add a layer of defense against CSRF.
+2. `'lax'` mode - If the request is from another site, _but_ is directly because of navigation by the user, e.g., `<link type=prefetch>` or `<a href="...">`, pass `sameSiteContext: 'lax'`.
+3. `'none'` - Otherwise, pass `sameSiteContext: 'none'` (this indicates a cross-origin request).
+4. unset/`undefined` - SameSite **will not** be enforced! This can be a valid use-case for when CSRF isn't in the threat model of the system being built.
+
+It is highly recommended that you read RFC 6265bis for fine details on SameSite cookies.
 
 ## Cookie Prefixes
 
