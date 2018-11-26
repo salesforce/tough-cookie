@@ -467,12 +467,12 @@ vows
         "is strict (lowercased)": function(c) { assert.equal(c.sameSite, "strict") },
         "no extensions": function(c) { assert.equal(c.extensions, null) }
       },
-      "other": {
+      "absent": {
         topic: function() {
           return Cookie.parse('abc=xyzzy; SameSite=example.com') || null;
         },
         "parsed": function(c) { assert.ok(c) },
-        "is falsey": function(c) { assert.equal(c.sameSite, "none") },
+        "is set to 'none' (by prototype)": function(c) { assert.equal(c.sameSite, "none") },
         "no extensions": function(c) { assert.equal(c.extensions, null) }
       }
     },
