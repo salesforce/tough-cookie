@@ -101,7 +101,8 @@ vows
       topic: function() {
         var url = 'http://example.com/index.html';
         var cookies = {
-          strict: Cookie.parse('strict=authorized; SameSite=strict'),
+          garbage: Cookie.parse('garbageIn=treatedAsNone; SameSite=garbage'),
+          strict: Cookie.parse('strict=authorized; SameSite=sTrIcT'),
           lax: Cookie.parse('lax=okay; SameSite=lax'),
           normal: Cookie.parse('normal=whatever') // none
         };
@@ -115,23 +116,41 @@ vows
         topic: function() {
           return { sameSiteContext: 'strict' };
         },
+        "for garbage cookie": {
+          topic: function(options) {
+            this.callSetCookie('garbage', options, this.callback);
+          },
+          "treated as 'none'": function(err, cookie) {
+            assert.isNull(err);
+            assert.equal(cookie.sameSite, 'none');
+          }
+        },
         "for strict cookie": {
           topic: function(options) {
             this.callSetCookie('strict', options, this.callback);
           },
-          "is fine": function(err, ignored) { ignored = null; assert.isNull(err); }
+          "has strict property": function(err, cookie) {
+            assert.isNull(err);
+            assert.equal(cookie.sameSite, 'strict');
+          }
         },
         "for lax cookie": {
           topic: function(options) {
             this.callSetCookie('lax', options, this.callback);
           },
-          "is fine": function(err, ignored) { ignored = null; assert.isNull(err); }
+          "has lax property": function(err, cookie) {
+            assert.isNull(err);
+            assert.equal(cookie.sameSite, 'lax');
+          }
         },
         "for normal cookie": {
           topic: function(options) {
             this.callSetCookie('normal', options, this.callback);
           },
-          "is fine": function(err, ignored) { ignored = null; assert.isNull(err); }
+          "treated as 'none'": function(err, cookie) {
+            assert.isNull(err);
+            assert.equal(cookie.sameSite, 'none');
+          }
         },
       },
 
@@ -196,12 +215,18 @@ vows
     "Canonicalized strings": {
       topic: function() {
         var url = 'http://example.com/index.html';
+        var garbage = Cookie.parse('garbage=1');
+        garbage.sameSite = 'GaRbAGe';
         var cookies = {
+          garbage: garbage,
           strict: Cookie.parse('strict=1; SameSite=STRict'),
           lax: Cookie.parse('lax=1; SameSite=LAx'),
           normal: Cookie.parse('normal=1') // none
         };
         return cookies;
+      },
+      "garbage in, garbage out": function(cookies) {
+        assert.equal(cookies.garbage.toString(), 'garbage=1; SameSite=GaRbAGe');
       },
       "strict is 'Strict'": function(cookies) {
         assert.equal(cookies.strict.toString(), 'strict=1; SameSite=Strict');

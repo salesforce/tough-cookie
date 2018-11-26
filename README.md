@@ -510,10 +510,11 @@ Supported.
 
 This change makes it possible for servers, and supporting clients, to mitigate certain types of CSRF attacks by disallowing `SameSite` cookies from being sent cross-origin.
 
-On the Cookie object itself, you can get/set the `sameSite` attribute, which will be serialized into the `SameSite=` cookie attribute. When unset or `undefined`, no `SameSite=` attribute will be serialized. The valid values of this attribute are `'none'`, `'lax'`, or `'strict'`.
+On the Cookie object itself, you can get/set the `.sameSite` attribute, which will be serialized into the `SameSite=` cookie attribute. When unset or `undefined`, no `SameSite=` attribute will be serialized. The valid values of this attribute are `'none'`, `'lax'`, or `'strict'`. Other values will be serialized as-is.
+
+When parsing cookies with a `SameSite` cookie attribute, values other than `'lax'` or `'strict'` are parsed as `'none'`. For example, `SomeCookie=SomeValue; SameSite=garbage` will parse so that `cookie.sameSite === 'none'`.
 
 In order to support SameSite cookies, you must provide a `sameSiteContext` option to _both_ `setCookie` and `getCookies`. Valid values for this option are just like for the Cookie object, but have particular meanings:
-
 1. `'strict'` mode - If the request is on the same "site for cookies" (see the RFC draft for what this means), pass this option to add a layer of defense against CSRF.
 2. `'lax'` mode - If the request is from another site, _but_ is directly because of navigation by the user, e.g., `<link type=prefetch>` or `<a href="...">`, pass `sameSiteContext: 'lax'`.
 3. `'none'` - Otherwise, pass `sameSiteContext: 'none'` (this indicates a cross-origin request).
