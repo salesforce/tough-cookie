@@ -520,7 +520,7 @@ In order to support SameSite cookies, you must provide a `sameSiteContext` optio
 3. `'none'` - Otherwise, pass `sameSiteContext: 'none'` (this indicates a cross-origin request).
 4. unset/`undefined` - SameSite **will not** be enforced! This can be a valid use-case for when CSRF isn't in the threat model of the system being built.
 
-It is highly recommended that you read RFC 6265bis for fine details on SameSite cookies.
+It is highly recommended that you read RFC 6265bis for fine details on SameSite cookies. In particular [Section 8.8](https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-02#section-8.8) discusses security considerations and defense in depth.
 
 ## Cookie Prefixes
 
