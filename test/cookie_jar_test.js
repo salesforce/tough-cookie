@@ -541,4 +541,31 @@ vows
       }
     }
   })
+  .addBatch({
+    "Issue 132 - setCookie": {
+      "with foreign object": {
+        topic: function() {
+          var jar = new CookieJar();
+          jar.setCookie({key:"x",value:"y"}, "http://example.com/", this.callback);
+        },
+        "results in an error": function(err, cookie) {
+          assert(err != null);
+          assert(!cookie);
+          assert.equal(err.message, "First argument to setCookie must be a Cookie object or string");
+        },
+      },
+      "with String instance": {
+        topic: function() {
+          var jar = new CookieJar();
+          jar.setCookie(new String("x=y; Domain=example.com; Path=/"), "http://example.com/", this.callback);
+        },
+        "is fine": function(err, cookie) {
+          assert(!err);
+          assert(!!cookie);
+          assert.instanceOf(cookie, Cookie);
+          assert.equal(cookie.key, "x");
+        },
+      }
+    }
+  })
   .export(module);
