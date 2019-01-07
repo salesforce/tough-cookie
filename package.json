@@ -62,7 +62,7 @@
     "cover": "nyc --reporter=lcov --reporter=html vows test/*_test.js"
   },
   "engines": {
-    "node": ">=0.8"
+    "node": ">=6"
   },
   "devDependencies": {
     "async": "^1.4.2",
