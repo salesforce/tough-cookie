@@ -67,7 +67,7 @@
   "devDependencies": {
     "async": "^1.4.2",
     "genversion": "^2.1.0",
-    "nyc": "^11.6.0",
+    "nyc": "^11.9.0",
     "string.prototype.repeat": "^0.2.0",
     "vows": "^0.8.2"
   },
