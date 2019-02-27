@@ -49,14 +49,17 @@ function matchVows(func, table) {
   return theVows;
 }
 
-function defaultPathVows(table) {
+function transformVows(fn, table) {
   var theVows = {};
   table.forEach(function (item) {
     var str = item[0];
     var expect = item[1];
     var label = str + " gives " + expect;
+    if (item.length >= 3) {
+      label += " (" + item[2] + ")";
+    }
     theVows[label] = function () {
-      assert.equal(tough.defaultPath(str), expect);
+      assert.equal(fn(str), expect);
     };
   });
   return theVows;
@@ -65,56 +68,86 @@ function defaultPathVows(table) {
 vows
   .describe('Domain and Path')
   .addBatch({
-    "domain normalization": {
-      "simple": function () {
-        var c = new Cookie();
-        c.domain = "EXAMPLE.com";
-        assert.equal(c.canonicalizedDomain(), "example.com");
-      },
-      "extra dots": function () {
-        var c = new Cookie();
-        c.domain = ".EXAMPLE.com";
-        assert.equal(c.cdomain(), "example.com");
-      },
-      "weird trailing dot": function () {
-        var c = new Cookie();
-        c.domain = "EXAMPLE.ca.";
-        assert.equal(c.canonicalizedDomain(), "example.ca.");
-      },
-      "weird internal dots": function () {
-        var c = new Cookie();
-        c.domain = "EXAMPLE...ca.";
-        assert.equal(c.canonicalizedDomain(), "example...ca.");
-      },
-      "IDN": function () {
-        var c = new Cookie();
-        c.domain = "δοκιμή.δοκιμή"; // "test.test" in greek
-        assert.equal(c.canonicalizedDomain(), "xn--jxalpdlp.xn--jxalpdlp");
-      }
-    }
+    "domain normalization": transformVows(tough.canonicalDomain, [
+      ["example.com", "example.com", "already canonical"], 
+      ["EXAMPLE.com", "example.com", "simple"], 
+      [".EXAMPLE.com", "example.com", "leading dot stripped"], 
+      ["EXAMPLE.com.", "example.com.", "trailing dot"], 
+      [".EXAMPLE.com.", "example.com.", "leading and trailing dot"], 
+      [".EXAMPLE...com.", "example...com.", "internal dots"], 
+      ["δοκιμή.δοκιμή","xn--jxalpdlp.xn--jxalpdlp", "IDN: test.test in greek"],
+    ])
   })
   .addBatch({
     "Domain Match": matchVows(tough.domainMatch, [
       // str,          dom,          expect
-      ["example.com", "example.com", true],
-      ["eXaMpLe.cOm", "ExAmPlE.CoM", true],
+      ["example.com", "example.com", true], // identical
+      ["eXaMpLe.cOm", "ExAmPlE.CoM", true], // both canonicalized
       ["no.ca", "yes.ca", false],
       ["wwwexample.com", "example.com", false],
-      ["www.example.com", "example.com", true],
-      ["example.com", "www.example.com", false],
       ["www.subdom.example.com", "example.com", true],
       ["www.subdom.example.com", "subdom.example.com", true],
       ["example.com", "example.com.", false], // RFC6265 S4.1.2.3
-      ["192.168.0.1", "168.0.1", false], // S5.1.3 "The string is a host name"
+
+      // nulls and undefineds
       [null, "example.com", null],
       ["example.com", null, null],
       [null, null, null],
       [undefined, undefined, null],
+
+      // suffix matching:
+      ["www.example.com", "example.com", true], // substr AND suffix
+      ["www.example.com.org", "example.com", false], // substr but not suffix
+      ["example.com", "www.example.com.org", false], // neither
+      ["example.com", "www.example.com", false], // super-str
+      ["aaa.com", "aaaa.com", false], // str can't be suffix of domain
+      ["aaaa.com", "aaa.com", false], // dom is suffix, but has to match on "." boundary!
+      ["www.aaaa.com", "aaa.com", false],
+      ["www.aaa.com", "aaa.com", true],
+      ["www.aexample.com", "example.com", false], // has to match on "." boundary
+
+      // S5.1.3 "The string is a host name (i.e., not an IP address)"
+      ["192.168.0.1", "168.0.1", false], // because str is an IP (v4)
+      ["100.192.168.0.1", "168.0.1", true], // WEIRD: because str is not a valid IPv4
+      ["100.192.168.0.1", "192.168.0.1", true], // WEIRD: because str is not a valid IPv4
+      ["::ffff:192.168.0.1", "168.0.1", false], // because str is an IP (v6)
+      ["::ffff:192.168.0.1", "192.168.0.1", false], // because str is an IP (v6)
+      ["::FFFF:192.168.0.1", "192.168.0.1", false], // because str is an IP (v6)
+      ["::192.168.0.1", "192.168.0.1", false], // because str is an IP (yes, v6!)
+      [":192.168.0.1", "168.0.1", true], // WEIRD: because str is not valid IPv6 
+      [":ffff:100.192.168.0.1", "192.168.0.1", true], // WEIRD: because str is not valid IPv6
+      [":ffff:192.168.0.1", "192.168.0.1", false],
+      [":ffff:192.168.0.1", "168.0.1", true], // WEIRD: because str is not valid IPv6 
+      ["::Fxxx:192.168.0.1", "168.0.1", true], // WEIRD: because str isnt IPv6
+      ["192.168.0.1", "68.0.1", false],
+      ["192.168.0.1", "2.68.0.1", false],
+      ["192.168.0.1", "92.68.0.1", false],
+      ["10.1.2.3", "210.1.2.3", false],
+      ["2008::1", "::1", false],
+      ["::1", "2008::1", false],
+      ["::1", "::1", true], // "are identical" rule, despite IPv6
+      ["::3xam:1e", "2008::3xam:1e", false], // malformed IPv6
+      ["::3Xam:1e", "::3xaM:1e", true], // identical, even though malformed
+      ["3xam::1e", "3xam::1e", true], // identical
+      ["::3xam::1e", "3xam::1e", false],
+      ["3xam::1e", "::3xam:1e", false],
+      ["::f00f:10.0.0.1", "10.0.0.1", false],
+      ["10.0.0.1", "::f00f:10.0.0.1", false],
+
+      // "IP like" hostnames:
+      ["1.example.com", "example.com", true],
+      ["11.example.com", "example.com", true],
+      ["192.168.0.1.example.com", "example.com", true],
+
+      // exact length "TLD" tests:
+      ["com", "net", false], // same len, non-match
+      ["com", "com", true], // "are identical" rule
+      ["NOTATLD", "notaTLD", true], // "are identical" rule (after canonicalization)
     ])
   })
 
   .addBatch({
-    "default-path": defaultPathVows([
+    "default-path": transformVows(tough.defaultPath,[
       [null, "/"],
       ["/", "/"],
       ["/file", "/"],

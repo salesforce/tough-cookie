@@ -72,7 +72,6 @@
     "vows": "^0.8.2"
   },
   "dependencies": {
-    "ip-regex": "^2.1.0",
     "psl": "^1.1.28",
     "punycode": "^2.1.1"
   }
