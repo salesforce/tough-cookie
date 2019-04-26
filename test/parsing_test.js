@@ -491,7 +491,7 @@ vows
     "way too many semicolons followed by non-semicolon": {
       topic: function() {
         // takes abnormally long due to semi-catastrophic regexp backtracking
-        const str = "foo=bar" + LOTS_OF_SEMICOLONS + " domain=example.com";
+        const str = `foo=bar${LOTS_OF_SEMICOLONS} domain=example.com`;
         return Cookie.parse(str) || null;
       },
       parsed: function(c) {
@@ -516,7 +516,7 @@ vows
     "way too many spaces": {
       topic: function() {
         // takes abnormally long due to semi-catastrophic regexp backtracking
-        const str1 = "x" + LOTS_OF_SPACES + "x";
+        const str1 = `x${LOTS_OF_SPACES}x`;
         const str2 = "x x";
         const t0 = Date.now();
         const cookie1 = Cookie.parse(str1) || null;
@@ -546,7 +546,7 @@ vows
     "way too many spaces with value": {
       topic: function() {
         // takes abnormally long due to semi-catastrophic regexp backtracking
-        const str1 = "x" + LOTS_OF_SPACES + "=x";
+        const str1 = `x${LOTS_OF_SPACES}=x`;
         const str2 = "x =x";
         const t0 = Date.now();
         const cookie1 = Cookie.parse(str1) || null;
@@ -580,7 +580,7 @@ vows
     "way too many spaces in loose mode": {
       topic: function() {
         // takes abnormally long due to semi-catastrophic regexp backtracking
-        const str1 = "x" + LOTS_OF_SPACES + "x";
+        const str1 = `x${LOTS_OF_SPACES}x`;
         const str2 = "x x";
         const t0 = Date.now();
         const cookie1 = Cookie.parse(str1, { loose: true }) || null;
@@ -597,7 +597,7 @@ vows
       "large one parses": function(c) {
         assert.ok(c.cookie1);
         assert.equal(c.cookie1.key, "");
-        assert.equal(c.cookie1.value, "x" + LOTS_OF_SPACES + "x");
+        assert.equal(c.cookie1.value, `x${LOTS_OF_SPACES}x`);
       },
       "small one parses": function(c) {
         assert.ok(c.cookie2);
@@ -614,7 +614,7 @@ vows
     "way too many spaces with value in loose mode": {
       topic: function() {
         // takes abnormally long due to semi-catastrophic regexp backtracking
-        const str1 = "x" + LOTS_OF_SPACES + "=x";
+        const str1 = `x${LOTS_OF_SPACES}=x`;
         const str2 = "x =x";
         const t0 = Date.now();
         const cookie1 = Cookie.parse(str1, { loose: true }) || null;

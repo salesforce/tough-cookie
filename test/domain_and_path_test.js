@@ -54,7 +54,7 @@ function defaultPathVows(table) {
   table.forEach(function(item) {
     const str = item[0];
     const expect = item[1];
-    const label = str + " gives " + expect;
+    const label = `${str} gives ${expect}`;
     theVows[label] = function() {
       assert.equal(tough.defaultPath(str), expect);
     };

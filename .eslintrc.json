@@ -4,7 +4,8 @@
   },
   "rules": {
     "no-var": "error",
-    "prefer-const": "error"
+    "prefer-const": "error",
+    "prefer-template": "error"
   },
   "extends": ["plugin:prettier/recommended"]
 }

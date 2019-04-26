@@ -52,10 +52,10 @@ function setGetCookieVows() {
     theVows[testCase.test] = function() {
       const jar = new CookieJar();
       const expected = testCase["sent"];
-      const sentFrom = "http://home.example.org/cookie-parser?" + testCase.test;
+      const sentFrom = `http://home.example.org/cookie-parser?${testCase.test}`;
       const sentTo = testCase["sent-to"]
         ? url.resolve("http://home.example.org", testCase["sent-to"])
-        : "http://home.example.org/cookie-parser-result?" + testCase.test;
+        : `http://home.example.org/cookie-parser-result?${testCase.test}`;
 
       testCase["received"].forEach(function(cookieStr) {
         jar.setCookieSync(cookieStr, sentFrom, { ignoreError: true });
@@ -87,7 +87,7 @@ function dateVows() {
     const fileName = path.basename(filePath);
 
     data.forEach(function(testCase) {
-      theVows[fileName + " : " + testCase.test] = function() {
+      theVows[`${fileName} : ${testCase.test}`] = function() {
         let actual = tough.parseDate(testCase.test);
         actual = actual ? actual.toUTCString() : null;
         assert.strictEqual(actual, testCase.expected);

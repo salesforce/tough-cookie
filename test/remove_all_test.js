@@ -120,7 +120,7 @@ vows
           store.removeCookie = function(domain, path, key, cb) {
             callNumber++;
             if (callNumber == 4) {
-              return cb(new Error("something happened " + callNumber));
+              return cb(new Error(`something happened ${callNumber}`));
             }
             StoreWithoutRemoveAll.prototype.removeCookie.call(
               this,
@@ -159,7 +159,7 @@ vows
             callNumber++;
             if (callNumber % 2 === 1) {
               // odd calls; 1st, 3rd, etc.
-              return cb(new Error("something happened " + callNumber));
+              return cb(new Error(`something happened ${callNumber}`));
             }
             origRemove.call(this, domain, path, key, cb);
           };

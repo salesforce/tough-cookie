@@ -57,7 +57,7 @@ function equivalenceVows(table) {
   const theVows = {};
   Object.keys(table).forEach(function(thisDate) {
     const sameAs = table[thisDate];
-    const label = "'" + thisDate + "' parses the same as '" + sameAs + "'";
+    const label = `'${thisDate}' parses the same as '${sameAs}'`;
     theVows[label] = function() {
       const expected = tough.parseDate(sameAs);
       const actual = tough.parseDate(thisDate);
@@ -128,7 +128,7 @@ vows
   .addBatch({
     "reDos hr": {
       topic: function() {
-        const str = "Wed, 09 Jun 2021 10" + TOO_MANY_XS + ":18:14 GMT";
+        const str = `Wed, 09 Jun 2021 10${TOO_MANY_XS}:18:14 GMT`;
         return tough.parseDate(str, true) ? true : false;
       },
       invalid: function(date) {
@@ -137,7 +137,7 @@ vows
     },
     "reDos min": {
       topic: function() {
-        const str = "Wed, 09 Jun 2021 10:18" + TOO_MANY_XS + ":14 GMT";
+        const str = `Wed, 09 Jun 2021 10:18${TOO_MANY_XS}:14 GMT`;
         return tough.parseDate(str, true) ? true : false;
       },
       invalid: function(date) {
@@ -146,7 +146,7 @@ vows
     },
     "reDos sec": {
       topic: function() {
-        const str = "Wed, 09 Jun 2021 10:18:14" + TOO_MANY_XS + " GMT";
+        const str = `Wed, 09 Jun 2021 10:18:14${TOO_MANY_XS} GMT`;
         return tough.parseDate(str, true) ? true : false;
       },
       valid: function(date) {

@@ -75,9 +75,9 @@ function setUp(context) {
         domain: domain,
         path: path,
         key: "key",
-        value: "value" + j + i
+        value: `value${j}${i}`
       });
-      context.jar.setCookieSync(c, "http://" + domain + "/", {
+      context.jar.setCookieSync(c, `http://${domain}/`, {
         now: context.now
       });
       context.totalCookies++;
@@ -118,7 +118,7 @@ function setUp(context) {
 function checkMetadata(serialized) {
   assert.notEqual(serialized, null);
   assert.isObject(serialized);
-  assert.equal(serialized.version, "tough-cookie@" + tough.version);
+  assert.equal(serialized.version, `tough-cookie@${tough.version}`);
   assert.equal(serialized.storeType, "MemoryCookieStore");
   assert.typeOf(serialized.rejectPublicSuffixes, "boolean");
   assert.isArray(serialized.cookies);
@@ -160,7 +160,7 @@ function validateSerializedCookie(cookie) {
         } else {
           assert(
             isInteger(cookie[prop]),
-            "serialized property isn't integer: " + prop
+            `serialized property isn't integer: ${prop}`
           );
         }
         break;
@@ -173,7 +173,7 @@ function validateSerializedCookie(cookie) {
         break;
 
       default:
-        assert.fail("unexpected serialized property: " + prop);
+        assert.fail(`unexpected serialized property: ${prop}`);
     }
   });
 }
@@ -358,7 +358,7 @@ vows
       },
       "has expected metadata": function(err, jsonObj) {
         assert.isNull(err);
-        assert.equal(jsonObj.version, "tough-cookie@" + tough.version);
+        assert.equal(jsonObj.version, `tough-cookie@${tough.version}`);
         assert.isTrue(jsonObj.rejectPublicSuffixes);
         assert.equal(jsonObj.storeType, "MemoryCookieStore");
       },
@@ -425,7 +425,7 @@ vows
                 } else if (cookie.key === "max") {
                   assert.strictEqual(cookie.TTL(this.now), 3600 * 1000);
                 } else {
-                  assert.fail("Unexpected cookie key: " + cookie.key);
+                  assert.fail(`Unexpected cookie key: ${cookie.key}`);
                 }
               }.bind(this)
             );
