@@ -29,15 +29,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 "use strict";
-const util = require("util");
 const vows = require("vows");
 const assert = require("assert");
 const async = require("async");
 const tough = require("../lib/cookie");
 const Cookie = tough.Cookie;
 const CookieJar = tough.CookieJar;
-const Store = tough.Store;
-const MemoryCookieStore = tough.MemoryCookieStore;
 
 const atNow = Date.now();
 
@@ -81,6 +78,79 @@ vows
         assert.equal(c.expires, "Infinity");
         assert.equal(c.secure, false);
         assert.equal(c.httpOnly, false);
+      }
+    }
+  })
+  .addBatch({
+    "CookieJar Promises": {
+      topic: () => new CookieJar(),
+      setCookie: {
+        topic(jar) {
+          jar
+            .setCookie("foo=bar", "http://example.com")
+            .then(c => this.callback(null, c), this.callback);
+        },
+        "resolves to a Cookie"(cookie) {
+          assert.ok(cookie instanceof Cookie);
+          assert.strictEqual(cookie.key, "foo");
+          assert.strictEqual(cookie.value, "bar");
+        }
+      },
+      getCookies: {
+        topic(jar) {
+          jar
+            .getCookies("http://example.com")
+            .then(cookies => this.callback(null, cookies), this.callback);
+        },
+        "resolves to an array of cookies"(cookies) {
+          assert.ok(Array.isArray(cookies), "not an array");
+          assert.ok(cookies.length > 0, "array is empty");
+          for (const cookie of cookies) {
+            assert.ok(cookie instanceof Cookie, "not instanceof Cookie");
+          }
+        }
+      },
+      getCookieString: {
+        topic(jar) {
+          jar
+            .getCookieString("http://example.com")
+            .then(cookies => this.callback(null, cookies), this.callback);
+        },
+        "resolves to a string"(cookies) {
+          assert.ok(typeof cookies === "string", "not a string");
+        }
+      },
+      getSetCookieStrings: {
+        topic(jar) {
+          jar
+            .getSetCookieStrings("http://example.com")
+            .then(cookies => this.callback(null, cookies), this.callback);
+        },
+        "resolves to a an array of strings"(cookies) {
+          assert.ok(Array.isArray(cookies), "not an array");
+          assert.ok(cookies.length > 0, "array is empty");
+          for (const cookie of cookies) {
+            assert.ok(typeof cookie === "string", "not a string");
+          }
+        }
+      },
+      removeAllCookies: {
+        topic(jar) {
+          jar.removeAllCookies().then(this.callback, this.callback);
+        },
+        "resolves to undefined"(arg) {
+          assert.ok(arg === undefined, "was not undefined");
+        }
+      },
+      serialize: {
+        topic(jar) {
+          jar
+            .serialize()
+            .then(data => this.callback(null, data), this.callback);
+        },
+        "resolves to an object"(data) {
+          assert.ok(data instanceof Object, "not an object");
+        }
       }
     }
   })
