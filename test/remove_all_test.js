@@ -29,15 +29,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 "use strict";
-var util = require("util");
-var vows = require("vows");
-var assert = require("assert");
-var async = require("async");
-var tough = require("../lib/cookie");
-var Cookie = tough.Cookie;
-var CookieJar = tough.CookieJar;
-var Store = tough.Store;
-var MemoryCookieStore = tough.MemoryCookieStore;
+const util = require("util");
+const vows = require("vows");
+const assert = require("assert");
+const async = require("async");
+const tough = require("../lib/cookie");
+const Cookie = tough.Cookie;
+const CookieJar = tough.CookieJar;
+const Store = tough.Store;
+const MemoryCookieStore = tough.MemoryCookieStore;
 
 function StoreWithoutRemoveAll() {
   Store.call(this);
@@ -91,11 +91,11 @@ vows
     "With a store that doesn't implement removeAllCookies": {
       "under normal conditions": {
         topic: function() {
-          var store = new StoreWithoutRemoveAll();
-          var jar = new CookieJar(store);
+          const store = new StoreWithoutRemoveAll();
+          const jar = new CookieJar(store);
           jar.setCookieSync("a=b", "http://example.com/index.html");
           jar.setCookieSync("c=d", "http://example.org/index.html");
-          var cb = this.callback;
+          const cb = this.callback;
           jar.removeAllCookies(function(err) {
             return cb(err, store.stats);
           });
@@ -109,14 +109,14 @@ vows
       },
       "when one of the removeCookie calls fail": {
         topic: function() {
-          var store = new StoreWithoutRemoveAll();
-          var jar = new CookieJar(store);
+          const store = new StoreWithoutRemoveAll();
+          const jar = new CookieJar(store);
           jar.setCookieSync("a=b", "http://example.com/index.html");
           jar.setCookieSync("c=d", "http://example.org/index.html");
           jar.setCookieSync("e=f", "http://example.net/index.html");
           jar.setCookieSync("g=h", "http://example.edu/index.html");
 
-          var callNumber = 0;
+          let callNumber = 0;
           store.removeCookie = function(domain, path, key, cb) {
             callNumber++;
             if (callNumber == 4) {
@@ -131,7 +131,7 @@ vows
             );
           };
 
-          var cb = this.callback;
+          const cb = this.callback;
           jar.removeAllCookies(function(err) {
             return cb(err, store.stats);
           });
@@ -146,15 +146,15 @@ vows
       },
       "when several of the removeCookie calls fail": {
         topic: function() {
-          var store = new StoreWithoutRemoveAll();
-          var jar = new CookieJar(store);
+          const store = new StoreWithoutRemoveAll();
+          const jar = new CookieJar(store);
           jar.setCookieSync("a=b", "http://example.com/index.html");
           jar.setCookieSync("c=d", "http://example.org/index.html");
           jar.setCookieSync("e=f", "http://example.net/index.html");
           jar.setCookieSync("g=h", "http://example.edu/index.html");
 
-          var callNumber = 0;
-          var origRemove = store.removeCookie;
+          let callNumber = 0;
+          const origRemove = store.removeCookie;
           store.removeCookie = function(domain, path, key, cb) {
             callNumber++;
             if (callNumber % 2 === 1) {
@@ -164,7 +164,7 @@ vows
             origRemove.call(this, domain, path, key, cb);
           };
 
-          var cb = this.callback;
+          const cb = this.callback;
           jar.removeAllCookies(function(err) {
             return cb(err, store.stats);
           });
@@ -181,11 +181,11 @@ vows
   .addBatch({
     "With a store that does implement removeAllCookies": {
       topic: function() {
-        var store = new MemoryStoreExtension();
-        var jar = new CookieJar(store);
+        const store = new MemoryStoreExtension();
+        const jar = new CookieJar(store);
         jar.setCookieSync("a=b", "http://example.com/index.html");
         jar.setCookieSync("c=d", "http://example.org/index.html");
-        var cb = this.callback;
+        const cb = this.callback;
         this.jar = jar;
         jar.removeAllCookies(function(err) {
           return cb(err, store.stats);

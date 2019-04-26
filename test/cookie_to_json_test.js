@@ -30,10 +30,10 @@
  */
 
 "use strict";
-var vows = require("vows");
-var assert = require("assert");
-var tough = require("../lib/cookie");
-var Cookie = tough.Cookie;
+const vows = require("vows");
+const assert = require("assert");
+const tough = require("../lib/cookie");
+const Cookie = tough.Cookie;
 
 vows
   .describe("Cookie.toJSON()")
@@ -41,7 +41,7 @@ vows
     JSON: {
       serialization: {
         topic: function() {
-          var c = Cookie.parse(
+          const c = Cookie.parse(
             "alpha=beta; Domain=example.com; Path=/foo; Expires=Tue, 19 Jan 2038 03:14:07 GMT; HttpOnly"
           );
           return JSON.stringify(c);
@@ -59,7 +59,7 @@ vows
       },
       deserialization: {
         topic: function() {
-          var json =
+          const json =
             '{"key":"alpha","value":"beta","domain":"example.com","path":"/foo","expires":"2038-01-19T03:14:07.000Z","httpOnly":true,"lastAccessed":2000000000123}';
           return Cookie.fromJSON(json);
         },
@@ -118,7 +118,7 @@ vows
     "maxAge serialization": {
       topic: function() {
         return function(toSet) {
-          var c = new Cookie();
+          const c = new Cookie();
           c.key = "foo";
           c.value = "bar";
           c.setMaxAge(toSet);

@@ -31,13 +31,13 @@
 
 "use strict";
 require("string.prototype.repeat"); // polyfill
-var vows = require("vows");
-var assert = require("assert");
-var tough = require("../lib/cookie");
-var Cookie = tough.Cookie;
+const vows = require("vows");
+const assert = require("assert");
+const tough = require("../lib/cookie");
+const Cookie = tough.Cookie;
 
-var LOTS_OF_SEMICOLONS = ";".repeat(65535);
-var LOTS_OF_SPACES = " ".repeat(65535);
+const LOTS_OF_SEMICOLONS = ";".repeat(65535);
+const LOTS_OF_SPACES = " ".repeat(65535);
 
 vows
   .describe("Parsing")
@@ -166,32 +166,32 @@ vows
       }
     },
     "invalid expires": function() {
-      var c = Cookie.parse("a=b; Expires=xyzzy");
+      const c = Cookie.parse("a=b; Expires=xyzzy");
       assert.ok(c);
       assert.equal(c.expires, Infinity);
     },
     "zero max-age": function() {
-      var c = Cookie.parse("a=b; Max-Age=0");
+      const c = Cookie.parse("a=b; Max-Age=0");
       assert.ok(c);
       assert.equal(c.maxAge, 0);
     },
     "negative max-age": function() {
-      var c = Cookie.parse("a=b; Max-Age=-1");
+      const c = Cookie.parse("a=b; Max-Age=-1");
       assert.ok(c);
       assert.equal(c.maxAge, -1);
     },
     "empty domain": function() {
-      var c = Cookie.parse("a=b; domain=");
+      const c = Cookie.parse("a=b; domain=");
       assert.ok(c);
       assert.equal(c.domain, null);
     },
     "dot domain": function() {
-      var c = Cookie.parse("a=b; domain=.");
+      const c = Cookie.parse("a=b; domain=.");
       assert.ok(c);
       assert.equal(c.domain, null);
     },
     "uppercase domain": function() {
-      var c = Cookie.parse("a=b; domain=EXAMPLE.COM");
+      const c = Cookie.parse("a=b; domain=EXAMPLE.COM");
       assert.ok(c);
       assert.equal(c.domain, "example.com");
     },
@@ -207,12 +207,12 @@ vows
       }
     },
     "empty path": function() {
-      var c = Cookie.parse("a=b; path=");
+      const c = Cookie.parse("a=b; path=");
       assert.ok(c);
       assert.equal(c.path, null);
     },
     "no-slash path": function() {
-      var c = Cookie.parse("a=b; path=xyzzy");
+      const c = Cookie.parse("a=b; path=xyzzy");
       assert.ok(c);
       assert.equal(c.path, null);
     },
@@ -221,20 +221,20 @@ vows
         return ["a=b; path=/;", "c=d;;;;"];
       },
       "strips semi-colons": function(t) {
-        var c1 = Cookie.parse(t[0]);
-        var c2 = Cookie.parse(t[1]);
+        const c1 = Cookie.parse(t[0]);
+        const c2 = Cookie.parse(t[1]);
         assert.ok(c1);
         assert.ok(c2);
         assert.equal(c1.path, "/");
       }
     },
     "secure-with-value": function() {
-      var c = Cookie.parse("a=b; Secure=xyzzy");
+      const c = Cookie.parse("a=b; Secure=xyzzy");
       assert.ok(c);
       assert.equal(c.secure, true);
     },
     "httponly-with-value": function() {
-      var c = Cookie.parse("a=b; HttpOnly=xyzzy");
+      const c = Cookie.parse("a=b; HttpOnly=xyzzy");
       assert.ok(c);
       assert.equal(c.httpOnly, true);
     },
@@ -491,7 +491,7 @@ vows
     "way too many semicolons followed by non-semicolon": {
       topic: function() {
         // takes abnormally long due to semi-catastrophic regexp backtracking
-        var str = "foo=bar" + LOTS_OF_SEMICOLONS + " domain=example.com";
+        const str = "foo=bar" + LOTS_OF_SEMICOLONS + " domain=example.com";
         return Cookie.parse(str) || null;
       },
       parsed: function(c) {
@@ -516,13 +516,13 @@ vows
     "way too many spaces": {
       topic: function() {
         // takes abnormally long due to semi-catastrophic regexp backtracking
-        var str1 = "x" + LOTS_OF_SPACES + "x";
-        var str2 = "x x";
-        var t0 = Date.now();
-        var cookie1 = Cookie.parse(str1) || null;
-        var t1 = Date.now();
-        var cookie2 = Cookie.parse(str2) || null;
-        var t2 = Date.now();
+        const str1 = "x" + LOTS_OF_SPACES + "x";
+        const str2 = "x x";
+        const t0 = Date.now();
+        const cookie1 = Cookie.parse(str1) || null;
+        const t1 = Date.now();
+        const cookie2 = Cookie.parse(str2) || null;
+        const t2 = Date.now();
         return {
           cookie1: cookie1,
           cookie2: cookie2,
@@ -537,22 +537,22 @@ vows
         assert.equal(c.cookie2, null);
       },
       "takes about the same time for each": function(c) {
-        var long1 = c.dt1 + 1; // avoid 0ms
-        var short2 = c.dt2 + 1; // avoid 0ms
-        var ratio = Math.abs(long1 / short2);
+        const long1 = c.dt1 + 1; // avoid 0ms
+        const short2 = c.dt2 + 1; // avoid 0ms
+        const ratio = Math.abs(long1 / short2);
         assert.lesser(ratio, 250); // if broken, goes 2000-4000x
       }
     },
     "way too many spaces with value": {
       topic: function() {
         // takes abnormally long due to semi-catastrophic regexp backtracking
-        var str1 = "x" + LOTS_OF_SPACES + "=x";
-        var str2 = "x =x";
-        var t0 = Date.now();
-        var cookie1 = Cookie.parse(str1) || null;
-        var t1 = Date.now();
-        var cookie2 = Cookie.parse(str2) || null;
-        var t2 = Date.now();
+        const str1 = "x" + LOTS_OF_SPACES + "=x";
+        const str2 = "x =x";
+        const t0 = Date.now();
+        const cookie1 = Cookie.parse(str1) || null;
+        const t1 = Date.now();
+        const cookie2 = Cookie.parse(str2) || null;
+        const t2 = Date.now();
         return {
           cookie1: cookie1,
           cookie2: cookie2,
@@ -571,22 +571,22 @@ vows
         assert.equal(c.cookie2.value, "x");
       },
       "takes about the same time for each": function(c) {
-        var long1 = c.dt1 + 1; // avoid 0ms
-        var short2 = c.dt2 + 1; // avoid 0ms
-        var ratio = Math.abs(long1 / short2);
+        const long1 = c.dt1 + 1; // avoid 0ms
+        const short2 = c.dt2 + 1; // avoid 0ms
+        const ratio = Math.abs(long1 / short2);
         assert.lesser(ratio, 250); // if broken, goes 2000-4000x
       }
     },
     "way too many spaces in loose mode": {
       topic: function() {
         // takes abnormally long due to semi-catastrophic regexp backtracking
-        var str1 = "x" + LOTS_OF_SPACES + "x";
-        var str2 = "x x";
-        var t0 = Date.now();
-        var cookie1 = Cookie.parse(str1, { loose: true }) || null;
-        var t1 = Date.now();
-        var cookie2 = Cookie.parse(str2, { loose: true }) || null;
-        var t2 = Date.now();
+        const str1 = "x" + LOTS_OF_SPACES + "x";
+        const str2 = "x x";
+        const t0 = Date.now();
+        const cookie1 = Cookie.parse(str1, { loose: true }) || null;
+        const t1 = Date.now();
+        const cookie2 = Cookie.parse(str2, { loose: true }) || null;
+        const t2 = Date.now();
         return {
           cookie1: cookie1,
           cookie2: cookie2,
@@ -605,22 +605,22 @@ vows
         assert.equal(c.cookie2.value, "x x");
       },
       "takes about the same time for each": function(c) {
-        var long1 = c.dt1 + 1; // avoid 0ms
-        var short2 = c.dt2 + 1; // avoid 0ms
-        var ratio = Math.abs(long1 / short2);
+        const long1 = c.dt1 + 1; // avoid 0ms
+        const short2 = c.dt2 + 1; // avoid 0ms
+        const ratio = Math.abs(long1 / short2);
         assert.lesser(ratio, 250); // if broken, goes 2000-4000x
       }
     },
     "way too many spaces with value in loose mode": {
       topic: function() {
         // takes abnormally long due to semi-catastrophic regexp backtracking
-        var str1 = "x" + LOTS_OF_SPACES + "=x";
-        var str2 = "x =x";
-        var t0 = Date.now();
-        var cookie1 = Cookie.parse(str1, { loose: true }) || null;
-        var t1 = Date.now();
-        var cookie2 = Cookie.parse(str2, { loose: true }) || null;
-        var t2 = Date.now();
+        const str1 = "x" + LOTS_OF_SPACES + "=x";
+        const str2 = "x =x";
+        const t0 = Date.now();
+        const cookie1 = Cookie.parse(str1, { loose: true }) || null;
+        const t1 = Date.now();
+        const cookie2 = Cookie.parse(str2, { loose: true }) || null;
+        const t2 = Date.now();
         return {
           cookie1: cookie1,
           cookie2: cookie2,
@@ -639,9 +639,9 @@ vows
         assert.equal(c.cookie2.value, "x");
       },
       "takes about the same time for each": function(c) {
-        var long1 = c.dt1 + 1; // avoid 0ms
-        var short2 = c.dt2 + 1; // avoid 0ms
-        var ratio = Math.abs(long1 / short2);
+        const long1 = c.dt1 + 1; // avoid 0ms
+        const short2 = c.dt2 + 1; // avoid 0ms
+        const ratio = Math.abs(long1 / short2);
         assert.lesser(ratio, 250); // if broken, goes 2000-4000x
       }
     }

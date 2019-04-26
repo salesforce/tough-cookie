@@ -30,17 +30,17 @@
  */
 
 "use strict";
-var vows = require("vows");
-var assert = require("assert");
-var tough = require("../lib/cookie");
+const vows = require("vows");
+const assert = require("assert");
+const tough = require("../lib/cookie");
 require("string.prototype.repeat"); // polyfill
 
 function dateVows(table) {
-  var theVows = {};
+  const theVows = {};
   Object.keys(table).forEach(function(date) {
-    var expect = table[date];
+    const expect = table[date];
     theVows[date] = function() {
-      var got = tough.parseDate(date) ? true : false;
+      const got = tough.parseDate(date) ? true : false;
       if (expect && !got) {
         assert.ok(false, "expected valid date but was invalid");
       } else if (!expect && got) {
@@ -54,13 +54,13 @@ function dateVows(table) {
 }
 
 function equivalenceVows(table) {
-  var theVows = {};
+  const theVows = {};
   Object.keys(table).forEach(function(thisDate) {
-    var sameAs = table[thisDate];
-    var label = "'" + thisDate + "' parses the same as '" + sameAs + "'";
+    const sameAs = table[thisDate];
+    const label = "'" + thisDate + "' parses the same as '" + sameAs + "'";
     theVows[label] = function() {
-      var expected = tough.parseDate(sameAs);
-      var actual = tough.parseDate(thisDate);
+      const expected = tough.parseDate(sameAs);
+      const actual = tough.parseDate(thisDate);
       if (!expected && !actual) {
         assert.ok(false, "both dates failed to parse!");
       }
@@ -70,7 +70,7 @@ function equivalenceVows(table) {
   return { "equivalence parsing": theVows };
 }
 
-var TOO_MANY_XS = String("x").repeat(65535);
+const TOO_MANY_XS = String("x").repeat(65535);
 
 vows
   .describe("Date")
@@ -128,7 +128,7 @@ vows
   .addBatch({
     "reDos hr": {
       topic: function() {
-        var str = "Wed, 09 Jun 2021 10" + TOO_MANY_XS + ":18:14 GMT";
+        const str = "Wed, 09 Jun 2021 10" + TOO_MANY_XS + ":18:14 GMT";
         return tough.parseDate(str, true) ? true : false;
       },
       invalid: function(date) {
@@ -137,7 +137,7 @@ vows
     },
     "reDos min": {
       topic: function() {
-        var str = "Wed, 09 Jun 2021 10:18" + TOO_MANY_XS + ":14 GMT";
+        const str = "Wed, 09 Jun 2021 10:18" + TOO_MANY_XS + ":14 GMT";
         return tough.parseDate(str, true) ? true : false;
       },
       invalid: function(date) {
@@ -146,7 +146,7 @@ vows
     },
     "reDos sec": {
       topic: function() {
-        var str = "Wed, 09 Jun 2021 10:18:14" + TOO_MANY_XS + " GMT";
+        const str = "Wed, 09 Jun 2021 10:18:14" + TOO_MANY_XS + " GMT";
         return tough.parseDate(str, true) ? true : false;
       },
       valid: function(date) {

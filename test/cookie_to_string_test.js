@@ -30,17 +30,17 @@
  */
 
 "use strict";
-var vows = require("vows");
-var assert = require("assert");
-var tough = require("../lib/cookie");
-var Cookie = tough.Cookie;
+const vows = require("vows");
+const assert = require("assert");
+const tough = require("../lib/cookie");
+const Cookie = tough.Cookie;
 
 vows
   .describe("Cookie.toString()")
   .addBatch({
     "a simple cookie": {
       topic: function() {
-        var c = new Cookie();
+        const c = new Cookie();
         c.key = "a";
         c.value = "b";
         return c;
@@ -54,7 +54,7 @@ vows
     },
     "a cookie with spaces in the value": {
       topic: function() {
-        var c = new Cookie();
+        const c = new Cookie();
         c.key = "a";
         c.value = "beta gamma";
         return c;
@@ -68,7 +68,7 @@ vows
     },
     "with an empty value and HttpOnly": {
       topic: function() {
-        var c = new Cookie();
+        const c = new Cookie();
         c.key = "a";
         c.httpOnly = true;
         return c;
@@ -79,7 +79,7 @@ vows
     },
     "with an expiry": {
       topic: function() {
-        var c = new Cookie();
+        const c = new Cookie();
         c.key = "a";
         c.value = "b";
         c.setExpires("Oct 18 2011 07:05:03 GMT");
@@ -100,7 +100,7 @@ vows
     },
     "with a max-age": {
       topic: function() {
-        var c = new Cookie();
+        const c = new Cookie();
         c.key = "a";
         c.value = "b";
         c.setExpires("Oct 18 2011 07:05:03 GMT");
@@ -118,7 +118,7 @@ vows
       }
     },
     "with a bunch of things": function() {
-      var c = new Cookie();
+      const c = new Cookie();
       c.key = "a";
       c.value = "b";
       c.setExpires("Oct 18 2011 07:05:03 GMT");
@@ -135,7 +135,7 @@ vows
     },
     "a host-only cookie": {
       topic: function() {
-        var c = new Cookie();
+        const c = new Cookie();
         c.key = "a";
         c.value = "b";
         c.hostOnly = true;
@@ -152,7 +152,7 @@ vows
     },
     "minutes are '10'": {
       topic: function() {
-        var c = new Cookie();
+        const c = new Cookie();
         c.key = "a";
         c.value = "b";
         c.expires = new Date(1284113410000);
@@ -162,7 +162,7 @@ vows
         assert.ok(c.validate());
       },
       "to string": function(c) {
-        var str = c.toString();
+        const str = c.toString();
         assert.notEqual(str, "a=b; Expires=Fri, 010 Sep 2010 010:010:010 GMT");
         assert.equal(str, "a=b; Expires=Fri, 10 Sep 2010 10:10:10 GMT");
       }

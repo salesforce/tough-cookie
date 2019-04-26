@@ -30,14 +30,14 @@
  */
 
 "use strict";
-var vows = require("vows");
-var assert = require("assert");
-var fs = require("fs");
-var path = require("path");
-var url = require("url");
-var tough = require("../lib/cookie");
-var Cookie = tough.Cookie;
-var CookieJar = tough.CookieJar;
+const vows = require("vows");
+const assert = require("assert");
+const fs = require("fs");
+const path = require("path");
+const url = require("url");
+const tough = require("../lib/cookie");
+const Cookie = tough.Cookie;
+const CookieJar = tough.CookieJar;
 
 function readJson(filePath) {
   filePath = path.join(__dirname, filePath);
@@ -45,15 +45,15 @@ function readJson(filePath) {
 }
 
 function setGetCookieVows() {
-  var theVows = {};
-  var data = readJson("./ietf_data/parser.json");
+  const theVows = {};
+  const data = readJson("./ietf_data/parser.json");
 
   data.forEach(function(testCase) {
     theVows[testCase.test] = function() {
-      var jar = new CookieJar();
-      var expected = testCase["sent"];
-      var sentFrom = "http://home.example.org/cookie-parser?" + testCase.test;
-      var sentTo = testCase["sent-to"]
+      const jar = new CookieJar();
+      const expected = testCase["sent"];
+      const sentFrom = "http://home.example.org/cookie-parser?" + testCase.test;
+      const sentTo = testCase["sent-to"]
         ? url.resolve("http://home.example.org", testCase["sent-to"])
         : "http://home.example.org/cookie-parser-result?" + testCase.test;
 
@@ -61,12 +61,12 @@ function setGetCookieVows() {
         jar.setCookieSync(cookieStr, sentFrom, { ignoreError: true });
       });
 
-      var actual = jar.getCookiesSync(sentTo, { sort: true });
+      const actual = jar.getCookiesSync(sentTo, { sort: true });
 
       assert.strictEqual(actual.length, expected.length);
 
       actual.forEach(function(actualCookie, idx) {
-        var expectedCookie = expected[idx];
+        const expectedCookie = expected[idx];
         assert.strictEqual(actualCookie.key, expectedCookie.name);
         assert.strictEqual(actualCookie.value, expectedCookie.value);
       });
@@ -77,18 +77,18 @@ function setGetCookieVows() {
 }
 
 function dateVows() {
-  var theVows = {};
+  const theVows = {};
 
   [
     "./ietf_data/dates/bsd-examples.json",
     "./ietf_data/dates/examples.json"
   ].forEach(function(filePath) {
-    var data = readJson(filePath);
-    var fileName = path.basename(filePath);
+    const data = readJson(filePath);
+    const fileName = path.basename(filePath);
 
     data.forEach(function(testCase) {
       theVows[fileName + " : " + testCase.test] = function() {
-        var actual = tough.parseDate(testCase.test);
+        let actual = tough.parseDate(testCase.test);
         actual = actual ? actual.toUTCString() : null;
         assert.strictEqual(actual, testCase.expected);
       };

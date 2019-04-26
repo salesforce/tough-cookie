@@ -30,14 +30,14 @@
  */
 
 "use strict";
-var vows = require("vows");
-var assert = require("assert");
-var async = require("async");
-var tough = require("../lib/cookie");
-var Cookie = tough.Cookie;
-var CookieJar = tough.CookieJar;
+const vows = require("vows");
+const assert = require("assert");
+const async = require("async");
+const tough = require("../lib/cookie");
+const Cookie = tough.Cookie;
+const CookieJar = tough.CookieJar;
 
-var atNow = Date.now();
+const atNow = Date.now();
 
 function at(offset) {
   return { now: new Date(atNow + offset) };
@@ -48,7 +48,7 @@ vows
   .addBatch({
     "Issue 1": {
       topic: function() {
-        var cj = new CookieJar();
+        const cj = new CookieJar();
         cj.setCookie(
           "hello=world; path=/some/path/",
           "http://domain/some/path/file",
@@ -73,7 +73,7 @@ vows
           assert.lengthOf(t.cookies, 1);
         },
         "it's the right one": function(t) {
-          var c = t.cookies[0];
+          const c = t.cookies[0];
           assert.equal(c.key, "hello");
           assert.equal(c.value, "world");
         }
@@ -83,10 +83,10 @@ vows
   .addBatch({
     "trailing semi-colon set into cj": {
       topic: function() {
-        var cb = this.callback;
-        var cj = new CookieJar();
-        var ex = "http://www.example.com";
-        var tasks = [];
+        const cb = this.callback;
+        const cj = new CookieJar();
+        const ex = "http://www.example.com";
+        const tasks = [];
         tasks.push(function(next) {
           cj.setCookie("broken_path=testme; path=/;", ex, at(-1), next);
         });
@@ -115,7 +115,7 @@ vows
       },
       "retrieve the cookie": {
         topic: function(t) {
-          var cb = this.callback;
+          const cb = this.callback;
           t.cj.getCookies("http://www.example.com", {}, function(err, cookies) {
             t.cookies = cookies;
             cb(err, t);
@@ -135,8 +135,8 @@ vows
   .addBatch({
     "tough-cookie throws exception on malformed URI (GH-32)": {
       topic: function() {
-        var url = "http://www.example.com/?test=100%";
-        var cj = new CookieJar();
+        const url = "http://www.example.com/?test=100%";
+        const cj = new CookieJar();
 
         cj.setCookieSync("Test=Test", url);
 

@@ -30,18 +30,18 @@
  */
 
 "use strict";
-var vows = require("vows");
-var assert = require("assert");
-var tough = require("../lib/cookie");
-var Cookie = tough.Cookie;
+const vows = require("vows");
+const assert = require("assert");
+const tough = require("../lib/cookie");
+const Cookie = tough.Cookie;
 
 function matchVows(func, table) {
-  var theVows = {};
+  const theVows = {};
   table.forEach(function(item) {
-    var str = item[0];
-    var dom = item[1];
-    var expect = item[2];
-    var label = str + (expect ? " matches " : " doesn't match ") + dom;
+    const str = item[0];
+    const dom = item[1];
+    const expect = item[2];
+    const label = str + (expect ? " matches " : " doesn't match ") + dom;
     theVows[label] = function() {
       assert.equal(func(str, dom), expect);
     };
@@ -50,11 +50,11 @@ function matchVows(func, table) {
 }
 
 function defaultPathVows(table) {
-  var theVows = {};
+  const theVows = {};
   table.forEach(function(item) {
-    var str = item[0];
-    var expect = item[1];
-    var label = str + " gives " + expect;
+    const str = item[0];
+    const expect = item[1];
+    const label = str + " gives " + expect;
     theVows[label] = function() {
       assert.equal(tough.defaultPath(str), expect);
     };
@@ -67,27 +67,27 @@ vows
   .addBatch({
     "domain normalization": {
       simple: function() {
-        var c = new Cookie();
+        const c = new Cookie();
         c.domain = "EXAMPLE.com";
         assert.equal(c.canonicalizedDomain(), "example.com");
       },
       "extra dots": function() {
-        var c = new Cookie();
+        const c = new Cookie();
         c.domain = ".EXAMPLE.com";
         assert.equal(c.cdomain(), "example.com");
       },
       "weird trailing dot": function() {
-        var c = new Cookie();
+        const c = new Cookie();
         c.domain = "EXAMPLE.ca.";
         assert.equal(c.canonicalizedDomain(), "example.ca.");
       },
       "weird internal dots": function() {
-        var c = new Cookie();
+        const c = new Cookie();
         c.domain = "EXAMPLE...ca.";
         assert.equal(c.canonicalizedDomain(), "example...ca.");
       },
       IDN: function() {
-        var c = new Cookie();
+        const c = new Cookie();
         c.domain = "δοκιμή.δοκιμή"; // "test.test" in greek
         assert.equal(c.canonicalizedDomain(), "xn--jxalpdlp.xn--jxalpdlp");
       }
