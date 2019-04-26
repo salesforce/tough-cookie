@@ -28,12 +28,12 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-'use strict';
-var util = require('util');
-var vows = require('vows');
-var assert = require('assert');
-var async = require('async');
-var tough = require('../lib/cookie');
+"use strict";
+var util = require("util");
+var vows = require("vows");
+var assert = require("assert");
+var async = require("async");
+var tough = require("../lib/cookie");
 var Cookie = tough.Cookie;
 var CookieJar = tough.CookieJar;
 var Store = tough.Store;
@@ -48,10 +48,10 @@ util.inherits(StoreWithoutRemoveAll, Store);
 StoreWithoutRemoveAll.prototype.synchronous = true;
 StoreWithoutRemoveAll.prototype.cookies = [];
 StoreWithoutRemoveAll.prototype.findCookie = function(domain, path, key, cb) {
-  return cb(null,null);
+  return cb(null, null);
 };
 StoreWithoutRemoveAll.prototype.findCookies = function(domain, path, key, cb) {
-  return cb(null,[]);
+  return cb(null, []);
 };
 StoreWithoutRemoveAll.prototype.putCookie = function(cookie, cb) {
   this.stats.put++;
@@ -86,21 +86,21 @@ MemoryStoreExtension.prototype.removeAllCookies = function(cb) {
 };
 
 vows
-  .describe('Store removeAllCookies API')
+  .describe("Store removeAllCookies API")
   .addBatch({
     "With a store that doesn't implement removeAllCookies": {
       "under normal conditions": {
         topic: function() {
           var store = new StoreWithoutRemoveAll();
           var jar = new CookieJar(store);
-          jar.setCookieSync("a=b", 'http://example.com/index.html');
-          jar.setCookieSync("c=d", 'http://example.org/index.html');
+          jar.setCookieSync("a=b", "http://example.com/index.html");
+          jar.setCookieSync("c=d", "http://example.org/index.html");
           var cb = this.callback;
           jar.removeAllCookies(function(err) {
             return cb(err, store.stats);
           });
         },
-        "Cookies are removed one-by-one": function (err, stats) {
+        "Cookies are removed one-by-one": function(err, stats) {
           assert.equal(err, null);
           assert.equal(stats.put, 2);
           assert.equal(stats.getAll, 1);
@@ -111,18 +111,24 @@ vows
         topic: function() {
           var store = new StoreWithoutRemoveAll();
           var jar = new CookieJar(store);
-          jar.setCookieSync("a=b", 'http://example.com/index.html');
-          jar.setCookieSync("c=d", 'http://example.org/index.html');
-          jar.setCookieSync("e=f", 'http://example.net/index.html');
-          jar.setCookieSync("g=h", 'http://example.edu/index.html');
+          jar.setCookieSync("a=b", "http://example.com/index.html");
+          jar.setCookieSync("c=d", "http://example.org/index.html");
+          jar.setCookieSync("e=f", "http://example.net/index.html");
+          jar.setCookieSync("g=h", "http://example.edu/index.html");
 
           var callNumber = 0;
           store.removeCookie = function(domain, path, key, cb) {
             callNumber++;
             if (callNumber == 4) {
-              return cb(new Error('something happened ' + callNumber));
+              return cb(new Error("something happened " + callNumber));
             }
-            StoreWithoutRemoveAll.prototype.removeCookie.call(this, domain, path, key, cb);
+            StoreWithoutRemoveAll.prototype.removeCookie.call(
+              this,
+              domain,
+              path,
+              key,
+              cb
+            );
           };
 
           var cb = this.callback;
@@ -130,9 +136,9 @@ vows
             return cb(err, store.stats);
           });
         },
-        "The one error gets returned": function (err, stats) {
+        "The one error gets returned": function(err, stats) {
           assert(err != null);
-          assert.equal(err.message, 'something happened 4');
+          assert.equal(err.message, "something happened 4");
           assert.equal(stats.put, 4);
           assert.equal(stats.getAll, 1);
           assert.equal(stats.remove, 3);
@@ -142,17 +148,18 @@ vows
         topic: function() {
           var store = new StoreWithoutRemoveAll();
           var jar = new CookieJar(store);
-          jar.setCookieSync("a=b", 'http://example.com/index.html');
-          jar.setCookieSync("c=d", 'http://example.org/index.html');
-          jar.setCookieSync("e=f", 'http://example.net/index.html');
-          jar.setCookieSync("g=h", 'http://example.edu/index.html');
+          jar.setCookieSync("a=b", "http://example.com/index.html");
+          jar.setCookieSync("c=d", "http://example.org/index.html");
+          jar.setCookieSync("e=f", "http://example.net/index.html");
+          jar.setCookieSync("g=h", "http://example.edu/index.html");
 
           var callNumber = 0;
           var origRemove = store.removeCookie;
           store.removeCookie = function(domain, path, key, cb) {
             callNumber++;
-            if (callNumber % 2 === 1) { // odd calls; 1st, 3rd, etc.
-              return cb(new Error('something happened ' + callNumber));
+            if (callNumber % 2 === 1) {
+              // odd calls; 1st, 3rd, etc.
+              return cb(new Error("something happened " + callNumber));
             }
             origRemove.call(this, domain, path, key, cb);
           };
@@ -162,29 +169,29 @@ vows
             return cb(err, store.stats);
           });
         },
-        "all cookies are attemped": function (err, stats) {
+        "all cookies are attemped": function(err, stats) {
           assert.equal(stats.remove, 2); // two are prevented by test harness
         },
-        "only the first error is returned": function (err, stats) {
-          assert.equal(err.message, 'something happened 1');
-        },
+        "only the first error is returned": function(err, stats) {
+          assert.equal(err.message, "something happened 1");
+        }
       }
     }
   })
   .addBatch({
     "With a store that does implement removeAllCookies": {
-      topic: function () {
+      topic: function() {
         var store = new MemoryStoreExtension();
         var jar = new CookieJar(store);
-        jar.setCookieSync("a=b", 'http://example.com/index.html');
-        jar.setCookieSync("c=d", 'http://example.org/index.html');
+        jar.setCookieSync("a=b", "http://example.com/index.html");
+        jar.setCookieSync("c=d", "http://example.org/index.html");
         var cb = this.callback;
         this.jar = jar;
         jar.removeAllCookies(function(err) {
           return cb(err, store.stats);
         });
       },
-      "Cookies are removed as batch": function (err, stats) {
+      "Cookies are removed as batch": function(err, stats) {
         assert.equal(err, null);
         assert.equal(stats.getAll, 0);
         assert.equal(stats.remove, 0);
