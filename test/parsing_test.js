@@ -30,7 +30,6 @@
  */
 
 "use strict";
-require("string.prototype.repeat"); // polyfill
 const vows = require("vows");
 const assert = require("assert");
 const tough = require("../lib/cookie");

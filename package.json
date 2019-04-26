@@ -75,7 +75,6 @@
     "genversion": "^2.1.0",
     "nyc": "^11.6.0",
     "prettier": "^1.17.0",
-    "string.prototype.repeat": "^0.2.0",
     "vows": "^0.8.2"
   },
   "dependencies": {

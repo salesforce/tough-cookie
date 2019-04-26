@@ -33,7 +33,6 @@
 const vows = require("vows");
 const assert = require("assert");
 const tough = require("../lib/cookie");
-require("string.prototype.repeat"); // polyfill
 
 function dateVows(table) {
   const theVows = {};
