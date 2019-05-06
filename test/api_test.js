@@ -127,55 +127,17 @@ vows
     "allPaths option": {
       topic: function() {
         const cj = new CookieJar();
-        const tasks = [];
-        tasks.push(
-          cj.setCookie.bind(
-            cj,
-            "nopath_dom=qq; Path=/; Domain=example.com",
-            "http://example.com",
-            {}
-          )
-        );
-        tasks.push(
-          cj.setCookie.bind(
-            cj,
-            "path_dom=qq; Path=/foo; Domain=example.com",
-            "http://example.com",
-            {}
-          )
-        );
-        tasks.push(
-          cj.setCookie.bind(
-            cj,
-            "nopath_host=qq; Path=/",
-            "http://www.example.com",
-            {}
-          )
-        );
-        tasks.push(
-          cj.setCookie.bind(
-            cj,
-            "path_host=qq; Path=/foo",
-            "http://www.example.com",
-            {}
-          )
-        );
-        tasks.push(
-          cj.setCookie.bind(
-            cj,
-            "other=qq; Path=/",
-            "http://other.example.com/",
-            {}
-          )
-        );
-        tasks.push(
-          cj.setCookie.bind(
-            cj,
-            "other2=qq; Path=/foo",
-            "http://other.example.com/foo",
-            {}
-          )
-        );
+        const apex = "http://example.com";
+        const www = "http://www.example.com";
+        const other = "http://other.example.com";
+        const tasks = [
+          ["nopath_dom=qq; Path=/; Domain=example.com", apex, {}],
+          ["path_dom=qq; Path=/foo; Domain=example.com", apex, {}],
+          ["nopath_host=qq; Path=/", www, {}],
+          ["path_host=qq; Path=/foo", www, {}],
+          ["other=qq; Path=/", other, {}],
+          ["other2=qq; Path=/foo", `${other}/foo`, {}]
+        ].map(args => cb => cj.setCookie(...args, cb));
         const cb = this.callback;
         async.parallel(tasks, (err, results) => {
           cb(err, { cj: cj, cookies: results });
