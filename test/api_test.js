@@ -93,7 +93,7 @@ vows
           "near=expiry; Domain=example.com; Path=/; Max-Age=1",
           "http://www.example.com",
           at(-1),
-          function(err, cookie) {
+          (err, cookie) => {
             cb(err, { cj: cj, cookie: cookie });
           }
         );
@@ -105,11 +105,11 @@ vows
       "then, retrieving": {
         topic: function(t) {
           const cb = this.callback;
-          setTimeout(function() {
+          setTimeout(() => {
             t.cj.getCookies(
               "http://www.example.com",
               { http: true, expire: false },
-              function(err, cookies) {
+              (err, cookies) => {
                 t.cookies = cookies;
                 cb(err, t);
               }
@@ -177,14 +177,14 @@ vows
           )
         );
         const cb = this.callback;
-        async.parallel(tasks, function(err, results) {
+        async.parallel(tasks, (err, results) => {
           cb(err, { cj: cj, cookies: results });
         });
       },
       "all set": function(t) {
         assert.equal(t.cookies.length, 6);
         assert.ok(
-          t.cookies.every(function(c) {
+          t.cookies.every(c => {
             return !!c;
           })
         );
@@ -193,7 +193,7 @@ vows
         topic: function(t) {
           const cb = this.callback;
           const cj = t.cj;
-          cj.getCookies("http://www.example.com/", {}, function(err, cookies) {
+          cj.getCookies("http://www.example.com/", {}, (err, cookies) => {
             cb(err, { cj: cj, cookies: cookies });
           });
         },
@@ -202,14 +202,14 @@ vows
         },
         "all are path=/": function(t) {
           assert.ok(
-            t.cookies.every(function(c) {
+            t.cookies.every(c => {
               return c.path === "/";
             })
           );
         },
         "no 'other' cookies": function(t) {
           assert.ok(
-            !t.cookies.some(function(c) {
+            !t.cookies.some(c => {
               return /^other/.test(c.name);
             })
           );
@@ -219,10 +219,7 @@ vows
         topic: function(t) {
           const cb = this.callback;
           const cj = t.cj;
-          cj.getCookies("http://www.example.com/foo", {}, function(
-            err,
-            cookies
-          ) {
+          cj.getCookies("http://www.example.com/foo", {}, (err, cookies) => {
             cb(err, { cj: cj, cookies: cookies });
           });
         },
@@ -231,7 +228,7 @@ vows
         },
         "no 'other' cookies": function(t) {
           assert.ok(
-            !t.cookies.some(function(c) {
+            !t.cookies.some(c => {
               return /^other/.test(c.name);
             })
           );
@@ -241,19 +238,20 @@ vows
         topic: function(t) {
           const cb = this.callback;
           const cj = t.cj;
-          cj.getCookies("http://www.example.com/", { allPaths: true }, function(
-            err,
-            cookies
-          ) {
-            cb(err, { cj: cj, cookies: cookies });
-          });
+          cj.getCookies(
+            "http://www.example.com/",
+            { allPaths: true },
+            (err, cookies) => {
+              cb(err, { cj: cj, cookies: cookies });
+            }
+          );
         },
         "found four cookies": function(t) {
           assert.equal(t.cookies.length, 4);
         },
         "no 'other' cookies": function(t) {
           assert.ok(
-            !t.cookies.some(function(c) {
+            !t.cookies.some(c => {
               return /^other/.test(c.name);
             })
           );
@@ -268,22 +266,22 @@ vows
         const cookie = Cookie.parse("a=b; Domain=example.com; Path=/");
         const cookie2 = Cookie.parse("a=b; Domain=foo.com; Path=/");
         const cookie3 = Cookie.parse("foo=bar; Domain=foo.com; Path=/");
-        jar.setCookie(cookie, "http://example.com/index.html", function() {});
-        jar.setCookie(cookie2, "http://foo.com/index.html", function() {});
-        jar.setCookie(cookie3, "http://foo.com/index.html", function() {});
+        jar.setCookie(cookie, "http://example.com/index.html", () => {});
+        jar.setCookie(cookie2, "http://foo.com/index.html", () => {});
+        jar.setCookie(cookie3, "http://foo.com/index.html", () => {});
         return jar;
       },
       "all from matching domain": function(jar) {
-        jar.store.removeCookies("example.com", null, function(err) {
+        jar.store.removeCookies("example.com", null, err => {
           assert(err == null);
 
-          jar.store.findCookies("example.com", null, function(err, cookies) {
+          jar.store.findCookies("example.com", null, (err, cookies) => {
             assert(err == null);
             assert(cookies != null);
             assert(cookies.length === 0, "cookie was not removed");
           });
 
-          jar.store.findCookies("foo.com", null, function(err, cookies) {
+          jar.store.findCookies("foo.com", null, (err, cookies) => {
             assert(err == null);
             assert(cookies != null);
             assert(
@@ -294,10 +292,10 @@ vows
         });
       },
       "from cookie store matching domain and key": function(jar) {
-        jar.store.removeCookie("foo.com", "/", "foo", function(err) {
+        jar.store.removeCookie("foo.com", "/", "foo", err => {
           assert(err == null);
 
-          jar.store.findCookies("foo.com", null, function(err, cookies) {
+          jar.store.findCookies("foo.com", null, (err, cookies) => {
             assert(err == null);
             assert(cookies != null);
             assert(cookies.length === 1, "cookie was not removed correctly");
@@ -333,7 +331,7 @@ vows
           assert.ok(!err);
           assert.ok(Array.isArray(cookies));
           assert.lengthOf(cookies, 2);
-          cookies.forEach(function(cookie) {
+          cookies.forEach(cookie => {
             assert.instanceOf(cookie, Cookie);
           });
         }
@@ -365,7 +363,7 @@ vows
           assert.ok(!err);
           assert.ok(Array.isArray(headers));
           assert.lengthOf(headers, 2);
-          headers.forEach(function(header) {
+          headers.forEach(header => {
             assert.typeOf(header, "string");
           });
         }

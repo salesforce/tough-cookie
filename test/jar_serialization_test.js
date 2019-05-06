@@ -144,7 +144,7 @@ function validateSerializedCookie(cookie) {
   assert.isObject(cookie);
   assert.isFalse(cookie instanceof Cookie);
 
-  Object.keys(cookie).forEach(function(prop) {
+  Object.keys(cookie).forEach(prop => {
     const type = serializedCookiePropTypes[prop];
     switch (type) {
       case "string":
@@ -200,7 +200,7 @@ vows
         return jar;
       },
       "Cannot call toJSON": function(jar) {
-        assert.throws(function() {
+        assert.throws(() => {
           jar.toJSON();
         }, /^Error: getAllCookies is not implemented \(therefore jar cannot be serialized\)$/);
       }
@@ -215,7 +215,7 @@ vows
         return jar;
       },
       "Cannot call toJSON": function(jar) {
-        assert.throws(function() {
+        assert.throws(() => {
           jar.toJSON();
         }, /^Error: CookieJar store is not synchronous; use async API instead\.$/);
       }
@@ -247,7 +247,7 @@ vows
         "it gives a serialization with the two cookies": function(data) {
           checkMetadata(data);
           assert.equal(data.cookies.length, 2);
-          data.cookies.forEach(function(cookie) {
+          data.cookies.forEach(cookie => {
             validateSerializedCookie(cookie);
           });
         },
@@ -276,7 +276,7 @@ vows
         "it gives a serialization with the two cookies": function(data) {
           checkMetadata(data);
           assert.equal(data.cookies.length, 2);
-          data.cookies.forEach(function(cookie) {
+          data.cookies.forEach(cookie => {
             validateSerializedCookie(cookie);
           });
         },
@@ -343,7 +343,7 @@ vows
         },
         "throws an error": function(newStore) {
           const jar = this.jar;
-          assert.throws(function() {
+          assert.throws(() => {
             jar.cloneSync(newStore);
           }, /^Error: CookieJar clone destination store is not synchronous; use async API instead\.$/);
         }
@@ -415,20 +415,18 @@ vows
             assert.isArray(results);
             assert.equal(results.length, 2);
 
-            results.forEach(
-              function(cookie) {
-                assert.instanceOf(cookie, Cookie);
+            results.forEach(cookie => {
+              assert.instanceOf(cookie, Cookie);
 
-                if (cookie.key === "infExp") {
-                  assert.strictEqual(cookie.expires, "Infinity");
-                  assert.strictEqual(cookie.TTL(this.now), Infinity);
-                } else if (cookie.key === "max") {
-                  assert.strictEqual(cookie.TTL(this.now), 3600 * 1000);
-                } else {
-                  assert.fail(`Unexpected cookie key: ${cookie.key}`);
-                }
-              }.bind(this)
-            );
+              if (cookie.key === "infExp") {
+                assert.strictEqual(cookie.expires, "Infinity");
+                assert.strictEqual(cookie.TTL(this.now), Infinity);
+              } else if (cookie.key === "max") {
+                assert.strictEqual(cookie.TTL(this.now), 3600 * 1000);
+              } else {
+                assert.fail(`Unexpected cookie key: ${cookie.key}`);
+              }
+            });
           }
         }
       }

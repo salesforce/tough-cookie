@@ -37,7 +37,7 @@ require("string.prototype.repeat"); // polyfill
 
 function dateVows(table) {
   const theVows = {};
-  Object.keys(table).forEach(function(date) {
+  Object.keys(table).forEach(date => {
     const expect = table[date];
     theVows[date] = function() {
       const got = tough.parseDate(date) ? true : false;
@@ -55,7 +55,7 @@ function dateVows(table) {
 
 function equivalenceVows(table) {
   const theVows = {};
-  Object.keys(table).forEach(function(thisDate) {
+  Object.keys(table).forEach(thisDate => {
     const sameAs = table[thisDate];
     const label = `'${thisDate}' parses the same as '${sameAs}'`;
     theVows[label] = function() {

@@ -201,10 +201,10 @@ vows
         const cj = new CookieJar();
         const ex = "http://example.com/index.html";
         const tasks = [];
-        tasks.push(function(next) {
+        tasks.push(next => {
           cj.setCookie("a=1; Domain=example.com; Path=/", ex, at(0), next);
         });
-        tasks.push(function(next) {
+        tasks.push(next => {
           cj.setCookie(
             "b=2; Domain=example.com; Path=/; HttpOnly",
             ex,
@@ -212,7 +212,7 @@ vows
             next
           );
         });
-        tasks.push(function(next) {
+        tasks.push(next => {
           cj.setCookie(
             "c=3; Domain=example.com; Path=/; Secure",
             ex,
@@ -220,7 +220,7 @@ vows
             next
           );
         });
-        tasks.push(function(next) {
+        tasks.push(next => {
           // path
           cj.setCookie(
             "d=4; Domain=example.com; Path=/foo",
@@ -229,11 +229,11 @@ vows
             next
           );
         });
-        tasks.push(function(next) {
+        tasks.push(next => {
           // host only
           cj.setCookie("e=5", ex, at(4000), next);
         });
-        tasks.push(function(next) {
+        tasks.push(next => {
           // other domain
           cj.setCookie(
             "f=6; Domain=nodejs.org; Path=/",
@@ -242,7 +242,7 @@ vows
             next
           );
         });
-        tasks.push(function(next) {
+        tasks.push(next => {
           // expired
           cj.setCookie(
             "g=7; Domain=example.com; Path=/; Expires=Tue, 18 Oct 2011 00:00:00 GMT",
@@ -251,13 +251,13 @@ vows
             next
           );
         });
-        tasks.push(function(next) {
+        tasks.push(next => {
           // expired via Max-Age
           cj.setCookie("h=8; Domain=example.com; Path=/; Max-Age=1", ex, next);
         });
         const cb = this.callback;
-        async.parallel(tasks, function(err, results) {
-          setTimeout(function() {
+        async.parallel(tasks, (err, results) => {
+          setTimeout(() => {
             cb(err, cj, results);
           }, 2000); // so that 'h=8' expires
         });
@@ -284,7 +284,7 @@ vows
           cj.getCookies("https://example.com", { secure: true }, this.callback);
         },
         "get a secure example cookie with others": function(cookies) {
-          const names = cookies.map(function(c) {
+          const names = cookies.map(c => {
             return c.key;
           });
           assert.deepEqual(names, ["a", "b", "c", "e"]);
@@ -296,7 +296,7 @@ vows
           cj.getCookies("https://example.com", this.callback);
         },
         "get a secure example cookie with others": function(cookies) {
-          const names = cookies.map(function(c) {
+          const names = cookies.map(c => {
             return c.key;
           });
           assert.deepEqual(names, ["a", "b", "c", "e"]);
@@ -308,7 +308,7 @@ vows
           cj.getCookies("http://example.com", this.callback);
         },
         "get a bunch of cookies": function(cookies) {
-          const names = cookies.map(function(c) {
+          const names = cookies.map(c => {
             return c.key;
           });
           assert.deepEqual(names, ["a", "b", "e"]);
@@ -320,7 +320,7 @@ vows
           cj.getCookies("http://EXAMPlE.com", this.callback);
         },
         "get a bunch of cookies": function(cookies) {
-          const names = cookies.map(function(c) {
+          const names = cookies.map(c => {
             return c.key;
           });
           assert.deepEqual(names, ["a", "b", "e"]);
@@ -332,7 +332,7 @@ vows
           cj.getCookies("http://example.com", { http: false }, this.callback);
         },
         "get a bunch of cookies": function(cookies) {
-          const names = cookies.map(function(c) {
+          const names = cookies.map(c => {
             return c.key;
           });
           assert.deepEqual(names, ["a", "e"]);
@@ -344,7 +344,7 @@ vows
           cj.getCookies("http://example.com/foo/bar", this.callback);
         },
         "get a bunch of cookies": function(cookies) {
-          const names = cookies.map(function(c) {
+          const names = cookies.map(c => {
             return c.key;
           });
           assert.deepEqual(names, ["d", "a", "b", "e"]);
@@ -380,7 +380,7 @@ vows
           cj.getCookies("http://www.example.com/foo/bar", this.callback);
         },
         "get a bunch of cookies": function(cookies) {
-          const names = cookies.map(function(c) {
+          const names = cookies.map(c => {
             return c.key;
           });
           assert.deepEqual(names, ["d", "a", "b"]); // note lack of 'e'
@@ -410,8 +410,8 @@ vows
             at(3000)
           )
         );
-        async.series(tasks, function(err, results) {
-          results = results.filter(function(e) {
+        async.series(tasks, (err, results) => {
+          results = results.filter(e => {
             return e !== undefined;
           });
           cb(err, { cj: cj, cookies: results, now: now });
@@ -426,7 +426,7 @@ vows
           cj.getCookies("http://www.example.com/pathA", this.callback);
         },
         "there's just three": function(err, cookies) {
-          const vals = cookies.map(function(c) {
+          const vals = cookies.map(c => {
             return c.value;
           });
           // may break with sorting; sorting should put 3333 first due to longest path:
@@ -552,12 +552,12 @@ vows
         const cookie1 = Cookie.parse("a=b; Domain=example.com; Path=/");
         const cookie2 = Cookie.parse("a=b; Domain=foo.com; Path=/");
         const cookie3 = Cookie.parse("foo=bar; Domain=foo.com; Path=/");
-        jar.setCookie(cookie1, "http://example.com/index.html", function() {});
-        jar.setCookie(cookie2, "http://foo.com/index.html", function() {});
-        jar.setCookie(cookie3, "http://foo.com/index.html", function() {});
+        jar.setCookie(cookie1, "http://example.com/index.html", () => {});
+        jar.setCookie(cookie2, "http://foo.com/index.html", () => {});
+        jar.setCookie(cookie3, "http://foo.com/index.html", () => {});
 
         const cb = this.callback;
-        jar.removeAllCookies(function(err) {
+        jar.removeAllCookies(err => {
           cb(err, jar);
         });
       },
@@ -582,12 +582,12 @@ vows
         const cookie1 = Cookie.parse("a=b; Domain=example.com; Path=/");
         const cookie2 = Cookie.parse("a=b; Domain=foo.com; Path=/");
         const cookie3 = Cookie.parse("foo=bar; Domain=foo.com; Path=/");
-        jar.setCookie(cookie1, "http://example.com/index.html", function() {});
-        jar.setCookie(cookie2, "http://foo.com/index.html", function() {});
-        jar.setCookie(cookie3, "http://foo.com/index.html", function() {});
+        jar.setCookie(cookie1, "http://example.com/index.html", () => {});
+        jar.setCookie(cookie2, "http://foo.com/index.html", () => {});
+        jar.setCookie(cookie3, "http://foo.com/index.html", () => {});
 
         const cb = this.callback;
-        jar.removeAllCookies(function(err) {
+        jar.removeAllCookies(err => {
           cb(err, jar);
         });
       },

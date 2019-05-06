@@ -52,9 +52,9 @@ vows
         cj.setCookie(
           "hello=world; path=/some/path/",
           "http://domain/some/path/file",
-          function(err, cookie) {
+          (err, cookie) => {
             this.callback(err, { cj: cj, cookie: cookie });
-          }.bind(this)
+          }
         );
       },
       "stored a cookie": function(t) {
@@ -62,12 +62,9 @@ vows
       },
       "getting it back": {
         topic: function(t) {
-          t.cj.getCookies(
-            "http://domain/some/path/file",
-            function(err, cookies) {
-              this.callback(err, { cj: t.cj, cookies: cookies || [] });
-            }.bind(this)
-          );
+          t.cj.getCookies("http://domain/some/path/file", (err, cookies) => {
+            this.callback(err, { cj: t.cj, cookies: cookies || [] });
+          });
         },
         "got one cookie": function(t) {
           assert.lengthOf(t.cookies, 1);
@@ -87,13 +84,13 @@ vows
         const cj = new CookieJar();
         const ex = "http://www.example.com";
         const tasks = [];
-        tasks.push(function(next) {
+        tasks.push(next => {
           cj.setCookie("broken_path=testme; path=/;", ex, at(-1), next);
         });
-        tasks.push(function(next) {
+        tasks.push(next => {
           cj.setCookie("b=2; Path=/;;;;", ex, at(-1), next);
         });
-        async.parallel(tasks, function(err, cookies) {
+        async.parallel(tasks, (err, cookies) => {
           cb(null, {
             cj: cj,
             cookies: cookies
@@ -116,7 +113,7 @@ vows
       "retrieve the cookie": {
         topic: function(t) {
           const cb = this.callback;
-          t.cj.getCookies("http://www.example.com", {}, function(err, cookies) {
+          t.cj.getCookies("http://www.example.com", {}, (err, cookies) => {
             t.cookies = cookies;
             cb(err, t);
           });

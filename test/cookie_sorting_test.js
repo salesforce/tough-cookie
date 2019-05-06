@@ -36,7 +36,7 @@ const Cookie = tough.Cookie;
 const CookieJar = tough.CookieJar;
 
 function toKeyArray(cookies) {
-  return cookies.map(function(c) {
+  return cookies.map(c => {
     return c.key;
   });
 }
@@ -128,7 +128,7 @@ vows
         );
 
         // weak shuffle:
-        cookies = cookies.sort(function() {
+        cookies = cookies.sort(() => {
           return Math.random() - 0.5;
         });
 
@@ -150,7 +150,7 @@ vows
         cookies.push(Cookie.parse("b=1;"));
         cookies.push(Cookie.parse("c=2;"));
 
-        cookies.forEach(function(cookie, idx) {
+        cookies.forEach((cookie, idx) => {
           cookie.creation = new Date(now - 100 * idx);
         });
 

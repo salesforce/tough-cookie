@@ -48,7 +48,7 @@ function setGetCookieVows() {
   const theVows = {};
   const data = readJson("./ietf_data/parser.json");
 
-  data.forEach(function(testCase) {
+  data.forEach(testCase => {
     theVows[testCase.test] = function() {
       const jar = new CookieJar();
       const expected = testCase["sent"];
@@ -57,7 +57,7 @@ function setGetCookieVows() {
         ? url.resolve("http://home.example.org", testCase["sent-to"])
         : `http://home.example.org/cookie-parser-result?${testCase.test}`;
 
-      testCase["received"].forEach(function(cookieStr) {
+      testCase["received"].forEach(cookieStr => {
         jar.setCookieSync(cookieStr, sentFrom, { ignoreError: true });
       });
 
@@ -65,7 +65,7 @@ function setGetCookieVows() {
 
       assert.strictEqual(actual.length, expected.length);
 
-      actual.forEach(function(actualCookie, idx) {
+      actual.forEach((actualCookie, idx) => {
         const expectedCookie = expected[idx];
         assert.strictEqual(actualCookie.key, expectedCookie.name);
         assert.strictEqual(actualCookie.value, expectedCookie.value);
@@ -82,11 +82,11 @@ function dateVows() {
   [
     "./ietf_data/dates/bsd-examples.json",
     "./ietf_data/dates/examples.json"
-  ].forEach(function(filePath) {
+  ].forEach(filePath => {
     const data = readJson(filePath);
     const fileName = path.basename(filePath);
 
-    data.forEach(function(testCase) {
+    data.forEach(testCase => {
       theVows[`${fileName} : ${testCase.test}`] = function() {
         let actual = tough.parseDate(testCase.test);
         actual = actual ? actual.toUTCString() : null;

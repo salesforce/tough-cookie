@@ -37,7 +37,7 @@ const Cookie = tough.Cookie;
 
 function matchVows(func, table) {
   const theVows = {};
-  table.forEach(function(item) {
+  table.forEach(item => {
     const str = item[0];
     const dom = item[1];
     const expect = item[2];
@@ -51,7 +51,7 @@ function matchVows(func, table) {
 
 function defaultPathVows(table) {
   const theVows = {};
-  table.forEach(function(item) {
+  table.forEach(item => {
     const str = item[0];
     const expect = item[1];
     const label = `${str} gives ${expect}`;
@@ -176,7 +176,7 @@ vows
           assert.deepEqual(list, ["/foo", "/"]);
         },
         "path matching": function(list) {
-          list.forEach(function(e) {
+          list.forEach(e => {
             assert.ok(tough.pathMatch("/foo", e));
           });
         }
@@ -187,7 +187,7 @@ vows
           assert.deepEqual(list, ["/foo/bar", "/foo", "/"]);
         },
         "path matching": function(list) {
-          list.forEach(function(e) {
+          list.forEach(e => {
             assert.ok(tough.pathMatch("/foo/bar", e));
           });
         }
@@ -198,7 +198,7 @@ vows
           assert.deepEqual(list, ["/foo/bar", "/foo", "/"]);
         },
         "path matching": function(list) {
-          list.forEach(function(e) {
+          list.forEach(e => {
             assert.ok(tough.pathMatch("/foo/bar/", e));
           });
         }

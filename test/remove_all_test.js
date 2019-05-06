@@ -96,7 +96,7 @@ vows
           jar.setCookieSync("a=b", "http://example.com/index.html");
           jar.setCookieSync("c=d", "http://example.org/index.html");
           const cb = this.callback;
-          jar.removeAllCookies(function(err) {
+          jar.removeAllCookies(err => {
             return cb(err, store.stats);
           });
         },
@@ -132,7 +132,7 @@ vows
           };
 
           const cb = this.callback;
-          jar.removeAllCookies(function(err) {
+          jar.removeAllCookies(err => {
             return cb(err, store.stats);
           });
         },
@@ -165,7 +165,7 @@ vows
           };
 
           const cb = this.callback;
-          jar.removeAllCookies(function(err) {
+          jar.removeAllCookies(err => {
             return cb(err, store.stats);
           });
         },
@@ -187,7 +187,7 @@ vows
         jar.setCookieSync("c=d", "http://example.org/index.html");
         const cb = this.callback;
         this.jar = jar;
-        jar.removeAllCookies(function(err) {
+        jar.removeAllCookies(err => {
           return cb(err, store.stats);
         });
       },
