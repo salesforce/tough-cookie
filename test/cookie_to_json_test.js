@@ -58,44 +58,24 @@ vows
         }
       },
       deserialization: {
-        topic: function() {
-          const json =
-            '{"key":"alpha","value":"beta","domain":"example.com","path":"/foo","expires":"2038-01-19T03:14:07.000Z","httpOnly":true,"lastAccessed":2000000000123}';
-          return Cookie.fromJSON(json);
+        topic() {
+          return Cookie.fromJSON(
+            '{"key":"alpha","value":"beta","domain":"example.com","path":"/foo","expires":"2038-01-19T03:14:07.000Z","httpOnly":true,"lastAccessed":2000000000123}'
+          );
         },
-        works: function(c) {
-          assert.ok(c);
-        },
-        key: function(c) {
-          assert.equal(c.key, "alpha");
-        },
-        value: function(c) {
-          assert.equal(c.value, "beta");
-        },
-        domain: function(c) {
-          assert.equal(c.domain, "example.com");
-        },
-        path: function(c) {
-          assert.equal(c.path, "/foo");
-        },
-        httpOnly: function(c) {
-          assert.strictEqual(c.httpOnly, true);
-        },
-        secure: function(c) {
-          assert.strictEqual(c.secure, false);
-        },
-        hostOnly: function(c) {
-          assert.strictEqual(c.hostOnly, null);
-        },
-        "expires is a date object": function(c) {
-          assert.equal(c.expires.getTime(), 2147483647000);
-        },
-        "lastAccessed is a date object": function(c) {
-          assert.equal(c.lastAccessed.getTime(), 2000000000123);
-        },
-        "creation defaulted": function(c) {
-          assert.ok(c.creation.getTime());
-        }
+        works: c => assert.ok(c),
+        key: c => assert.equal(c.key, "alpha"),
+        value: c => assert.equal(c.value, "beta"),
+        domain: c => assert.equal(c.domain, "example.com"),
+        path: c => assert.equal(c.path, "/foo"),
+        httpOnly: c => assert.strictEqual(c.httpOnly, true),
+        secure: c => assert.strictEqual(c.secure, false),
+        hostOnly: c => assert.strictEqual(c.hostOnly, null),
+        "expires is a date object": c =>
+          assert.equal(c.expires.getTime(), 2147483647000),
+        "lastAccessed is a date object": c =>
+          assert.equal(c.lastAccessed.getTime(), 2000000000123),
+        "creation defaulted": c => assert.ok(c.creation.getTime())
       },
       "null deserialization": {
         topic: function() {
