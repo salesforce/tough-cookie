@@ -228,10 +228,16 @@ vows
         const cookie = Cookie.parse("a=b; Domain=example.com; Path=/");
         const cookie2 = Cookie.parse("a=b; Domain=foo.com; Path=/");
         const cookie3 = Cookie.parse("foo=bar; Domain=foo.com; Path=/");
-        jar.setCookie(cookie, "http://example.com/index.html", () => {});
-        jar.setCookie(cookie2, "http://foo.com/index.html", () => {});
-        jar.setCookie(cookie3, "http://foo.com/index.html", () => {});
-        return jar;
+        async.parallel(
+          [
+            [cookie, "http://example.com/index.html"],
+            [cookie2, "http://foo.com/index.html"],
+            [cookie3, "http://foo.com/index.html"]
+          ].map(args => cb => jar.setCookie(...args, cb)),
+          err => {
+            this.callback(err, jar);
+          }
+        );
       },
       "all from matching domain": function(jar) {
         jar.store.removeCookies("example.com", null, err => {
