@@ -1,0 +1,12 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 6
+  },
+  "rules": {
+    "no-var": "error",
+    "prefer-arrow-callback": "error",
+    "prefer-const": "error",
+    "prefer-template": "error"
+  },
+  "extends": ["plugin:prettier/recommended"]
+}
