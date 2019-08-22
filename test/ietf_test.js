@@ -36,7 +36,6 @@ const fs = require("fs");
 const path = require("path");
 const url = require("url");
 const tough = require("../lib/cookie");
-const Cookie = tough.Cookie;
 const CookieJar = tough.CookieJar;
 
 function readJson(filePath) {
