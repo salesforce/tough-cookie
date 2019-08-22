@@ -29,20 +29,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-'use strict';
-var vows = require('vows');
-var assert = require('assert');
-var tough = require('../lib/cookie');
-var Cookie = tough.Cookie;
+"use strict";
+const vows = require("vows");
+const assert = require("assert");
+const tough = require("../lib/cookie");
+const Cookie = tough.Cookie;
 
 function matchVows(func, table) {
-  var theVows = {};
-  table.forEach(function (item) {
-    var str = item[0];
-    var dom = item[1];
-    var expect = item[2];
-    var label = str + (expect ? " matches " : " doesn't match ") + dom;
-    theVows[label] = function () {
+  const theVows = {};
+  table.forEach(item => {
+    const str = item[0];
+    const dom = item[1];
+    const expect = item[2];
+    const label = str + (expect ? " matches " : " doesn't match ") + dom;
+    theVows[label] = function() {
       assert.equal(func(str, dom), expect);
     };
   });
@@ -50,12 +50,12 @@ function matchVows(func, table) {
 }
 
 function defaultPathVows(table) {
-  var theVows = {};
-  table.forEach(function (item) {
-    var str = item[0];
-    var expect = item[1];
-    var label = str + " gives " + expect;
-    theVows[label] = function () {
+  const theVows = {};
+  table.forEach(item => {
+    const str = item[0];
+    const expect = item[1];
+    const label = `${str} gives ${expect}`;
+    theVows[label] = function() {
       assert.equal(tough.defaultPath(str), expect);
     };
   });
@@ -63,31 +63,31 @@ function defaultPathVows(table) {
 }
 
 vows
-  .describe('Domain and Path')
+  .describe("Domain and Path")
   .addBatch({
     "domain normalization": {
-      "simple": function () {
-        var c = new Cookie();
+      simple: function() {
+        const c = new Cookie();
         c.domain = "EXAMPLE.com";
         assert.equal(c.canonicalizedDomain(), "example.com");
       },
-      "extra dots": function () {
-        var c = new Cookie();
+      "extra dots": function() {
+        const c = new Cookie();
         c.domain = ".EXAMPLE.com";
         assert.equal(c.cdomain(), "example.com");
       },
-      "weird trailing dot": function () {
-        var c = new Cookie();
+      "weird trailing dot": function() {
+        const c = new Cookie();
         c.domain = "EXAMPLE.ca.";
         assert.equal(c.canonicalizedDomain(), "example.ca.");
       },
-      "weird internal dots": function () {
-        var c = new Cookie();
+      "weird internal dots": function() {
+        const c = new Cookie();
         c.domain = "EXAMPLE...ca.";
         assert.equal(c.canonicalizedDomain(), "example...ca.");
       },
-      "IDN": function () {
-        var c = new Cookie();
+      IDN: function() {
+        const c = new Cookie();
         c.domain = "δοκιμή.δοκιμή"; // "test.test" in greek
         assert.equal(c.canonicalizedDomain(), "xn--jxalpdlp.xn--jxalpdlp");
       }
@@ -109,7 +109,7 @@ vows
       [null, "example.com", null],
       ["example.com", null, null],
       [null, null, null],
-      [undefined, undefined, null],
+      [undefined, undefined, null]
     ])
   })
 
@@ -119,7 +119,7 @@ vows
       ["/", "/"],
       ["/file", "/"],
       ["/dir/file", "/dir"],
-      ["noslash", "/"],
+      ["noslash", "/"]
     ])
   })
   .addBatch({
@@ -131,71 +131,78 @@ vows
       ["/dir/", "/dir/", true],
       ["/dir/file", "/dir/", true],
       ["/dir/file", "/dir", true],
-      ["/directory", "/dir", false],
+      ["/directory", "/dir", false]
     ])
   })
   .addBatch({
-    "permuteDomain": {
+    permuteDomain: {
       "base case": {
-        topic: tough.permuteDomain.bind(null, 'example.com'),
-        "got the domain": function (list) {
-          assert.deepEqual(list, ['example.com']);
+        topic: tough.permuteDomain.bind(null, "example.com"),
+        "got the domain": function(list) {
+          assert.deepEqual(list, ["example.com"]);
         }
       },
       "two levels": {
-        topic: tough.permuteDomain.bind(null, 'foo.bar.example.com'),
-        "got three things": function (list) {
-          assert.deepEqual(list, ['example.com', 'bar.example.com', 'foo.bar.example.com']);
+        topic: tough.permuteDomain.bind(null, "foo.bar.example.com"),
+        "got three things": function(list) {
+          assert.deepEqual(list, [
+            "example.com",
+            "bar.example.com",
+            "foo.bar.example.com"
+          ]);
         }
       },
       "local domain": {
-        topic: tough.permuteDomain.bind(null, 'foo.bar.example.localduhmain'),
-        "got three things": function (list) {
-          assert.deepEqual(list,  ['example.localduhmain', 'bar.example.localduhmain', 'foo.bar.example.localduhmain']);
+        topic: tough.permuteDomain.bind(null, "foo.bar.example.localduhmain"),
+        "got three things": function(list) {
+          assert.deepEqual(list, [
+            "example.localduhmain",
+            "bar.example.localduhmain",
+            "foo.bar.example.localduhmain"
+          ]);
         }
       }
     },
-    "permutePath": {
+    permutePath: {
       "base case": {
-        topic: tough.permutePath.bind(null, '/'),
-        "just slash": function (list) {
-          assert.deepEqual(list, ['/']);
+        topic: tough.permutePath.bind(null, "/"),
+        "just slash": function(list) {
+          assert.deepEqual(list, ["/"]);
         }
       },
       "single case": {
-        topic: tough.permutePath.bind(null, '/foo'),
-        "two things": function (list) {
-          assert.deepEqual(list, ['/foo', '/']);
+        topic: tough.permutePath.bind(null, "/foo"),
+        "two things": function(list) {
+          assert.deepEqual(list, ["/foo", "/"]);
         },
-        "path matching": function (list) {
-          list.forEach(function (e) {
-            assert.ok(tough.pathMatch('/foo', e));
+        "path matching": function(list) {
+          list.forEach(e => {
+            assert.ok(tough.pathMatch("/foo", e));
           });
         }
       },
       "double case": {
-        topic: tough.permutePath.bind(null, '/foo/bar'),
-        "four things": function (list) {
-          assert.deepEqual(list, ['/foo/bar', '/foo', '/']);
+        topic: tough.permutePath.bind(null, "/foo/bar"),
+        "four things": function(list) {
+          assert.deepEqual(list, ["/foo/bar", "/foo", "/"]);
         },
-        "path matching": function (list) {
-          list.forEach(function (e) {
-            assert.ok(tough.pathMatch('/foo/bar', e));
+        "path matching": function(list) {
+          list.forEach(e => {
+            assert.ok(tough.pathMatch("/foo/bar", e));
           });
         }
       },
       "trailing slash": {
-        topic: tough.permutePath.bind(null, '/foo/bar/'),
-        "three things": function (list) {
-          assert.deepEqual(list, ['/foo/bar', '/foo', '/']);
+        topic: tough.permutePath.bind(null, "/foo/bar/"),
+        "three things": function(list) {
+          assert.deepEqual(list, ["/foo/bar", "/foo", "/"]);
         },
-        "path matching": function (list) {
-          list.forEach(function (e) {
-            assert.ok(tough.pathMatch('/foo/bar/', e));
+        "path matching": function(list) {
+          list.forEach(e => {
+            assert.ok(tough.pathMatch("/foo/bar/", e));
           });
         }
       }
     }
   })
   .export(module);
-
