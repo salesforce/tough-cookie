@@ -644,4 +644,30 @@ vows
       }
     }
   })
+  .addBatch({
+    "Issue #144 - secure": {
+      "of undefined": {
+        topic: function() {
+          const jar = new tough.CookieJar();
+          const cookieString = `AWSELB=69b2c0038b16e8e27056d1178e0d556c; 
+          Path=/, jses_WS41=5f8dc2f6-ea37-49de-8dfa-b58336c2d9ce; path=/; 
+          Secure; HttpOnly, AuthToken=EFKFFFCH@K@GHIHEJCJMMGJM>CDHDEK>CFGK?MHJ
+          >>JI@B??@CAEHBJH@H@A@GCFDLIMLJEEJEIFGALA?BIM?@G@DEDI@JE?I?HKJBIDDHJMEFEFM
+          >G@J?I??B@C>>LAH?GCGJ@FMEGHBGAF; expires=Sun, 31-Jan-9021 02:39:04 GMT; 
+          path=/; Secure; HttpOnly, FirstReferrer=; expires=Fri, 31-Jan-9020 20:50:44 
+          GMT; path=/`;
+
+          jar.setCookieSync(cookieString, "https://google.com");
+          const cookies = jar.getCookiesSync("https://google.com");
+          return cookies;
+        },
+        "results in a 1-length array with a valid cookie": function(err, cookies) {
+          assert(!err);
+          assert(cookies.length == 1);
+          assert.instanceOf(cookies[0], Cookie);
+          assert.isTrue(cookies[0].secure);
+        }
+      }
+    }
+  })
   .export(module);
