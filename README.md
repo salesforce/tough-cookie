@@ -149,6 +149,7 @@ Cookie object properties:
   * _path_ - string - the `Path=` of the cookie
   * _secure_ - boolean - the `Secure` cookie flag
   * _httpOnly_ - boolean - the `HttpOnly` cookie flag
+  * _sameSite_ - string - the `SameSite` cookie attribute (from [RFC6265bis]); must be one of `none`, `lax`, or `strict`
   * _extensions_ - `Array` - any unrecognized cookie attributes as strings (even if equal-signs inside)
   * _creation_ - `Date` - when this cookie was constructed
   * _creationIndex_ - number - set at construction, used to provide greater sort precision (please see `cookieCompare(a,b)` for a full explanation)
@@ -265,6 +266,7 @@ The `options` object can be omitted and can have the following properties:
   * _secure_ - boolean - autodetect from url - indicates if this is a "Secure" API.  If the currentUrl starts with `https:` or `wss:` then this is defaulted to `true`, otherwise `false`.
   * _now_ - Date - default `new Date()` - what to use for the creation/access time of cookies
   * _ignoreError_ - boolean - default `false` - silently ignore things like parse errors and invalid domains.  `Store` errors aren't ignored by this option.
+  * _sameSiteContext_ - string - default unset - set to `'none'`, `'lax'`, or `'strict'` See [SameSite Cookies] below.
 
 As per the RFC, the `.hostOnly` property is set if there was no "Domain=" parameter in the cookie string (or `.domain` was null on the Cookie object).  The `.domain` property is set to the fully-qualified hostname of `currentUrl` in this case.  Matching this cookie requires an exact hostname match (not a `domainMatch` as per usual).
 
@@ -285,6 +287,7 @@ The `options` object can be omitted and can have the following properties:
   * _now_ - Date - default `new Date()` - what to use for the creation/access time of cookies
   * _expire_ - boolean - default `true` - perform expiry-time checking of cookies and asynchronously remove expired cookies from the store.  Using `false` will return expired cookies and **not** remove them from the store (which is useful for replaying Set-Cookie headers, potentially).
   * _allPaths_ - boolean - default `false` - if `true`, do not scope cookies by path. The default uses RFC-compliant path scoping. **Note**: may not be supported by the underlying store (the default `MemoryCookieStore` supports it).
+  * _sameSiteContext_ - string - default unset - Set this to `'none'`, `'lax'` or `'strict'` to enforce SameSite cookies upon retrival. See [SameSite Cookies] below.
 
 The `.lastAccessed` property of the returned cookies will have been updated.
 
@@ -490,6 +493,38 @@ These are some Store implementations authored and maintained by the community. T
     ]
   }
 ```
+
+# RFC6265bis
+
+Support for RFC6265bis revision 02 is being developed. Since this is a bit of an omnibus revision to the RFC6252, support is broken up into the functional areas.
+
+## Leave Secure Cookies Alone
+
+Not yet supported.
+
+This change makes it so that if a cookie is sent from the server to the client with a `Secure` attribute, the channel must also be secure or the cookie is ignored.
+
+## SameSite Cookies
+
+Supported.
+
+This change makes it possible for servers, and supporting clients, to mitigate certain types of CSRF attacks by disallowing `SameSite` cookies from being sent cross-origin.
+
+On the Cookie object itself, you can get/set the `.sameSite` attribute, which will be serialized into the `SameSite=` cookie attribute. When unset or `undefined`, no `SameSite=` attribute will be serialized. The valid values of this attribute are `'none'`, `'lax'`, or `'strict'`. Other values will be serialized as-is.
+
+When parsing cookies with a `SameSite` cookie attribute, values other than `'lax'` or `'strict'` are parsed as `'none'`. For example, `SomeCookie=SomeValue; SameSite=garbage` will parse so that `cookie.sameSite === 'none'`.
+
+In order to support SameSite cookies, you must provide a `sameSiteContext` option to _both_ `setCookie` and `getCookies`. Valid values for this option are just like for the Cookie object, but have particular meanings:
+1. `'strict'` mode - If the request is on the same "site for cookies" (see the RFC draft for what this means), pass this option to add a layer of defense against CSRF.
+2. `'lax'` mode - If the request is from another site, _but_ is directly because of navigation by the user, e.g., `<link type=prefetch>` or `<a href="...">`, pass `sameSiteContext: 'lax'`.
+3. `'none'` - Otherwise, pass `sameSiteContext: 'none'` (this indicates a cross-origin request).
+4. unset/`undefined` - SameSite **will not** be enforced! This can be a valid use-case for when CSRF isn't in the threat model of the system being built.
+
+It is highly recommended that you read RFC 6265bis for fine details on SameSite cookies. In particular [Section 8.8](https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-02#section-8.8) discusses security considerations and defense in depth.
+
+## Cookie Prefixes
+
+Not yet supported.
 
 # Copyright and License
 
