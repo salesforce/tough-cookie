@@ -59,21 +59,27 @@
   "scripts": {
     "version": "genversion lib/version.js && git add lib/version.js",
     "test": "vows test/*_test.js",
-    "cover": "nyc --reporter=lcov --reporter=html vows test/*_test.js"
+    "cover": "nyc --reporter=lcov --reporter=html vows test/*_test.js",
+    "eslint": "eslint --env node --ext .js .",
+    "prettier": "prettier '**/*.{json,ts,yaml,md}'",
+    "format": "npm run eslint -- --fix"
   },
   "engines": {
     "node": ">=6"
   },
   "devDependencies": {
-    "async": "^1.4.2",
+    "async": "^2.6.2",
+    "eslint": "^5.16.0",
+    "eslint-config-prettier": "^4.2.0",
+    "eslint-plugin-prettier": "^3.0.1",
     "genversion": "^2.1.0",
-    "nyc": "^11.6.0",
-    "string.prototype.repeat": "^0.2.0",
+    "nyc": "^14.0.0",
+    "prettier": "^1.17.0",
     "vows": "^0.8.2"
   },
   "dependencies": {
     "ip-regex": "^2.1.0",
-    "psl": "^1.1.28",
+    "psl": "^1.1.33",
     "punycode": "^2.1.1"
   }
 }
