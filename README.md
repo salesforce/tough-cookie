@@ -252,6 +252,7 @@ The `options` object can be omitted and can have the following properties:
 
   * _rejectPublicSuffixes_ - boolean - default `true` - reject cookies with domains like "com" and "co.uk"
   * _looseMode_ - boolean - default `false` - accept malformed cookies like `bar` and `=bar`, which have an implied empty name.
+  * _allowSpecialUseDomain_ - boolean - default `false` - accepts special-use domain suffixes, such as `local`. Useful for testing purposes.
     This is not in the standard, but is used sometimes on the web and is accepted by (most) browsers.
 
 Since eventually this module would like to support database/remote/etc. CookieJars, continuation passing style is used for CookieJar methods.
