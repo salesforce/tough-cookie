@@ -158,8 +158,8 @@ vows
       "has max-age": function(c) {
         assert.equal(c.maxAge, 1234);
       },
-      "has same-site 'none'": function(c) { 
-          assert.equal(c.sameSite, "none") 
+      "has same-site 'none'": function(c) {
+        assert.equal(c.sameSite, "none");
       },
       "has extensions": function(c) {
         assert.ok(c.extensions);
@@ -649,30 +649,48 @@ vows
     },
 
     "same-site": {
-      "lax": {
+      lax: {
         topic: function() {
-          return Cookie.parse('abc=xyzzy; SameSite=Lax') || null;
+          return Cookie.parse("abc=xyzzy; SameSite=Lax") || null;
         },
-        "parsed": function(c) { assert.ok(c) },
-        "is lax (lowercased)": function(c) { assert.equal(c.sameSite, "lax") },
-        "no extensions": function(c) { assert.equal(c.extensions, null) }
+        parsed: function(c) {
+          assert.ok(c);
+        },
+        "is lax (lowercased)": function(c) {
+          assert.equal(c.sameSite, "lax");
+        },
+        "no extensions": function(c) {
+          assert.equal(c.extensions, null);
+        }
       },
-      "strict": {
+      strict: {
         topic: function() {
-          return Cookie.parse('abc=xyzzy; SameSite=StRiCt') || null;
+          return Cookie.parse("abc=xyzzy; SameSite=StRiCt") || null;
         },
-        "parsed": function(c) { assert.ok(c) },
-        "is strict (lowercased)": function(c) { assert.equal(c.sameSite, "strict") },
-        "no extensions": function(c) { assert.equal(c.extensions, null) }
+        parsed: function(c) {
+          assert.ok(c);
+        },
+        "is strict (lowercased)": function(c) {
+          assert.equal(c.sameSite, "strict");
+        },
+        "no extensions": function(c) {
+          assert.equal(c.extensions, null);
+        }
       },
-      "absent": {
+      absent: {
         topic: function() {
-          return Cookie.parse('abc=xyzzy; SameSite=example.com') || null;
+          return Cookie.parse("abc=xyzzy; SameSite=example.com") || null;
         },
-        "parsed": function(c) { assert.ok(c) },
-        "is set to 'none' (by prototype)": function(c) { assert.equal(c.sameSite, "none") },
-        "no extensions": function(c) { assert.equal(c.extensions, null) }
+        parsed: function(c) {
+          assert.ok(c);
+        },
+        "is set to 'none' (by prototype)": function(c) {
+          assert.equal(c.sameSite, "none");
+        },
+        "no extensions": function(c) {
+          assert.equal(c.extensions, null);
+        }
       }
-    },
+    }
   })
   .export(module);

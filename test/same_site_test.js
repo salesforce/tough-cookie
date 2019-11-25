@@ -29,34 +29,38 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-'use strict';
-var vows = require('vows');
-var assert = require('assert');
-var tough = require('../lib/cookie');
-var Cookie = tough.Cookie;
-var CookieJar = tough.CookieJar;
+"use strict";
+const vows = require("vows");
+const assert = require("assert");
+const tough = require("../lib/cookie");
+const Cookie = tough.Cookie;
+const CookieJar = tough.CookieJar;
 
 vows
-  .describe('Same-Site Cookies')
+  .describe("Same-Site Cookies")
   .addBatch({
     "Testing retrieval from a three-cookie jar": {
       topic: function() {
-        var jar = new CookieJar();
-        var url = this.url = 'http://example.com/index.html';
-        var options = {};
+        const jar = new CookieJar();
+        const url = (this.url = "http://example.com/index.html");
+        const options = {};
 
         [
-          'strict=authorized; SameSite=strict',
-          'lax=okay; SameSite=lax',
-          'normal=whatever' // none
-        ].forEach(function(str) {
+          "strict=authorized; SameSite=strict",
+          "lax=okay; SameSite=lax",
+          "normal=whatever" // none
+        ].forEach(str => {
           jar.setCookieSync(Cookie.parse(str), url, options);
         });
         return jar;
       },
       "when making a same-site request": {
         topic: function(jar) {
-          jar.getCookies(this.url, {sameSiteContext: 'strict'}, this.callback);
+          jar.getCookies(
+            this.url,
+            { sameSiteContext: "strict" },
+            this.callback
+          );
         },
         "all three cookies are returned": function(cookies) {
           assert.equal(cookies.length, 3);
@@ -64,26 +68,26 @@ vows
       },
       "when making a lax request": {
         topic: function(jar) {
-          jar.getCookies(this.url, {sameSiteContext: 'lax'}, this.callback);
+          jar.getCookies(this.url, { sameSiteContext: "lax" }, this.callback);
         },
         "only two cookies are returned": function(cookies) {
           assert.equal(cookies.length, 2);
         },
         "the strict one is omitted": function(cookies) {
-          cookies.forEach(function(c) {
-            assert.notEqual(c.key, 'strict');
+          cookies.forEach(c => {
+            assert.notEqual(c.key, "strict");
           });
         }
       },
       "when making a cross-origin request": {
         topic: function(jar) {
-          jar.getCookies(this.url, {sameSiteContext: 'none'}, this.callback);
+          jar.getCookies(this.url, { sameSiteContext: "none" }, this.callback);
         },
         "only one cookie is returned": function(cookies) {
           assert.equal(cookies.length, 1);
         },
         "and it's the one without same-site": function(cookies) {
-          assert.equal(cookies[0].key, 'normal');
+          assert.equal(cookies[0].key, "normal");
         }
       },
       "when making an unqualified request": {
@@ -93,20 +97,20 @@ vows
         "all three cookies are returned": function(cookies) {
           assert.equal(cookies.length, 3);
         }
-      },
+      }
     }
   })
   .addBatch({
     "Testing setting cookies": {
       topic: function() {
-        var url = 'http://example.com/index.html';
-        var cookies = {
-          garbage: Cookie.parse('garbageIn=treatedAsNone; SameSite=garbage'),
-          strict: Cookie.parse('strict=authorized; SameSite=sTrIcT'),
-          lax: Cookie.parse('lax=okay; SameSite=lax'),
-          normal: Cookie.parse('normal=whatever') // none
+        const url = "http://example.com/index.html";
+        const cookies = {
+          garbage: Cookie.parse("garbageIn=treatedAsNone; SameSite=garbage"),
+          strict: Cookie.parse("strict=authorized; SameSite=sTrIcT"),
+          lax: Cookie.parse("lax=okay; SameSite=lax"),
+          normal: Cookie.parse("normal=whatever") // none
         };
-        var jar = new CookieJar();
+        const jar = new CookieJar();
         this.callSetCookie = function(which, options, cb) {
           return jar.setCookie(cookies[which], url, options, cb);
         };
@@ -114,76 +118,85 @@ vows
       },
       "from same-site context": {
         topic: function() {
-          return { sameSiteContext: 'strict' };
+          return { sameSiteContext: "strict" };
         },
         "for garbage cookie": {
           topic: function(options) {
-            this.callSetCookie('garbage', options, this.callback);
+            this.callSetCookie("garbage", options, this.callback);
           },
           "treated as 'none'": function(err, cookie) {
             assert.isNull(err);
-            assert.equal(cookie.sameSite, 'none');
+            assert.equal(cookie.sameSite, "none");
           }
         },
         "for strict cookie": {
           topic: function(options) {
-            this.callSetCookie('strict', options, this.callback);
+            this.callSetCookie("strict", options, this.callback);
           },
           "has strict property": function(err, cookie) {
             assert.isNull(err);
-            assert.equal(cookie.sameSite, 'strict');
+            assert.equal(cookie.sameSite, "strict");
           }
         },
         "for lax cookie": {
           topic: function(options) {
-            this.callSetCookie('lax', options, this.callback);
+            this.callSetCookie("lax", options, this.callback);
           },
           "has lax property": function(err, cookie) {
             assert.isNull(err);
-            assert.equal(cookie.sameSite, 'lax');
+            assert.equal(cookie.sameSite, "lax");
           }
         },
         "for normal cookie": {
           topic: function(options) {
-            this.callSetCookie('normal', options, this.callback);
+            this.callSetCookie("normal", options, this.callback);
           },
           "treated as 'none'": function(err, cookie) {
             assert.isNull(err);
-            assert.equal(cookie.sameSite, 'none');
+            assert.equal(cookie.sameSite, "none");
           }
-        },
+        }
       },
 
       "from cross-origin context": {
         topic: function() {
-          return { sameSiteContext: 'none' };
+          return { sameSiteContext: "none" };
         },
         "for strict cookie": {
           topic: function(options) {
-            this.callSetCookie('strict', options, this.callback);
+            this.callSetCookie("strict", options, this.callback);
           },
           "is not allowed": function(err, ignored) {
             ignored = null;
             assert.ok(err instanceof Error);
-            assert.equal(err.message, "Cookie is SameSite but this is a cross-origin request");
+            assert.equal(
+              err.message,
+              "Cookie is SameSite but this is a cross-origin request"
+            );
           }
         },
         "for lax cookie": {
           topic: function(options) {
-            this.callSetCookie('lax', options, this.callback);
+            this.callSetCookie("lax", options, this.callback);
           },
           "is not allowed": function(err, ignored) {
             ignored = null;
             assert.ok(err instanceof Error);
-            assert.equal(err.message, "Cookie is SameSite but this is a cross-origin request");
+            assert.equal(
+              err.message,
+              "Cookie is SameSite but this is a cross-origin request"
+            );
           }
         },
         "for normal cookie": {
           topic: function(options) {
-            this.callSetCookie('normal', options, this.callback);
+            this.callSetCookie("normal", options, this.callback);
           },
-          "is fine": function(err, ignored) { ignored = null; assert.isNull(err); }
-        },
+          "is fine": function(err, ignored) {
+            ignored = null;
+            assert.isNull(err);
+          }
+        }
       },
 
       "from undefined context": {
@@ -192,51 +205,60 @@ vows
         },
         "for strict cookie": {
           topic: function(options) {
-            this.callSetCookie('strict', options, this.callback);
+            this.callSetCookie("strict", options, this.callback);
           },
-          "is fine": function(err, ignored) { ignored = null; assert.isNull(err); }
+          "is fine": function(err, ignored) {
+            ignored = null;
+            assert.isNull(err);
+          }
         },
         "for lax cookie": {
           topic: function(options) {
-            this.callSetCookie('lax', options, this.callback);
+            this.callSetCookie("lax", options, this.callback);
           },
-          "is fine": function(err, ignored) { ignored = null; assert.isNull(err); }
+          "is fine": function(err, ignored) {
+            ignored = null;
+            assert.isNull(err);
+          }
         },
         "for normal cookie": {
           topic: function(options) {
-            this.callSetCookie('normal', options, this.callback);
+            this.callSetCookie("normal", options, this.callback);
           },
-          "is fine": function(err, ignored) { ignored = null; assert.isNull(err); }
-        },
-      },
+          "is fine": function(err, ignored) {
+            ignored = null;
+            assert.isNull(err);
+          }
+        }
+      }
     }
   })
   .addBatch({
     "Canonicalized strings": {
       topic: function() {
-        var url = 'http://example.com/index.html';
-        var garbage = Cookie.parse('garbage=1');
-        garbage.sameSite = 'GaRbAGe';
-        var cookies = {
+        const url = "http://example.com/index.html";
+        const garbage = Cookie.parse("garbage=1");
+        garbage.sameSite = "GaRbAGe";
+        const cookies = {
           garbage: garbage,
-          strict: Cookie.parse('strict=1; SameSite=STRict'),
-          lax: Cookie.parse('lax=1; SameSite=LAx'),
-          normal: Cookie.parse('normal=1') // none
+          strict: Cookie.parse("strict=1; SameSite=STRict"),
+          lax: Cookie.parse("lax=1; SameSite=LAx"),
+          normal: Cookie.parse("normal=1") // none
         };
         return cookies;
       },
       "garbage in, garbage out": function(cookies) {
-        assert.equal(cookies.garbage.toString(), 'garbage=1; SameSite=GaRbAGe');
+        assert.equal(cookies.garbage.toString(), "garbage=1; SameSite=GaRbAGe");
       },
       "strict is 'Strict'": function(cookies) {
-        assert.equal(cookies.strict.toString(), 'strict=1; SameSite=Strict');
+        assert.equal(cookies.strict.toString(), "strict=1; SameSite=Strict");
       },
       "lax is 'Lax'": function(cookies) {
-        assert.equal(cookies.lax.toString(), 'lax=1; SameSite=Lax');
+        assert.equal(cookies.lax.toString(), "lax=1; SameSite=Lax");
       },
       "normal is omitted": function(cookies) {
-        assert.equal(cookies.normal.toString(), 'normal=1');
-      },
+        assert.equal(cookies.normal.toString(), "normal=1");
+      }
     }
   })
   .export(module);

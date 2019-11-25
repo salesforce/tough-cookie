@@ -39,51 +39,55 @@ const CookieJar = tough.CookieJar;
 const Store = tough.Store;
 const MemoryCookieStore = tough.MemoryCookieStore;
 
-function StoreWithoutRemoveAll() {
-  Store.call(this);
-  this.stats = { put: 0, getAll: 0, remove: 0 };
-  this.cookies = [];
+class StoreWithoutRemoveAll extends Store {
+  constructor() {
+    super();
+    this.synchronous = true;
+    this.stats = { put: 0, getAll: 0, remove: 0 };
+    this.cookies = [];
+  }
+  findCookie(domain, path, key, cb) {
+    return cb(null, null);
+  }
+  findCookies(domain, path, cb) {
+    return cb(null, []);
+  }
+  putCookie(cookie, cb) {
+    this.stats.put++;
+    this.cookies.push(cookie);
+    return cb(null);
+  }
+  getAllCookies(cb) {
+    this.stats.getAll++;
+    return cb(null, this.cookies.slice());
+  }
+  removeCookie(domain, path, key, cb) {
+    this.stats.remove++;
+    return cb(null, null);
+  }
 }
-util.inherits(StoreWithoutRemoveAll, Store);
-StoreWithoutRemoveAll.prototype.synchronous = true;
-StoreWithoutRemoveAll.prototype.cookies = [];
-StoreWithoutRemoveAll.prototype.findCookie = function(domain, path, key, cb) {
-  return cb(null, null);
-};
-StoreWithoutRemoveAll.prototype.findCookies = function(domain, path, key, cb) {
-  return cb(null, []);
-};
-StoreWithoutRemoveAll.prototype.putCookie = function(cookie, cb) {
-  this.stats.put++;
-  this.cookies.push(cookie);
-  return cb(null);
-};
-StoreWithoutRemoveAll.prototype.getAllCookies = function(cb) {
-  this.stats.getAll++;
-  return cb(null, this.cookies.slice());
-};
-StoreWithoutRemoveAll.prototype.removeCookie = function(domain, path, key, cb) {
-  this.stats.remove++;
-  return cb(null, null);
-};
 
-function MemoryStoreExtension() {
-  MemoryCookieStore.call(this);
-  this.stats = { getAll: 0, remove: 0, removeAll: 0 };
+class MemoryStoreExtension extends MemoryCookieStore {
+  constructor() {
+    super();
+    this.stats = { getAll: 0, remove: 0, removeAll: 0 };
+  }
+
+  getAllCookies(cb) {
+    this.stats.getAll++;
+    MemoryCookieStore.prototype.getAllCookies.call(this, cb);
+  }
+
+  removeCookie(domain, path, key, cb) {
+    this.stats.remove++;
+    super.removeCookie(domain, path, key, cb);
+  }
+
+  removeAllCookies(cb) {
+    this.stats.removeAll++;
+    super.removeAllCookies(cb);
+  }
 }
-util.inherits(MemoryStoreExtension, MemoryCookieStore);
-MemoryStoreExtension.prototype.getAllCookies = function(cb) {
-  this.stats.getAll++;
-  MemoryCookieStore.prototype.getAllCookies.call(this, cb);
-};
-MemoryStoreExtension.prototype.removeCookie = function(domain, path, key, cb) {
-  this.stats.remove++;
-  MemoryCookieStore.prototype.removeCookie.call(this, domain, path, key, cb);
-};
-MemoryStoreExtension.prototype.removeAllCookies = function(cb) {
-  this.stats.removeAll++;
-  MemoryCookieStore.prototype.removeAllCookies.call(this, cb);
-};
 
 vows
   .describe("Store removeAllCookies API")
