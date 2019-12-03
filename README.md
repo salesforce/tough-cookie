@@ -252,6 +252,7 @@ The `options` object can be omitted and can have the following properties:
 
   * _rejectPublicSuffixes_ - boolean - default `true` - reject cookies with domains like "com" and "co.uk"
   * _looseMode_ - boolean - default `false` - accept malformed cookies like `bar` and `=bar`, which have an implied empty name.
+  * _prefixSecurity_ - string - default `silent` - set to `'unsafe-disabled'`, `'silent'`, or `'strict'`. See [Cookie Prefixes] below.
   * _allowSpecialUseDomain_ - boolean - default `false` - accepts special-use domain suffixes, such as `local`. Useful for testing purposes.
     This is not in the standard, but is used sometimes on the web and is accepted by (most) browsers.
 
@@ -525,7 +526,25 @@ It is highly recommended that you read RFC 6265bis for fine details on SameSite 
 
 ## Cookie Prefixes
 
-Not yet supported.
+Supported.
+
+Cookie prefixes are a way to indicate that a given cookie was set with a set of attributes simply by inspecting the first few characters of the cookie's name.
+
+Cookie prefixes are defined in [Section 4.1.3 of 6265bis](https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-03#section-4.1.3). Two prefixes are defined:
+
+1. `"__Secure-" Prefix`: If a cookie's name begins with a case-sensitive match for the string "__Secure-", then the cookie will have been set with a "Secure" attribute.
+2. `"__Host-" Prefix`: If a cookie's name begins with a case-sensitive match for the string "__Host-", then the cookie will have been set with a "Secure" attribute, a "Path" attribute with a value of "/", and no "Domain" attribute.
+
+If `prefixSecurity` is enabled for `CookieJar`, then cookies that match the prefixes defined above but do not obey the attribute restrictions will not be added.
+
+You can define this functionality by passing in `prefixSecurity` option to `CookieJar`. It can be one of 3 values:
+
+1. `silent`: Enable cookie prefix checking but silently fail to add the cookie if conditions not met. Default.
+2. `strict`: Enable cookie prefix checking and error out if conditions not met.
+3. `unsafe-disabled`: Disable cookie prefix checking.
+
+Note that if `ignoreError` is passed in as `true` then the error will be silent regardless of `prefixSecurity` option (assuming it's enabled).
+
 
 # Copyright and License
 
