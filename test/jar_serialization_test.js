@@ -137,7 +137,8 @@ const serializedCookiePropTypes = {
   hostOnly: "boolean",
   pathIsDefault: "boolean",
   creation: "isoDate",
-  lastAccessed: "isoDate"
+  lastAccessed: "isoDate",
+  sameSite: "string"
 };
 
 function validateSerializedCookie(cookie) {

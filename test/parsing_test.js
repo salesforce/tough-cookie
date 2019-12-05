@@ -119,7 +119,7 @@ vows
         assert.ok(!c.secure);
       }
     },
-    "with everything": {
+    "with most things": {
       topic: function() {
         return (
           Cookie.parse(
@@ -157,6 +157,9 @@ vows
       },
       "has max-age": function(c) {
         assert.equal(c.maxAge, 1234);
+      },
+      "has same-site 'none'": function(c) {
+        assert.equal(c.sameSite, "none");
       },
       "has extensions": function(c) {
         assert.ok(c.extensions);
@@ -642,6 +645,51 @@ vows
         const short2 = c.dt2 + 1; // avoid 0ms
         const ratio = Math.abs(long1 / short2);
         assert.lesser(ratio, 250); // if broken, goes 2000-4000x
+      }
+    },
+
+    "same-site": {
+      lax: {
+        topic: function() {
+          return Cookie.parse("abc=xyzzy; SameSite=Lax") || null;
+        },
+        parsed: function(c) {
+          assert.ok(c);
+        },
+        "is lax (lowercased)": function(c) {
+          assert.equal(c.sameSite, "lax");
+        },
+        "no extensions": function(c) {
+          assert.equal(c.extensions, null);
+        }
+      },
+      strict: {
+        topic: function() {
+          return Cookie.parse("abc=xyzzy; SameSite=StRiCt") || null;
+        },
+        parsed: function(c) {
+          assert.ok(c);
+        },
+        "is strict (lowercased)": function(c) {
+          assert.equal(c.sameSite, "strict");
+        },
+        "no extensions": function(c) {
+          assert.equal(c.extensions, null);
+        }
+      },
+      absent: {
+        topic: function() {
+          return Cookie.parse("abc=xyzzy; SameSite=example.com") || null;
+        },
+        parsed: function(c) {
+          assert.ok(c);
+        },
+        "is set to 'none' (by prototype)": function(c) {
+          assert.equal(c.sameSite, "none");
+        },
+        "no extensions": function(c) {
+          assert.equal(c.extensions, null);
+        }
       }
     }
   })
