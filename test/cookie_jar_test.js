@@ -658,11 +658,10 @@ vows
           GMT; path=/`;
 
           jar.setCookieSync(cookieString, "https://google.com");
-          const cookies = jar.getCookiesSync("https://google.com");
-          return cookies;
+          jar.getCookies("https://google.com", this.callback)
         },
         "results in a 1-length array with a valid cookie": function(err, cookies) {
-          assert(!err);
+          assert(!err, err);
           assert(cookies.length == 1);
           assert.instanceOf(cookies[0], Cookie);
           assert.isTrue(cookies[0].secure);
