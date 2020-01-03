@@ -1,4 +1,4 @@
-FROM node
+FROM node:12
 MAINTAINER awaterman@salesforce.com
 LABEL Description="Vendor=\"Salesforce.com\" Version=\"1.0\""
 RUN apt-get update && \
