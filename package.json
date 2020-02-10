@@ -80,6 +80,7 @@
   "dependencies": {
     "ip-regex": "^2.1.0",
     "psl": "^1.1.33",
-    "punycode": "^2.1.1"
+    "punycode": "^2.1.1",
+    "universalify": "^0.1.2"
   }
 }
