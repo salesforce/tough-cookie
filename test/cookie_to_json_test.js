@@ -29,64 +29,65 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-'use strict';
-var vows = require('vows');
-var assert = require('assert');
-var tough = require('../lib/cookie');
-var Cookie = tough.Cookie;
+"use strict";
+const vows = require("vows");
+const assert = require("assert");
+const tough = require("../lib/cookie");
+const Cookie = tough.Cookie;
 
 vows
-  .describe('Cookie.toJSON()')
+  .describe("Cookie.toJSON()")
   .addBatch({
-    "JSON": {
-      "serialization": {
+    JSON: {
+      serialization: {
         topic: function() {
-          var c = Cookie.parse('alpha=beta; Domain=example.com; Path=/foo; Expires=Tue, 19 Jan 2038 03:14:07 GMT; HttpOnly');
+          const c = Cookie.parse(
+            "alpha=beta; Domain=example.com; Path=/foo; Expires=Tue, 19 Jan 2038 03:14:07 GMT; HttpOnly"
+          );
           return JSON.stringify(c);
         },
         "gives a string": function(str) {
           assert.equal(typeof str, "string");
         },
         "date is in ISO format": function(str) {
-          assert.match(str, /"expires":"2038-01-19T03:14:07\.000Z"/, 'expires is in ISO format');
+          assert.match(
+            str,
+            /"expires":"2038-01-19T03:14:07\.000Z"/,
+            "expires is in ISO format"
+          );
         }
       },
-      "deserialization": {
-        topic: function() {
-          var json = '{"key":"alpha","value":"beta","domain":"example.com","path":"/foo","expires":"2038-01-19T03:14:07.000Z","httpOnly":true,"lastAccessed":2000000000123}';
-          return Cookie.fromJSON(json);
+      deserialization: {
+        topic() {
+          return Cookie.fromJSON(
+            '{"key":"alpha","value":"beta","domain":"example.com","path":"/foo","expires":"2038-01-19T03:14:07.000Z","httpOnly":true,"lastAccessed":2000000000123}'
+          );
         },
-        "works": function(c) {
-          assert.ok(c);
-        },
-        "key": function(c) { assert.equal(c.key, "alpha") },
-        "value": function(c) { assert.equal(c.value, "beta") },
-        "domain": function(c) { assert.equal(c.domain, "example.com") },
-        "path": function(c) { assert.equal(c.path, "/foo") },
-        "httpOnly": function(c) { assert.strictEqual(c.httpOnly, true) },
-        "secure": function(c) { assert.strictEqual(c.secure, false) },
-        "hostOnly": function(c) { assert.strictEqual(c.hostOnly, null) },
-        "expires is a date object": function(c) {
-          assert.equal(c.expires.getTime(), 2147483647000);
-        },
-        "lastAccessed is a date object": function(c) {
-          assert.equal(c.lastAccessed.getTime(), 2000000000123);
-        },
-        "creation defaulted": function(c) {
-          assert.ok(c.creation.getTime());
-        }
+        works: c => assert.ok(c),
+        key: c => assert.equal(c.key, "alpha"),
+        value: c => assert.equal(c.value, "beta"),
+        domain: c => assert.equal(c.domain, "example.com"),
+        path: c => assert.equal(c.path, "/foo"),
+        httpOnly: c => assert.strictEqual(c.httpOnly, true),
+        secure: c => assert.strictEqual(c.secure, false),
+        hostOnly: c => assert.strictEqual(c.hostOnly, null),
+        "expires is a date object": c =>
+          assert.equal(c.expires.getTime(), 2147483647000),
+        "lastAccessed is a date object": c =>
+          assert.equal(c.lastAccessed.getTime(), 2000000000123),
+        "creation defaulted": c => assert.ok(c.creation.getTime())
       },
       "null deserialization": {
         topic: function() {
           return Cookie.fromJSON(null);
         },
         "is null": function(cookie) {
-          assert.equal(cookie,null);
+          assert.equal(cookie, null);
         }
       }
     },
     "expiry deserialization": {
-      "Infinity": {
+      Infinity: {
         topic: Cookie.fromJSON.bind(null, '{"expires":"Infinity"}'),
         "is infinite": function(c) {
           assert.strictEqual(c.expires, "Infinity");
@@ -97,64 +98,88 @@ vows
     "maxAge serialization": {
       topic: function() {
         return function(toSet) {
-          var c = new Cookie();
-          c.key = 'foo'; c.value = 'bar';
+          const c = new Cookie();
+          c.key = "foo";
+          c.value = "bar";
           c.setMaxAge(toSet);
           return JSON.stringify(c);
         };
       },
-      "zero": {
-        topic: function(f) { return f(0) },
+      zero: {
+        topic: function(f) {
+          return f(0);
+        },
         "looks good": function(str) {
           assert.match(str, /"maxAge":0/);
         }
       },
-      "Infinity": {
-        topic: function(f) { return f(Infinity) },
+      Infinity: {
+        topic: function(f) {
+          return f(Infinity);
+        },
         "looks good": function(str) {
           assert.match(str, /"maxAge":"Infinity"/);
         }
       },
       "-Infinity": {
-        topic: function(f) { return f(-Infinity) },
+        topic: function(f) {
+          return f(-Infinity);
+        },
         "looks good": function(str) {
           assert.match(str, /"maxAge":"-Infinity"/);
         }
       },
-      "null": {
-        topic: function(f) { return f(null) },
-        "absent": function(str) {
+      null: {
+        topic: function(f) {
+          return f(null);
+        },
+        absent: function(str) {
           assert.match(str, /(?!"maxAge":null)/); // NB: negative RegExp
         }
       }
     },
     "maxAge deserialization": {
-      "number": {
-        topic: Cookie.fromJSON.bind(null,'{"key":"foo","value":"bar","maxAge":123}'),
+      number: {
+        topic: Cookie.fromJSON.bind(
+          null,
+          '{"key":"foo","value":"bar","maxAge":123}'
+        ),
         "is the number": function(c) {
           assert.strictEqual(c.maxAge, 123);
         }
       },
-      "null": {
-        topic: Cookie.fromJSON.bind(null,'{"key":"foo","value":"bar","maxAge":null}'),
+      null: {
+        topic: Cookie.fromJSON.bind(
+          null,
+          '{"key":"foo","value":"bar","maxAge":null}'
+        ),
         "is null": function(c) {
           assert.strictEqual(c.maxAge, null);
         }
       },
       "less than zero": {
-        topic: Cookie.fromJSON.bind(null,'{"key":"foo","value":"bar","maxAge":-123}'),
+        topic: Cookie.fromJSON.bind(
+          null,
+          '{"key":"foo","value":"bar","maxAge":-123}'
+        ),
         "is -123": function(c) {
           assert.strictEqual(c.maxAge, -123);
         }
       },
-      "Infinity": {
-        topic: Cookie.fromJSON.bind(null,'{"key":"foo","value":"bar","maxAge":"Infinity"}'),
+      Infinity: {
+        topic: Cookie.fromJSON.bind(
+          null,
+          '{"key":"foo","value":"bar","maxAge":"Infinity"}'
+        ),
         "is inf-as-string": function(c) {
           assert.strictEqual(c.maxAge, "Infinity");
         }
       },
       "-Infinity": {
-        topic: Cookie.fromJSON.bind(null,'{"key":"foo","value":"bar","maxAge":"-Infinity"}'),
+        topic: Cookie.fromJSON.bind(
+          null,
+          '{"key":"foo","value":"bar","maxAge":"-Infinity"}'
+        ),
         "is inf-as-string": function(c) {
           assert.strictEqual(c.maxAge, "-Infinity");
         }
