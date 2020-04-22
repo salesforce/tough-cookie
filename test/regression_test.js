@@ -144,4 +144,48 @@ vows
       }
     }
   })
+  .addBatch({
+    "setCookie (without options) callback works even if it's not instanceof Function (GH-158/GH-175)": {
+      topic: function() {
+        const cj = new CookieJar();
+
+        const thisCallback = this.callback;
+        const cb = function(err, cookie) {
+          thisCallback(err, cookie);
+        };
+        Object.setPrototypeOf(cb, null);
+        assert(
+          !(cb instanceof Function),
+          "clearing callback prototype chain failed"
+        );
+
+        cj.setCookie("a=b", "http://example.com/index.html", cb);
+      },
+      works: function(c) {
+        assert.instanceOf(c, Cookie);
+      }
+    },
+    "getCookies (without options) callback works even if it's not instanceof Function (GH-175)": {
+      topic: function() {
+        const cj = new CookieJar();
+        const url = "http://example.com/index.html";
+        cj.setCookieSync("a=b", url);
+
+        const thisCallback = this.callback;
+        const cb = function(err, cookies) {
+          thisCallback(err, cookies);
+        };
+        Object.setPrototypeOf(cb, null);
+        assert(
+          !(cb instanceof Function),
+          "clearing callback prototype chain failed"
+        );
+
+        cj.getCookies(url, cb);
+      },
+      works: function(cookies) {
+        assert.lengthOf(cookies, 1);
+      }
+    }
+  })
   .export(module);
