@@ -681,7 +681,7 @@ vows
         },
         "results in a error being returned because of missing parameters": function(err, cookies) {
           assert(err != null);
-          assert.equal(err.message, "No URL was specified");
+          assert(err instanceof tough.ParameterError);
         }
       }
     }
