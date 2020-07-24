@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## 4.X.X
+
+### Minor Changes
+- Added parameter checking to setCookie so as to error out when no URL was passed in
+
 ## 4.0.0
 
 ### Breaking Changes (Major Version)
