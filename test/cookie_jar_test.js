@@ -669,4 +669,21 @@ vows
       }
     }
   })
+  .addBatch({
+    "Issue #145 - Missing parameter validation on setCookie function causes TypeError": {
+      "with missing parameters": {
+        topic: function() {
+          const jar = new tough.CookieJar();
+          jar.setCookie(
+            new String("x=y; Domain=example.com; Path=/"),
+            this.callback
+          );
+        },
+        "results in a error being returned because of missing parameters": function(err, cookies) {
+          assert(err != null);
+          assert(err instanceof tough.ParameterError);
+        }
+      }
+    }
+  })
   .export(module);
