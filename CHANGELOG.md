@@ -7,6 +7,11 @@ All notable changes to this project will be documented in this file.
 ### Minor Changes
 - Added parameter checking to setCookie so as to error out when no URL was passed in
 
+## X.Y.Z
+
+### Minor Changes
+- Added loose mode to the serialized options. Now a serialized cookie jar with loose mode enabled will honor that flag when deserialized.
+
 ## 4.0.0
 
 ### Breaking Changes (Major Version)
