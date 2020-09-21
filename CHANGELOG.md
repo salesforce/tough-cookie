@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 
 ### Minor Changes
 - Added loose mode to the serialized options. Now a serialized cookie jar with loose mode enabled will honor that flag when deserialized.
+- Added allowSpecialUseDomain and prefixSecurity to the serialized options. Now any options accepted passed in to the cookie jar will be honored when serialized and deserialized.
 
 ## 4.0.0
 
