@@ -543,6 +543,19 @@ vows
         assert.strictEqual(cookies[0].key, "");
         assert.strictEqual(cookies[0].value, "FooBar");
       }
+    },
+    "Loose Mode Cloned": {
+      topic: function() {
+        const cj = new CookieJar(null, { looseMode: true });
+        return CookieJar.fromJSON(cj.toJSON());
+      },
+      "parses loose cookies from serialized cookie jar": function(cj) {
+        cj.setCookieSync("FooBar", "http://www.foonet.net", {});
+        const cookies = cj.getCookiesSync("http://www.foonet.net");
+        assert.strictEqual(cookies.length, 1);
+        assert.strictEqual(cookies[0].key, "");
+        assert.strictEqual(cookies[0].value, "FooBar");
+      }
     }
   })
   .addBatch({
