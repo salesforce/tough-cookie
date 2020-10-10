@@ -543,6 +543,19 @@ vows
         assert.strictEqual(cookies[0].key, "");
         assert.strictEqual(cookies[0].value, "FooBar");
       }
+    },
+    "Loose Mode Cloned": {
+      topic: function() {
+        const cj = new CookieJar(null, { looseMode: true });
+        return CookieJar.fromJSON(cj.toJSON());
+      },
+      "parses loose cookies from serialized cookie jar": function(cj) {
+        cj.setCookieSync("FooBar", "http://www.foonet.net", {});
+        const cookies = cj.getCookiesSync("http://www.foonet.net");
+        assert.strictEqual(cookies.length, 1);
+        assert.strictEqual(cookies[0].key, "");
+        assert.strictEqual(cookies[0].value, "FooBar");
+      }
     }
   })
   .addBatch({
@@ -665,6 +678,23 @@ vows
           assert(cookies.length == 1);
           assert.instanceOf(cookies[0], Cookie);
           assert.isTrue(cookies[0].secure);
+        }
+      }
+    }
+  })
+  .addBatch({
+    "Issue #145 - Missing parameter validation on setCookie function causes TypeError": {
+      "with missing parameters": {
+        topic: function() {
+          const jar = new tough.CookieJar();
+          jar.setCookie(
+            new String("x=y; Domain=example.com; Path=/"),
+            this.callback
+          );
+        },
+        "results in a error being returned because of missing parameters": function(err, cookies) {
+          assert(err != null);
+          assert(err instanceof tough.ParameterError);
         }
       }
     }
