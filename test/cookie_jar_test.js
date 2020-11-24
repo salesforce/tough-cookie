@@ -686,4 +686,21 @@ vows
       }
     }
   })
+  .addBatch({
+    "Issue #197 - CookieJar().setCookie crashes when empty cookie is passed": {
+      "with missing parameters": {
+        topic: function() {
+          const jar = new tough.CookieJar();
+          jar.setCookie(
+            '',
+            "https://google.com",
+            this.callback
+          );
+        },
+        "results in a error being returned because of missing parameters": function(err, cookies) {
+          assert(cookies == undefined);
+        }
+      }
+    }
+  })
   .export(module);
