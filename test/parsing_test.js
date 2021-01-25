@@ -691,6 +691,22 @@ vows
           assert.equal(c.extensions, null);
         }
       }
+    },
+    "empty string": {
+      topic: function() {
+        return Cookie.parse('');
+      },
+      "is empty": function(c) {
+        assert.equal(c, null);
+      }
+    },
+    "missing string": {
+      topic: function() {
+        return Cookie.parse();
+      },
+      "is empty": function(c) {
+        assert.equal(c, null);
+      }
     }
   })
   .export(module);

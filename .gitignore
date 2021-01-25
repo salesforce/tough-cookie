@@ -6,3 +6,4 @@ docker-compose.override.yml
 .nyc_output
 coverage
 package-lock.json
+.npm
