@@ -7,3 +7,5 @@ docker-compose.override.yml
 coverage
 package-lock.json
 .npm
+.config
+.bash_history
