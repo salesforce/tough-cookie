@@ -194,6 +194,16 @@ vows
             "foo.bar.example.localduhmain"
           ]);
         }
+      },
+      "trailing dot": {
+        topic: tough.permuteDomain.bind(null, "foo.bar.example.com."),
+        "got three things": function(list) {
+          assert.deepEqual(list, [
+            "example.com",
+            "bar.example.com",
+            "foo.bar.example.com"
+          ]);
+        }
       }
     },
     permutePath: {
