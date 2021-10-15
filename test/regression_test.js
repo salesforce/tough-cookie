@@ -188,4 +188,47 @@ vows
       }
     }
   })
+  .addBatch({
+    "setCookie with localhost (GH-215)": {
+      topic: function() {
+        const cookieJar = new CookieJar();
+        return cookieJar.setCookieSync("a=b; Domain=localhost", "http://localhost")  // when domain set to 'localhost', will throw 'Error: Cookie has domain set to a public suffix'
+      },
+      works: function(err, c) {
+        // localhost as domain throws an error, cookie should not be defined
+        assert.instanceOf(err, Error)
+        assert.isUndefined(c)
+      }
+    }},
+    {
+    "setCookie with localhost (GH-215) (null domain)": {
+      topic: function() {
+        const cookieJar = new CookieJar();
+        return cookieJar.setCookieSync("a=b; Domain=", "http://localhost")  // when domain set to 'localhost', will throw 'Error: Cookie has domain set to a public suffix'
+      },
+      works: function(c) {
+        assert.instanceOf(c, Cookie)
+      }
+    }},
+    { 
+      "setCookie with localhost (localhost.local domain) (GH-215)": {
+        topic: function() {
+        const cookieJar = new CookieJar();
+        return cookieJar.setCookieSync("a=b; Domain=localhost.local", "http://localhost")
+      },
+      works: function(c) {
+        assert.instanceOf(c, Cookie)
+      }
+    }},
+    { 
+      "setCookie with localhost (.localhost domain), (GH-215)": {
+        topic: function() {
+        const cookieJar = new CookieJar();
+        return cookieJar.setCookieSync("a=b; Domain=.localhost", "http://localhost")
+      },
+      works: function(c) {
+        assert.instanceOf(c, Cookie)
+      }
+    }
+  })
   .export(module);
