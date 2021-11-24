@@ -50,15 +50,15 @@ function matchVows(func, table) {
 }
 
 function transformVows(fn, table) {
-  var theVows = {};
-  table.forEach(function (item) {
-    var str = item[0];
-    var expect = item[1];
-    var label = str + " gives " + expect;
+  const theVows = {};
+  table.forEach(item => {
+    const str = item[0];
+    const expect = item[1];
+    let label = `${str} gives ${expect}`;
     if (item.length >= 3) {
-      label += " (" + item[2] + ")";
+      label += ` (${item[2]})`;
     }
-    theVows[label] = function () {
+    theVows[label] = function() {
       assert.equal(fn(str), expect);
     };
   });
@@ -75,7 +75,7 @@ vows
       ["EXAMPLE.com.", "example.com.", "trailing dot"],
       [".EXAMPLE.com.", "example.com.", "leading and trailing dot"],
       [".EXAMPLE...com.", "example...com.", "internal dots"],
-      ["δοκιμή.δοκιμή","xn--jxalpdlp.xn--jxalpdlp", "IDN: test.test in greek"],
+      ["δοκιμή.δοκιμή", "xn--jxalpdlp.xn--jxalpdlp", "IDN: test.test in greek"]
     ])
   })
   .addBatch({
@@ -142,12 +142,12 @@ vows
       // exact length "TLD" tests:
       ["com", "net", false], // same len, non-match
       ["com", "com", true], // "are identical" rule
-      ["NOTATLD", "notaTLD", true], // "are identical" rule (after canonicalization)
+      ["NOTATLD", "notaTLD", true] // "are identical" rule (after canonicalization)
     ])
   })
 
   .addBatch({
-    "default-path": transformVows(tough.defaultPath,[
+    "default-path": transformVows(tough.defaultPath, [
       [null, "/"],
       ["/", "/"],
       ["/file", "/"],

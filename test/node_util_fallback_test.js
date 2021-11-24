@@ -42,7 +42,7 @@ vows
   .addBatch({
     util: {
       topic: function() {
-        process.env.JSC_COMPATIBILITY = "enabled";
+        process.env.NODE_UTIL_FALLBACK = "enabled";
         return new Cookie();
       },
       "should not error out on util.* code paths": function(c) {
@@ -51,7 +51,7 @@ vows
         assert.equal(nullUtil.inspect.custom, util.inspect.custom);
       },
       teardown: function() {
-        delete process.env.JSC_COMPATIBILITY;
+        delete process.env.NODE_UTIL_FALLBACK;
       }
     }
   })

@@ -693,35 +693,35 @@ vows
       }
     },
     "empty string": {
-      topic: function () {
-        return Cookie.parse('');
+      topic: function() {
+        return Cookie.parse("");
       },
-      "is empty": function (c) {
+      "is empty": function(c) {
         assert.isNull(c);
       }
     },
     "missing string": {
-      topic: function () {
+      topic: function() {
         return Cookie.parse();
       },
-      "is empty": function (c) {
+      "is empty": function(c) {
         assert.isNull(c);
       }
     },
     "some string object": {
       topic: function() {
-        return Cookie.parse(new String(''))
+        return Cookie.parse(new String(""));
       },
       "is empty": function(c) {
-        assert.isNull(c,null)
+        assert.isNull(c, null);
       }
     },
     "some empty string object": {
       topic: function() {
-        return Cookie.parse(new String())
+        return Cookie.parse(new String());
       },
       "is empty": function(c) {
-        assert.isNull(c,null)
+        assert.isNull(c, null);
       }
     }
   })
