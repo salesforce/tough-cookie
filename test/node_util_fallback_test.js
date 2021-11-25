@@ -40,11 +40,11 @@ const CookieJar = tough.CookieJar;
 const MemoryCookieStore = tough.MemoryCookieStore;
 
 function usingNodeUtilFallback(fn) {
-  process.env.NODE_UTIL_FALLBACK = "enabled";
+  process.env.TOUGH_COOKIE_NODE_UTIL_FALLBACK = "enabled";
   try {
     return fn();
   } finally {
-    delete process.env.NODE_UTIL_FALLBACK;
+    delete process.env.TOUGH_COOKIE_NODE_UTIL_FALLBACK;
   }
 }
 
