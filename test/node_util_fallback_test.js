@@ -34,24 +34,121 @@ const vows = require("vows");
 const assert = require("assert");
 const tough = require("../lib/cookie");
 const util = require("util");
-const nodeUtil = require("../lib/node-util");
+
 const Cookie = tough.Cookie;
+const CookieJar = tough.CookieJar;
+const MemoryCookieStore = tough.MemoryCookieStore;
+
+function usingNodeUtilFallback(fn) {
+  process.env.NODE_UTIL_FALLBACK = "enabled";
+  try {
+    return fn();
+  } finally {
+    delete process.env.NODE_UTIL_FALLBACK;
+  }
+}
+
+function resetAgeFields(str) {
+  return str.replace(/\d+ms/g, "0ms");
+}
 
 vows
-  .describe("JavaScriptCore Compatibility")
+  .describe("Node util module fallback for non-node environments")
   .addBatch({
-    util: {
-      topic: function() {
-        process.env.NODE_UTIL_FALLBACK = "enabled";
-        return new Cookie();
+    "Cookie usage for util.* code paths": {
+      "should not error out when initializing a Cookie": function() {
+        assert.doesNotThrow(() => {
+          usingNodeUtilFallback(() => new Cookie());
+        });
+      }
+    },
+    "MemoryCookieStore usage for util.* code paths": {
+      "should not error out when initializing a MemoryCookieStore": function() {
+        assert.doesNotThrow(() => {
+          usingNodeUtilFallback(() => new MemoryCookieStore());
+        });
       },
-      "should not error out on util.* code paths": function(c) {
-        const nullUtil = nodeUtil();
-        assert.equal(nullUtil.inspect(c), "");
-        assert.equal(nullUtil.inspect.custom, util.inspect.custom);
-      },
-      teardown: function() {
-        delete process.env.NODE_UTIL_FALLBACK;
+      "inspecting contents": {
+        "when store is empty": {
+          topic: function() {
+            const cookieJar = new CookieJar();
+            return this.callback(
+              null,
+              cookieJar,
+              util.inspect(cookieJar.store)
+            );
+          },
+          "should provide equivalent output to util.inspect(memoryCookieStore)": function(
+            err,
+            cookieJar,
+            expectedResult
+          ) {
+            usingNodeUtilFallback(() => {
+              const fallbackResult = cookieJar.store.inspect();
+              assert.equal(fallbackResult, expectedResult);
+            });
+          }
+        },
+        "when store has a single cookie": {
+          topic: function() {
+            const cookieJar = new CookieJar();
+            cookieJar.setCookieSync(
+              "a=1; Domain=example.com; Path=/",
+              "http://example.com/index.html"
+            );
+            return this.callback(
+              null,
+              cookieJar,
+              resetAgeFields(util.inspect(cookieJar.store))
+            );
+          },
+          "should provide equivalent output to util.inspect(memoryCookieStore)": function(
+            err,
+            cookieJar,
+            expectedResult
+          ) {
+            usingNodeUtilFallback(() => {
+              const fallbackResult = resetAgeFields(cookieJar.store.inspect());
+              assert.equal(expectedResult, fallbackResult);
+            });
+          }
+        },
+        "when store has a multiple cookies": {
+          topic: function() {
+            const cookieJar = new CookieJar();
+            ["a", "b", "c"].forEach((cookieName, i) => {
+              cookieJar.setCookieSync(
+                `${cookieName}=${i}; Domain=example.com; Path=/`,
+                "http://example.com/index.html"
+              );
+            });
+            ["d", "e"].forEach((cookieName, i) => {
+              cookieJar.setCookieSync(
+                `${cookieName}=${i}; Domain=example.com; Path=/some-path/`,
+                "http://example.com/index.html"
+              );
+            });
+            cookieJar.setCookieSync(
+              `f=0; Domain=another.com; Path=/`,
+              "http://another.com/index.html"
+            );
+            return this.callback(
+              null,
+              cookieJar,
+              resetAgeFields(util.inspect(cookieJar.store))
+            );
+          },
+          "should provide equivalent output to util.inspect(memoryCookieStore)": function(
+            err,
+            cookieJar,
+            expectedResult
+          ) {
+            usingNodeUtilFallback(() => {
+              const fallbackResult = resetAgeFields(cookieJar.store.inspect());
+              assert.equal(expectedResult, fallbackResult);
+            });
+          }
+        }
       }
     }
   })
