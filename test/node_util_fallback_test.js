@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2015, Salesforce.com, Inc.
+ * Copyright (c) 2021, Salesforce.com, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
