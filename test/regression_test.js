@@ -36,6 +36,7 @@ const async = require("async");
 const tough = require("../lib/cookie");
 const Cookie = tough.Cookie;
 const CookieJar = tough.CookieJar;
+const MemoryCookieStore = tough.MemoryCookieStore;
 
 const atNow = Date.now();
 
@@ -245,4 +246,25 @@ vows
       }
     }
   )
+  .addBatch({
+    MemoryCookieStore: {
+      topic: new MemoryCookieStore(),
+      "has no static methods": function() {
+        assert.deepEqual(Object.keys(MemoryCookieStore), []);
+      },
+      "has instance methods that return promises": function(store) {
+        assert.instanceOf(store.findCookie("example.com", "/", "key"), Promise);
+        assert.instanceOf(store.findCookies("example.com", "/"), Promise);
+        assert.instanceOf(store.putCookie({}), Promise);
+        assert.instanceOf(store.updateCookie({}, {}), Promise);
+        assert.instanceOf(
+          store.removeCookie("example.com", "/", "key"),
+          Promise
+        );
+        assert.instanceOf(store.removeCookies("example.com", "/"), Promise);
+        assert.instanceOf(store.removeAllCookies(), Promise);
+        assert.instanceOf(store.getAllCookies(), Promise);
+      }
+    }
+  })
   .export(module);
