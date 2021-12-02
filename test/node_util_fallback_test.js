@@ -34,19 +34,10 @@ const vows = require("vows");
 const assert = require("assert");
 const tough = require("../lib/cookie");
 const util = require("util");
-
+const inspectFallback = require("../lib/memstore").inspectFallback;
+const { getCustomInspectSymbol, getUtilInspect } = require("../lib/utilHelper");
 const Cookie = tough.Cookie;
 const CookieJar = tough.CookieJar;
-const MemoryCookieStore = tough.MemoryCookieStore;
-
-function usingNodeUtilFallback(fn) {
-  process.env.TOUGH_COOKIE_NODE_UTIL_FALLBACK = "enabled";
-  try {
-    return fn();
-  } finally {
-    delete process.env.TOUGH_COOKIE_NODE_UTIL_FALLBACK;
-  }
-}
 
 function resetAgeFields(str) {
   return str.replace(/\d+ms/g, "0ms");
@@ -55,99 +46,128 @@ function resetAgeFields(str) {
 vows
   .describe("Node util module fallback for non-node environments")
   .addBatch({
-    "Cookie usage for util.* code paths": {
-      "should not error out when initializing a Cookie": function() {
-        assert.doesNotThrow(() => {
-          usingNodeUtilFallback(() => new Cookie());
-        });
+    getCustomInspectSymbol: {
+      "should not be null in a node environment": function() {
+        assert.equal(
+          getCustomInspectSymbol(),
+          Symbol.for("nodejs.util.inspect.custom") || util.inspect.custom
+        );
+      },
+      "should not be null in a node environment when custom inspect symbol cannot be retrieved": function() {
+        assert.equal(
+          getCustomInspectSymbol({
+            lookupCustomInspectSymbol: () => null
+          }),
+          Symbol.for("nodejs.util.inspect.custom") || util.inspect.custom
+        );
+      },
+      "should not be null in a non-node environment": function() {
+        assert.equal(
+          getCustomInspectSymbol({
+            lookupCustomInspectSymbol: () => null,
+            requireUtil: () => null
+          }),
+          null
+        );
       }
     },
-    "MemoryCookieStore usage for util.* code paths": {
-      "should not error out when initializing a MemoryCookieStore": function() {
-        assert.doesNotThrow(() => {
-          usingNodeUtilFallback(() => new MemoryCookieStore());
-        });
+    getUtilInspect: {
+      "should use util.inspect in a node environment": function() {
+        const inspect = getUtilInspect(() => "fallback");
+        assert.equal(inspect("util.inspect"), util.inspect("util.inspect"));
       },
-      "inspecting contents": {
-        "when store is empty": {
-          topic: function() {
-            const cookieJar = new CookieJar();
-            return this.callback(
-              null,
-              cookieJar,
-              util.inspect(cookieJar.store)
-            );
-          },
-          "should provide equivalent output to util.inspect(memoryCookieStore)": function(
-            err,
-            cookieJar,
-            expectedResult
-          ) {
-            usingNodeUtilFallback(() => {
-              const fallbackResult = cookieJar.store.inspect();
-              assert.equal(fallbackResult, expectedResult);
-            });
-          }
+      "should use fallback inspect function in a non-node environment": function() {
+        const inspect = getUtilInspect(() => "fallback", {
+          requireUtil: () => null
+        });
+        assert.equal(inspect("util.inspect"), "fallback");
+      }
+    },
+    "util usage in Cookie": {
+      "custom inspect for Cookie still works": function() {
+        const cookie = Cookie.parse("a=1; Domain=example.com; Path=/");
+        assert.equal(cookie.inspect(), util.inspect(cookie));
+      }
+    },
+    "util usage in MemoryCookie": {
+      "when store is empty": {
+        topic: function() {
+          const cookieJar = new CookieJar();
+          return cookieJar.store;
         },
-        "when store has a single cookie": {
-          topic: function() {
-            const cookieJar = new CookieJar();
+        "custom inspect for MemoryCookie still works": function(memoryStore) {
+          assert.equal(
+            resetAgeFields(util.inspect(memoryStore)),
+            resetAgeFields(memoryStore.inspect())
+          );
+        },
+        "fallback produces equivalent output to custom inspect": function(
+          memoryStore
+        ) {
+          assert.equal(
+            resetAgeFields(util.inspect(memoryStore.idx)),
+            resetAgeFields(inspectFallback(memoryStore.idx))
+          );
+        }
+      },
+      "when store has a single cookie": {
+        topic: function() {
+          const cookieJar = new CookieJar();
+          cookieJar.setCookieSync(
+            "a=1; Domain=example.com; Path=/",
+            "http://example.com/index.html"
+          );
+          return cookieJar.store;
+        },
+        "custom inspect for MemoryCookie still works": function(memoryStore) {
+          assert.equal(
+            resetAgeFields(util.inspect(memoryStore)),
+            resetAgeFields(memoryStore.inspect())
+          );
+        },
+        "fallback produces equivalent output to custom inspect": function(
+          memoryStore
+        ) {
+          assert.equal(
+            resetAgeFields(util.inspect(memoryStore.idx)),
+            resetAgeFields(inspectFallback(memoryStore.idx))
+          );
+        }
+      },
+      "when store has a multiple cookies": {
+        topic: function() {
+          const cookieJar = new CookieJar();
+          ["a", "b", "c"].forEach((cookieName, i) => {
             cookieJar.setCookieSync(
-              "a=1; Domain=example.com; Path=/",
+              `${cookieName}=${i}; Domain=example.com; Path=/`,
               "http://example.com/index.html"
             );
-            return this.callback(
-              null,
-              cookieJar,
-              resetAgeFields(util.inspect(cookieJar.store))
-            );
-          },
-          "should provide equivalent output to util.inspect(memoryCookieStore)": function(
-            err,
-            cookieJar,
-            expectedResult
-          ) {
-            usingNodeUtilFallback(() => {
-              const fallbackResult = resetAgeFields(cookieJar.store.inspect());
-              assert.equal(expectedResult, fallbackResult);
-            });
-          }
-        },
-        "when store has a multiple cookies": {
-          topic: function() {
-            const cookieJar = new CookieJar();
-            ["a", "b", "c"].forEach((cookieName, i) => {
-              cookieJar.setCookieSync(
-                `${cookieName}=${i}; Domain=example.com; Path=/`,
-                "http://example.com/index.html"
-              );
-            });
-            ["d", "e"].forEach((cookieName, i) => {
-              cookieJar.setCookieSync(
-                `${cookieName}=${i}; Domain=example.com; Path=/some-path/`,
-                "http://example.com/index.html"
-              );
-            });
+          });
+          ["d", "e"].forEach((cookieName, i) => {
             cookieJar.setCookieSync(
-              `f=0; Domain=another.com; Path=/`,
-              "http://another.com/index.html"
+              `${cookieName}=${i}; Domain=example.com; Path=/some-path/`,
+              "http://example.com/index.html"
             );
-            return this.callback(
-              null,
-              cookieJar,
-              resetAgeFields(util.inspect(cookieJar.store))
-            );
-          },
-          "should provide equivalent output to util.inspect(memoryCookieStore)": function(
-            err,
-            cookieJar,
-            expectedResult
-          ) {
-            usingNodeUtilFallback(() => {
-              const fallbackResult = resetAgeFields(cookieJar.store.inspect());
-              assert.equal(expectedResult, fallbackResult);
-            });
-          }
+          });
+          cookieJar.setCookieSync(
+            `f=0; Domain=another.com; Path=/`,
+            "http://another.com/index.html"
+          );
+          return cookieJar.store;
+        },
+        "custom inspect for MemoryCookie still works": function(memoryStore) {
+          assert.equal(
+            resetAgeFields(util.inspect(memoryStore)),
+            resetAgeFields(memoryStore.inspect())
+          );
+        },
+        "fallback produces equivalent output to custom inspect": function(
+          memoryStore
+        ) {
+          assert.equal(
+            resetAgeFields(util.inspect(memoryStore.idx)),
+            resetAgeFields(inspectFallback(memoryStore.idx))
+          );
         }
       }
     }
