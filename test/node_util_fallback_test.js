@@ -53,7 +53,7 @@ vows
           Symbol.for("nodejs.util.inspect.custom") || util.inspect.custom
         );
       },
-      "should not be null in a node environment when custom inspect symbol cannot be retrieved": function() {
+      "should not be null in a node environment when custom inspect symbol cannot be retrieved (< node v10.12.0)": function() {
         assert.equal(
           getCustomInspectSymbol({
             lookupCustomInspectSymbol: () => null
@@ -61,7 +61,7 @@ vows
           Symbol.for("nodejs.util.inspect.custom") || util.inspect.custom
         );
       },
-      "should not be null in a non-node environment": function() {
+      "should be null in a non-node environment since 'util' features cannot be relied on": function() {
         assert.equal(
           getCustomInspectSymbol({
             lookupCustomInspectSymbol: () => null,
