@@ -579,4 +579,86 @@ vows
       }
     }
   })
+  .addBatch(allowSpecialUseOptionVows())
   .export(module);
+
+function allowSpecialUseOptionVows() {
+  const specialUseDomains = [
+    "local",
+    "example",
+    "invalid",
+    "localhost",
+    "test"
+  ];
+
+  return specialUseDomains.reduce((vows, specialUseDomain) => {
+    vows[
+      `cookie jar with allowSpecialUseDomain enabled and domain is "${specialUseDomain}"`
+    ] = {
+      topic: function() {
+        const cb = this.callback;
+        const cj = new CookieJar(new tough.MemoryCookieStore(), {
+          rejectPublicSuffixes: true,
+          allowSpecialUseDomain: true
+        });
+        cj.setCookie(
+          `settingThisShouldPass=true; Domain=dev.${specialUseDomain}; Path=/;`,
+          `http://dev.${specialUseDomain}`,
+          at(-1),
+          (err, cookie) => {
+            cb(err, { cj: cj, cookie: cookie });
+          }
+        );
+      },
+      "set the cookie": function(t) {
+        assert.ok(t.cookie, "didn't set?!");
+        assert.equal(t.cookie.key, "settingThisShouldPass");
+      },
+      "then, retrieving": {
+        topic: function(t) {
+          const cb = this.callback;
+          setTimeout(() => {
+            t.cj.getCookies(
+              `http://dev.${specialUseDomain}`,
+              { http: true },
+              (err, cookies) => {
+                t.cookies = cookies;
+                cb(err, t);
+              }
+            );
+          }, 2000);
+        },
+        "got the cookie": function(t) {
+          assert.lengthOf(t.cookies, 1);
+          assert.equal(t.cookies[0].key, "settingThisShouldPass");
+        }
+      }
+    };
+
+    vows[
+      `cookie jar with allowSpecialUseDomain disabled and domain is "${specialUseDomain}"`
+    ] = {
+      topic: function() {
+        const cj = new CookieJar(new tough.MemoryCookieStore(), {
+          allowSpecialUseDomain: false,
+          rejectPublicSuffixes: true
+        });
+        cj.setCookie(
+          `settingThisShouldFail=true; Domain=dev.${specialUseDomain}; Path=/;`,
+          `http://dev.${specialUseDomain}`,
+          this.callback
+        );
+      },
+      errors: function(err, cookie) {
+        assert.ok(err);
+        assert.ok(!cookie);
+        assert.equal(
+          err.message,
+          `Cookie has domain set to the public suffix "${specialUseDomain}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain:true, rejectPublicSuffixes: false}.`
+        );
+      }
+    };
+
+    return vows;
+  }, {});
+}
