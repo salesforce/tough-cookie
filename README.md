@@ -7,18 +7,16 @@
 # Synopsis
 
 ``` javascript
-var tough = require('tough-cookie');
-var Cookie = tough.Cookie;
-var cookie = Cookie.parse(header);
+import { Cookie, CookieJar } from 'tough-cookie';
+const cookie = Cookie.parse(header);
 cookie.value = 'somethingdifferent';
 header = cookie.toString();
 
-var cookiejar = new tough.CookieJar();
-cookiejar.setCookie(cookie, 'http://currentdomain.example.com/path', cb);
+const cookiejar = new CookieJar();
+await cookiejar.setCookie(cookie, 'http://currentdomain.example.com/path');
 // ...
-cookiejar.getCookies('http://example.com/otherpath',function(err,cookies) {
-  res.headers['cookie'] = cookies.join('; ');
-});
+const cookies = await cookiejar.getCookies('http://example.com/otherpath');
+res.headers['cookie'] = cookies.join('; ');
 ```
 
 # Installation
