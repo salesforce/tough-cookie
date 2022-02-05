@@ -9,3 +9,4 @@ package-lock.json
 .npm
 .config
 .bash_history
+dist/
