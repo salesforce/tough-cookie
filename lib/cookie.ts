@@ -474,11 +474,7 @@ function parseCookiePair(cookiePair, looseMode) {
   return c;
 }
 
-function parse(str, options) {
-  if (!options || typeof options !== "object") {
-    options = {};
-  }
-
+function parse(str: string, options: any = {}): Cookie {
   if (validators.isEmptyString(str) || !validators.isString(str)) {
     return null
   }
@@ -826,9 +822,6 @@ export class Cookie {
   lastAccessed: Date | null | 'Infinity';
   sameSite: string | undefined;
 
-  static serializableProperties: string[]
-  static cookiesCreated: number
-
   constructor(options = {}) {
     if (util.inspect.custom) {
       this[util.inspect.custom] = this.inspect;
@@ -1012,7 +1005,7 @@ export class Cookie {
   // elsewhere)
   // S5.3 says to give the "latest representable date" for which we use Infinity
   // For "expired" we use 0
-  TTL(now) {
+  TTL(now: number = Date.now()) {
     /* RFC6265 S4.1.2.2 If a cookie has both the Max-Age and the Expires
      * attribute, the Max-Age attribute has precedence and controls the
      * expiration date of the cookie.
@@ -1091,26 +1084,30 @@ export class Cookie {
   cdomain() {
     return this.canonicalizedDomain();
   }
+
+  static parse (cookieString: string, options?): Cookie {
+    return parse(cookieString, options)
+  }
+
+  static fromJSON (jsonString: string): Cookie {
+    return fromJSON(jsonString)
+  }
+
+  static cookiesCreated: number = 0
+
+  static sameSiteLevel = {
+    strict: 3,
+    lax: 2,
+    none: 1
+  }
+
+  static sameSiteCanonical = {
+    strict: "Strict",
+    lax: "Lax"
+  }
+
+  static serializableProperties = Object.keys(cookieDefaults)
 }
-
-Cookie.cookiesCreated = 0;
-// @ts-ignore
-Cookie.parse = parse;
-// @ts-ignore
-Cookie.fromJSON = fromJSON;
-Cookie.serializableProperties = Object.keys(cookieDefaults);
-// @ts-ignore
-Cookie.sameSiteLevel = {
-  strict: 3,
-  lax: 2,
-  none: 1
-};
-
-// @ts-ignore
-Cookie.sameSiteCanonical = {
-  strict: "Strict",
-  lax: "Lax"
-};
 
 function getNormalizedPrefixSecurity(prefixSecurity) {
   if (prefixSecurity != null) {
@@ -1127,38 +1124,11 @@ function getNormalizedPrefixSecurity(prefixSecurity) {
   return PrefixSecurityEnum.SILENT;
 }
 
-type SetCookieOptions = {
-  loose?: boolean;
-  sameSiteContext?: boolean;
-  ignoreError?: boolean;
-  http?: boolean;
-  now?: Date;
-}
-
 const defaultSetCookieOptions: SetCookieOptions = {
   loose: false,
   sameSiteContext: false,
   ignoreError: false,
   http: false
-}
-
-interface PromiseCallback<T> {
-  promise: Promise<T>;
-  callback: (error?: Error, result?: T) => Promise<T>;
-}
-
-export interface SerializedCookieJar {
-  version: string;
-  storeType: string;
-  rejectPublicSuffixes: boolean;
-  [key: string]: any;
-  cookies: SerializedCookie[];
-}
-
-export interface SerializedCookie {
-  key: string;
-  value: string;
-  [key: string]: any;
 }
 
 function createPromiseCallback<T>(args: IArguments): PromiseCallback<T> {
@@ -1199,41 +1169,44 @@ function createPromiseCallback<T>(args: IArguments): PromiseCallback<T> {
 }
 
 export class CookieJar {
-  store: Store;
+  readonly store: Store;
+  private readonly rejectPublicSuffixes: boolean;
+  private readonly enableLooseMode: boolean;
+  private readonly allowSpecialUseDomain: boolean;
+  private readonly prefixSecurity: string;
 
   constructor(store?: any, options: any = { rejectPublicSuffixes: true }) {
     if (typeof options === "boolean") {
       options = { rejectPublicSuffixes: options };
     }
     validators.validate(validators.isObject(options), options);
-    // @ts-ignore
     this.rejectPublicSuffixes = options.rejectPublicSuffixes;
-    // @ts-ignore
     this.enableLooseMode = !!options.looseMode;
-    // @ts-ignore
     this.allowSpecialUseDomain = !!options.allowSpecialUseDomain;
     this.store = store || new MemoryCookieStore();
-    // @ts-ignore
     this.prefixSecurity = getNormalizedPrefixSecurity(options.prefixSecurity);
-    // @ts-ignore
-    this._cloneSync = syncWrap("clone");
-    // @ts-ignore
-    this._importCookiesSync = syncWrap("_importCookies");
-    // @ts-ignore
-    this.getCookiesSync = syncWrap("getCookies");
-    // @ts-ignore
-    this.getCookieStringSync = syncWrap("getCookieString");
-    // @ts-ignore
-    this.getSetCookieStringsSync = syncWrap("getSetCookieStrings");
-    // @ts-ignore
-    this.removeAllCookiesSync = syncWrap("removeAllCookies");
-    // @ts-ignore
-    this.setCookieSync = syncWrap("setCookie");
-    // @ts-ignore
-    this.serializeSync = syncWrap("serialize");
   }
 
-  setCookie(cookie, url, options: SetCookieOptions = defaultSetCookieOptions, callback?: (error: Error, result: Cookie) => void): Promise<Cookie> {
+  private callSync<T>(fn): T {
+    if (!this.store.synchronous) {
+      throw new Error(
+        "CookieJar store is not synchronous; use async API instead."
+      );
+    }
+    let syncErr, syncResult;
+    fn.call(this, (error: Error, result: T) => {
+      syncErr = error
+      syncResult = result
+    })
+    if (syncErr) throw syncErr;
+    return syncResult;
+  }
+
+  setCookie(cookie, url: string, callback: Callback<Cookie>): void;
+  setCookie(cookie, url: string, options: SetCookieOptions, callback: Callback<Cookie>): void;
+  setCookie(cookie, url: string): Promise<Cookie>
+  setCookie(cookie, url: string, options: SetCookieOptions): Promise<Cookie>
+  setCookie(cookie, url: string, options: SetCookieOptions | Callback<Cookie> = defaultSetCookieOptions, callback?: Callback<Cookie>): unknown {
     const promiseCallback = createPromiseCallback<Cookie>(arguments)
     const cb = promiseCallback.callback
 
@@ -1245,7 +1218,7 @@ export class CookieJar {
     }
 
     const context = getCookieContext(url);
-    if (validators.isFunction(options)) {
+    if (typeof options === 'function') {
       options = defaultSetCookieOptions;
     }
 
@@ -1256,7 +1229,6 @@ export class CookieJar {
     }
 
     const host = canonicalDomain(context.hostname);
-    // @ts-ignore
     const loose = options.loose || this.enableLooseMode;
 
     let sameSiteContext = null;
@@ -1292,10 +1264,8 @@ export class CookieJar {
     // S5.3 step 4: NOOP; domain is null by default
 
     // S5.3 step 5: public suffixes
-    // @ts-ignore
     if (this.rejectPublicSuffixes && cookie.domain) {
       const suffix = pubsuffix.getPublicSuffix(cookie.cdomain(), {
-        // @ts-ignore
         allowSpecialUseDomain: this.allowSpecialUseDomain,
         ignoreError: options.ignoreError
       });
@@ -1357,10 +1327,8 @@ export class CookieJar {
 
     /* 6265bis-02 S5.4 Steps 15 & 16 */
     const ignoreErrorForPrefixSecurity =
-      // @ts-ignore
       this.prefixSecurity === PrefixSecurityEnum.SILENT;
     const prefixSecurityDisabled =
-      // @ts-ignore
       this.prefixSecurity === PrefixSecurityEnum.DISABLED;
     /* If prefix checking is not disabled ...*/
     if (!prefixSecurityDisabled) {
@@ -1431,9 +1399,16 @@ export class CookieJar {
     return promiseCallback.promise
   // }
   }
+  setCookieSync(cookie, url: string, options?: SetCookieOptions): Cookie {
+    return this.callSync<Cookie>(this.setCookie.bind(this, cookie, url, options))
+  }
 
   // RFC6365 S5.4
-  getCookies(url: string, options: any = {}, callback?: (error: Error, result: Cookie[]) => void): Promise<Cookie[]> {
+  getCookies(url: string, callback: Callback<Cookie[]>);
+  getCookies(url: string, options: any, callback: Callback<Cookie[]>)
+  getCookies(url: string): Promise<Cookie[]>
+  getCookies(url: string, options: any): Promise<Cookie[]>
+  getCookies(url: string, options: any = {}, callback?: (error: Error, result: Cookie[]) => void): unknown {
     const promiseCallback = createPromiseCallback<Cookie[]>(arguments)
     const cb = promiseCallback.callback
 
@@ -1475,7 +1450,6 @@ export class CookieJar {
     const now = options.now || Date.now();
     const expireCheck = options.expire !== false;
     const allPaths = !!options.allPaths;
-    // @ts-ignore
     const store = this.store;
 
     function matchingCookie(c) {
@@ -1535,7 +1509,6 @@ export class CookieJar {
     store.findCookies(
       host,
       allPaths ? null : path,
-      // @ts-ignore
       this.allowSpecialUseDomain,
       (err, cookies) => {
         if (err) {
@@ -1562,8 +1535,15 @@ export class CookieJar {
 
     return promiseCallback.promise
   }
+  getCookiesSync(url: string, options: any = {}): Cookie[] {
+    return this.callSync<Cookie[]>(this.getCookies.bind(this, url, options))
+  }
 
-  getCookieString(url: string, options: any = {}, callback?: (error: Error, result: string) => void): Promise<string> {
+  getCookieString(url: string, options: any, callback: (error: Error, result: string) => void): void;
+  getCookieString(url, callback: (error: Error, result: string) => void): void;
+  getCookieString(url): Promise<string>;
+  getCookieString(url, options: any): Promise<string>;
+  getCookieString(url: string, options: any = {}, callback?: (error: Error, result: string) => void): unknown {
     const promiseCallback = createPromiseCallback<string>(arguments)
 
     const next = function(err: Error, cookies: Cookie[]) {
@@ -1583,8 +1563,15 @@ export class CookieJar {
     this.getCookies(url, options, next)
     return promiseCallback.promise
   }
+  getCookieStringSync(url: string, options: any = {}): string {
+    return this.callSync<string>(this.getCookieString.bind(this, url, options))
+  }
 
-  getSetCookieStrings (url: string, options: any = {}, callback?: (error: Error, result: string[]) => void): Promise<string[]> {
+  getSetCookieStrings (url: string, callback: Callback<string[]>): void
+  getSetCookieStrings (url: string, options: any, callback: Callback<string[]>): void
+  getSetCookieStrings (url: string): Promise<string[]>
+  getSetCookieStrings (url: string, options: any): Promise<string[]>
+  getSetCookieStrings (url: string, options: any = {}, callback?: (error: Error, result: string[]) => void): unknown {
     const promiseCallback = createPromiseCallback<string[]>(arguments)
 
     const next = function(err: Error, cookies: Cookie[]) {
@@ -1603,13 +1590,17 @@ export class CookieJar {
     this.getCookies(url, options, next);
     return promiseCallback.promise
   }
+  getSetCookieStringsSync(url: string, options: any = {}): string[] {
+    return this.callSync<string[]>(this.getSetCookieStrings.bind(this, url, options))
+  }
 
-  serialize(callback?: (error: Error, data: SerializedCookieJar) => void): Promise<SerializedCookieJar> {
+  serialize(callback: Callback<SerializedCookieJar>): void;
+  serialize(): Promise<SerializedCookieJar>;
+  serialize(callback?: (error: Error, data: SerializedCookieJar) => void): unknown {
     const promiseCallback = createPromiseCallback<SerializedCookieJar>(arguments)
     const cb = promiseCallback.callback
 
     validators.validate(validators.isFunction(cb), cb);
-    // @ts-ignore
     let type = this.store.constructor.name;
     if (validators.isObject(type)) {
       type = null;
@@ -1626,13 +1617,9 @@ export class CookieJar {
       storeType: type,
 
       // CookieJar configuration:
-      // @ts-ignore
       rejectPublicSuffixes: !!this.rejectPublicSuffixes,
-      // @ts-ignore
       enableLooseMode: !!this.enableLooseMode,
-      // @ts-ignore
       allowSpecialUseDomain: !!this.allowSpecialUseDomain,
-      // @ts-ignore
       prefixSecurity: getNormalizedPrefixSecurity(this.prefixSecurity),
 
       // this gets filled from getAllCookies:
@@ -1641,9 +1628,7 @@ export class CookieJar {
 
     if (
       !(
-        // @ts-ignore
         this.store.getAllCookies &&
-        // @ts-ignore
         typeof this.store.getAllCookies === "function"
       )
     ) {
@@ -1654,7 +1639,6 @@ export class CookieJar {
       );
     }
 
-    // @ts-ignore
     this.store.getAllCookies((err, cookies) => {
       if (err) {
         return cb(err);
@@ -1675,9 +1659,11 @@ export class CookieJar {
 
     return promiseCallback.promise
   }
+  serializeSync(): SerializedCookieJar {
+    return this.callSync<SerializedCookieJar>(this.serialize.bind(this))
+  }
 
   toJSON() {
-    // @ts-ignore
     return this.serializeSync();
   }
 
@@ -1709,12 +1695,15 @@ export class CookieJar {
         return putNext(null); // skip this cookie
       }
 
-      // @ts-ignore
       this.store.putCookie(cookie, putNext);
     };
 
     // @ts-ignore
     putNext();
+  }
+
+  _importCookiesSync (serialized): void {
+    this.callSync(this._importCookies.bind(this, serialized))
   }
 
   clone(newStore, cb) {
@@ -1731,9 +1720,12 @@ export class CookieJar {
     });
   }
 
+  _cloneSync(newStore?): void {
+    return this.callSync(this.clone.bind(this, newStore))
+  }
+
   cloneSync(newStore) {
     if (arguments.length === 0) {
-      // @ts-ignore
       return this._cloneSync();
     }
     if (!newStore.synchronous) {
@@ -1741,15 +1733,15 @@ export class CookieJar {
         "CookieJar clone destination store is not synchronous; use async API instead."
       );
     }
-    // @ts-ignore
     return this._cloneSync(newStore);
   }
 
-  removeAllCookies(callback?: (error?: Error) => void): Promise<void> {
+  removeAllCookies(callback: ErrorCallback): void;
+  removeAllCookies(): Promise<void>;
+  removeAllCookies(callback?: ErrorCallback): unknown {
     const promiseCallback = createPromiseCallback<void>(arguments)
     const cb = promiseCallback.callback
 
-    // @ts-ignore
     const store = this.store;
 
     // Check that the store implements its own removeAllCookies(). The default
@@ -1799,6 +1791,9 @@ export class CookieJar {
 
     return promiseCallback.promise
   }
+  removeAllCookiesSync(): void {
+    return this.callSync<void>(this.removeAllCookies.bind(this))
+  }
 
   static deserialize(strOrObj, store, cb) {
     if (arguments.length !== 3) {
@@ -1820,7 +1815,6 @@ export class CookieJar {
 
     const jar = new CookieJar(store, {
       rejectPublicSuffixes: serialized.rejectPublicSuffixes,
-      // @ts-ignore
       looseMode: serialized.enableLooseMode,
       allowSpecialUseDomain: serialized.allowSpecialUseDomain,
       prefixSecurity: serialized.prefixSecurity
@@ -1833,67 +1827,31 @@ export class CookieJar {
     });
   }
 
-  static deserializeSync(strOrObj, store) {
+  static deserializeSync(strOrObj, store): CookieJar {
     const serialized =
       typeof strOrObj === "string" ? JSON.parse(strOrObj) : strOrObj;
     const jar = new CookieJar(store, {
       rejectPublicSuffixes: serialized.rejectPublicSuffixes,
-      // @ts-ignore
       looseMode: serialized.enableLooseMode
     });
 
     // catch this mistake early:
-    // @ts-ignore
     if (!jar.store.synchronous) {
       throw new Error(
         "CookieJar store is not synchronous; use async API instead."
       );
     }
 
-    // @ts-ignore
     jar._importCookiesSync(serialized);
     return jar;
   }
-}
-// @ts-ignore
-CookieJar.fromJSON = CookieJar.deserializeSync;
 
-[
-  "_importCookies",
-  "clone",
-  "getCookies",
-  "getCookieString",
-  "getSetCookieStrings",
-  "removeAllCookies",
-  "serialize",
-  // "setCookie"
-].forEach(name => {
-  CookieJar.prototype[name] = fromCallback(CookieJar.prototype[name]);
-});
-// CookieJar.prototype.setCookie = fromCallback(CookieJar.prototype.setCookie)
+  static fromJSON (jsonString: string, store): CookieJar {
+    return CookieJar.deserializeSync(jsonString, store)
+  }
+}
+
 CookieJar.deserialize = fromCallback(CookieJar.deserialize);
-
-// Use a closure to provide a true imperative API for synchronous stores.
-function syncWrap(method) {
-  return function(...args) {
-    if (!this.store.synchronous) {
-      throw new Error(
-        "CookieJar store is not synchronous; use async API instead."
-      );
-    }
-
-    let syncErr, syncResult;
-    this[method](...args, (err, result) => {
-      syncErr = err;
-      syncResult = result;
-    });
-
-    if (syncErr) {
-      throw syncErr;
-    }
-    return syncResult;
-  };
-}
 
 const getPublicSuffix = pubsuffix.getPublicSuffix
 const ParameterError = validators.ParameterError
@@ -1915,3 +1873,33 @@ export { permutePath as permutePath }
 export { canonicalDomain as canonicalDomain }
 export { PrefixSecurityEnum as PrefixSecurityEnum }
 export { ParameterError as ParameterError }
+
+type SetCookieOptions = {
+  loose?: boolean;
+  sameSiteContext?: boolean;
+  ignoreError?: boolean;
+  http?: boolean;
+  now?: Date;
+}
+
+interface PromiseCallback<T> {
+  promise: Promise<T>;
+  callback: (error?: Error, result?: T) => Promise<T>;
+}
+
+export interface SerializedCookieJar {
+  version: string;
+  storeType: string;
+  rejectPublicSuffixes: boolean;
+  [key: string]: any;
+  cookies: SerializedCookie[];
+}
+
+export interface SerializedCookie {
+  key: string;
+  value: string;
+  [key: string]: any;
+}
+
+export type Callback<T> = (error: Error, result: T) => void
+export type ErrorCallback = (error: Error) => void

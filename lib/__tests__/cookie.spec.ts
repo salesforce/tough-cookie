@@ -28,53 +28,39 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-"use strict";
-/*jshint unused:false */
 
-import {Cookie} from "./cookie";
+import {Cookie} from '../cookie'
 
-export class Store {
-  synchronous: boolean;
+jest.useFakeTimers()
 
-  constructor() {
-    this.synchronous = false;
-  }
+describe('Cookie', () => {
+  let cookie: Cookie
 
-  findCookie(domain, path, key, cb): Cookie {
-    throw new Error("findCookie is not implemented");
-  }
+  describe('constructor', () => {
+    beforeEach(() => {
+      cookie = new Cookie({
+        key: "test",
+        value: "b",
+        maxAge: 60
+      })
+    })
 
-  findCookies(domain: string, path?: string, allowSpecialUseDomain: boolean = false, callback?: (error: Error, result: Cookie[]) => void): Promise<Cookie[]> {
-    throw new Error("findCookies is not implemented");
-  }
+    it("should check for key property", () => {
+      expect(cookie.key).toEqual('test')
+    })
 
-  putCookie(cookie, cb) {
-    throw new Error("putCookie is not implemented");
-  }
+    it('should check for value property', () => {
+      expect(cookie.value).toBe("b");
+    })
 
-  updateCookie(oldCookie, newCookie, cb) {
-    // recommended default implementation:
-    // return this.putCookie(newCookie, cb);
-    throw new Error("updateCookie is not implemented");
-  }
+    it("should check for maxAge", () => {
+      expect(cookie.maxAge).toBe(60);
+    })
 
-  removeCookie(domain: string, path: string, key: string, callback?: (error: Error) => void): Promise<void> {
-    throw new Error("removeCookie is not implemented");
-  }
-
-  removeCookies(domain: string, path?: string, callback?: (error: Error) => void): Promise<void> {
-    throw new Error("removeCookies is not implemented");
-  }
-
-  removeAllCookies(callback?: (error: Error) => void): Promise<void> {
-    throw new Error("removeAllCookies is not implemented");
-  }
-
-  getAllCookies(cb) {
-    throw new Error(
-      "getAllCookies is not implemented (therefore jar cannot be serialized)"
-    );
-  }
-}
-
-exports.Store = Store;
+    it("should check for default values for unspecified properties", () => {
+      expect(cookie.expires).toBe('Infinity')
+      expect(cookie.secure).toBe(false)
+      expect(cookie.httpOnly).toBe(false)
+    })
+  })
+})
