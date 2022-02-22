@@ -1,10 +1,12 @@
+# tough-cookie
+
 [RFC6265](https://tools.ietf.org/html/rfc6265) Cookies and CookieJar for Node.js
 
 [![npm package](https://nodei.co/npm/tough-cookie.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/tough-cookie/)
 
 [![Build Status](https://travis-ci.org/salesforce/tough-cookie.svg?branch=master)](https://travis-ci.org/salesforce/tough-cookie)
 
-# Synopsis
+## Synopsis
 
 ``` javascript
 var tough = require('tough-cookie');
@@ -21,7 +23,7 @@ cookiejar.getCookies('http://example.com/otherpath',function(err,cookies) {
 });
 ```
 
-# Installation
+## Installation
 
 It's _so_ easy!
 
@@ -29,65 +31,65 @@ It's _so_ easy!
 
 Why the name?  NPM modules `cookie`, `cookies` and `cookiejar` were already taken.
 
-## Version Support
+### Version Support
 
 Support for versions of node.js will follow that of the [request](https://www.npmjs.com/package/request) module.
 
-# API
+## API
 
-## tough
+### tough
 
 Functions on the module you get from `require('tough-cookie')`.  All can be used as pure functions and don't need to be "bound".
 
 **Note**: prior to 1.0.x, several of these functions took a `strict` parameter. This has since been removed from the API as it was no longer necessary.
 
-### `parseDate(string)`
+#### `parseDate(string)`
 
 Parse a cookie date string into a `Date`.  Parses according to RFC6265 Section 5.1.1, not `Date.parse()`.
 
-### `formatDate(date)`
+#### `formatDate(date)`
 
 Format a Date into a RFC1123 string (the RFC6265-recommended format).
 
-### `canonicalDomain(str)`
+#### `canonicalDomain(str)`
 
 Transforms a domain-name into a canonical domain-name.  The canonical domain-name is a trimmed, lowercased, stripped-of-leading-dot and optionally punycode-encoded domain-name (Section 5.1.2 of RFC6265).  For the most part, this function is idempotent (can be run again on its output without ill effects).
 
-### `domainMatch(str,domStr[,canonicalize=true])`
+#### `domainMatch(str,domStr[,canonicalize=true])`
 
 Answers "does this real domain match the domain in a cookie?".  The `str` is the "current" domain-name and the `domStr` is the "cookie" domain-name.  Matches according to RFC6265 Section 5.1.3, but it helps to think of it as a "suffix match".
 
 The `canonicalize` parameter will run the other two parameters through `canonicalDomain` or not.
 
-### `defaultPath(path)`
+#### `defaultPath(path)`
 
 Given a current request/response path, gives the Path apropriate for storing in a cookie.  This is basically the "directory" of a "file" in the path, but is specified by Section 5.1.4 of the RFC.
 
 The `path` parameter MUST be _only_ the pathname part of a URI (i.e. excludes the hostname, query, fragment, etc.).  This is the `.pathname` property of node's `uri.parse()` output.
 
-### `pathMatch(reqPath,cookiePath)`
+#### `pathMatch(reqPath,cookiePath)`
 
 Answers "does the request-path path-match a given cookie-path?" as per RFC6265 Section 5.1.4.  Returns a boolean.
 
 This is essentially a prefix-match where `cookiePath` is a prefix of `reqPath`.
 
-### `parse(cookieString[, options])`
+#### `parse(cookieString[, options])`
 
 alias for `Cookie.parse(cookieString[, options])`
 
-### `fromJSON(string)`
+#### `fromJSON(string)`
 
 alias for `Cookie.fromJSON(string)`
 
-### `getPublicSuffix(hostname)`
+#### `getPublicSuffix(hostname)`
 
 Returns the public suffix of this hostname.  The public suffix is the shortest domain-name upon which a cookie can be set.  Returns `null` if the hostname cannot have cookies set for it.
 
 For example: `www.example.com` and `www.subdomain.example.com` both have public suffix `example.com`.
 
-For further information, see http://publicsuffix.org/.  This module derives its list from that site. This call is currently a wrapper around [`psl`](https://www.npmjs.com/package/psl)'s [get() method](https://www.npmjs.com/package/psl#pslgetdomain).
+For further information, see the [Public Suffix List](http://publicsuffix.org/).  This module derives its list from that site. This call is currently a wrapper around [`psl`](https://www.npmjs.com/package/psl)'s [get() method](https://www.npmjs.com/package/psl##pslgetdomain).
 
-### `cookieCompare(a,b)`
+#### `cookieCompare(a,b)`
 
 For use with `.sort()`, sorts a list of cookies into the recommended order given in the RFC (Section 5.4 step 2). The sort algorithm is, in order of precedence:
 
@@ -102,28 +104,27 @@ cookies = cookies.sort(cookieCompare);
 
 **Note**: Since JavaScript's `Date` is limited to a 1ms precision, cookies within the same milisecond are entirely possible. This is especially true when using the `now` option to `.setCookie()`. The `.creationIndex` property is a per-process global counter, assigned during construction with `new Cookie()`. This preserves the spirit of the RFC sorting: older cookies go first. This works great for `MemoryCookieStore`, since `Set-Cookie` headers are parsed in order, but may not be so great for distributed systems. Sophisticated `Store`s may wish to set this to some other _logical clock_ such that if cookies A and B are created in the same millisecond, but cookie A is created before cookie B, then `A.creationIndex < B.creationIndex`. If you want to alter the global counter, which you probably _shouldn't_ do, it's stored in `Cookie.cookiesCreated`.
 
-### `permuteDomain(domain)`
+#### `permuteDomain(domain)`
 
 Generates a list of all possible domains that `domainMatch()` the parameter.  May be handy for implementing cookie stores.
 
-### `permutePath(path)`
+#### `permutePath(path)`
 
 Generates a list of all possible paths that `pathMatch()` the parameter.  May be handy for implementing cookie stores.
 
-
-## Cookie
+### Cookie
 
 Exported via `tough.Cookie`.
 
-### `Cookie.parse(cookieString[, options])`
+#### `Cookie.parse(cookieString[, options])`
 
 Parses a single Cookie or Set-Cookie HTTP header into a `Cookie` object.  Returns `undefined` if the string can't be parsed.
 
 The options parameter is not required and currently has only one property:
 
-  * _loose_ - boolean - if `true` enable parsing of key-less cookies like `=abc` and `=`, which are not RFC-compliant.
+* _loose_ - boolean - if `true` enable parsing of key-less cookies like `=abc` and `=`, which are not RFC-compliant.
 
-If options is not an object, it is ignored, which means you can use `Array#map` with it.
+If options is not an object, it is ignored, which means you can use `Array##map` with it.
 
 Here's how to process the Set-Cookie header(s) on a node HTTP/HTTPS response:
 
@@ -137,53 +138,53 @@ else
 _Note:_ in version 2.3.3, tough-cookie limited the number of spaces before the `=` to 256 characters. This limitation has since been removed.
 See [Issue 92](https://github.com/salesforce/tough-cookie/issues/92)
 
-### Properties
+#### Properties
 
 Cookie object properties:
 
-  * _key_ - string - the name or key of the cookie (default "")
-  * _value_ - string - the value of the cookie (default "")
-  * _expires_ - `Date` - if set, the `Expires=` attribute of the cookie (defaults to the string `"Infinity"`). See `setExpires()`
-  * _maxAge_ - seconds - if set, the `Max-Age=` attribute _in seconds_ of the cookie.  May also be set to strings `"Infinity"` and `"-Infinity"` for non-expiry and immediate-expiry, respectively.  See `setMaxAge()`
-  * _domain_ - string - the `Domain=` attribute of the cookie
-  * _path_ - string - the `Path=` of the cookie
-  * _secure_ - boolean - the `Secure` cookie flag
-  * _httpOnly_ - boolean - the `HttpOnly` cookie flag
-  * _sameSite_ - string - the `SameSite` cookie attribute (from [RFC6265bis]); must be one of `none`, `lax`, or `strict`
-  * _extensions_ - `Array` - any unrecognized cookie attributes as strings (even if equal-signs inside)
-  * _creation_ - `Date` - when this cookie was constructed
-  * _creationIndex_ - number - set at construction, used to provide greater sort precision (please see `cookieCompare(a,b)` for a full explanation)
+* _key_ - string - the name or key of the cookie (default "")
+* _value_ - string - the value of the cookie (default "")
+* _expires_ - `Date` - if set, the `Expires=` attribute of the cookie (defaults to the string `"Infinity"`). See `setExpires()`
+* _maxAge_ - seconds - if set, the `Max-Age=` attribute _in seconds_ of the cookie.  May also be set to strings `"Infinity"` and `"-Infinity"` for non-expiry and immediate-expiry, respectively.  See `setMaxAge()`
+* _domain_ - string - the `Domain=` attribute of the cookie
+* _path_ - string - the `Path=` of the cookie
+* _secure_ - boolean - the `Secure` cookie flag
+* _httpOnly_ - boolean - the `HttpOnly` cookie flag
+* _sameSite_ - string - the `SameSite` cookie attribute (from [RFC6265bis]); must be one of `none`, `lax`, or `strict`
+* _extensions_ - `Array` - any unrecognized cookie attributes as strings (even if equal-signs inside)
+* _creation_ - `Date` - when this cookie was constructed
+* _creationIndex_ - number - set at construction, used to provide greater sort precision (please see `cookieCompare(a,b)` for a full explanation)
 
 After a cookie has been passed through `CookieJar.setCookie()` it will have the following additional attributes:
 
-  * _hostOnly_ - boolean - is this a host-only cookie (i.e. no Domain field was set, but was instead implied)
-  * _pathIsDefault_ - boolean - if true, there was no Path field on the cookie and `defaultPath()` was used to derive one.
-  * _creation_ - `Date` - **modified** from construction to when the cookie was added to the jar
-  * _lastAccessed_ - `Date` - last time the cookie got accessed. Will affect cookie cleaning once implemented.  Using `cookiejar.getCookies(...)` will update this attribute.
+* _hostOnly_ - boolean - is this a host-only cookie (i.e. no Domain field was set, but was instead implied)
+* _pathIsDefault_ - boolean - if true, there was no Path field on the cookie and `defaultPath()` was used to derive one.
+* _creation_ - `Date` - **modified** from construction to when the cookie was added to the jar
+* _lastAccessed_ - `Date` - last time the cookie got accessed. Will affect cookie cleaning once implemented.  Using `cookiejar.getCookies(...)` will update this attribute.
 
-### `Cookie([{properties}])`
+#### `Cookie([{properties}])`
 
 Receives an options object that can contain any of the above Cookie properties, uses the default for unspecified properties.
 
-### `.toString()`
+#### `.toString()`
 
 encode to a Set-Cookie header value.  The Expires cookie field is set using `formatDate()`, but is omitted entirely if `.expires` is `Infinity`.
 
-### `.cookieString()`
+#### `.cookieString()`
 
 encode to a Cookie header value (i.e. the `.key` and `.value` properties joined with '=').
 
-### `.setExpires(String)`
+#### `.setExpires(String)`
 
 sets the expiry based on a date-string passed through `parseDate()`.  If parseDate returns `null` (i.e. can't parse this date string), `.expires` is set to `"Infinity"` (a string) is set.
 
-### `.setMaxAge(number)`
+#### `.setMaxAge(number)`
 
 sets the maxAge in seconds.  Coerces `-Infinity` to `"-Infinity"` and `Infinity` to `"Infinity"` so it JSON serializes correctly.
 
-### `.expiryTime([now=Date.now()])`
+#### `.expiryTime([now=Date.now()])`
 
-### `.expiryDate([now=Date.now()])`
+#### `.expiryDate([now=Date.now()])`
 
 expiryTime() Computes the absolute unix-epoch milliseconds that this cookie expires. expiryDate() works similarly, except it returns a `Date` object.  Note that in both cases the `now` parameter should be milliseconds.
 
@@ -193,19 +194,19 @@ If Expires (`.expires`) is set, that's returned.
 
 Otherwise, `expiryTime()` returns `Infinity` and `expiryDate()` returns a `Date` object for "Tue, 19 Jan 2038 03:14:07 GMT" (latest date that can be expressed by a 32-bit `time_t`; the common limit for most user-agents).
 
-### `.TTL([now=Date.now()])`
+#### `.TTL([now=Date.now()])`
 
 compute the TTL relative to `now` (milliseconds).  The same precedence rules as for `expiryTime`/`expiryDate` apply.
 
 The "number" `Infinity` is returned for cookies without an explicit expiry and `0` is returned if the cookie is expired.  Otherwise a time-to-live in milliseconds is returned.
 
-### `.canonicalizedDomain()`
+#### `.canonicalizedDomain()`
 
-### `.cdomain()`
+#### `.cdomain()`
 
 return the canonicalized `.domain` field.  This is lower-cased and punycode (RFC3490) encoded if the domain has any non-ASCII characters.
 
-### `.toJSON()`
+#### `.toJSON()`
 
 For convenience in using `JSON.serialize(cookie)`. Returns a plain-old `Object` that can be JSON-serialized.
 
@@ -213,7 +214,7 @@ Any `Date` properties (i.e., `.expires`, `.creation`, and `.lastAccessed`) are e
 
 **NOTE**: Custom `Cookie` properties will be discarded. In tough-cookie 1.x, since there was no `.toJSON` method explicitly defined, all enumerable properties were captured. If you want a property to be serialized, add the property name to the `Cookie.serializableProperties` Array.
 
-### `Cookie.fromJSON(strOrObj)`
+#### `Cookie.fromJSON(strOrObj)`
 
 Does the reverse of `cookie.toJSON()`. If passed a string, will `JSON.parse()` that first.
 
@@ -221,13 +222,13 @@ Any `Date` properties (i.e., `.expires`, `.creation`, and `.lastAccessed`) are p
 
 Returns `null` upon JSON parsing error.
 
-### `.clone()`
+#### `.clone()`
 
 Does a deep clone of this cookie, exactly implemented as `Cookie.fromJSON(cookie.toJSON())`.
 
-### `.validate()`
+#### `.validate()`
 
-Status: *IN PROGRESS*. Works for a few things, but is by no means comprehensive.
+Status: _IN PROGRESS_. Works for a few things, but is by no means comprehensive.
 
 validates cookie attributes for semantic correctness.  Useful for "lint" checking any Set-Cookie headers you generate.  For now, it returns a boolean, but eventually could return a reason string -- you can future-proof with this construct:
 
@@ -239,44 +240,43 @@ if (cookie.validate() === true) {
 }
 ```
 
-
-## CookieJar
+### CookieJar
 
 Exported via `tough.CookieJar`.
 
-### `CookieJar([store],[options])`
+#### `CookieJar([store],[options])`
 
 Simply use `new CookieJar()`.  If you'd like to use a custom store, pass that to the constructor otherwise a `MemoryCookieStore` will be created and used.
 
 The `options` object can be omitted and can have the following properties:
 
-  * _rejectPublicSuffixes_ - boolean - default `true` - reject cookies with domains like "com" and "co.uk"
-  * _looseMode_ - boolean - default `false` - accept malformed cookies like `bar` and `=bar`, which have an implied empty name.
-  * _prefixSecurity_ - string - default `silent` - set to `'unsafe-disabled'`, `'silent'`, or `'strict'`. See [Cookie Prefixes] below.
-  * _allowSpecialUseDomain_ - boolean - default `false` - accepts special-use domain suffixes, such as `local`. Useful for testing purposes.
-    This is not in the standard, but is used sometimes on the web and is accepted by (most) browsers.
+* _rejectPublicSuffixes_ - boolean - default `true` - reject cookies with domains like "com" and "co.uk"
+* _looseMode_ - boolean - default `false` - accept malformed cookies like `bar` and `=bar`, which have an implied empty name.
+* _prefixSecurity_ - string - default `silent` - set to `'unsafe-disabled'`, `'silent'`, or `'strict'`. See [Cookie Prefixes] below.
+* _allowSpecialUseDomain_ - boolean - default `false` - accepts special-use domain suffixes, such as `local`. Useful for testing purposes.
+  This is not in the standard, but is used sometimes on the web and is accepted by (most) browsers.
 
 Since eventually this module would like to support database/remote/etc. CookieJars, continuation passing style is used for CookieJar methods.
 
-### `.setCookie(cookieOrString, currentUrl, [{options},] cb(err,cookie))`
+#### `.setCookie(cookieOrString, currentUrl, [{options},] cb(err,cookie))`
 
 Attempt to set the cookie in the cookie jar.  If the operation fails, an error will be given to the callback `cb`, otherwise the cookie is passed through.  The cookie will have updated `.creation`, `.lastAccessed` and `.hostOnly` properties.
 
 The `options` object can be omitted and can have the following properties:
 
-  * _http_ - boolean - default `true` - indicates if this is an HTTP or non-HTTP API.  Affects HttpOnly cookies.
-  * _secure_ - boolean - autodetect from url - indicates if this is a "Secure" API.  If the currentUrl starts with `https:` or `wss:` then this is defaulted to `true`, otherwise `false`.
-  * _now_ - Date - default `new Date()` - what to use for the creation/access time of cookies
-  * _ignoreError_ - boolean - default `false` - silently ignore things like parse errors and invalid domains.  `Store` errors aren't ignored by this option.
-  * _sameSiteContext_ - string - default unset - set to `'none'`, `'lax'`, or `'strict'` See [SameSite Cookies] below.
+* _http_ - boolean - default `true` - indicates if this is an HTTP or non-HTTP API.  Affects HttpOnly cookies.
+* _secure_ - boolean - autodetect from url - indicates if this is a "Secure" API.  If the currentUrl starts with `https:` or `wss:` then this is defaulted to `true`, otherwise `false`.
+* _now_ - Date - default `new Date()` - what to use for the creation/access time of cookies
+* _ignoreError_ - boolean - default `false` - silently ignore things like parse errors and invalid domains.  `Store` errors aren't ignored by this option.
+* _sameSiteContext_ - string - default unset - set to `'none'`, `'lax'`, or `'strict'` See [SameSite Cookies] below.
 
 As per the RFC, the `.hostOnly` property is set if there was no "Domain=" parameter in the cookie string (or `.domain` was null on the Cookie object).  The `.domain` property is set to the fully-qualified hostname of `currentUrl` in this case.  Matching this cookie requires an exact hostname match (not a `domainMatch` as per usual).
 
-### `.setCookieSync(cookieOrString, currentUrl, [{options}])`
+#### `.setCookieSync(cookieOrString, currentUrl, [{options}])`
 
 Synchronous version of `setCookie`; only works with synchronous stores (e.g. the default `MemoryCookieStore`).
 
-### `.getCookies(currentUrl, [{options},] cb(err,cookies))`
+#### `.getCookies(currentUrl, [{options},] cb(err,cookies))`
 
 Retrieve the list of cookies that can be sent in a Cookie header for the current url.
 
@@ -284,36 +284,36 @@ If an error is encountered, that's passed as `err` to the callback, otherwise an
 
 The `options` object can be omitted and can have the following properties:
 
-  * _http_ - boolean - default `true` - indicates if this is an HTTP or non-HTTP API.  Affects HttpOnly cookies.
-  * _secure_ - boolean - autodetect from url - indicates if this is a "Secure" API.  If the currentUrl starts with `https:` or `wss:` then this is defaulted to `true`, otherwise `false`.
-  * _now_ - Date - default `new Date()` - what to use for the creation/access time of cookies
-  * _expire_ - boolean - default `true` - perform expiry-time checking of cookies and asynchronously remove expired cookies from the store.  Using `false` will return expired cookies and **not** remove them from the store (which is useful for replaying Set-Cookie headers, potentially).
-  * _allPaths_ - boolean - default `false` - if `true`, do not scope cookies by path. The default uses RFC-compliant path scoping. **Note**: may not be supported by the underlying store (the default `MemoryCookieStore` supports it).
-  * _sameSiteContext_ - string - default unset - Set this to `'none'`, `'lax'` or `'strict'` to enforce SameSite cookies upon retrival. See [SameSite Cookies] below.
+* _http_ - boolean - default `true` - indicates if this is an HTTP or non-HTTP API.  Affects HttpOnly cookies.
+* _secure_ - boolean - autodetect from url - indicates if this is a "Secure" API.  If the currentUrl starts with `https:` or `wss:` then this is defaulted to `true`, otherwise `false`.
+* _now_ - Date - default `new Date()` - what to use for the creation/access time of cookies
+* _expire_ - boolean - default `true` - perform expiry-time checking of cookies and asynchronously remove expired cookies from the store.  Using `false` will return expired cookies and **not** remove them from the store (which is useful for replaying Set-Cookie headers, potentially).
+* _allPaths_ - boolean - default `false` - if `true`, do not scope cookies by path. The default uses RFC-compliant path scoping. **Note**: may not be supported by the underlying store (the default `MemoryCookieStore` supports it).
+* _sameSiteContext_ - string - default unset - Set this to `'none'`, `'lax'` or `'strict'` to enforce SameSite cookies upon retrival. See [SameSite Cookies] below.
 
 The `.lastAccessed` property of the returned cookies will have been updated.
 
-### `.getCookiesSync(currentUrl, [{options}])`
+#### `.getCookiesSync(currentUrl, [{options}])`
 
 Synchronous version of `getCookies`; only works with synchronous stores (e.g. the default `MemoryCookieStore`).
 
-### `.getCookieString(...)`
+#### `.getCookieString(...)`
 
 Accepts the same options as `.getCookies()` but passes a string suitable for a Cookie header rather than an array to the callback.  Simply maps the `Cookie` array via `.cookieString()`.
 
-### `.getCookieStringSync(...)`
+#### `.getCookieStringSync(...)`
 
 Synchronous version of `getCookieString`; only works with synchronous stores (e.g. the default `MemoryCookieStore`).
 
-### `.getSetCookieStrings(...)`
+#### `.getSetCookieStrings(...)`
 
 Returns an array of strings suitable for **Set-Cookie** headers. Accepts the same options as `.getCookies()`.  Simply maps the cookie array via `.toString()`.
 
-### `.getSetCookieStringsSync(...)`
+#### `.getSetCookieStringsSync(...)`
 
 Synchronous version of `getSetCookieStrings`; only works with synchronous stores (e.g. the default `MemoryCookieStore`).
 
-### `.serialize(cb(err,serializedObject))`
+#### `.serialize(cb(err,serializedObject))`
 
 Serialize the Jar if the underlying store supports `.getAllCookies`.
 
@@ -321,15 +321,15 @@ Serialize the Jar if the underlying store supports `.getAllCookies`.
 
 See [Serialization Format].
 
-### `.serializeSync()`
+#### `.serializeSync()`
 
 Sync version of .serialize
 
-### `.toJSON()`
+#### `.toJSON()`
 
 Alias of .serializeSync() for the convenience of `JSON.stringify(cookiejar)`.
 
-### `CookieJar.deserialize(serialized, [store], cb(err,object))`
+#### `CookieJar.deserialize(serialized, [store], cb(err,object))`
 
 A new Jar is created and the serialized Cookies are added to the underlying store. Each `Cookie` is added via `store.putCookie` in the order in which they appear in the serialization.
 
@@ -337,21 +337,21 @@ The `store` argument is optional, but should be an instance of `Store`. By defau
 
 As a convenience, if `serialized` is a string, it is passed through `JSON.parse` first. If that throws an error, this is passed to the callback.
 
-### `CookieJar.deserializeSync(serialized, [store])`
+#### `CookieJar.deserializeSync(serialized, [store])`
 
 Sync version of `.deserialize`.  _Note_ that the `store` must be synchronous for this to work.
 
-### `CookieJar.fromJSON(string)`
+#### `CookieJar.fromJSON(string)`
 
 Alias of `.deserializeSync` to provide consistency with `Cookie.fromJSON()`.
 
-### `.clone([store,]cb(err,newJar))`
+#### `.clone([store,]cb(err,newJar))`
 
 Produces a deep clone of this jar. Modifications to the original won't affect the clone, and vice versa.
 
 The `store` argument is optional, but should be an instance of `Store`. By default, a new instance of `MemoryCookieStore` is created. Transferring between store types is supported so long as the source implements `.getAllCookies()` and the destination implements `.putCookie()`.
 
-### `.cloneSync([store])`
+#### `.cloneSync([store])`
 
 Synchronous version of `.clone`, returning a new `CookieJar` instance.
 
@@ -359,21 +359,21 @@ The `store` argument is optional, but must be a _synchronous_ `Store` instance i
 
 The _source_ and _destination_ must both be synchronous `Store`s. If one or both stores are asynchronous, use `.clone` instead. Recall that `MemoryCookieStore` supports both synchronous and asynchronous API calls.
 
-### `.removeAllCookies(cb(err))`
+#### `.removeAllCookies(cb(err))`
 
 Removes all cookies from the jar.
 
 This is a new backwards-compatible feature of `tough-cookie` version 2.5, so not all Stores will implement it efficiently. For Stores that do not implement `removeAllCookies`, the fallback is to call `removeCookie` after `getAllCookies`. If `getAllCookies` fails or isn't implemented in the Store, that error is returned. If one or more of the `removeCookie` calls fail, only the first error is returned.
 
-### `.removeAllCookiesSync()`
+#### `.removeAllCookiesSync()`
 
 Sync version of `.removeAllCookies()`
 
-## Store
+### Store
 
 Base class for CookieJar stores. Available as `tough.Store`.
 
-## Store API
+### Store API
 
 The storage model for each `CookieJar` instance can be replaced with a custom implementation.  The default is `MemoryCookieStore` which can be found in the `lib/memstore.js` file.  The API uses continuation-passing-style to allow for asynchronous stores.
 
@@ -385,13 +385,13 @@ All `domain` parameters will have been normalized before calling.
 
 The Cookie store must have all of the following methods.
 
-### `store.findCookie(domain, path, key, cb(err,cookie))`
+#### `store.findCookie(domain, path, key, cb(err,cookie))`
 
 Retrieve a cookie with the given domain, path and key (a.k.a. name).  The RFC maintains that exactly one of these cookies should exist in a store.  If the store is using versioning, this means that the latest/newest such cookie should be returned.
 
 Callback takes an error and the resulting `Cookie` object.  If no cookie is found then `null` MUST be passed instead (i.e. not an error).
 
-### `store.findCookies(domain, path, cb(err,cookies))`
+#### `store.findCookies(domain, path, cb(err,cookies))`
 
 Locates cookies matching the given domain and path.  This is most often called in the context of `cookiejar.getCookies()` above.
 
@@ -401,7 +401,7 @@ The resulting list will be checked for applicability to the current request acco
 
 As of version 0.9.12, the `allPaths` option to `cookiejar.getCookies()` above will cause the path here to be `null`.  If the path is `null`, path-matching MUST NOT be performed (i.e. domain-matching only).
 
-### `store.putCookie(cookie, cb(err))`
+#### `store.putCookie(cookie, cb(err))`
 
 Adds a new cookie to the store.  The implementation SHOULD replace any existing cookie with the same `.domain`, `.path`, and `.key` properties -- depending on the nature of the implementation, it's possible that between the call to `fetchCookie` and `putCookie` that a duplicate `putCookie` can occur.
 
@@ -409,7 +409,7 @@ The `cookie` object MUST NOT be modified; the caller will have already updated t
 
 Pass an error if the cookie cannot be stored.
 
-### `store.updateCookie(oldCookie, newCookie, cb(err))`
+#### `store.updateCookie(oldCookie, newCookie, cb(err))`
 
 Update an existing cookie.  The implementation MUST update the `.value` for a cookie with the same `domain`, `.path` and `.key`.  The implementation SHOULD check that the old value in the store is equivalent to `oldCookie` - how the conflict is resolved is up to the store.
 
@@ -421,19 +421,19 @@ The `newCookie` and `oldCookie` objects MUST NOT be modified.
 
 Pass an error if the newCookie cannot be stored.
 
-### `store.removeCookie(domain, path, key, cb(err))`
+#### `store.removeCookie(domain, path, key, cb(err))`
 
 Remove a cookie from the store (see notes on `findCookie` about the uniqueness constraint).
 
 The implementation MUST NOT pass an error if the cookie doesn't exist; only pass an error due to the failure to remove an existing cookie.
 
-### `store.removeCookies(domain, path, cb(err))`
+#### `store.removeCookies(domain, path, cb(err))`
 
 Removes matching cookies from the store.  The `path` parameter is optional, and if missing means all paths in a domain should be removed.
 
 Pass an error ONLY if removing any existing cookies failed.
 
-### `store.removeAllCookies(cb(err))`
+#### `store.removeAllCookies(cb(err))`
 
 _Optional_. Removes all cookies from the store.
 
@@ -441,7 +441,7 @@ Pass an error if one or more cookies can't be removed.
 
 **Note**: New method as of `tough-cookie` version 2.5, so not all Stores will implement this, plus some stores may choose not to implement this.
 
-### `store.getAllCookies(cb(err, cookies))`
+#### `store.getAllCookies(cb(err, cookies))`
 
 _Optional_. Produces an `Array` of all cookies during `jar.serialize()`. The items in the array can be true `Cookie` objects or generic `Object`s with the [Serialization Format] data structure.
 
@@ -451,24 +451,23 @@ Pass an error if retrieval fails.
 
 **Note**: not all Stores can implement this due to technical limitations, so it is optional.
 
-## MemoryCookieStore
+### MemoryCookieStore
 
 Inherits from `Store`.
 
 A just-in-memory CookieJar synchronous store implementation, used by default. Despite being a synchronous implementation, it's usable with both the synchronous and asynchronous forms of the `CookieJar` API. Supports serialization, `getAllCookies`, and `removeAllCookies`.
 
-## Community Cookie Stores
+### Community Cookie Stores
 
 These are some Store implementations authored and maintained by the community. They aren't official and we don't vouch for them but you may be interested to have a look:
 
-- [`db-cookie-store`](https://github.com/JSBizon/db-cookie-store): SQL including SQLite-based databases
-- [`file-cookie-store`](https://github.com/JSBizon/file-cookie-store): Netscape cookie file format on disk
-- [`redis-cookie-store`](https://github.com/benkroeger/redis-cookie-store): Redis
-- [`tough-cookie-filestore`](https://github.com/mitsuru/tough-cookie-filestore): JSON on disk
-- [`tough-cookie-web-storage-store`](https://github.com/exponentjs/tough-cookie-web-storage-store): DOM localStorage and sessionStorage
+* [`db-cookie-store`](https://github.com/JSBizon/db-cookie-store): SQL including SQLite-based databases
+* [`file-cookie-store`](https://github.com/JSBizon/file-cookie-store): Netscape cookie file format on disk
+* [`redis-cookie-store`](https://github.com/benkroeger/redis-cookie-store): Redis
+* [`tough-cookie-filestore`](https://github.com/mitsuru/tough-cookie-filestore): JSON on disk
+* [`tough-cookie-web-storage-store`](https://github.com/exponentjs/tough-cookie-web-storage-store): DOM localStorage and sessionStorage
 
-
-# Serialization Format
+## Serialization Format
 
 **NOTE**: if you want to have custom `Cookie` properties serialized, add the property name to `Cookie.serializableProperties`.
 
@@ -496,17 +495,17 @@ These are some Store implementations authored and maintained by the community. T
   }
 ```
 
-# RFC6265bis
+## RFC6265bis
 
 Support for RFC6265bis revision 02 is being developed. Since this is a bit of an omnibus revision to the RFC6252, support is broken up into the functional areas.
 
-## Leave Secure Cookies Alone
+### Leave Secure Cookies Alone
 
 Not yet supported.
 
 This change makes it so that if a cookie is sent from the server to the client with a `Secure` attribute, the channel must also be secure or the cookie is ignored.
 
-## SameSite Cookies
+### SameSite Cookies
 
 Supported.
 
@@ -517,20 +516,21 @@ On the Cookie object itself, you can get/set the `.sameSite` attribute, which wi
 When parsing cookies with a `SameSite` cookie attribute, values other than `'lax'` or `'strict'` are parsed as `'none'`. For example, `SomeCookie=SomeValue; SameSite=garbage` will parse so that `cookie.sameSite === 'none'`.
 
 In order to support SameSite cookies, you must provide a `sameSiteContext` option to _both_ `setCookie` and `getCookies`. Valid values for this option are just like for the Cookie object, but have particular meanings:
+
 1. `'strict'` mode - If the request is on the same "site for cookies" (see the RFC draft for what this means), pass this option to add a layer of defense against CSRF.
 2. `'lax'` mode - If the request is from another site, _but_ is directly because of navigation by the user, e.g., `<link type=prefetch>` or `<a href="...">`, pass `sameSiteContext: 'lax'`.
 3. `'none'` - Otherwise, pass `sameSiteContext: 'none'` (this indicates a cross-origin request).
 4. unset/`undefined` - SameSite **will not** be enforced! This can be a valid use-case for when CSRF isn't in the threat model of the system being built.
 
-It is highly recommended that you read RFC 6265bis for fine details on SameSite cookies. In particular [Section 8.8](https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-02#section-8.8) discusses security considerations and defense in depth.
+It is highly recommended that you read RFC 6265bis for fine details on SameSite cookies. In particular [Section 8.8](https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-02##section-8.8) discusses security considerations and defense in depth.
 
-## Cookie Prefixes
+### Cookie Prefixes
 
 Supported.
 
 Cookie prefixes are a way to indicate that a given cookie was set with a set of attributes simply by inspecting the first few characters of the cookie's name.
 
-Cookie prefixes are defined in [Section 4.1.3 of 6265bis](https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-03#section-4.1.3). Two prefixes are defined:
+Cookie prefixes are defined in [Section 4.1.3 of 6265bis](https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-03##section-4.1.3). Two prefixes are defined:
 
 1. `"__Secure-" Prefix`: If a cookie's name begins with a case-sensitive match for the string "__Secure-", then the cookie will have been set with a "Secure" attribute.
 2. `"__Host-" Prefix`: If a cookie's name begins with a case-sensitive match for the string "__Host-", then the cookie will have been set with a "Secure" attribute, a "Path" attribute with a value of "/", and no "Domain" attribute.
@@ -545,8 +545,7 @@ You can define this functionality by passing in `prefixSecurity` option to `Cook
 
 Note that if `ignoreError` is passed in as `true` then the error will be silent regardless of `prefixSecurity` option (assuming it's enabled).
 
-
-# Copyright and License
+## Copyright and License
 
 BSD-3-Clause:
 
