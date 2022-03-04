@@ -104,6 +104,6 @@
   "dependencies": {
     "psl": "^1.1.33",
     "punycode": "^2.1.1",
-    "universalify": "^0.1.2"
+    "universalify": "^0.2.0"
   }
 }
