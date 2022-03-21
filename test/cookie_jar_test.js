@@ -281,7 +281,7 @@ vows
         assert.equal(c.TTL(), Infinity);
         assert.ok(!c.isPersistent());
       }
-    },
+    }
   })
   .addBatch({
     "Store eight cookies": {
@@ -750,18 +750,21 @@ vows
       "of undefined": {
         topic: function() {
           const jar = new tough.CookieJar();
-          const cookieString = `AWSELB=69b2c0038b16e8e27056d1178e0d556c; 
-          Path=/, jses_WS41=5f8dc2f6-ea37-49de-8dfa-b58336c2d9ce; path=/; 
+          const cookieString = `AWSELB=69b2c0038b16e8e27056d1178e0d556c;
+          Path=/, jses_WS41=5f8dc2f6-ea37-49de-8dfa-b58336c2d9ce; path=/;
           Secure; HttpOnly, AuthToken=EFKFFFCH@K@GHIHEJCJMMGJM>CDHDEK>CFGK?MHJ
           >>JI@B??@CAEHBJH@H@A@GCFDLIMLJEEJEIFGALA?BIM?@G@DEDI@JE?I?HKJBIDDHJMEFEFM
-          >G@J?I??B@C>>LAH?GCGJ@FMEGHBGAF; expires=Sun, 31-Jan-9021 02:39:04 GMT; 
-          path=/; Secure; HttpOnly, FirstReferrer=; expires=Fri, 31-Jan-9020 20:50:44 
+          >G@J?I??B@C>>LAH?GCGJ@FMEGHBGAF; expires=Sun, 31-Jan-9021 02:39:04 GMT;
+          path=/; Secure; HttpOnly, FirstReferrer=; expires=Fri, 31-Jan-9020 20:50:44
           GMT; path=/`;
 
           jar.setCookieSync(cookieString, "https://google.com");
-          jar.getCookies("https://google.com", this.callback)
+          jar.getCookies("https://google.com", this.callback);
         },
-        "results in a 1-length array with a valid cookie": function(err, cookies) {
+        "results in a 1-length array with a valid cookie": function(
+          err,
+          cookies
+        ) {
           assert(!err, err);
           assert(cookies.length == 1);
           assert.instanceOf(cookies[0], Cookie);
@@ -780,7 +783,10 @@ vows
             this.callback
           );
         },
-        "results in a error being returned because of missing parameters": function(err, cookies) {
+        "results in a error being returned because of missing parameters": function(
+          err,
+          cookies
+        ) {
           assert(err != null);
           assert(err instanceof tough.ParameterError);
         }
@@ -792,13 +798,12 @@ vows
       "with missing parameters": {
         topic: function() {
           const jar = new tough.CookieJar();
-          jar.setCookie(
-            '',
-            "https://google.com",
-            this.callback
-          );
+          jar.setCookie("", "https://google.com", this.callback);
         },
-        "results in a error being returned because of missing parameters": function(err, cookies) {
+        "results in a error being returned because of missing parameters": function(
+          err,
+          cookies
+        ) {
           assert(cookies == undefined);
         }
       }
