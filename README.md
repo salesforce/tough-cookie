@@ -47,7 +47,7 @@ npm install tough-cookie
 
 ## Node.js Version Support
 
-Inspired by [AVA's support policy](https://github.com/avajs/ava/blob/v4.0.0/docs/support-statement.md), we follow the [node.js release schedule](https://github.com/nodejs/Release#release-schedule) and support versions that are in Active LTS or Maintenance. We only drop support for older versions of node when we do a major release.
+Similar to [AVA's support policy](https://github.com/avajs/ava/blob/v4.0.0/docs/support-statement.md), we follow the [node.js release schedule](https://github.com/nodejs/Release#release-schedule) and support all versions that are in Active LTS or Maintenance. We will only drop support for older versions of node when we do a major release and in consultation with our community.
 
 ## API
 
@@ -57,31 +57,31 @@ The top-level exports from `require('tough-cookie')`. All can be used as pure fu
 
 #### `parseDate(string)`
 
-Parse a cookie date string into a `Date`. Parses according to RFC 6265 Section 5.1.1, not `Date.parse()`.
+Parse a cookie date string into a `Date`. Parses according to [RFC 6265 Section 5.1.1](https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.1), not `Date.parse()`.
 
 #### `formatDate(date)`
 
-Format a `Date` into an RFC 1123 string (the RFC 6265 recommended format).
+Format a `Date` into an [RFC 822](https://datatracker.ietf.org/doc/html/rfc822#section-5) string (the RFC 6265 recommended format).
 
 #### `canonicalDomain(str)`
 
-Transforms a domain name into a canonical domain name. The canonical domain name is a domain name that has been trimmed, lowercased, stripped of leading dot, and optionally punycode-encoded (Section 5.1.2 of RFC 6265). For the most part, this function is idempotent (calling the function with the output from a previous call returns the same output).
+Transforms a domain name into a canonical domain name. The canonical domain name is a domain name that has been trimmed, lowercased, stripped of leading dot, and optionally punycode-encoded ([Section 5.1.2 of RFC 6265](https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.2)). For the most part, this function is idempotent (calling the function with the output from a previous call returns the same output).
 
 #### `domainMatch(str, domStr[, canonicalize=true])`
 
-Answers "does this real domain match the domain in a cookie?". The `str` is the "current" domain name and the `domStr` is the "cookie" domain name. Matches according to RFC 6265 Section 5.1.3, but it helps to think of it as a "suffix match".
+Answers "does this real domain match the domain in a cookie?". The `str` is the "current" domain name and the `domStr` is the "cookie" domain name. Matches according to [RFC 6265 Section 5.1.3](https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.3), but it helps to think of it as a "suffix match".
 
 The `canonicalize` parameter toggles whether the domain parameters get normalized with `canonicalDomain` or not.
 
 #### `defaultPath(path)`
 
-Given a current request/response path, gives the path appropriate for storing in a cookie. This is basically the "directory" of a "file" in the path, but is specified by Section 5.1.4 of the RFC.
+Given a current request/response path, gives the path appropriate for storing in a cookie. This is basically the "directory" of a "file" in the path, but is specified by [Section 5.1.4 of the RFC](https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.4).
 
 The `path` parameter MUST be _only_ the pathname part of a URI (excluding the hostname, query, fragment, and so on.). This is the `.pathname` property of node's `uri.parse()` output.
 
 #### `pathMatch(reqPath, cookiePath)`
 
-Answers "does the request-path path-match a given cookie-path?" as per RFC 6265 Section 5.1.4. Returns a boolean.
+Answers "does the request-path path-match a given cookie-path?" as per [RFC 6265 Section 5.1.4](https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.4). Returns a boolean.
 
 This is essentially a prefix-match where `cookiePath` is a prefix of `reqPath`.
 
@@ -103,7 +103,7 @@ For further information, see the [Public Suffix List](http://publicsuffix.org/).
 
 #### `cookieCompare(a, b)`
 
-For use with `.sort()`, sorts a list of cookies into the recommended order given in the RFC (Section 5.4 step 2). The sort algorithm is, in order of precedence:
+For use with `.sort()`, sorts a list of cookies into the recommended order given in step 2 of ([RFC 6265 Section 5.4](https://datatracker.ietf.org/doc/html/rfc6265#section-5.4)). The sort algorithm is, in order of precedence:
 
 - Longest `.path`
 - oldest `.creation` (which has a 1-ms precision, same as `Date`)
@@ -116,7 +116,7 @@ var cookies = [
 cookies = cookies.sort(cookieCompare);
 ```
 
-**Note**: Since the JavaScript `Date` is limited to a 1-ms precision, cookies within the same millisecond are entirely possible. This is especially true when using the `now` option to `.setCookie()`. The `.creationIndex` property is a per-process global counter, assigned during construction with `new Cookie()`, which preserves the spirit of the RFC sorting: older cookies go first. This works great for `MemoryCookieStore` since `Set-Cookie` headers are parsed in order, but is not so great for distributed systems. Sophisticated `Store`s may wish to set this to some other _logical clock_ so that if cookies A and B are created in the same millisecond, but cookie A is created before cookie B, then `A.creationIndex < B.creationIndex`. If you want to alter the global counter, which you probably _shouldn't_ do, it's stored in `Cookie.cookiesCreated`.
+> **Note**: Since the JavaScript `Date` is limited to a 1-ms precision, cookies within the same millisecond are entirely possible. This is especially true when using the `now` option to `.setCookie()`. The `.creationIndex` property is a per-process global counter, assigned during construction with `new Cookie()`, which preserves the spirit of the RFC sorting: older cookies go first. This works great for `MemoryCookieStore` since `Set-Cookie` headers are parsed in order, but is not so great for distributed systems. Sophisticated `Store`s may wish to set this to some other _logical clock_ so that if cookies A and B are created in the same millisecond, but cookie A is created before cookie B, then `A.creationIndex < B.creationIndex`. If you want to alter the global counter, which you probably _shouldn't_ do, it's stored in `Cookie.cookiesCreated`.
 
 #### `permuteDomain(domain)`
 
@@ -215,7 +215,7 @@ Computes the TTL relative to `now` (milliseconds). The same precedence rules as 
 
 #### `.cdomain()`
 
-Returns the canonicalized `.domain` field. This is lower-cased and punycode (RFC 3490) encoded if the domain has any non-ASCII characters.
+Returns the canonicalized `.domain` field. This is lower-cased and punycode ([RFC 3490](https://datatracker.ietf.org/doc/html/rfc3490)) encoded if the domain has any non-ASCII characters.
 
 #### `.toJSON()`
 
@@ -223,7 +223,7 @@ For convenience in using `JSON.serialize(cookie)`. Returns a plain-old `Object` 
 
 Any `Date` properties (such as `.expires`, `.creation`, and `.lastAccessed`) are exported in ISO format (`.toISOString()`).
 
-**NOTE**: Custom `Cookie` properties are discarded. In tough-cookie 1.x, since there was no `.toJSON` method explicitly defined, all enumerable properties were captured. If you want a property to be serialized, add the property name to the `Cookie.serializableProperties` Array.
+> **NOTE**: Custom `Cookie` properties are discarded. In tough-cookie 1.x, since there was no `.toJSON` method explicitly defined, all enumerable properties were captured. If you want a property to be serialized, add the property name to the `Cookie.serializableProperties` Array.
 
 #### `Cookie.fromJSON(strOrObj)`
 
@@ -331,7 +331,7 @@ Returns a promise if a callback is not provided.
 
 Serialize the Jar if the underlying store supports `.getAllCookies`.
 
-**NOTE**: Custom `Cookie` properties are discarded. If you want a property to be serialized, add the property name to the `Cookie.serializableProperties` Array.
+> **NOTE**: Custom `Cookie` properties are discarded. If you want a property to be serialized, add the property name to the `Cookie.serializableProperties` Array.
 
 See [Serialization Format](#serialization-format).
 
