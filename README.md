@@ -22,6 +22,7 @@ var cookie = await cookiejar.setCookie(
   "https://currentdomain.example.com/path"
 );
 var cookies = await cookiejar.getCookies("https://example.com/otherpath");
+
 // Or with callbacks!
 cookiejar.setCookie(
   cookie,
