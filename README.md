@@ -54,7 +54,7 @@ We follow the [node.js release schedule](https://github.com/nodejs/Release#relea
 
 ### tough
 
-The top-level exports from `require('tough-cookie')`. All exports are pure functions and don't need to be bound.
+The top-level exports from `require('tough-cookie')` can all be used as pure functions and don't need to be bound.
 
 #### `parseDate(string)`
 
