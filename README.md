@@ -14,8 +14,8 @@ var Cookie = tough.Cookie;
 var cookie = Cookie.parse(header);
 cookie.value = "somethingdifferent";
 header = cookie.toString();
-
 var cookiejar = new tough.CookieJar();
+
 // Asynchronous!
 var cookie = await cookiejar.setCookie(
   cookie,
