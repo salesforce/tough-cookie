@@ -77,7 +77,7 @@ The `canonicalize` parameter toggles whether the domain parameters get normalize
 
 Given a current request/response path, gives the path appropriate for storing in a cookie. This is basically the "directory" of a "file" in the path, but is specified by [Section 5.1.4 of the RFC](https://datatracker.ietf.org/doc/html/rfc6265#section-5.1.4).
 
-The `path` parameter MUST be _only_ the pathname part of a URI (excluding the hostname, query, fragment, and so on.). This is the `.pathname` property of node's `uri.parse()` output.
+The `path` parameter MUST be _only_ the pathname part of a URI (excluding the hostname, query, fragment, and so on). This is the `.pathname` property of node's `uri.parse()` output.
 
 #### `pathMatch(reqPath, cookiePath)`
 
