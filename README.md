@@ -47,7 +47,7 @@ npm install tough-cookie
 
 ## Node.js Version Support
 
-Similar to [AVA's support policy](https://github.com/avajs/ava/blob/v4.0.0/docs/support-statement.md), we follow the [node.js release schedule](https://github.com/nodejs/Release#release-schedule) and support all versions that are in Active LTS or Maintenance. We will only drop support for older versions of node when we do a major release and in consultation with our community.
+We follow the [node.js release schedule](https://github.com/nodejs/Release#release-schedule) and support all versions that are in Active LTS or Maintenance. We will always do a major release when dropping support for older versions of node, and we will do so in consultation with our community.
 
 ## API
 
