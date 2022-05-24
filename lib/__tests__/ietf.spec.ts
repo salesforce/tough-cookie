@@ -47,11 +47,9 @@ describe('IETF http state tests', () => {
         : `http://home.example.org/cookie-parser-result?${testCase.test}`;
 
       testCase["received"].forEach(cookieStr => {
-        // @ts-ignore
         jar.setCookieSync(cookieStr, sentFrom, {ignoreError: true});
       });
 
-      // @ts-ignore
       const actual = jar.getCookiesSync(sentTo, {sort: true}) as Array<{ key: string, value: string }>;
 
       expect(actual.length).toBe(expected.length)

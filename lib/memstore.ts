@@ -29,13 +29,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 "use strict";
-const { fromCallback } = require("universalify");
-const Store = require("./store").Store;
-const permuteDomain = require("./permuteDomain").permuteDomain;
-const pathMatch = require("./pathMatch").pathMatch;
-const util = require("util");
+import {Callback, Cookie, createPromiseCallback, pathMatch, permuteDomain} from "./cookie";
+import {Store} from './store'
+import util from 'util'
 
-class MemoryCookieStore extends Store {
+export class MemoryCookieStore extends Store {
+  synchronous: boolean;
+  idx: {
+    [domain: string]: {
+      [path: string]: {
+        [key: string]: Cookie
+      }
+    }
+  };
+
   constructor() {
     super();
     this.synchronous = true;
@@ -49,21 +56,34 @@ class MemoryCookieStore extends Store {
     return `{ idx: ${util.inspect(this.idx, false, 2)} }`;
   }
 
-  findCookie(domain, path, key, cb) {
+  findCookie(domain: string, path: string, key: string): Promise<Cookie>
+  findCookie(domain: string, path: string, key: string, callback: Callback<Cookie>): void
+  findCookie(domain: string, path: string, key: string, callback?: Callback<Cookie>): unknown {
+    const promiseCallback = createPromiseCallback(arguments)
+    const cb = promiseCallback.callback
+
     if (!this.idx[domain]) {
       return cb(null, undefined);
     }
     if (!this.idx[domain][path]) {
       return cb(null, undefined);
     }
-    return cb(null, this.idx[domain][path][key] || null);
+
+    cb(null, this.idx[domain][path][key] || null);
+    return promiseCallback.promise
   }
-  findCookies(domain, path, allowSpecialUseDomain, cb) {
-    const results = [];
+
+  findCookies(domain: string, path: string, allowSpecialUseDomain?: boolean): Promise<Cookie[]>
+  findCookies(domain: string, path: string, allowSpecialUseDomain?: boolean, callback?: Callback<Cookie[]>): void
+  findCookies(domain: string, path: string, allowSpecialUseDomain: boolean | Callback<Cookie[]> = false, callback?: Callback<Cookie[]>): unknown {
     if (typeof allowSpecialUseDomain === "function") {
-      cb = allowSpecialUseDomain;
       allowSpecialUseDomain = false;
     }
+
+    const results = [];
+    const promiseCallback = createPromiseCallback<Cookie[]>(arguments)
+    const cb = promiseCallback.callback
+
     if (!domain) {
       return cb(null, []);
     }
@@ -105,9 +125,15 @@ class MemoryCookieStore extends Store {
     });
 
     cb(null, results);
+    return promiseCallback.promise
   }
 
-  putCookie(cookie, cb) {
+  putCookie(cookie: Cookie): Promise<void>
+  putCookie(cookie: Cookie, callback: Callback<void>): void;
+  putCookie(cookie: Cookie, callback?: Callback<void>): unknown {
+    const promiseCallback = createPromiseCallback<void>(arguments)
+    const cb = promiseCallback.callback
+
     if (!this.idx[cookie.domain]) {
       this.idx[cookie.domain] = {};
     }
@@ -115,15 +141,26 @@ class MemoryCookieStore extends Store {
       this.idx[cookie.domain][cookie.path] = {};
     }
     this.idx[cookie.domain][cookie.path][cookie.key] = cookie;
-    cb(null);
+    cb(null, undefined);
+
+    return promiseCallback.promise
   }
-  updateCookie(oldCookie, newCookie, cb) {
+
+  updateCookie(oldCookie: Cookie, newCookie: Cookie): Promise<void>
+  updateCookie(oldCookie: Cookie, newCookie: Cookie, callback: Callback<void>): void;
+  updateCookie(oldCookie: Cookie, newCookie: Cookie, callback?: Callback<void>): unknown {
     // updateCookie() may avoid updating cookies that are identical.  For example,
     // lastAccessed may not be important to some stores and an equality
     // comparison could exclude that field.
-    this.putCookie(newCookie, cb);
+    return this.putCookie(newCookie, callback);
   }
-  removeCookie(domain, path, key, cb) {
+
+  removeCookie(domain: string, path: string, key: string): Promise<void>
+  removeCookie(domain: string, path: string, key: string, callback: Callback<void>): void
+  removeCookie(domain: string, path: string, key: string, callback?: Callback<void>): unknown {
+    const promiseCallback = createPromiseCallback<void>(arguments)
+    const cb = promiseCallback.callback
+
     if (
       this.idx[domain] &&
       this.idx[domain][path] &&
@@ -131,9 +168,17 @@ class MemoryCookieStore extends Store {
     ) {
       delete this.idx[domain][path][key];
     }
-    cb(null);
+
+    cb(null, undefined);
+    return promiseCallback.promise
   }
-  removeCookies(domain, path, cb) {
+
+  removeCookies(domain: string, path: string): Promise<void>
+  removeCookies(domain: string, path: string, callback: Callback<void>): void
+  removeCookies(domain: string, path: string, callback?: Callback<void>): unknown {
+    const promiseCallback = createPromiseCallback<void>(arguments)
+    const cb = promiseCallback.callback
+
     if (this.idx[domain]) {
       if (path) {
         delete this.idx[domain][path];
@@ -141,14 +186,30 @@ class MemoryCookieStore extends Store {
         delete this.idx[domain];
       }
     }
-    return cb(null);
+
+    cb(null);
+    return promiseCallback.promise
   }
-  removeAllCookies(cb) {
+
+  removeAllCookies(): Promise<void>
+  removeAllCookies(callback: Callback<void>): void
+  removeAllCookies(callback?: Callback<void>): unknown {
+    const promiseCallback = createPromiseCallback<void>(arguments)
+    const cb = promiseCallback.callback
+
     this.idx = {};
-    return cb(null);
+
+    cb(null);
+    return promiseCallback.promise
   }
-  getAllCookies(cb) {
-    const cookies = [];
+
+  getAllCookies(): Promise<Cookie[]>
+  getAllCookies(callback: Callback<Cookie[]>): void
+  getAllCookies(callback?: Callback<Cookie[]>): unknown {
+    const promiseCallback = createPromiseCallback<Cookie[]>(arguments)
+    const cb = promiseCallback.callback
+
+    const cookies: Cookie[] = [];
     const idx = this.idx;
 
     const domains = Object.keys(idx);
@@ -171,22 +232,7 @@ class MemoryCookieStore extends Store {
     });
 
     cb(null, cookies);
+    return promiseCallback.promise
   }
 }
 
-[
-  "findCookie",
-  "findCookies",
-  "putCookie",
-  "updateCookie",
-  "removeCookie",
-  "removeCookies",
-  "removeAllCookies",
-  "getAllCookies"
-].forEach(name => {
-  MemoryCookieStore.prototype[name] = fromCallback(
-    MemoryCookieStore.prototype[name]
-  );
-});
-
-exports.MemoryCookieStore = MemoryCookieStore;

@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 "use strict";
-const psl = require("psl");
+import * as psl from 'psl'
 
 // RFC 6761
 const SPECIAL_USE_DOMAINS = [
@@ -40,7 +40,18 @@ const SPECIAL_USE_DOMAINS = [
   "test"
 ];
 
-function getPublicSuffix(domain, options = {}) {
+type GetPublicSuffixOptions = {
+  allowSpecialUseDomain?: boolean;
+  ignoreError?: boolean;
+}
+
+const defaultGetPublicSuffixOptions: GetPublicSuffixOptions = {
+  allowSpecialUseDomain: false,
+  ignoreError: false
+}
+
+export function getPublicSuffix(domain: string, options: GetPublicSuffixOptions = {}): string {
+  options = { ...defaultGetPublicSuffixOptions, ...options }
   const domainParts = domain.split(".");
   const topLevelDomain = domainParts[domainParts.length - 1];
   const allowSpecialUseDomain = !!options.allowSpecialUseDomain;
@@ -66,5 +77,3 @@ function getPublicSuffix(domain, options = {}) {
 
   return psl.get(domain);
 }
-
-exports.getPublicSuffix = getPublicSuffix;

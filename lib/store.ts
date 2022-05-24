@@ -31,7 +31,7 @@
 "use strict";
 /*jshint unused:false */
 
-import {Cookie} from "./cookie";
+import {Callback, Cookie} from "./cookie";
 
 export class Store {
   synchronous: boolean;
@@ -40,37 +40,54 @@ export class Store {
     this.synchronous = false;
   }
 
-  findCookie(domain, path, key, cb): Cookie {
+  findCookie(domain: string, path: string, key: string): Promise<Cookie>
+  findCookie(domain: string, path: string, key: string, callback: Callback<Cookie>): void
+  findCookie(domain: string, path: string, key: string, callback?: Callback<Cookie>): unknown {
     throw new Error("findCookie is not implemented");
   }
 
-  findCookies(domain: string, path?: string, allowSpecialUseDomain: boolean = false, callback?: (error: Error, result: Cookie[]) => void): Promise<Cookie[]> {
+  findCookies(domain: string, path: string, allowSpecialUseDomain?: boolean): Promise<Cookie[]>
+  findCookies(domain: string, path: string, allowSpecialUseDomain?: boolean, callback?: Callback<Cookie[]>): void
+  findCookies(domain: string, path: string, allowSpecialUseDomain: boolean | Callback<Cookie[]> = false, callback?: Callback<Cookie[]>): unknown {
     throw new Error("findCookies is not implemented");
   }
 
-  putCookie(cookie, cb) {
+  putCookie(cookie: Cookie): Promise<void>
+  putCookie(cookie: Cookie, callback: Callback<void>): void;
+  putCookie(cookie: Cookie, callback?: Callback<void>): unknown {
     throw new Error("putCookie is not implemented");
   }
 
-  updateCookie(oldCookie, newCookie, cb) {
+
+  updateCookie(oldCookie: Cookie, newCookie: Cookie): Promise<void>
+  updateCookie(oldCookie: Cookie, newCookie: Cookie, callback: Callback<void>): void;
+  updateCookie(oldCookie: Cookie, newCookie: Cookie, callback?: Callback<void>): unknown {
     // recommended default implementation:
     // return this.putCookie(newCookie, cb);
     throw new Error("updateCookie is not implemented");
   }
 
-  removeCookie(domain: string, path: string, key: string, callback?: (error: Error) => void): Promise<void> {
+  removeCookie(domain: string, path: string, key: string): Promise<void>
+  removeCookie(domain: string, path: string, key: string, callback: Callback<void>): void
+  removeCookie(domain: string, path: string, key: string, callback?: Callback<void>): unknown {
     throw new Error("removeCookie is not implemented");
   }
 
-  removeCookies(domain: string, path?: string, callback?: (error: Error) => void): Promise<void> {
+  removeCookies(domain: string, path: string): Promise<void>
+  removeCookies(domain: string, path: string, callback: Callback<void>): void
+  removeCookies(domain: string, path: string, callback?: Callback<void>): unknown {
     throw new Error("removeCookies is not implemented");
   }
 
-  removeAllCookies(callback?: (error: Error) => void): Promise<void> {
+  removeAllCookies(): Promise<void>
+  removeAllCookies(callback: Callback<void>): void
+  removeAllCookies(callback?: Callback<void>): unknown {
     throw new Error("removeAllCookies is not implemented");
   }
 
-  getAllCookies(cb) {
+  getAllCookies(): Promise<Cookie[]>
+  getAllCookies(callback: Callback<Cookie[]>): void
+  getAllCookies(callback?: Callback<Cookie[]>): unknown {
     throw new Error(
       "getAllCookies is not implemented (therefore jar cannot be serialized)"
     );

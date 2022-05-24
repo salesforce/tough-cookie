@@ -30,7 +30,7 @@
  */
 
 import * as punycode from "punycode";
-import { parse as urlParse } from 'url'
+import {parse as urlParse} from 'url'
 import * as pubsuffix from './pubsuffix-psl'
 import util from 'util'
 import {Store} from './store'
@@ -38,7 +38,6 @@ import {MemoryCookieStore} from './memstore'
 import {pathMatch} from "./pathMatch";
 import * as validators from './validators'
 import VERSION from './version'
-import {fromCallback} from 'universalify'
 import {permuteDomain} from "./permuteDomain"
 
 // From RFC6265 S4.1.1
@@ -342,7 +341,7 @@ function canonicalDomain(str) {
 }
 
 // S5.1.3 Domain Matching
-function domainMatch(str, domStr, canonicalize) {
+function domainMatch(str?: string, domStr?: string, canonicalize?: boolean): boolean {
   if (str == null || domStr == null) {
     return null;
   }
@@ -401,7 +400,7 @@ function domainMatch(str, domStr, canonicalize) {
  *
  * Assumption: the path (and not query part or absolute uri) is passed in.
  */
-function defaultPath(path) {
+function defaultPath(path?: string): string {
   // "2. If the uri-path is empty or if the first character of the uri-path is not
   // a %x2F ("/") character, output %x2F ("/") and skip the remaining steps.
   if (!path || path.substr(0, 1) !== "/") {
@@ -753,7 +752,7 @@ function cookieCompare(a, b) {
 
 // Gives the permutation of all possible pathMatch()es of a given path. The
 // array is in longest-to-shortest order.  Handy for indexing.
-function permutePath(path) {
+function permutePath(path: string): string[] {
   validators.validate(validators.isString(path));
   if (path === "/") {
     return ["/"];
@@ -842,18 +841,16 @@ export class Cookie {
   inspect() {
     const now = Date.now();
     const hostOnly = this.hostOnly != null ? this.hostOnly : "?";
-    const createAge = this.creation
-      // @ts-ignore
+    const createAge = this.creation && this.creation !== 'Infinity'
       ? `${now - this.creation.getTime()}ms`
       : "?";
-    const accessAge = this.lastAccessed
-      // @ts-ignore
+    const accessAge = this.lastAccessed && this.lastAccessed !== 'Infinity'
       ? `${now - this.lastAccessed.getTime()}ms`
       : "?";
     return `Cookie="${this.toString()}; hostOnly=${hostOnly}; aAge=${accessAge}; cAge=${createAge}"`;
   }
 
-  toJSON() {
+  toJSON(): SerializedCookie {
     const obj = {};
 
     for (const prop of Cookie.serializableProperties) {
@@ -866,14 +863,15 @@ export class Cookie {
         prop === "creation" ||
         prop === "lastAccessed"
       ) {
-        if (this[prop] === null) {
+        if (this[prop] == null) {
           obj[prop] = null;
         } else {
-          obj[prop] =
-            this[prop] == "Infinity" // intentionally not ===
-              ? "Infinity"
-              // @ts-ignore
-              : this[prop].toISOString();
+          const value = this[prop]
+          if (value === 'Infinity') {
+            obj[prop] = value
+          } else {
+            obj[prop] = value.toISOString()
+          }
         }
       } else if (prop === "maxAge") {
         if (this[prop] !== null) {
@@ -890,7 +888,7 @@ export class Cookie {
       }
     }
 
-    return obj;
+    return <SerializedCookie>obj;
   }
 
   clone() {
@@ -902,8 +900,7 @@ export class Cookie {
       return false;
     }
     if (
-      // @ts-ignore
-      this.expires != Infinity &&
+      this.expires != 'Infinity' &&
       !(this.expires instanceof Date) &&
       !parseDate(this.expires)
     ) {
@@ -961,8 +958,7 @@ export class Cookie {
   toString() {
     let str = this.cookieString();
 
-    // @ts-ignore
-    if (this.expires != Infinity) {
+    if (this.expires != 'Infinity') {
       if (this.expires instanceof Date) {
         str += `; Expires=${formatDate(this.expires)}`;
       } else {
@@ -988,7 +984,6 @@ export class Cookie {
       str += "; HttpOnly";
     }
     if (this.sameSite && this.sameSite !== "none") {
-      // @ts-ignore
       const ssCanon = Cookie.sameSiteCanonical[this.sameSite.toLowerCase()];
       str += `; SameSite=${ssCanon ? ssCanon : this.sameSite}`;
     }
@@ -1005,52 +1000,45 @@ export class Cookie {
   // elsewhere)
   // S5.3 says to give the "latest representable date" for which we use Infinity
   // For "expired" we use 0
-  TTL(now: number = Date.now()) {
+  TTL(now: number = Date.now()): number {
     /* RFC6265 S4.1.2.2 If a cookie has both the Max-Age and the Expires
      * attribute, the Max-Age attribute has precedence and controls the
      * expiration date of the cookie.
      * (Concurs with S5.3 step 3)
      */
-    if (this.maxAge != null) {
-      // @ts-ignore
+    if (this.maxAge != null && typeof this.maxAge === 'number') {
       return this.maxAge <= 0 ? 0 : this.maxAge * 1000;
     }
 
     let expires = this.expires;
-    // @ts-ignore
-    if (expires != Infinity) {
-      if (!(expires instanceof Date)) {
-        // @ts-ignore
-        expires = parseDate(expires) || Infinity;
-      }
-
-      // @ts-ignore
-      if (expires == Infinity) {
-        return Infinity;
-      }
-
-      // @ts-ignore
-      return expires.getTime() - (now || Date.now());
+    if (expires === 'Infinity') {
+      return Infinity
     }
 
-    return Infinity;
+    if (typeof expires === 'string') {
+      expires = parseDate(expires)
+    }
+
+    return expires.getTime() - (now || Date.now())
   }
 
   // expiryTime() replaces the "expiry-time" parts of S5.3 step 3 (setCookie()
   // elsewhere)
-  expiryTime(now) {
+  expiryTime(now?: Date): number {
     if (this.maxAge != null) {
       const relativeTo = now || this.creation || new Date();
-      // @ts-ignore
-      const age = this.maxAge <= 0 ? -Infinity : this.maxAge * 1000;
+      const maxAge = typeof this.maxAge === 'number' ? this.maxAge : -Infinity;
+      const age = maxAge <= 0 ? -Infinity : maxAge * 1000;
+      if (relativeTo === 'Infinity') {
+        return Infinity
+      }
       return relativeTo.getTime() + age;
     }
 
-    // @ts-ignore
-    if (this.expires == Infinity) {
+    if (this.expires == 'Infinity') {
       return Infinity;
     }
-    // @ts-ignore
+
     return this.expires.getTime();
   }
 
@@ -1068,9 +1056,8 @@ export class Cookie {
   }
 
   // This replaces the "persistent-flag" parts of S5.3 step 3
-  isPersistent() {
-    // @ts-ignore
-    return this.maxAge != null || this.expires != Infinity;
+  isPersistent(): boolean {
+    return this.maxAge != null || this.expires != 'Infinity';
   }
 
   // Mostly S5.1.2 and S5.2.3:
@@ -1126,12 +1113,12 @@ function getNormalizedPrefixSecurity(prefixSecurity) {
 
 const defaultSetCookieOptions: SetCookieOptions = {
   loose: false,
-  sameSiteContext: false,
+  sameSiteContext: undefined,
   ignoreError: false,
   http: false
 }
 
-function createPromiseCallback<T>(args: IArguments): PromiseCallback<T> {
+export function createPromiseCallback<T>(args: IArguments): PromiseCallback<T> {
   let callback: (error: Error, result: T) => Promise<T>
   let resolve: (result: T) => void
   let reject: (error: Error) => void
@@ -1173,7 +1160,7 @@ export class CookieJar {
   private readonly rejectPublicSuffixes: boolean;
   private readonly enableLooseMode: boolean;
   private readonly allowSpecialUseDomain: boolean;
-  private readonly prefixSecurity: string;
+  readonly prefixSecurity: string;
 
   constructor(store?: any, options: any = { rejectPublicSuffixes: true }) {
     if (typeof options === "boolean") {
@@ -1206,6 +1193,7 @@ export class CookieJar {
   setCookie(cookie, url: string, options: SetCookieOptions, callback: Callback<Cookie>): void;
   setCookie(cookie, url: string): Promise<Cookie>
   setCookie(cookie, url: string, options: SetCookieOptions): Promise<Cookie>
+  setCookie(cookie, url: string, options: SetCookieOptions | Callback<Cookie>, callback?: Callback<Cookie>): unknown;
   setCookie(cookie, url: string, options: SetCookieOptions | Callback<Cookie> = defaultSetCookieOptions, callback?: Callback<Cookie>): unknown {
     const promiseCallback = createPromiseCallback<Cookie>(arguments)
     const cb = promiseCallback.callback
@@ -1241,8 +1229,7 @@ export class CookieJar {
 
     // S5.3 step 1
     if (typeof cookie === "string" || cookie instanceof String) {
-      // @ts-ignore
-      cookie = Cookie.parse(cookie, {loose: loose});
+      cookie = Cookie.parse(cookie.toString(), {loose: loose});
       if (!cookie) {
         err = new Error("Cookie failed to parse");
         return cb(options.ignoreError ? null : err);
@@ -1265,14 +1252,18 @@ export class CookieJar {
 
     // S5.3 step 5: public suffixes
     if (this.rejectPublicSuffixes && cookie.domain) {
-      const suffix = pubsuffix.getPublicSuffix(cookie.cdomain(), {
-        allowSpecialUseDomain: this.allowSpecialUseDomain,
-        ignoreError: options.ignoreError
-      });
-      if (suffix == null && !IP_V6_REGEX_OBJECT.test(cookie.domain)) {
-        // e.g. "com"
-        err = new Error("Cookie has domain set to a public suffix");
-        return cb(options.ignoreError ? null : err);
+      try {
+        const suffix = pubsuffix.getPublicSuffix(cookie.cdomain(), {
+          allowSpecialUseDomain: this.allowSpecialUseDomain,
+          ignoreError: options.ignoreError
+        });
+        if (suffix == null && !IP_V6_REGEX_OBJECT.test(cookie.domain)) {
+          // e.g. "com"
+          err = new Error("Cookie has domain set to a public suffix");
+          return cb(options.ignoreError ? null : err);
+        }
+      } catch (err) {
+        return cb(options.ignoreError ? null : err)
       }
     }
 
@@ -1356,8 +1347,8 @@ export class CookieJar {
     const store = this.store;
 
     if (!store.updateCookie) {
-      store.updateCookie = function (oldCookie, newCookie, cb) {
-        this.putCookie(newCookie, cb);
+      store.updateCookie = function (oldCookie: Cookie, newCookie: Cookie, cb?: Callback<void>): Promise<void> {
+        return this.putCookie(newCookie, cb);
       };
     }
 
@@ -1377,11 +1368,9 @@ export class CookieJar {
       if (oldCookie) {
         // S5.3 step 11 - "If the cookie store contains a cookie with the same name,
         // domain, and path as the newly created cookie:"
-        // @ts-ignore
-        if (options.http === false && oldCookie.httpOnly) {
+        if ('http' in options && options.http === false && oldCookie.httpOnly) {
           // step 11.2
           err = new Error("old Cookie is HttpOnly and this isn't an HTTP API");
-          // @ts-ignore
           return cb(options.ignoreError ? null : err);
         }
         cookie.creation = oldCookie.creation; // step 11.3
@@ -1408,6 +1397,7 @@ export class CookieJar {
   getCookies(url: string, options: any, callback: Callback<Cookie[]>)
   getCookies(url: string): Promise<Cookie[]>
   getCookies(url: string, options: any): Promise<Cookie[]>
+  getCookies(url: string, options: any, callback?: (error: Error, result: Cookie[]) => void): unknown;
   getCookies(url: string, options: any = {}, callback?: (error: Error, result: Cookie[]) => void): unknown {
     const promiseCallback = createPromiseCallback<Cookie[]>(arguments)
     const cb = promiseCallback.callback
@@ -1435,7 +1425,6 @@ export class CookieJar {
     let sameSiteLevel = 0;
     if (options.sameSiteContext) {
       const sameSiteContext = checkSameSiteContext(options.sameSiteContext);
-      // @ts-ignore
       sameSiteLevel = Cookie.sameSiteLevel[sameSiteContext];
       if (!sameSiteLevel) {
         return cb(new Error(SAME_SITE_CONTEXT_VAL_ERR));
@@ -1488,7 +1477,6 @@ export class CookieJar {
 
       // RFC6265bis-02 S5.3.7
       if (sameSiteLevel) {
-        // @ts-ignore
         const cookieLevel = Cookie.sameSiteLevel[c.sameSite || "none"];
         if (cookieLevel > sameSiteLevel) {
           // only allow cookies at or below the request level
@@ -1543,6 +1531,7 @@ export class CookieJar {
   getCookieString(url, callback: (error: Error, result: string) => void): void;
   getCookieString(url): Promise<string>;
   getCookieString(url, options: any): Promise<string>;
+  getCookieString(url: string, options: any, callback?: (error: Error, result: string) => void): unknown;
   getCookieString(url: string, options: any = {}, callback?: (error: Error, result: string) => void): unknown {
     const promiseCallback = createPromiseCallback<string>(arguments)
 
@@ -1571,7 +1560,8 @@ export class CookieJar {
   getSetCookieStrings (url: string, options: any, callback: Callback<string[]>): void
   getSetCookieStrings (url: string): Promise<string[]>
   getSetCookieStrings (url: string, options: any): Promise<string[]>
-  getSetCookieStrings (url: string, options: any = {}, callback?: (error: Error, result: string[]) => void): unknown {
+  getSetCookieStrings (url: string, options: any, callback?: Callback<string[]>): unknown;
+  getSetCookieStrings (url: string, options: any = {}, callback?: Callback<string[]>): unknown {
     const promiseCallback = createPromiseCallback<string[]>(arguments)
 
     const next = function(err: Error, cookies: Cookie[]) {
@@ -1596,7 +1586,8 @@ export class CookieJar {
 
   serialize(callback: Callback<SerializedCookieJar>): void;
   serialize(): Promise<SerializedCookieJar>;
-  serialize(callback?: (error: Error, data: SerializedCookieJar) => void): unknown {
+  serialize(callback?: Callback<SerializedCookieJar>): unknown;
+  serialize(callback?: Callback<SerializedCookieJar>): unknown {
     const promiseCallback = createPromiseCallback<SerializedCookieJar>(arguments)
     const cb = promiseCallback.callback
 
@@ -1646,12 +1637,12 @@ export class CookieJar {
 
       serialized.cookies = cookies.map(cookie => {
         // convert to serialized 'raw' cookies
-        cookie = cookie instanceof Cookie ? cookie.toJSON() : cookie;
+        const serializedCookie = cookie instanceof Cookie ? cookie.toJSON() : cookie;
 
         // Remove the index so new ones get assigned during deserialization
-        delete cookie.creationIndex;
+        delete serializedCookie.creationIndex;
 
-        return cookie;
+        return serializedCookie;
       });
 
       return cb(null, serialized);
@@ -1675,7 +1666,7 @@ export class CookieJar {
     }
     cookies = cookies.slice(); // do not modify the original
 
-    const putNext = err => {
+    const putNext = (err?: Error) => {
       if (err) {
         return cb(err);
       }
@@ -1698,7 +1689,6 @@ export class CookieJar {
       this.store.putCookie(cookie, putNext);
     };
 
-    // @ts-ignore
     putNext();
   }
 
@@ -1706,25 +1696,33 @@ export class CookieJar {
     this.callSync(this._importCookies.bind(this, serialized))
   }
 
-  clone(newStore, cb) {
-    if (arguments.length === 1) {
-      cb = newStore;
+  clone(callback: Callback<CookieJar>): void;
+  clone(newStore: Store, callback: Callback<CookieJar>): void;
+  clone(): Promise<CookieJar>;
+  clone(newStore: Store): Promise<CookieJar>;
+  clone(newStore?: Store | Callback<CookieJar>, callback?: Callback<CookieJar>): unknown {
+    if (typeof newStore === 'function') {
       newStore = null;
     }
+
+    const promiseCallback = createPromiseCallback<CookieJar>(arguments)
+    const cb = promiseCallback.callback
 
     this.serialize((err, serialized) => {
       if (err) {
         return cb(err);
       }
-      CookieJar.deserialize(serialized, newStore, cb);
+      return CookieJar.deserialize(serialized, newStore, cb);
     });
+
+    return promiseCallback.promise
   }
 
-  _cloneSync(newStore?): void {
+  _cloneSync(newStore?): CookieJar {
     return this.callSync(this.clone.bind(this, newStore))
   }
 
-  cloneSync(newStore) {
+  cloneSync(newStore?: Store): CookieJar {
     if (arguments.length === 0) {
       return this._cloneSync();
     }
@@ -1738,6 +1736,7 @@ export class CookieJar {
 
   removeAllCookies(callback: ErrorCallback): void;
   removeAllCookies(): Promise<void>;
+  removeAllCookies(callback?: ErrorCallback): unknown;
   removeAllCookies(callback?: ErrorCallback): unknown {
     const promiseCallback = createPromiseCallback<void>(arguments)
     const cb = promiseCallback.callback
@@ -1795,19 +1794,24 @@ export class CookieJar {
     return this.callSync<void>(this.removeAllCookies.bind(this))
   }
 
-  static deserialize(strOrObj, store, cb) {
-    if (arguments.length !== 3) {
-      // store is optional
-      cb = store;
+  static deserialize(strOrObj: string | object, callback: Callback<CookieJar>): void;
+  static deserialize(strOrObj: string | object, store: Store, callback: Callback<CookieJar>): void;
+  static deserialize(strOrObj: string | object): Promise<CookieJar>;
+  static deserialize(strOrObj: string | object, store: Store): Promise<CookieJar>;
+  static deserialize(strOrObj: string | object, store?: Store | Callback<CookieJar>, callback?: Callback<CookieJar>): unknown;
+  static deserialize(strOrObj: string | object, store?: Store | Callback<CookieJar>, callback?: Callback<CookieJar>): unknown {
+    if (typeof store === 'function') {
       store = null;
     }
-    validators.validate(validators.isFunction(cb), cb);
+
+    const promiseCallback = createPromiseCallback<CookieJar>(arguments)
+    const cb = promiseCallback.callback
 
     let serialized;
     if (typeof strOrObj === "string") {
       serialized = jsonParse(strOrObj);
       if (serialized instanceof Error) {
-        return cb(serialized);
+        return cb(serialized, undefined);
       }
     } else {
       serialized = strOrObj;
@@ -1821,13 +1825,15 @@ export class CookieJar {
     });
     jar._importCookies(serialized, err => {
       if (err) {
-        return cb(err);
+        return cb(err, undefined);
       }
-      cb(null, jar);
+      return cb(undefined, jar);
     });
+
+    return promiseCallback.promise
   }
 
-  static deserializeSync(strOrObj, store): CookieJar {
+  static deserializeSync(strOrObj, store?: Store): CookieJar {
     const serialized =
       typeof strOrObj === "string" ? JSON.parse(strOrObj) : strOrObj;
     const jar = new CookieJar(store, {
@@ -1846,12 +1852,10 @@ export class CookieJar {
     return jar;
   }
 
-  static fromJSON (jsonString: string, store): CookieJar {
+  static fromJSON (jsonString: SerializedCookieJar, store?: Store): CookieJar {
     return CookieJar.deserializeSync(jsonString, store)
   }
 }
-
-CookieJar.deserialize = fromCallback(CookieJar.deserialize);
 
 const getPublicSuffix = pubsuffix.getPublicSuffix
 const ParameterError = validators.ParameterError
@@ -1876,7 +1880,7 @@ export { ParameterError as ParameterError }
 
 type SetCookieOptions = {
   loose?: boolean;
-  sameSiteContext?: boolean;
+  sameSiteContext?: 'strict' | 'lax' | 'none';
   ignoreError?: boolean;
   http?: boolean;
   now?: Date;
