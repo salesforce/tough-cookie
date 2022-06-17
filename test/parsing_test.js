@@ -677,15 +677,43 @@ vows
           assert.equal(c.extensions, null);
         }
       },
-      absent: {
+      none: {
+        topic: function() {
+          return Cookie.parse("abc=xyz; SameSite=NoNe") || null;
+        },
+        parsed: function(c) {
+          assert.ok(c);
+        },
+        "is none (lowercased)": function(c) {
+          assert.equal(c.sameSite, "none");
+        },
+        "no extensions": function(c) {
+          assert.equal(c.extensions, null);
+        }
+      },
+      bad: {
         topic: function() {
           return Cookie.parse("abc=xyzzy; SameSite=example.com") || null;
         },
         parsed: function(c) {
           assert.ok(c);
         },
-        "is set to 'none' (by prototype)": function(c) {
-          assert.equal(c.sameSite, "none");
+        "is set to 'lax' (by prototype)": function(c) {
+          assert.equal(c.sameSite, "lax");
+        },
+        "no extensions": function(c) {
+          assert.equal(c.extensions, null);
+        }
+      },
+      absent: {
+        topic: function() {
+          return Cookie.parse("abc=xyzzy;") || null;
+        },
+        parsed: function(c) {
+          assert.ok(c);
+        },
+        "is set to 'lax' (by prototype)": function(c) {
+          assert.equal(c.sameSite, "lax");
         },
         "no extensions": function(c) {
           assert.equal(c.extensions, null);
