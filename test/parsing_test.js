@@ -158,8 +158,8 @@ vows
       "has max-age": function(c) {
         assert.equal(c.maxAge, 1234);
       },
-      "has same-site 'none'": function(c) {
-        assert.equal(c.sameSite, "none");
+      "has same-site 'undefined'": function(c) {
+        assert.equal(c.sameSite, undefined);
       },
       "has extensions": function(c) {
         assert.ok(c.extensions);
@@ -698,8 +698,8 @@ vows
         parsed: function(c) {
           assert.ok(c);
         },
-        "is set to 'lax' (by prototype)": function(c) {
-          assert.equal(c.sameSite, "lax");
+        "is set to 'undefined'": function(c) {
+          assert.equal(c.sameSite, undefined);
         },
         "no extensions": function(c) {
           assert.equal(c.extensions, null);
@@ -712,8 +712,8 @@ vows
         parsed: function(c) {
           assert.ok(c);
         },
-        "is set to 'lax' (by prototype)": function(c) {
-          assert.equal(c.sameSite, "lax");
+        "is set to 'undefined'": function(c) {
+          assert.equal(c.sameSite, undefined);
         },
         "no extensions": function(c) {
           assert.equal(c.extensions, null);
