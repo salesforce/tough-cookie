@@ -124,9 +124,9 @@ vows
           topic: function(options) {
             this.callSetCookie("garbage", options, this.callback);
           },
-          "treated as 'none'": function(err, cookie) {
+          "treated as 'undefined'": function(err, cookie) {
             assert.isNull(err);
-            assert.equal(cookie.sameSite, "none");
+            assert.equal(cookie.sameSite, undefined);
           }
         },
         "for strict cookie": {
@@ -151,9 +151,9 @@ vows
           topic: function(options) {
             this.callSetCookie("normal", options, this.callback);
           },
-          "treated as 'none'": function(err, cookie) {
+          "treated as 'undefined'": function(err, cookie) {
             assert.isNull(err);
-            assert.equal(cookie.sameSite, "none");
+            assert.equal(cookie.sameSite, undefined);
           }
         }
       },
