@@ -265,7 +265,7 @@ The `options` object can be omitted and can have the following properties:
 - _rejectPublicSuffixes_ - boolean - default `true` - reject cookies with domains like "com" and "co.uk"
 - _looseMode_ - boolean - default `false` - accept malformed cookies like `bar` and `=bar`, which have an implied empty name.
 - _prefixSecurity_ - string - default `silent` - set to `'unsafe-disabled'`, `'silent'`, or `'strict'`. See [Cookie Prefixes](#cookie-prefixes) below.
-- _allowSpecialUseDomain_ - boolean - default `false` - accepts special-use domain suffixes, such as `local`. Useful for testing purposes.
+- _allowSpecialUseDomain_ - boolean - default `true` - accepts special-use domain suffixes, such as `local`. Useful for testing purposes.
   This is not in the standard, but is used sometimes on the web and is accepted by most browsers.
 
 #### `.setCookie(cookieOrString, currentUrl[, options][, callback(err, cookie)])`
