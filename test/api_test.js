@@ -599,6 +599,46 @@ function allowSpecialUseOptionVows() {
         const cb = this.callback;
         const cj = new CookieJar();
         cj.setCookie(
+          `settingThisShouldPass=true; Domain=${specialUseDomain}; Path=/;`,
+          `http://${specialUseDomain}`,
+          at(-1),
+          (err, cookie) => {
+            cb(err, { cj: cj, cookie: cookie });
+          }
+        );
+      },
+      "set the cookie": function(t) {
+        assert.ok(t.cookie, "didn't set?!");
+        assert.equal(t.cookie.key, "settingThisShouldPass");
+      },
+      "then, retrieving": {
+        topic: function(t) {
+          const cb = this.callback;
+          setTimeout(() => {
+            t.cj.getCookies(
+              `http://${specialUseDomain}`,
+              { http: true },
+              (err, cookies) => {
+                t.cookies = cookies;
+                cb(err, t);
+              }
+            );
+          }, 2000);
+        },
+        "got the cookie": function(t) {
+          assert.lengthOf(t.cookies, 1);
+          assert.equal(t.cookies[0].key, "settingThisShouldPass");
+        }
+      }
+    };
+
+    vows[
+      `cookie jar with allowSpecialUseDomain set to the default value and domain is "dev.${specialUseDomain}"`
+    ] = {
+      topic: function() {
+        const cb = this.callback;
+        const cj = new CookieJar();
+        cj.setCookie(
           `settingThisShouldPass=true; Domain=dev.${specialUseDomain}; Path=/;`,
           `http://dev.${specialUseDomain}`,
           at(-1),
@@ -633,7 +673,7 @@ function allowSpecialUseOptionVows() {
     };
 
     vows[
-      `cookie jar with allowSpecialUseDomain enabled and domain is "${specialUseDomain}"`
+      `cookie jar with allowSpecialUseDomain enabled and domain is "dev.${specialUseDomain}"`
     ] = {
       topic: function() {
         const cb = this.callback;
@@ -676,7 +716,7 @@ function allowSpecialUseOptionVows() {
     };
 
     vows[
-      `cookie jar with allowSpecialUseDomain disabled and domain is "${specialUseDomain}"`
+      `cookie jar with allowSpecialUseDomain disabled and domain is "dev.${specialUseDomain}"`
     ] = {
       topic: function() {
         const cj = new CookieJar(new tough.MemoryCookieStore(), {
