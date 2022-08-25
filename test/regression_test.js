@@ -197,10 +197,26 @@ vows
           return cookieJar.setCookieSync(
             "a=b; Domain=localhost",
             "http://localhost"
-          );
+          ); // Users are free to use localhost names as they would any other domain names. [RFC 6761, Sec. 6.3.1]
         },
         works: function(err, c) {
           assert.instanceOf(c, Cookie);
+          assert.match(c, /Domain=localhost/);
+        }
+      }
+    },
+    {
+      "setCookie with localhost (localhost. domain) (GH-215)": {
+        topic: function() {
+          const cookieJar = new CookieJar();
+          return cookieJar.setCookieSync(
+            "a=b; Domain=localhost.",
+            "http://localhost."
+          ); // Users are free to use localhost names as they would any other domain names. [RFC 6761, Sec. 6.3.1]
+        },
+        works: function(err, c) {
+          assert.instanceOf(c, Cookie);
+          assert.match(c, /Domain=localhost/);
         }
       }
     },
