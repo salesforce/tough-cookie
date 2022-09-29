@@ -82,7 +82,7 @@
   ],
   "scripts": {
     "version": "genversion lib/version.js && git add lib/version.js",
-    "test": "vows test/*_test.js",
+    "test": "jest && tsc && vows test/*_test.js",
     "cover": "nyc --reporter=lcov --reporter=html vows test/*_test.js",
     "eslint": "eslint --env node --ext .js .",
     "prettier": "prettier '**/*.{json,ts,yaml,md}'",
