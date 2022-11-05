@@ -50,7 +50,7 @@ const defaultGetPublicSuffixOptions: GetPublicSuffixOptions = {
   ignoreError: false
 }
 
-export function getPublicSuffix(domain: string, options: GetPublicSuffixOptions = {}): string {
+export function getPublicSuffix(domain: string, options: GetPublicSuffixOptions = {}): string | null {
   options = { ...defaultGetPublicSuffixOptions, ...options }
   const domainParts = domain.split(".");
   const topLevelDomain = domainParts[domainParts.length - 1];

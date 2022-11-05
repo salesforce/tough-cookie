@@ -93,6 +93,7 @@
   },
   "devDependencies": {
     "@types/jest": "^27.4.0",
+    "@types/psl": "^1.1.0",
     "async": "^2.6.2",
     "eslint": "^5.16.0",
     "eslint-config-prettier": "^4.2.0",

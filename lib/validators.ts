@@ -81,7 +81,7 @@ export function validate(bool: boolean, cb?: any, options?: any): void {
 }
 
 export class ParameterError extends Error {
-  constructor(...params) {
+  constructor(...params: any[]) {
     super(...params);
     if (Object.setPrototypeOf) {
       Object.setPrototypeOf(this, ParameterError.prototype);

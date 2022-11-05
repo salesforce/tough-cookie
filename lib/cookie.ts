@@ -79,7 +79,7 @@ const MIN_TIME = 0; // 31-bit min
 const SAME_SITE_CONTEXT_VAL_ERR =
   'Invalid sameSiteContext option for getCookies(); expected one of "strict", "lax", or "none"';
 
-function checkSameSiteContext(value) {
+function checkSameSiteContext(value: string) {
   validators.validate(validators.isNonEmptyString(value), value);
   const context = String(value).toLowerCase();
   if (context === "none" || context === "lax" || context === "strict") {
@@ -125,7 +125,7 @@ const IP_V6_REGEX_OBJECT = new RegExp(`^${IP_V6_REGEX}$`)
  * The "trailingOK" boolean controls if the grammar accepts a
  * "( non-digit *OCTET )" trailer.
  */
-function parseDigits(token, minDigits, maxDigits, trailingOK) {
+function parseDigits(token: string, minDigits: number, maxDigits: number, trailingOK: boolean) {
   let count = 0;
   while (count < token.length) {
     const c = token.charCodeAt(count);
@@ -148,7 +148,7 @@ function parseDigits(token, minDigits, maxDigits, trailingOK) {
   return parseInt(token.substr(0, count), 10);
 }
 
-function parseTime(token) {
+function parseTime(token: string) {
   const parts = token.split(":");
   const result = [0, 0, 0];
 
@@ -164,7 +164,7 @@ function parseTime(token) {
 
   for (let i = 0; i < 3; i++) {
     // "time-field" must be strictly "1*2DIGIT", HOWEVER, "hms-time" can be
-    // followed by "( non-digit *OCTET )" so therefore the last time-field can
+    // followed by "( non-digit *OCTET )" therefore the last time-field can
     // have a trailer
     const trailingOK = i == 2;
     const num = parseDigits(parts[i], 1, 2, trailingOK);
@@ -177,20 +177,33 @@ function parseTime(token) {
   return result;
 }
 
-function parseMonth(token) {
+function parseMonth(token: string) {
   token = String(token)
     .substr(0, 3)
     .toLowerCase();
-  const num = MONTH_TO_NUM[token];
-  return num >= 0 ? num : null;
+  switch (token) {
+    case 'jan': return MONTH_TO_NUM.jan
+    case 'feb': return MONTH_TO_NUM.feb
+    case 'mar': return MONTH_TO_NUM.mar
+    case 'apr': return MONTH_TO_NUM.apr
+    case 'may': return MONTH_TO_NUM.may
+    case 'jun': return MONTH_TO_NUM.jun
+    case 'jul': return MONTH_TO_NUM.jul
+    case 'aug': return MONTH_TO_NUM.aug
+    case 'sep': return MONTH_TO_NUM.sep
+    case 'oct': return MONTH_TO_NUM.oct
+    case 'nov': return MONTH_TO_NUM.nov
+    case 'dec': return MONTH_TO_NUM.dec
+    default: return null
+  }
 }
 
 /*
  * RFC6265 S5.1.1 date parser (see RFC for full grammar)
  */
-function parseDate(str) {
+function parseDate(str: string | undefined | null): Date | undefined {
   if (!str) {
-    return;
+    return undefined;
   }
 
   /* RFC6265 S5.1.1:
@@ -199,7 +212,7 @@ function parseDate(str) {
    */
   const tokens = str.split(DATE_DELIM);
   if (!tokens) {
-    return;
+    return undefined;
   }
 
   let hour = null;
@@ -306,23 +319,25 @@ function parseDate(str) {
     dayOfMonth < 1 ||
     dayOfMonth > 31 ||
     year < 1601 ||
+    hour === null ||
     hour > 23 ||
+    minute === null ||
     minute > 59 ||
     second > 59
   ) {
-    return;
+    return undefined;
   }
 
   return new Date(Date.UTC(year, month, dayOfMonth, hour, minute, second));
 }
 
-function formatDate(date) {
+function formatDate(date: Date) {
   validators.validate(validators.isDate(date), date);
   return date.toUTCString();
 }
 
 // S5.1.2 Canonicalized Host Names
-function canonicalDomain(str) {
+function canonicalDomain(str: string | null) {
   if (str == null) {
     return null;
   }
@@ -341,13 +356,24 @@ function canonicalDomain(str) {
 }
 
 // S5.1.3 Domain Matching
-function domainMatch(str?: string, domStr?: string, canonicalize?: boolean): boolean {
+function domainMatch(str?: string, domStr?: string, canonicalize?: boolean): boolean | null {
   if (str == null || domStr == null) {
     return null;
   }
+
+  let _str: string | null
+  let _domStr: string | null
+
   if (canonicalize !== false) {
-    str = canonicalDomain(str);
-    domStr = canonicalDomain(domStr);
+    _str = canonicalDomain(str);
+    _domStr = canonicalDomain(domStr);
+  } else {
+    _str = str;
+    _domStr = domStr
+  }
+
+  if (_str == null || _domStr == null) {
+    return null;
   }
 
   /*
@@ -359,14 +385,14 @@ function domainMatch(str?: string, domStr?: string, canonicalize?: boolean): boo
    * domain string and the string will have been canonicalized to lower case at
    * this point)"
    */
-  if (str == domStr) {
+  if (_str == _domStr) {
     return true;
   }
 
   /* " o All of the following [three] conditions hold:" */
 
   /* "* The domain string is a suffix of the string" */
-  const idx = str.indexOf(domStr);
+  const idx = _str.indexOf(_domStr);
   if (idx <= 0) {
     return false; // it's a non-match (-1) or prefix (0)
   }
@@ -374,18 +400,18 @@ function domainMatch(str?: string, domStr?: string, canonicalize?: boolean): boo
   // next, check it's a proper suffix
   // e.g., "a.b.c".indexOf("b.c") === 2
   // 5 === 3+2
-  if (str.length !== domStr.length + idx) {
+  if (_str.length !== _domStr.length + idx) {
     return false; // it's not a suffix
   }
 
   /* "  * The last character of the string that is not included in the
    * domain string is a %x2E (".") character." */
-  if (str.substr(idx-1,1) !== '.') {
+  if (_str.substr(idx-1,1) !== '.') {
     return false; // doesn't align on "."
   }
 
   /* "  * The string is a host name (i.e., not an IP address)." */
-  if (IP_REGEX_LOWERCASE.test(str)) {
+  if (IP_REGEX_LOWERCASE.test(_str)) {
     return false; // it's an IP address
   }
 
@@ -423,7 +449,7 @@ function defaultPath(path?: string): string {
   return path.slice(0, rightSlash);
 }
 
-function trimTerminator(str) {
+function trimTerminator(str: string) {
   if (validators.isEmptyString(str)) return str;
   for (let t = 0; t < TERMINATORS.length; t++) {
     const terminatorIdx = str.indexOf(TERMINATORS[t]);
@@ -435,7 +461,7 @@ function trimTerminator(str) {
   return str;
 }
 
-function parseCookiePair(cookiePair, looseMode) {
+function parseCookiePair(cookiePair: string, looseMode: boolean) {
   cookiePair = trimTerminator(cookiePair);
   validators.validate(validators.isString(cookiePair), cookiePair);
 
@@ -450,7 +476,7 @@ function parseCookiePair(cookiePair, looseMode) {
     // non-loose mode
     if (firstEq <= 0) {
       // no '=' or is at start
-      return; // needs to have non-empty "cookie-name"
+      return undefined; // needs to have non-empty "cookie-name"
     }
   }
 
@@ -464,7 +490,7 @@ function parseCookiePair(cookiePair, looseMode) {
   }
 
   if (CONTROL_CHARS.test(cookieName) || CONTROL_CHARS.test(cookieValue)) {
-    return;
+    return undefined;
   }
 
   const c = new Cookie();
@@ -473,9 +499,9 @@ function parseCookiePair(cookiePair, looseMode) {
   return c;
 }
 
-function parse(str: string, options: any = {}): Cookie {
+function parse(str: string, options: any = {}): Cookie | undefined {
   if (validators.isEmptyString(str) || !validators.isString(str)) {
-    return null
+    return undefined
   }
 
   str = str.trim();
@@ -485,7 +511,7 @@ function parse(str: string, options: any = {}): Cookie {
   const cookiePair = firstSemi === -1 ? str : str.substr(0, firstSemi);
   const c = parseCookiePair(cookiePair, !!options.loose);
   if (!c) {
-    return;
+    return undefined;
   }
 
   if (firstSemi === -1) {
@@ -513,7 +539,7 @@ function parse(str: string, options: any = {}): Cookie {
    */
   const cookie_avs = unparsed.split(";");
   while (cookie_avs.length) {
-    const av = cookie_avs.shift().trim();
+    const av = (cookie_avs.shift() ?? "").trim();
     if (av.length === 0) {
       // happens if ";;" appears
       continue;
@@ -639,9 +665,10 @@ function parse(str: string, options: any = {}): Cookie {
  * @param cookie
  * @returns boolean
  */
-function isSecurePrefixConditionMet(cookie) {
+function isSecurePrefixConditionMet(cookie: Cookie) {
   validators.validate(validators.isObject(cookie), cookie);
-  return !cookie.key.startsWith("__Secure-") || cookie.secure;
+  const startsWithSecurePrefix = typeof cookie.key === 'string' && cookie.key.startsWith("__Secure-")
+  return !startsWithSecurePrefix || cookie.secure
 }
 
 /**
@@ -655,10 +682,11 @@ function isSecurePrefixConditionMet(cookie) {
  * @param cookie
  * @returns boolean
  */
-function isHostPrefixConditionMet(cookie) {
+function isHostPrefixConditionMet(cookie: Cookie) {
   validators.validate(validators.isObject(cookie));
+  const startsWithHostPrefix = typeof cookie.key === 'string' && cookie.key.startsWith("__Host-")
   return (
-    !cookie.key.startsWith("__Host-") ||
+    !startsWithHostPrefix ||
     (cookie.secure &&
       cookie.hostOnly &&
       cookie.path != null &&
@@ -667,7 +695,7 @@ function isHostPrefixConditionMet(cookie) {
 }
 
 // avoid the V8 deoptimization monster!
-function jsonParse(str) {
+function jsonParse(str: string) {
   let obj;
   try {
     obj = JSON.parse(str);
@@ -677,7 +705,7 @@ function jsonParse(str) {
   return obj;
 }
 
-function fromJSON(str) {
+function fromJSON(str: string | SerializedCookie) {
   if (!str || validators.isEmptyString(str)) {
     return null;
   }
@@ -696,6 +724,7 @@ function fromJSON(str) {
   const c = new Cookie();
   for (let i = 0; i < Cookie.serializableProperties.length; i++) {
     const prop = Cookie.serializableProperties[i];
+    // @ts-ignore
     if (obj[prop] === undefined || obj[prop] === cookieDefaults[prop]) {
       continue; // leave as prototype default
     }
@@ -707,6 +736,7 @@ function fromJSON(str) {
         c[prop] = obj[prop] == "Infinity" ? "Infinity" : new Date(obj[prop]);
       }
     } else {
+      // @ts-ignore
       c[prop] = obj[prop];
     }
   }
@@ -723,7 +753,7 @@ function fromJSON(str) {
  *     creation-times."
  */
 
-function cookieCompare(a, b) {
+function cookieCompare(a: Cookie, b: Cookie) {
   validators.validate(validators.isObject(a), a);
   validators.validate(validators.isObject(b), b);
   let cmp = 0;
@@ -737,15 +767,15 @@ function cookieCompare(a, b) {
   }
 
   // ascending for time: a CMP b
-  const aTime = a.creation ? a.creation.getTime() : MAX_TIME;
-  const bTime = b.creation ? b.creation.getTime() : MAX_TIME;
+  const aTime = a.creation && a.creation instanceof Date ? a.creation.getTime() : MAX_TIME;
+  const bTime = b.creation && b.creation instanceof Date ? b.creation.getTime() : MAX_TIME;
   cmp = aTime - bTime;
   if (cmp !== 0) {
     return cmp;
   }
 
   // break ties for the same millisecond (precision of JavaScript's clock)
-  cmp = a.creationIndex - b.creationIndex;
+  cmp = (a.creationIndex ?? 0) - (b.creationIndex ?? 0);
 
   return cmp;
 }
@@ -770,19 +800,20 @@ function permutePath(path: string): string[] {
   return permutations;
 }
 
-function getCookieContext(url) {
-  if (url instanceof Object) {
+function getCookieContext(url: string | URL) {
+  if (url instanceof URL && 'query' in url) {
     return url;
   }
-  // NOTE: decodeURI will throw on malformed URIs (see GH-32).
-  // Therefore, we will just skip decoding for such URIs.
-  try {
-    url = decodeURI(url);
-  } catch (err) {
-    // Silently swallow error
+
+  if (typeof url === 'string') {
+    try {
+      return urlParse(decodeURI(url))
+    } catch {
+      return urlParse(url);
+    }
   }
 
-  return urlParse(url);
+  throw new Error('`url` argument is invalid')
 }
 
 const cookieDefaults = {
@@ -790,44 +821,53 @@ const cookieDefaults = {
   key: "",
   value: "",
   expires: "Infinity",
+  // @ts-ignore
   maxAge: null,
+  // @ts-ignore
   domain: null,
+  // @ts-ignore
   path: null,
   secure: false,
   httpOnly: false,
+  // @ts-ignore
   extensions: null,
   // set by the CookieJar:
+  // @ts-ignore
   hostOnly: null,
+  // @ts-ignore
   pathIsDefault: null,
+  // @ts-ignore
   creation: null,
+  // @ts-ignore
   lastAccessed: null,
   sameSite: "none"
 };
 
 export class Cookie {
-  key: string;
-  value: string;
-  expires: Date | 'Infinity';
-  maxAge: number | 'Infinity' | '-Infinity';
-  domain: string | null;
-  path: string | null;
-  secure: boolean;
-  httpOnly: boolean;
-  extensions: string[] | null;
-  creation: Date | 'Infinity';
-  creationIndex: number;
-  hostOnly: boolean | null;
-  pathIsDefault: boolean | null;
-  lastAccessed: Date | null | 'Infinity';
+  key: string | undefined;
+  value: string | undefined;
+  expires: Date | 'Infinity' | null | undefined;
+  maxAge: number | 'Infinity' | '-Infinity' | undefined;
+  domain: string | null | undefined;
+  path: string | null | undefined;
+  secure: boolean | undefined;
+  httpOnly: boolean | undefined;
+  extensions: string[] | null | undefined;
+  creation: Date | 'Infinity' | null;
+  creationIndex: number | undefined;
+  hostOnly: boolean | null | undefined;
+  pathIsDefault: boolean | null | undefined;
+  lastAccessed: Date | 'Infinity' | null | undefined;
   sameSite: string | undefined;
 
-  constructor(options = {}) {
+  constructor(options: { creation?: Date } = {}) {
     if (util.inspect.custom) {
+      // @ts-ignore
       this[util.inspect.custom] = this.inspect;
     }
 
     Object.assign(this, cookieDefaults, options);
-    this.creation = this.creation || new Date();
+    this.creation = options.creation ?? cookieDefaults.creation ?? new Date();
 
     // used to break creation ties in cookieCompare():
     Object.defineProperty(this, "creationIndex", {
@@ -851,9 +891,10 @@ export class Cookie {
   }
 
   toJSON(): SerializedCookie {
-    const obj = {};
+    const obj: SerializedCookie = {};
 
     for (const prop of Cookie.serializableProperties) {
+      // @ts-ignore
       if (this[prop] === cookieDefaults[prop]) {
         continue; // leave as prototype default
       }
@@ -870,25 +911,29 @@ export class Cookie {
           if (value === 'Infinity') {
             obj[prop] = value
           } else {
-            obj[prop] = value.toISOString()
+            obj[prop] = value && value.toISOString()
           }
         }
       } else if (prop === "maxAge") {
-        if (this[prop] !== null) {
+        const maxAge = this[prop]
+
+        if (maxAge != null) {
           // again, intentionally not ===
           obj[prop] =
-            this[prop] == Infinity || this[prop] == -Infinity
-              ? this[prop].toString()
-              : this[prop];
+            maxAge == Infinity || maxAge == -Infinity
+              ? maxAge.toString()
+              : maxAge;
         }
       } else {
+        // @ts-ignore
         if (this[prop] !== cookieDefaults[prop]) {
+          // @ts-ignore
           obj[prop] = this[prop];
         }
       }
     }
 
-    return <SerializedCookie>obj;
+    return obj;
   }
 
   clone() {
@@ -896,7 +941,7 @@ export class Cookie {
   }
 
   validate() {
-    if (!COOKIE_OCTETS.test(this.value)) {
+    if (this.value == null || !COOKIE_OCTETS.test(this.value)) {
       return false;
     }
     if (
@@ -927,7 +972,7 @@ export class Cookie {
     return true;
   }
 
-  setExpires(exp) {
+  setExpires(exp: string | Date) {
     if (exp instanceof Date) {
       this.expires = exp;
     } else {
@@ -935,9 +980,11 @@ export class Cookie {
     }
   }
 
-  setMaxAge(age) {
-    if (age === Infinity || age === -Infinity) {
-      this.maxAge = age.toString(); // so JSON.stringify() works
+  setMaxAge(age: number) {
+    if (age === Infinity) {
+      this.maxAge = "Infinity";
+    } else if (age === -Infinity) {
+      this.maxAge = '-Infinity';
     } else {
       this.maxAge = age;
     }
@@ -984,8 +1031,13 @@ export class Cookie {
       str += "; HttpOnly";
     }
     if (this.sameSite && this.sameSite !== "none") {
-      const ssCanon = Cookie.sameSiteCanonical[this.sameSite.toLowerCase()];
-      str += `; SameSite=${ssCanon ? ssCanon : this.sameSite}`;
+      if (this.sameSite.toLowerCase() === Cookie.sameSiteCanonical.lax.toLowerCase()) {
+        str += `; SameSite=${Cookie.sameSiteCanonical.lax}`;
+      } else if (this.sameSite.toLowerCase() === Cookie.sameSiteCanonical.strict.toLowerCase()) {
+        str += `; SameSite=${Cookie.sameSiteCanonical.strict}`;
+      } else {
+        str += `; SameSite=${this.sameSite}`;
+      }
     }
     if (this.extensions) {
       this.extensions.forEach(ext => {
@@ -1015,10 +1067,12 @@ export class Cookie {
       return Infinity
     }
 
+    // @ts-ignore
     if (typeof expires === 'string') {
       expires = parseDate(expires)
     }
 
+    // @ts-ignore
     return expires.getTime() - (now || Date.now())
   }
 
@@ -1039,12 +1093,13 @@ export class Cookie {
       return Infinity;
     }
 
+    // @ts-ignore
     return this.expires.getTime();
   }
 
   // expiryDate() replaces the "expiry-time" parts of S5.3 step 3 (setCookie()
   // elsewhere), except it returns a Date
-  expiryDate(now) {
+  expiryDate(now: Date) {
     const millisec = this.expiryTime(now);
     if (millisec == Infinity) {
       return new Date(MAX_TIME);
@@ -1072,11 +1127,11 @@ export class Cookie {
     return this.canonicalizedDomain();
   }
 
-  static parse (cookieString: string, options?): Cookie {
+  static parse (cookieString: string, options?: {}): Cookie | undefined {
     return parse(cookieString, options)
   }
 
-  static fromJSON (jsonString: string): Cookie {
+  static fromJSON (jsonString: string): Cookie | null {
     return fromJSON(jsonString)
   }
 
@@ -1093,10 +1148,25 @@ export class Cookie {
     lax: "Lax"
   }
 
-  static serializableProperties = Object.keys(cookieDefaults)
+  static serializableProperties = [
+    'key',
+    'value',
+    'expires',
+    'maxAge',
+    'domain',
+    'path',
+    'secure',
+    'httpOnly',
+    'extensions',
+    'hostOnly',
+    'pathIsDefault',
+    'creation',
+    'lastAccessed',
+    'sameSite'
+  ]
 }
 
-function getNormalizedPrefixSecurity(prefixSecurity) {
+function getNormalizedPrefixSecurity(prefixSecurity: string) {
   if (prefixSecurity != null) {
     const normalizedPrefixSecurity = prefixSecurity.toLowerCase();
     /* The three supported options */
@@ -1119,11 +1189,11 @@ const defaultSetCookieOptions: SetCookieOptions = {
 }
 
 export function createPromiseCallback<T>(args: IArguments): PromiseCallback<T> {
-  let callback: (error: Error, result: T) => Promise<T>
-  let resolve: (result: T) => void
-  let reject: (error: Error) => void
+  let callback: (error: Error | null | undefined, result: T | undefined) => Promise<T | undefined>
+  let resolve: (result: T | undefined) => void
+  let reject: (error: Error | null) => void
 
-  const promise = new Promise<T>((_resolve, _reject) => {
+  const promise = new Promise<T | undefined>((_resolve, _reject) => {
     resolve = _resolve
     reject = _reject
   })
@@ -1134,7 +1204,7 @@ export function createPromiseCallback<T>(args: IArguments): PromiseCallback<T> {
       try {
         cb(err, result)
       } catch(e) {
-        reject(e)
+        reject(e instanceof Error ? e : new Error(`${e}`))
       }
       return promise
     }
@@ -1143,7 +1213,7 @@ export function createPromiseCallback<T>(args: IArguments): PromiseCallback<T> {
       try {
         err ? reject(err) : resolve(result)
       } catch (e) {
-        reject(e)
+        reject(e instanceof Error ? e : new Error(`${e}`))
       }
       return promise
     }
@@ -1174,27 +1244,30 @@ export class CookieJar {
     this.prefixSecurity = getNormalizedPrefixSecurity(options.prefixSecurity);
   }
 
-  private callSync<T>(fn): T {
+  private callSync<T>(fn: Function): T {
     if (!this.store.synchronous) {
       throw new Error(
         "CookieJar store is not synchronous; use async API instead."
       );
     }
-    let syncErr, syncResult;
+    let syncErr: Error | undefined, syncResult: T;
     fn.call(this, (error: Error, result: T) => {
       syncErr = error
       syncResult = result
     })
-    if (syncErr) throw syncErr;
+    if (syncErr) {
+      throw syncErr;
+    }
+    // @ts-ignore
     return syncResult;
   }
 
-  setCookie(cookie, url: string, callback: Callback<Cookie>): void;
-  setCookie(cookie, url: string, options: SetCookieOptions, callback: Callback<Cookie>): void;
-  setCookie(cookie, url: string): Promise<Cookie>
-  setCookie(cookie, url: string, options: SetCookieOptions): Promise<Cookie>
-  setCookie(cookie, url: string, options: SetCookieOptions | Callback<Cookie>, callback?: Callback<Cookie>): unknown;
-  setCookie(cookie, url: string, options: SetCookieOptions | Callback<Cookie> = defaultSetCookieOptions, callback?: Callback<Cookie>): unknown {
+  setCookie(cookie: string | Cookie, url: string, callback: Callback<Cookie>): void;
+  setCookie(cookie: string | Cookie, url: string, options: SetCookieOptions, callback: Callback<Cookie>): void;
+  setCookie(cookie: string | Cookie, url: string): Promise<Cookie>
+  setCookie(cookie: string | Cookie, url: string, options: SetCookieOptions): Promise<Cookie>
+  setCookie(cookie: string | Cookie, url: string, options: SetCookieOptions | Callback<Cookie>, callback?: Callback<Cookie>): unknown;
+  setCookie(cookie: string | Cookie, url: string, options: SetCookieOptions | Callback<Cookie> = defaultSetCookieOptions, callback?: Callback<Cookie>): unknown {
     const promiseCallback = createPromiseCallback<Cookie>(arguments)
     const cb = promiseCallback.callback
 
@@ -1229,11 +1302,12 @@ export class CookieJar {
 
     // S5.3 step 1
     if (typeof cookie === "string" || cookie instanceof String) {
-      cookie = Cookie.parse(cookie.toString(), {loose: loose});
-      if (!cookie) {
+      const parsedCookie = Cookie.parse(cookie.toString(), {loose: loose});
+      if (!parsedCookie) {
         err = new Error("Cookie failed to parse");
         return cb(options.ignoreError ? null : err);
       }
+      cookie = parsedCookie
     } else if (!(cookie instanceof Cookie)) {
       // If you're seeing this error, and are passing in a Cookie object,
       // it *might* be a Cookie object from another loaded version of tough-cookie.
@@ -1253,23 +1327,32 @@ export class CookieJar {
     // S5.3 step 5: public suffixes
     if (this.rejectPublicSuffixes && cookie.domain) {
       try {
-        const suffix = pubsuffix.getPublicSuffix(cookie.cdomain(), {
+        const cdomain = cookie.cdomain()
+        const suffix = typeof cdomain === 'string' ? pubsuffix.getPublicSuffix(cdomain, {
           allowSpecialUseDomain: this.allowSpecialUseDomain,
           ignoreError: options.ignoreError
-        });
+        }) : null;
         if (suffix == null && !IP_V6_REGEX_OBJECT.test(cookie.domain)) {
           // e.g. "com"
           err = new Error("Cookie has domain set to a public suffix");
           return cb(options.ignoreError ? null : err);
         }
       } catch (err) {
-        return cb(options.ignoreError ? null : err)
+        if (options.ignoreError) {
+          return cb(null)
+        } else {
+          if (err instanceof Error) {
+            return cb(err)
+          } else {
+            return cb(null)
+          }
+        }
       }
     }
 
     // S5.3 step 6:
     if (cookie.domain) {
-      if (!domainMatch(host, cookie.cdomain(), false)) {
+      if (!domainMatch(host ?? undefined, cookie.cdomain() ?? undefined, false)) {
         err = new Error(
           `Cookie not in this host's domain. Cookie:${cookie.cdomain()} Request:${host}`
         );
@@ -1289,7 +1372,7 @@ export class CookieJar {
     //attribute-value is not %x2F ("/"):
     //Let cookie-path be the default-path.
     if (!cookie.path || cookie.path[0] !== "/") {
-      cookie.path = defaultPath(context.pathname);
+      cookie.path = defaultPath(context.pathname ?? undefined);
       cookie.pathIsDefault = true;
     }
 
@@ -1348,18 +1431,30 @@ export class CookieJar {
 
     if (!store.updateCookie) {
       store.updateCookie = function (oldCookie: Cookie, newCookie: Cookie, cb?: Callback<void>): Promise<void> {
-        return this.putCookie(newCookie, cb);
+        return this.putCookie(newCookie).then(
+          () => {
+            if (cb) {
+              cb(undefined, undefined)
+            }
+          },
+          (error: Error) => {
+            if (cb) {
+              cb(error, undefined)
+            }
+          }
+        );
       };
     }
 
-    function withCookie(err, oldCookie) {
+    function withCookie(err: Error | undefined, oldCookie: Cookie | undefined | null): void {
       if (err) {
-        return cb(err);
+        cb(err);
+        return
       }
 
-      const next = function (err) {
-        if (err) {
-          return cb(err);
+      const next = function (err: Error | undefined): void {
+        if (err || typeof cookie === 'string') {
+          cb(err);
         } else {
           cb(null, cookie);
         }
@@ -1371,30 +1466,37 @@ export class CookieJar {
         if ('http' in options && options.http === false && oldCookie.httpOnly) {
           // step 11.2
           err = new Error("old Cookie is HttpOnly and this isn't an HTTP API");
-          return cb(options.ignoreError ? null : err);
+          cb(options.ignoreError ? null : err);
+          return
         }
-        cookie.creation = oldCookie.creation; // step 11.3
-        cookie.creationIndex = oldCookie.creationIndex; // preserve tie-breaker
-        cookie.lastAccessed = now;
-        // Step 11.4 (delete cookie) is implied by just setting the new one:
-        store.updateCookie(oldCookie, cookie, next); // step 12
+        if (cookie instanceof Cookie) {
+          cookie.creation = oldCookie.creation;
+          // step 11.3
+          cookie.creationIndex = oldCookie.creationIndex;
+          // preserve tie-breaker
+          cookie.lastAccessed = now;
+          // Step 11.4 (delete cookie) is implied by just setting the new one:
+          store.updateCookie(oldCookie, cookie, next); // step 12
+        }
       } else {
-        cookie.creation = cookie.lastAccessed = now;
-        store.putCookie(cookie, next); // step 12
+        if (cookie instanceof Cookie) {
+          cookie.creation = cookie.lastAccessed = now;
+          store.putCookie(cookie, next); // step 12
+        }
       }
     }
 
     store.findCookie(cookie.domain, cookie.path, cookie.key, withCookie);
     return promiseCallback.promise
-  // }
   }
-  setCookieSync(cookie, url: string, options?: SetCookieOptions): Cookie {
-    return this.callSync<Cookie>(this.setCookie.bind(this, cookie, url, options))
+  setCookieSync(cookie: string | Cookie, url: string, options?: SetCookieOptions): Cookie {
+    const setCookieFn = this.setCookie.bind(this, cookie, url, options ?? defaultSetCookieOptions)
+    return this.callSync<Cookie>(setCookieFn)
   }
 
   // RFC6365 S5.4
-  getCookies(url: string, callback: Callback<Cookie[]>);
-  getCookies(url: string, options: any, callback: Callback<Cookie[]>)
+  getCookies(url: string, callback: Callback<Cookie[]>): void;
+  getCookies(url: string, options: any, callback: Callback<Cookie[]>): void
   getCookies(url: string): Promise<Cookie[]>
   getCookies(url: string, options: any): Promise<Cookie[]>
   getCookies(url: string, options: any, callback?: (error: Error, result: Cookie[]) => void): unknown;
@@ -1424,7 +1526,10 @@ export class CookieJar {
 
     let sameSiteLevel = 0;
     if (options.sameSiteContext) {
-      const sameSiteContext = checkSameSiteContext(options.sameSiteContext);
+      const sameSiteContext = checkSameSiteContext(options.sameSiteContext)
+      if (sameSiteContext == null) {
+        return cb(new Error(SAME_SITE_CONTEXT_VAL_ERR));
+      }
       sameSiteLevel = Cookie.sameSiteLevel[sameSiteContext];
       if (!sameSiteLevel) {
         return cb(new Error(SAME_SITE_CONTEXT_VAL_ERR));
@@ -1441,7 +1546,7 @@ export class CookieJar {
     const allPaths = !!options.allPaths;
     const store = this.store;
 
-    function matchingCookie(c) {
+    function matchingCookie(c: Cookie) {
       // "Either:
       //   The cookie's host-only-flag is true and the canonicalized
       //   request-host is identical to the cookie's domain.
@@ -1453,13 +1558,13 @@ export class CookieJar {
           return false;
         }
       } else {
-        if (!domainMatch(host, c.domain, false)) {
+        if (!domainMatch(host ?? undefined, c.domain ?? undefined, false)) {
           return false;
         }
       }
 
       // "The request-uri's path path-matches the cookie's path."
-      if (!allPaths && !pathMatch(path, c.path)) {
+      if (!allPaths && typeof c.path === 'string' && !pathMatch(path, c.path)) {
         return false;
       }
 
@@ -1477,7 +1582,14 @@ export class CookieJar {
 
       // RFC6265bis-02 S5.3.7
       if (sameSiteLevel) {
-        const cookieLevel = Cookie.sameSiteLevel[c.sameSite || "none"];
+        let cookieLevel: number
+        if (c.sameSite === 'lax') {
+          cookieLevel = Cookie.sameSiteLevel.lax
+        } else if (c.sameSite === 'strict') {
+          cookieLevel = Cookie.sameSiteLevel.strict
+        } else {
+          cookieLevel = Cookie.sameSiteLevel.none
+        }
         if (cookieLevel > sameSiteLevel) {
           // only allow cookies at or below the request level
           return false;
@@ -1498,9 +1610,15 @@ export class CookieJar {
       host,
       allPaths ? null : path,
       this.allowSpecialUseDomain,
-      (err, cookies) => {
+      (err, cookies): void  => {
         if (err) {
-          return cb(err);
+          cb(err);
+          return
+        }
+
+        if (cookies == null) {
+          cb(undefined, [])
+          return
         }
 
         cookies = cookies.filter(matchingCookie);
@@ -1528,9 +1646,9 @@ export class CookieJar {
   }
 
   getCookieString(url: string, options: any, callback: (error: Error, result: string) => void): void;
-  getCookieString(url, callback: (error: Error, result: string) => void): void;
-  getCookieString(url): Promise<string>;
-  getCookieString(url, options: any): Promise<string>;
+  getCookieString(url: string, callback: (error: Error, result: string) => void): void;
+  getCookieString(url: string): Promise<string>;
+  getCookieString(url: string, options: any): Promise<string>;
   getCookieString(url: string, options: any, callback?: (error: Error, result: string) => void): unknown;
   getCookieString(url: string, options: any = {}, callback?: (error: Error, result: string) => void): unknown {
     const promiseCallback = createPromiseCallback<string>(arguments)
@@ -1592,7 +1710,7 @@ export class CookieJar {
     const cb = promiseCallback.callback
 
     validators.validate(validators.isFunction(cb), cb);
-    let type = this.store.constructor.name;
+    let type: string | null = this.store.constructor.name;
     if (validators.isObject(type)) {
       type = null;
     }
@@ -1608,9 +1726,9 @@ export class CookieJar {
       storeType: type,
 
       // CookieJar configuration:
-      rejectPublicSuffixes: !!this.rejectPublicSuffixes,
-      enableLooseMode: !!this.enableLooseMode,
-      allowSpecialUseDomain: !!this.allowSpecialUseDomain,
+      rejectPublicSuffixes: this.rejectPublicSuffixes,
+      enableLooseMode: this.enableLooseMode,
+      allowSpecialUseDomain: this.allowSpecialUseDomain,
       prefixSecurity: getNormalizedPrefixSecurity(this.prefixSecurity),
 
       // this gets filled from getAllCookies:
@@ -1633,6 +1751,10 @@ export class CookieJar {
     this.store.getAllCookies((err, cookies) => {
       if (err) {
         return cb(err);
+      }
+
+      if (cookies == null) {
+        return cb(undefined, serialized)
       }
 
       serialized.cookies = cookies.map(cookie => {
@@ -1659,16 +1781,16 @@ export class CookieJar {
   }
 
   // use the class method CookieJar.deserialize instead of calling this directly
-  _importCookies(serialized, cb) {
+  _importCookies(serialized: { cookies: any; }, cb: Callback<CookieJar>) {
     let cookies = serialized.cookies;
     if (!cookies || !Array.isArray(cookies)) {
-      return cb(new Error("serialized jar has no cookies array"));
+      return cb(new Error("serialized jar has no cookies array"), undefined);
     }
     cookies = cookies.slice(); // do not modify the original
 
-    const putNext = (err?: Error) => {
+    const putNext = (err?: Error): void => {
       if (err) {
-        return cb(err);
+        return cb(err, undefined);
       }
 
       if (!cookies.length) {
@@ -1679,11 +1801,11 @@ export class CookieJar {
       try {
         cookie = fromJSON(cookies.shift());
       } catch (e) {
-        return cb(e);
+        return cb(e instanceof Error ? e : new Error(`${e}`), undefined);
       }
 
       if (cookie === null) {
-        return putNext(null); // skip this cookie
+        return putNext(undefined); // skip this cookie
       }
 
       this.store.putCookie(cookie, putNext);
@@ -1692,7 +1814,7 @@ export class CookieJar {
     putNext();
   }
 
-  _importCookiesSync (serialized): void {
+  _importCookiesSync (serialized: any): void {
     this.callSync(this._importCookies.bind(this, serialized))
   }
 
@@ -1702,7 +1824,7 @@ export class CookieJar {
   clone(newStore: Store): Promise<CookieJar>;
   clone(newStore?: Store | Callback<CookieJar>, callback?: Callback<CookieJar>): unknown {
     if (typeof newStore === 'function') {
-      newStore = null;
+      newStore = undefined;
     }
 
     const promiseCallback = createPromiseCallback<CookieJar>(arguments)
@@ -1712,18 +1834,21 @@ export class CookieJar {
       if (err) {
         return cb(err);
       }
-      return CookieJar.deserialize(serialized, newStore, cb);
+      return CookieJar.deserialize(serialized ?? "", newStore, cb);
     });
 
     return promiseCallback.promise
   }
 
-  _cloneSync(newStore?): CookieJar {
-    return this.callSync(this.clone.bind(this, newStore))
+  _cloneSync(newStore?: Store): CookieJar {
+    const cloneFn = newStore && typeof newStore !== 'function' ?
+      this.clone.bind(this, newStore) :
+      this.clone.bind(this)
+    return this.callSync(cloneFn)
   }
 
   cloneSync(newStore?: Store): CookieJar {
-    if (arguments.length === 0) {
+    if (!newStore) {
       return this._cloneSync();
     }
     if (!newStore.synchronous) {
@@ -1754,27 +1879,34 @@ export class CookieJar {
       return promiseCallback.promise
     }
 
-    store.getAllCookies((err, cookies) => {
+    store.getAllCookies((err, cookies): void => {
       if (err) {
-        return cb(err);
+        cb(err);
+        return
+      }
+
+      if (!cookies) {
+        cookies = []
       }
 
       if (cookies.length === 0) {
-        return cb(null);
+        cb(null);
+        return
       }
 
       let completedCount = 0;
-      const removeErrors = [];
+      const removeErrors: Error[] = [];
 
-      function removeCookieCb(removeErr) {
+      function removeCookieCb(removeErr: Error | undefined) {
         if (removeErr) {
           removeErrors.push(removeErr);
         }
 
         completedCount++;
 
-        if (completedCount === cookies.length) {
-          return cb(removeErrors.length ? removeErrors[0] : null);
+        if (completedCount === cookies?.length) {
+          cb(removeErrors.length ? removeErrors[0] : null);
+          return
         }
       }
 
@@ -1801,7 +1933,7 @@ export class CookieJar {
   static deserialize(strOrObj: string | object, store?: Store | Callback<CookieJar>, callback?: Callback<CookieJar>): unknown;
   static deserialize(strOrObj: string | object, store?: Store | Callback<CookieJar>, callback?: Callback<CookieJar>): unknown {
     if (typeof store === 'function') {
-      store = null;
+      store = undefined;
     }
 
     const promiseCallback = createPromiseCallback<CookieJar>(arguments)
@@ -1833,7 +1965,7 @@ export class CookieJar {
     return promiseCallback.promise
   }
 
-  static deserializeSync(strOrObj, store?: Store): CookieJar {
+  static deserializeSync(strOrObj: string | SerializedCookieJar, store?: Store): CookieJar {
     const serialized =
       typeof strOrObj === "string" ? JSON.parse(strOrObj) : strOrObj;
     const jar = new CookieJar(store, {
@@ -1887,23 +2019,23 @@ type SetCookieOptions = {
 }
 
 interface PromiseCallback<T> {
-  promise: Promise<T>;
-  callback: (error?: Error, result?: T) => Promise<T>;
+  promise: Promise<T | undefined>;
+  callback: (error: Error | undefined | null, result?: T) => Promise<T | undefined>;
 }
 
 export interface SerializedCookieJar {
   version: string;
-  storeType: string;
+  storeType: string | null;
   rejectPublicSuffixes: boolean;
   [key: string]: any;
   cookies: SerializedCookie[];
 }
 
 export interface SerializedCookie {
-  key: string;
-  value: string;
+  key?: string;
+  value?: string;
   [key: string]: any;
 }
 
-export type Callback<T> = (error: Error, result: T) => void
+export type Callback<T> = (error: Error | undefined, result: T | undefined) => void
 export type ErrorCallback = (error: Error) => void

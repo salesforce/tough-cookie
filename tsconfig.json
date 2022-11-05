@@ -6,7 +6,11 @@
     "target": "es5",
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "strict": false
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
   },
   "include": ["./lib/**/*"]
 }

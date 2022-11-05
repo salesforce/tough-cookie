@@ -40,15 +40,15 @@ export class Store {
     this.synchronous = false;
   }
 
-  findCookie(domain: string, path: string, key: string): Promise<Cookie>
-  findCookie(domain: string, path: string, key: string, callback: Callback<Cookie>): void
-  findCookie(domain: string, path: string, key: string, callback?: Callback<Cookie>): unknown {
+  findCookie(domain: string | null, path: string | null, key: string | undefined): Promise<Cookie | null | undefined>
+  findCookie(domain: string | null, path: string | null, key: string | undefined, callback: Callback<Cookie | null | undefined>): void
+  findCookie(domain: string | null, path: string | null, key: string | undefined, callback?: Callback<Cookie | null | undefined>): unknown {
     throw new Error("findCookie is not implemented");
   }
 
-  findCookies(domain: string, path: string, allowSpecialUseDomain?: boolean): Promise<Cookie[]>
-  findCookies(domain: string, path: string, allowSpecialUseDomain?: boolean, callback?: Callback<Cookie[]>): void
-  findCookies(domain: string, path: string, allowSpecialUseDomain: boolean | Callback<Cookie[]> = false, callback?: Callback<Cookie[]>): unknown {
+  findCookies(domain: string | null, path: string | null, allowSpecialUseDomain?: boolean): Promise<Cookie[]>
+  findCookies(domain: string | null, path: string | null, allowSpecialUseDomain?: boolean, callback?: Callback<Cookie[]>): void
+  findCookies(domain: string | null, path: string | null, allowSpecialUseDomain: boolean | Callback<Cookie[]> = false, callback?: Callback<Cookie[]>): unknown {
     throw new Error("findCookies is not implemented");
   }
 
@@ -67,9 +67,9 @@ export class Store {
     throw new Error("updateCookie is not implemented");
   }
 
-  removeCookie(domain: string, path: string, key: string): Promise<void>
-  removeCookie(domain: string, path: string, key: string, callback: Callback<void>): void
-  removeCookie(domain: string, path: string, key: string, callback?: Callback<void>): unknown {
+  removeCookie(domain: string | null | undefined, path: string | null | undefined, key: string | null | undefined): Promise<void>
+  removeCookie(domain: string | null | undefined, path: string | null | undefined, key: string | null | undefined, callback: Callback<void>): void
+  removeCookie(domain: string | null | undefined, path: string | null | undefined, key: string | null | undefined, callback?: Callback<void>): unknown {
     throw new Error("removeCookie is not implemented");
   }
 
