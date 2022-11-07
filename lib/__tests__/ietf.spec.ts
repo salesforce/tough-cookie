@@ -55,7 +55,9 @@ describe('IETF http state tests', () => {
       expect(actual.length).toBe(expected.length)
       actual.forEach((actualCookie, idx) => {
         const expectedCookie = expected[idx];
+        // @ts-ignore
         expect(actualCookie.key).toBe(expectedCookie.name)
+        // @ts-ignore
         expect(actualCookie.value).toBe(expectedCookie.value)
       });
     })

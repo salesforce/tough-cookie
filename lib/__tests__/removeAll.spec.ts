@@ -34,7 +34,7 @@ describe('store removeAllCookies API', () => {
       spy.mockImplementationOnce((domain, path, key, callback) => _removeCookie.call(store, domain, path, key, callback))
       spy.mockImplementationOnce((domain, path, key, callback) => _removeCookie.call(store, domain, path, key, callback))
       spy.mockImplementationOnce((domain, path, key, callback) => _removeCookie.call(store, domain, path, key, callback))
-      spy.mockImplementationOnce((domain, path, key, callback) => callback(new Error('something happened 4')))
+      spy.mockImplementationOnce((_domain, _path, _key, callback) => callback(new Error('something happened 4')))
 
       await expect(jar.removeAllCookies())
         .rejects
@@ -113,14 +113,14 @@ class StoreWithoutRemoveAll extends Store {
 
   override findCookie(domain: string, path: string, key: string): Promise<Cookie>
   override findCookie(domain: string, path: string, key: string, callback: Callback<Cookie>): void
-  override findCookie(domain: string, path: string, key: string, callback?: Callback<Cookie>): unknown {
+  override findCookie(_domain: string, _path: string, _key: string, callback?: Callback<Cookie>): unknown {
     // @ts-ignore
     return callback(null, null);
   }
 
   override findCookies(domain: string, path: string, allowSpecialUseDomain?: boolean): Promise<Cookie[]>
   override findCookies(domain: string, path: string, allowSpecialUseDomain?: boolean, callback?: Callback<Cookie[]>): void
-  override findCookies(domain: string, path: string, allowSpecialUseDomain: boolean | Callback<Cookie[]> = false, callback?: Callback<Cookie[]>): unknown {
+  override findCookies(_domain: string, _path: string, _allowSpecialUseDomain: boolean | Callback<Cookie[]> = false, callback?: Callback<Cookie[]>): unknown {
     // @ts-ignore
     return callback(null, []);
   }
@@ -144,7 +144,7 @@ class StoreWithoutRemoveAll extends Store {
 
   override removeCookie(domain: string, path: string, key: string): Promise<void>
   override removeCookie(domain: string, path: string, key: string, callback: Callback<void>): void
-  override removeCookie(domain: string, path: string, key: string, callback?: Callback<void>): unknown {
+  override removeCookie(_domain: string, _path: string, _key: string, callback?: Callback<void>): unknown {
     this.stats.remove++;
     // @ts-ignore
     return callback(null, null);

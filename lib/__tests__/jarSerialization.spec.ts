@@ -270,7 +270,9 @@ describe('cookieJar serialization', () => {
           key: 'max'
         })
       ])
+      // @ts-ignore
       expect(cookies[0].TTL(Date.now())).toBe(Infinity)
+      // @ts-ignore
       expect(cookies[1].TTL(Date.now())).toBe(3600 * 1000)
     })
   })

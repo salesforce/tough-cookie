@@ -167,7 +167,11 @@ function parseTime(token: string) {
     // followed by "( non-digit *OCTET )" therefore the last time-field can
     // have a trailer
     const trailingOK = i == 2;
-    const num = parseDigits(parts[i], 1, 2, trailingOK);
+    const numPart = parts[i]
+    if (numPart == null) {
+      return null
+    }
+    const num = parseDigits(numPart, 1, 2, trailingOK);
     if (num === null) {
       return null;
     }
@@ -223,7 +227,7 @@ function parseDate(str: string | undefined | null): Date | undefined {
   let year = null;
 
   for (let i = 0; i < tokens.length; i++) {
-    const token = tokens[i].trim();
+    const token = (tokens[i] ?? "").trim();
     if (!token.length) {
       continue;
     }
@@ -313,15 +317,15 @@ function parseDate(str: string | undefined | null): Date | undefined {
    */
   if (
     dayOfMonth === null ||
-    month === null ||
-    year === null ||
-    second === null ||
+    month == null ||
+    year == null ||
+    hour == null ||
+    minute == null ||
+    second == null ||
     dayOfMonth < 1 ||
     dayOfMonth > 31 ||
     year < 1601 ||
-    hour === null ||
     hour > 23 ||
-    minute === null ||
     minute > 59 ||
     second > 59
   ) {
@@ -452,7 +456,8 @@ function defaultPath(path?: string): string {
 function trimTerminator(str: string) {
   if (validators.isEmptyString(str)) return str;
   for (let t = 0; t < TERMINATORS.length; t++) {
-    const terminatorIdx = str.indexOf(TERMINATORS[t]);
+    const terminator = TERMINATORS[t]
+    const terminatorIdx = terminator ? str.indexOf(terminator) : -1;
     if (terminatorIdx !== -1) {
       str = str.substr(0, terminatorIdx);
     }
@@ -1422,7 +1427,7 @@ export class CookieJar {
     const store = this.store;
 
     if (!store.updateCookie) {
-      store.updateCookie = function (oldCookie: Cookie, newCookie: Cookie, cb?: Callback<void>): Promise<void> {
+      store.updateCookie = function (_oldCookie: Cookie, newCookie: Cookie, cb?: Callback<void>): Promise<void> {
         return this.putCookie(newCookie).then(
           () => {
             if (cb) {
@@ -1492,7 +1497,7 @@ export class CookieJar {
   getCookies(url: string): Promise<Cookie[]>
   getCookies(url: string, options: any): Promise<Cookie[]>
   getCookies(url: string, options: any, callback?: (error: Error, result: Cookie[]) => void): unknown;
-  getCookies(url: string, options: any = {}, callback?: (error: Error, result: Cookie[]) => void): unknown {
+  getCookies(url: string, options: any = {}, _callback?: (error: Error, result: Cookie[]) => void): unknown {
     const promiseCallback = createPromiseCallback<Cookie[]>(arguments)
     const cb = promiseCallback.callback
 
@@ -1642,7 +1647,7 @@ export class CookieJar {
   getCookieString(url: string): Promise<string>;
   getCookieString(url: string, options: any): Promise<string>;
   getCookieString(url: string, options: any, callback?: (error: Error, result: string) => void): unknown;
-  getCookieString(url: string, options: any = {}, callback?: (error: Error, result: string) => void): unknown {
+  getCookieString(url: string, options: any = {}, _callback?: (error: Error, result: string) => void): unknown {
     const promiseCallback = createPromiseCallback<string>(arguments)
 
     const next = function(err: Error, cookies: Cookie[]) {
@@ -1671,7 +1676,7 @@ export class CookieJar {
   getSetCookieStrings (url: string): Promise<string[]>
   getSetCookieStrings (url: string, options: any): Promise<string[]>
   getSetCookieStrings (url: string, options: any, callback?: Callback<string[]>): unknown;
-  getSetCookieStrings (url: string, options: any = {}, callback?: Callback<string[]>): unknown {
+  getSetCookieStrings (url: string, options: any = {}, _callback?: Callback<string[]>): unknown {
     const promiseCallback = createPromiseCallback<string[]>(arguments)
 
     const next = function(err: Error, cookies: Cookie[]) {
@@ -1697,7 +1702,7 @@ export class CookieJar {
   serialize(callback: Callback<SerializedCookieJar>): void;
   serialize(): Promise<SerializedCookieJar>;
   serialize(callback?: Callback<SerializedCookieJar>): unknown;
-  serialize(callback?: Callback<SerializedCookieJar>): unknown {
+  serialize(_callback?: Callback<SerializedCookieJar>): unknown {
     const promiseCallback = createPromiseCallback<SerializedCookieJar>(arguments)
     const cb = promiseCallback.callback
 
@@ -1814,7 +1819,7 @@ export class CookieJar {
   clone(newStore: Store, callback: Callback<CookieJar>): void;
   clone(): Promise<CookieJar>;
   clone(newStore: Store): Promise<CookieJar>;
-  clone(newStore?: Store | Callback<CookieJar>, callback?: Callback<CookieJar>): unknown {
+  clone(newStore?: Store | Callback<CookieJar>, _callback?: Callback<CookieJar>): unknown {
     if (typeof newStore === 'function') {
       newStore = undefined;
     }
@@ -1854,7 +1859,7 @@ export class CookieJar {
   removeAllCookies(callback: ErrorCallback): void;
   removeAllCookies(): Promise<void>;
   removeAllCookies(callback?: ErrorCallback): unknown;
-  removeAllCookies(callback?: ErrorCallback): unknown {
+  removeAllCookies(_callback?: ErrorCallback): unknown {
     const promiseCallback = createPromiseCallback<void>(arguments)
     const cb = promiseCallback.callback
 
@@ -1923,7 +1928,7 @@ export class CookieJar {
   static deserialize(strOrObj: string | object): Promise<CookieJar>;
   static deserialize(strOrObj: string | object, store: Store): Promise<CookieJar>;
   static deserialize(strOrObj: string | object, store?: Store | Callback<CookieJar>, callback?: Callback<CookieJar>): unknown;
-  static deserialize(strOrObj: string | object, store?: Store | Callback<CookieJar>, callback?: Callback<CookieJar>): unknown {
+  static deserialize(strOrObj: string | object, store?: Store | Callback<CookieJar>, _callback?: Callback<CookieJar>): unknown {
     if (typeof store === 'function') {
       store = undefined;
     }
@@ -2003,11 +2008,11 @@ export { PrefixSecurityEnum as PrefixSecurityEnum }
 export { ParameterError as ParameterError }
 
 type SetCookieOptions = {
-  loose?: boolean;
-  sameSiteContext?: 'strict' | 'lax' | 'none';
-  ignoreError?: boolean;
-  http?: boolean;
-  now?: Date;
+  loose?: boolean | undefined;
+  sameSiteContext?: 'strict' | 'lax' | 'none' | undefined;
+  ignoreError?: boolean | undefined;
+  http?: boolean | undefined;
+  now?: Date | undefined;
 }
 
 interface PromiseCallback<T> {

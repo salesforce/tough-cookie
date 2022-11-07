@@ -46,7 +46,7 @@ describe('CookieJar', () => {
 
     apiVariants('should resolve to a Cookie', {
       callbackStyle (done) {
-        cookieJar.setCookie("foo=bar", "http://example.com", (error, result) => {
+        cookieJar.setCookie("foo=bar", "http://example.com", (_error, result) => {
           if (result == null) {
             throw new Error('should not be null')
           }
@@ -255,7 +255,7 @@ describe('CookieJar', () => {
 
       apiVariants('resolves to an array of cookies', {
         callbackStyle(done) {
-          cookieJar.getCookies("http://example.com", (error, result) => {
+          cookieJar.getCookies("http://example.com", (_error, result) => {
             cookies = result
             done()
           })
@@ -581,7 +581,7 @@ describe('CookieJar', () => {
 
       apiVariants('resolves to a string', {
         callbackStyle(done) {
-          cookieJar.getCookieString("http://example.com", (err, result) => {
+          cookieJar.getCookieString("http://example.com", (_err, result) => {
             cookieString = result
             done()
           })
@@ -646,7 +646,7 @@ describe('CookieJar', () => {
 
       apiVariants('resolves to an array of strings', {
         callbackStyle(done) {
-          cookieJar.getSetCookieStrings("http://example.com", (error, result) => {
+          cookieJar.getSetCookieStrings("http://example.com", (_error, result) => {
             // @ts-ignore
             cookieHeaders = result
             done()
@@ -734,7 +734,7 @@ describe('CookieJar', () => {
 
     apiVariants('resolves to an array of strings', {
       callbackStyle(done) {
-        cookieJar.serialize((error, result) => {
+        cookieJar.serialize((_error, result) => {
           // @ts-ignore
           data = result
           done()
@@ -1006,7 +1006,7 @@ function createCookie(
   return cookie
 }
 
-function apiVariants<T> (testName: string, apiVariants: ApiVariants, assertions: () => Promise<void>) {
+function apiVariants (testName: string, apiVariants: ApiVariants, assertions: () => Promise<void>) {
   it(`${testName} (callback)`, async () => {
     await new Promise(resolve => apiVariants.callbackStyle(() => resolve(undefined)))
     await assertions()

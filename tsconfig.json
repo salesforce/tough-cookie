@@ -11,6 +11,14 @@
     "noImplicitThis": true,
     "noImplicitOverride": true,
     "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noUncheckedIndexedAccess": true,
+    "importsNotUsedAsValues": "error",
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    "exactOptionalPropertyTypes": true
   },
   "include": ["./lib/**/*"]
 }

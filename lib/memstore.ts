@@ -59,27 +59,35 @@ export class MemoryCookieStore extends Store {
 
   override findCookie(domain: string | null, path: string | null, key: string | undefined): Promise<Cookie | null | undefined>
   override findCookie(domain: string | null, path: string | null, key: string | undefined, callback: Callback<Cookie | null | undefined>): void
-  override findCookie(domain: string | null, path: string | null, key: string | undefined, callback?: Callback<Cookie | null | undefined>): unknown {
+  override findCookie(domain: string | null, path: string | null, key: string | undefined, _callback?: Callback<Cookie | null | undefined>): unknown {
     const promiseCallback = createPromiseCallback(arguments)
     const cb = promiseCallback.callback
 
-    if (domain == null || !this.idx[domain]) {
+    if (domain == null || path == null) {
+      return cb(null, undefined)
+    }
+
+    const domainEntry = this.idx[domain]
+    if (!domainEntry) {
       return cb(null, undefined);
     }
-    if (path == null || !this.idx[domain][path]) {
+
+    const pathEntry = domainEntry[path]
+    if (!pathEntry) {
       return cb(null, undefined);
     }
+
     if (key == null) {
       return cb(null, null);
     }
 
-    cb(null, this.idx[domain][path][key] || null);
+    cb(null, pathEntry[key] || null);
     return promiseCallback.promise
   }
 
   override findCookies(domain: string, path: string, allowSpecialUseDomain?: boolean): Promise<Cookie[]>
   override findCookies(domain: string, path: string, allowSpecialUseDomain?: boolean, callback?: Callback<Cookie[]>): void
-  override findCookies(domain: string, path: string, allowSpecialUseDomain: boolean | Callback<Cookie[]> = false, callback?: Callback<Cookie[]>): unknown {
+  override findCookies(domain: string, path: string, allowSpecialUseDomain: boolean | Callback<Cookie[]> = false, _callback?: Callback<Cookie[]>): unknown {
     if (typeof allowSpecialUseDomain === "function") {
       allowSpecialUseDomain = false;
     }
@@ -134,7 +142,7 @@ export class MemoryCookieStore extends Store {
 
   override putCookie(cookie: Cookie): Promise<void>
   override putCookie(cookie: Cookie, callback: Callback<void>): void;
-  override putCookie(cookie: Cookie, callback?: Callback<void>): unknown {
+  override putCookie(cookie: Cookie, _callback?: Callback<void>): unknown {
     const promiseCallback = createPromiseCallback<void>(arguments)
     const cb = promiseCallback.callback
 
@@ -144,13 +152,14 @@ export class MemoryCookieStore extends Store {
       return promiseCallback.promise
     }
 
-    if (!this.idx[domain]) {
-      this.idx[domain] = {};
-    }
-    if (!this.idx[domain][path]) {
-      this.idx[domain][path] = {};
-    }
-    this.idx[domain][path][key] = cookie;
+    const domainEntry: { [key: string]: any } = this.idx[domain] ?? {}
+    this.idx[domain] = domainEntry
+
+    const pathEntry: { [key: string]: any } = domainEntry[path] ?? {}
+    domainEntry[path] = pathEntry
+
+    pathEntry[key] = cookie
+
     cb(null, undefined);
 
     return promiseCallback.promise
@@ -158,7 +167,7 @@ export class MemoryCookieStore extends Store {
 
   override updateCookie(oldCookie: Cookie, newCookie: Cookie): Promise<void>
   override updateCookie(oldCookie: Cookie, newCookie: Cookie, callback: Callback<void>): void;
-  override updateCookie(oldCookie: Cookie, newCookie: Cookie, callback?: Callback<void>): unknown {
+  override updateCookie(_oldCookie: Cookie, newCookie: Cookie, callback?: Callback<void>): unknown {
     // this seems wrong but it stops typescript from complaining and all the test pass...
     callback = callback ?? function() {}
 
@@ -170,16 +179,19 @@ export class MemoryCookieStore extends Store {
 
   override removeCookie(domain: string, path: string, key: string): Promise<void>
   override removeCookie(domain: string, path: string, key: string, callback: Callback<void>): void
-  override removeCookie(domain: string, path: string, key: string, callback?: Callback<void>): unknown {
+  override removeCookie(domain: string, path: string, key: string, _callback?: Callback<void>): unknown {
     const promiseCallback = createPromiseCallback<void>(arguments)
     const cb = promiseCallback.callback
 
-    if (
-      this.idx[domain] &&
-      this.idx[domain][path] &&
-      this.idx[domain][path][key]
-    ) {
-      delete this.idx[domain][path][key];
+    const domainEntry = this.idx[domain]
+    if (domainEntry) {
+      const pathEntry = domainEntry[path]
+      if (pathEntry) {
+        const keyEntry = pathEntry[key]
+        if (keyEntry) {
+          delete pathEntry[key]
+        }
+      }
     }
 
     cb(null, undefined);
@@ -188,13 +200,14 @@ export class MemoryCookieStore extends Store {
 
   override removeCookies(domain: string, path: string): Promise<void>
   override removeCookies(domain: string, path: string, callback: Callback<void>): void
-  override removeCookies(domain: string, path: string, callback?: Callback<void>): unknown {
+  override removeCookies(domain: string, path: string, _callback?: Callback<void>): unknown {
     const promiseCallback = createPromiseCallback<void>(arguments)
     const cb = promiseCallback.callback
 
-    if (this.idx[domain]) {
+    const domainEntry = this.idx[domain]
+    if (domainEntry) {
       if (path) {
-        delete this.idx[domain][path];
+        delete domainEntry[path];
       } else {
         delete this.idx[domain];
       }
@@ -206,7 +219,7 @@ export class MemoryCookieStore extends Store {
 
   override removeAllCookies(): Promise<void>
   override removeAllCookies(callback: Callback<void>): void
-  override removeAllCookies(callback?: Callback<void>): unknown {
+  override removeAllCookies(_callback?: Callback<void>): unknown {
     const promiseCallback = createPromiseCallback<void>(arguments)
     const cb = promiseCallback.callback
 
@@ -218,7 +231,7 @@ export class MemoryCookieStore extends Store {
 
   override getAllCookies(): Promise<Cookie[]>
   override getAllCookies(callback: Callback<Cookie[]>): void
-  override getAllCookies(callback?: Callback<Cookie[]>): unknown {
+  override getAllCookies(_callback?: Callback<Cookie[]>): unknown {
     const promiseCallback = createPromiseCallback<Cookie[]>(arguments)
     const cb = promiseCallback.callback
 
@@ -227,12 +240,15 @@ export class MemoryCookieStore extends Store {
 
     const domains = Object.keys(idx);
     domains.forEach(domain => {
-      const paths = Object.keys(idx[domain]);
+      const domainEntry = idx[domain] ?? {}
+      const paths = Object.keys(domainEntry);
       paths.forEach(path => {
-        const keys = Object.keys(idx[domain][path]);
+        const pathEntry = domainEntry[path] ?? {}
+        const keys = Object.keys(pathEntry);
         keys.forEach(key => {
-          if (key !== null) {
-            cookies.push(idx[domain][path][key]);
+          const keyEntry = pathEntry[key]
+          if (keyEntry != null) {
+            cookies.push(keyEntry);
           }
         });
       });

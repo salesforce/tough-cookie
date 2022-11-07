@@ -41,8 +41,8 @@ const SPECIAL_USE_DOMAINS = [
 ];
 
 type GetPublicSuffixOptions = {
-  allowSpecialUseDomain?: boolean;
-  ignoreError?: boolean;
+  allowSpecialUseDomain?: boolean | undefined;
+  ignoreError?: boolean | undefined;
 }
 
 const defaultGetPublicSuffixOptions: GetPublicSuffixOptions = {
@@ -60,6 +60,7 @@ export function getPublicSuffix(domain: string, options: GetPublicSuffixOptions 
   if (
     allowSpecialUseDomain &&
     domainParts.length > 1 &&
+    typeof topLevelDomain === 'string' &&
     SPECIAL_USE_DOMAINS.includes(topLevelDomain)
   ) {
     // If the right-most label in the name is a special-use domain (e.g. bananas.apple.localhost),
@@ -69,7 +70,7 @@ export function getPublicSuffix(domain: string, options: GetPublicSuffixOptions 
     return `${secondLevelDomain}.${topLevelDomain}`;
   }
 
-  if (!ignoreError && SPECIAL_USE_DOMAINS.includes(topLevelDomain)) {
+  if (!ignoreError && typeof topLevelDomain === 'string' && SPECIAL_USE_DOMAINS.includes(topLevelDomain)) {
     throw new Error(
       `Cookie has domain set to the public suffix "${topLevelDomain}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain:true, rejectPublicSuffixes: false}.`
     );

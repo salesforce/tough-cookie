@@ -35,6 +35,7 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
   // })
 })
 
+// @ts-ignore
 function createSecurePrefixTests(securePrefixTestCases: SecurePrefixTestCase[], expectations: PrefixTestCaseExpectations) {
   // @ts-ignore
   const prefixTestCases = ['http', 'https'].reduce((acc: PrefixTestCase[], protocol: Protocol) => {
@@ -68,6 +69,7 @@ function createSecurePrefixTests(securePrefixTestCases: SecurePrefixTestCase[], 
   return createPrefixTests(prefixTestCases, expectations)
 }
 
+// @ts-ignore
 function createHostPrefixTests(securePrefixTestCases: HostPrefixTestCase[], expectations: PrefixTestCaseExpectations) {
   const prefixTestCases: PrefixTestCase[] = securePrefixTestCases.map((hostPrefixTestCase: HostPrefixTestCase) => {
     return {
