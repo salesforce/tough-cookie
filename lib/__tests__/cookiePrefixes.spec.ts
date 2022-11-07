@@ -36,6 +36,7 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
 })
 
 function createSecurePrefixTests(securePrefixTestCases: SecurePrefixTestCase[], expectations: PrefixTestCaseExpectations) {
+  // @ts-ignore
   const prefixTestCases = ['http', 'https'].reduce((acc: PrefixTestCase[], protocol: Protocol) => {
     for (const securePrefixTestCase of securePrefixTestCases) {
       const prefixTestCase = {
@@ -63,6 +64,7 @@ function createSecurePrefixTests(securePrefixTestCases: SecurePrefixTestCase[], 
     }
     return acc
   }, [])
+  // @ts-ignore
   return createPrefixTests(prefixTestCases, expectations)
 }
 
@@ -126,6 +128,7 @@ function lookupPrefixSecurity(prefixTestScenario: PrefixTestScenario): PrefixSec
   }
 }
 
+// @ts-ignore
 function lookupExpectationHandler(expectation): (testCase: PrefixTestCase, protocol: Protocol) => Promise<void> {
   switch (expectation) {
     case "expect setting cookie to fail silently":

@@ -42,11 +42,14 @@ describe('CookieJar', () => {
   })
 
   describe('setCookie', () => {
-    let cookie
+    let cookie: Cookie
 
     apiVariants('should resolve to a Cookie', {
       callbackStyle (done) {
         cookieJar.setCookie("foo=bar", "http://example.com", (error, result) => {
+          if (result == null) {
+            throw new Error('should not be null')
+          }
           cookie = result
           done()
         })
@@ -55,6 +58,7 @@ describe('CookieJar', () => {
         cookie = await cookieJar.setCookie("foo=bar", "http://example.com")
       },
       syncStyle () {
+        // @ts-ignore
         cookie = cookieJar.setCookieSync("foo=bar", "http://example.com")
       }
     }, async () => {
@@ -121,6 +125,7 @@ describe('CookieJar', () => {
     })
 
     it('should set a timestamp when storing a cookie', async () => {
+      // @ts-ignore
       cookie = Cookie.parse("a=b; Domain=example.com; Path=/")
       const t0 = new Date()
 
@@ -242,7 +247,7 @@ describe('CookieJar', () => {
 
   describe('getCookies', () => {
     describe('api', () => {
-      let cookies
+      let cookies: Cookie[] | undefined
 
       beforeEach(async () => {
         await cookieJar.setCookie("foo=bar", "http://example.com")
@@ -309,6 +314,7 @@ describe('CookieJar', () => {
         const allHaveRootPath = cookies.every(cookie => cookie.path === '/')
         expect(allHaveRootPath).toBe(true)
 
+        // @ts-ignore
         const noCookiesWithAnOtherKeyRetrieved = cookies.every(cookie => !/^other/.test(cookie.key))
         expect(noCookiesWithAnOtherKeyRetrieved).toBe(true)
       })
@@ -317,6 +323,7 @@ describe('CookieJar', () => {
         const cookies = await cookieJar.getCookies("http://www.example.com/foo")
         expect(cookies).toHaveLength(4)
 
+        // @ts-ignore
         const noCookiesWithAnOtherKeyRetrieved = cookies.every(cookie => !/^other/.test(cookie.key))
         expect(noCookiesWithAnOtherKeyRetrieved).toBe(true)
       })
@@ -327,6 +334,7 @@ describe('CookieJar', () => {
         })
         expect(cookies).toHaveLength(4)
 
+        // @ts-ignore
         const noCookiesWithAnOtherKeyRetrieved = cookies.every(cookie => !/^other/.test(cookie.key))
         expect(noCookiesWithAnOtherKeyRetrieved).toBe(true)
       })
@@ -592,6 +600,7 @@ describe('CookieJar', () => {
     describe('retrieving cookie strings', () => {
       beforeEach(async () => {
         const url = "http://example.com/index.html"
+        // @ts-ignore
         const at = (timeFromNow) => ({now: new Date(Date.now() + timeFromNow)})
 
         const cookies = await Promise.all([
@@ -638,6 +647,7 @@ describe('CookieJar', () => {
       apiVariants('resolves to an array of strings', {
         callbackStyle(done) {
           cookieJar.getSetCookieStrings("http://example.com", (error, result) => {
+            // @ts-ignore
             cookieHeaders = result
             done()
           })
@@ -656,6 +666,7 @@ describe('CookieJar', () => {
     describe('retrieving cookie strings', () => {
       beforeEach(async () => {
         const url = "http://example.com/index.html"
+        // @ts-ignore
         const at = (timeFromNow) => ({now: new Date(Date.now() + timeFromNow)})
 
         const cookies = await Promise.all([
@@ -724,6 +735,7 @@ describe('CookieJar', () => {
     apiVariants('resolves to an array of strings', {
       callbackStyle(done) {
         cookieJar.serialize((error, result) => {
+          // @ts-ignore
           data = result
           done()
         })
@@ -732,6 +744,7 @@ describe('CookieJar', () => {
         data = await cookieJar.serialize()
       },
       syncStyle() {
+        // @ts-ignore
         data = cookieJar.serializeSync()
       }
     }, async () => {
@@ -772,12 +785,14 @@ describe('CookieJar', () => {
       }
       for await (let [path, cookies] of Object.entries(cookiesByDomain)) {
         for await (let cookie of cookies) {
+          // @ts-ignore
           await cookieJar.setCookie(cookie, path)
         }
       }
     })
 
     it('should remove all from matching domain', async () => {
+      // @ts-ignore
       await cookieJar.store.removeCookies("example.com", null)
 
       const exampleCookies = await cookieJar.store.findCookies("example.com", null)
@@ -869,6 +884,7 @@ describe('loose mode', () => {
 
   it('should retain loose mode when cloning cookie store with loose mode enabled', async () => {
     const cookieJar = new CookieJar(null, { looseMode: true })
+    // @ts-ignore
     const clonedCookieJar = CookieJar.fromJSON(cookieJar.toJSON())
     await clonedCookieJar.setCookie(
       "FooBar",
@@ -887,6 +903,7 @@ describe('loose mode', () => {
 it('should fix issue #132', async () => {
   const cookieJar = new CookieJar()
   await expect(cookieJar.setCookie(
+    // @ts-ignore
     { key: "x", value: "y" },
     "http://example.com/"
   )).rejects.toThrowError("First argument to setCookie must be a Cookie object or string")
@@ -968,6 +985,7 @@ describe.each([
         `http://dev.${specialUseDomain}`
       )
     } catch(e) {
+      // @ts-ignore
       expect(e.message).toBe(`Cookie has domain set to the public suffix "${specialUseDomain}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain:true, rejectPublicSuffixes: false}.`)
     }
   })
@@ -981,8 +999,10 @@ function createCookie(
 ): Cookie {
   const cookie = Cookie.parse(cookieString)
   if (options?.hostOnly) {
+    // @ts-ignore
     cookie.hostOnly = options.hostOnly
   }
+  // @ts-ignore
   return cookie
 }
 

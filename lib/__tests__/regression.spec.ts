@@ -34,6 +34,7 @@ describe('Regression Tests', () => {
     assertions(2)
     const cookieJar = new CookieJar()
 
+    // @ts-ignore
     const callback = function(err, cookie) {
       expect(err).toBeNull()
       expect(cookie).toEqual(objectContaining({
@@ -54,6 +55,7 @@ describe('Regression Tests', () => {
     assertions(2)
     const cookieJar = new CookieJar()
 
+    // @ts-ignore
     const callback = function(err, cookie) {
       expect(err).toBeNull()
       expect(cookie).toEqual([

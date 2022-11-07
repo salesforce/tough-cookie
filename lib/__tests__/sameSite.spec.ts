@@ -12,9 +12,13 @@ describe('Same-Site Cookies', function () {
 
   beforeEach(() => {
     cookieJar = new CookieJar()
+    // @ts-ignore
     garbage = Cookie.parse("garbageIn=treatedAsNone; SameSite=garbage")
+    // @ts-ignore
     strict = Cookie.parse("strict=authorized; SameSite=sTrIcT")
+    // @ts-ignore
     lax = Cookie.parse("lax=okay; SameSite=lax")
+    // @ts-ignore
     normal = Cookie.parse("normal=whatever")
   })
 

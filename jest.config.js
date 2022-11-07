@@ -5,7 +5,7 @@ module.exports = {
   maxWorkers: 1,
   globals: {
     "ts-jest": {
-      isolatedModules: true
+      isolatedModules: false
     }
   }
 };

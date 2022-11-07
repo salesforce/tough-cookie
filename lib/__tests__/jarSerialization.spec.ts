@@ -95,11 +95,13 @@ describe('cookieJar serialization', () => {
     it('should serialize synchronously', () => {
       const serializedJar = jar.serializeSync()
       expectDataToMatchSerializationSchema(serializedJar)
+      // @ts-ignore
       expect(serializedJar.cookies.length).toBe(2)
     })
 
     it('should deserialize synchronously', () => {
       const serializedJar = jar.serializeSync()
+      // @ts-ignore
       const deserializedJar = CookieJar.deserializeSync(serializedJar)
       expect(jar.store).toEqual(deserializedJar.store);
     })
@@ -142,6 +144,7 @@ describe('cookieJar serialization', () => {
 
     it('should contain the same contents when cloned synchronously', async () => {
       const clonedJar = jar.cloneSync(new MemoryCookieStore())
+      // @ts-ignore
       expect(clonedJar.store).toEqual(jar.store)
     })
 
@@ -218,6 +221,7 @@ describe('cookieJar serialization', () => {
       expectDataToMatchSerializationSchema(serializedJar)
       serializedJar.cookies.forEach(serializedCookie => {
         if (serializedCookie.key === 'key') {
+          // @ts-ignore
           expect(JSON.parse(serializedCookie.value)).toEqual(objectContaining({
             domain: any(String),
             path: any(String)
@@ -272,6 +276,7 @@ describe('cookieJar serialization', () => {
   })
 })
 
+// @ts-ignore
 function expectDataToMatchSerializationSchema (serializedJar) {
   expect(serializedJar).not.toBeNull()
   expect(serializedJar).toBeInstanceOf(Object)
@@ -279,6 +284,7 @@ function expectDataToMatchSerializationSchema (serializedJar) {
   expect(serializedJar.storeType).toBe('MemoryCookieStore')
   expect(serializedJar.rejectPublicSuffixes).toBe(true)
   expect(serializedJar.cookies).toBeInstanceOf(Array)
+  // @ts-ignore
   serializedJar.cookies.forEach(cookie => validateSerializedCookie(cookie))
 }
 
@@ -299,11 +305,13 @@ const serializedCookiePropTypes = {
   sameSite: "string"
 };
 
+// @ts-ignore
 function validateSerializedCookie(cookie) {
   expect(typeof cookie).toBe('object');
   expect(cookie).not.toBeInstanceOf(Cookie);
 
   Object.keys(cookie).forEach(prop => {
+    // @ts-ignore
     const type = serializedCookiePropTypes[prop];
     switch (type) {
       case "string":
@@ -335,6 +343,7 @@ function validateSerializedCookie(cookie) {
   });
 }
 
+// @ts-ignore
 function isInteger(value) {
   if (Number.isInteger) {
     return Number.isInteger(value)

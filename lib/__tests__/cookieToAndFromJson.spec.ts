@@ -5,6 +5,7 @@ jest.useFakeTimers()
 describe('Cookie.toJSON()', () => {
   it('should serialize a cookie to JSON', () => {
     const cookie = Cookie.parse("alpha=beta; Domain=example.com; Path=/foo; Expires=Tue, 19 Jan 2038 03:14:07 GMT; HttpOnly")
+    // @ts-ignore
     expect(cookie.toJSON()).toEqual({
       "creation": new Date().toISOString(),
       "domain": "example.com",
@@ -50,8 +51,11 @@ describe('Cookie.fromJSON()', () => {
       "creation": "Infinity",
       "lastAccessed": "Infinity",
     })
+    // @ts-ignore
     expect(Cookie.fromJSON(json).expires).toBe("Infinity")
+    // @ts-ignore
     expect(Cookie.fromJSON(json).creation).toBe("Infinity")
+    // @ts-ignore
     expect(Cookie.fromJSON(json).lastAccessed).toBe("Infinity")
   })
 })

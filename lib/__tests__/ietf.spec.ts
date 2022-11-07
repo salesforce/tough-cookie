@@ -65,6 +65,7 @@ describe('IETF http state tests', () => {
     it.each(exampleDates)
     (`ietf_data/dates/examples: $test`, ({test, expected}) => {
       if (expected) {
+        // @ts-ignore
         expect(parseDate(test).toUTCString()).toBe(expected)
       } else {
         expect(parseDate(test)).toBeUndefined()
@@ -74,6 +75,7 @@ describe('IETF http state tests', () => {
     it.each(bsdExampleDates)
     (`ietf_data/dates/bsd_examples: $test`, ({test, expected}) => {
       if (expected) {
+        // @ts-ignore
         expect(parseDate(test).toUTCString()).toBe(expected)
       } else {
         expect(parseDate(test)).toBeUndefined()

@@ -111,37 +111,42 @@ class StoreWithoutRemoveAll extends Store {
     this.cookies = [];
   }
 
-  findCookie(domain: string, path: string, key: string): Promise<Cookie>
-  findCookie(domain: string, path: string, key: string, callback: Callback<Cookie>): void
-  findCookie(domain: string, path: string, key: string, callback?: Callback<Cookie>): unknown {
+  override findCookie(domain: string, path: string, key: string): Promise<Cookie>
+  override findCookie(domain: string, path: string, key: string, callback: Callback<Cookie>): void
+  override findCookie(domain: string, path: string, key: string, callback?: Callback<Cookie>): unknown {
+    // @ts-ignore
     return callback(null, null);
   }
 
-  findCookies(domain: string, path: string, allowSpecialUseDomain?: boolean): Promise<Cookie[]>
-  findCookies(domain: string, path: string, allowSpecialUseDomain?: boolean, callback?: Callback<Cookie[]>): void
-  findCookies(domain: string, path: string, allowSpecialUseDomain: boolean | Callback<Cookie[]> = false, callback?: Callback<Cookie[]>): unknown {
+  override findCookies(domain: string, path: string, allowSpecialUseDomain?: boolean): Promise<Cookie[]>
+  override findCookies(domain: string, path: string, allowSpecialUseDomain?: boolean, callback?: Callback<Cookie[]>): void
+  override findCookies(domain: string, path: string, allowSpecialUseDomain: boolean | Callback<Cookie[]> = false, callback?: Callback<Cookie[]>): unknown {
+    // @ts-ignore
     return callback(null, []);
   }
 
-  putCookie(cookie: Cookie): Promise<void>
-  putCookie(cookie: Cookie, callback: Callback<void>): void;
-  putCookie(cookie: Cookie, callback?: Callback<void>): unknown {
+  override putCookie(cookie: Cookie): Promise<void>
+  override putCookie(cookie: Cookie, callback: Callback<void>): void;
+  override putCookie(cookie: Cookie, callback?: Callback<void>): unknown {
     this.stats.put++;
     this.cookies.push(cookie);
+    // @ts-ignore
     return callback(null);
   }
 
-  getAllCookies(): Promise<Cookie[]>
-  getAllCookies(callback: Callback<Cookie[]>): void
-  getAllCookies(callback?: Callback<Cookie[]>): unknown {
+  override getAllCookies(): Promise<Cookie[]>
+  override getAllCookies(callback: Callback<Cookie[]>): void
+  override getAllCookies(callback?: Callback<Cookie[]>): unknown {
     this.stats.getAll++;
+    // @ts-ignore
     return callback(null, this.cookies.slice());
   }
 
-  removeCookie(domain: string, path: string, key: string): Promise<void>
-  removeCookie(domain: string, path: string, key: string, callback: Callback<void>): void
-  removeCookie(domain: string, path: string, key: string, callback?: Callback<void>): unknown {
+  override removeCookie(domain: string, path: string, key: string): Promise<void>
+  override removeCookie(domain: string, path: string, key: string, callback: Callback<void>): void
+  override removeCookie(domain: string, path: string, key: string, callback?: Callback<void>): unknown {
     this.stats.remove++;
+    // @ts-ignore
     return callback(null, null);
   }
 }
@@ -158,24 +163,27 @@ class MemoryStoreExtension extends MemoryCookieStore {
     this.stats = { getAll: 0, remove: 0, removeAll: 0 };
   }
 
-  getAllCookies(): Promise<Cookie[]>
-  getAllCookies(callback: Callback<Cookie[]>): void
-  getAllCookies(callback?: Callback<Cookie[]>): unknown {
+  override getAllCookies(): Promise<Cookie[]>
+  override getAllCookies(callback: Callback<Cookie[]>): void
+  override getAllCookies(callback?: Callback<Cookie[]>): unknown {
     this.stats.getAll++;
+    // @ts-ignore
     return super.getAllCookies(callback)
   }
 
-  removeCookie(domain: string, path: string, key: string): Promise<void>
-  removeCookie(domain: string, path: string, key: string, callback: Callback<void>): void
-  removeCookie(domain: string, path: string, key: string, callback?: Callback<void>): unknown {
+  override removeCookie(domain: string, path: string, key: string): Promise<void>
+  override removeCookie(domain: string, path: string, key: string, callback: Callback<void>): void
+  override removeCookie(domain: string, path: string, key: string, callback?: Callback<void>): unknown {
     this.stats.remove++;
+    // @ts-ignore
     return super.removeCookie(domain, path, key, callback);
   }
 
-  removeAllCookies(): Promise<void>
-  removeAllCookies(callback: Callback<void>): void
-  removeAllCookies(callback?: Callback<void>): unknown {
+  override removeAllCookies(): Promise<void>
+  override removeAllCookies(callback: Callback<void>): void
+  override removeAllCookies(callback?: Callback<void>): unknown {
     this.stats.removeAll++;
+    // @ts-ignore
     return super.removeAllCookies(callback);
   }
 }

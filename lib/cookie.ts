@@ -499,9 +499,9 @@ function parseCookiePair(cookiePair: string, looseMode: boolean) {
   return c;
 }
 
-function parse(str: string, options: any = {}): Cookie | undefined {
+function parse(str: string, options: any = {}): Cookie | undefined | null {
   if (validators.isEmptyString(str) || !validators.isString(str)) {
-    return undefined
+    return null
   }
 
   str = str.trim();
@@ -705,7 +705,7 @@ function jsonParse(str: string) {
   return obj;
 }
 
-function fromJSON(str: string | SerializedCookie) {
+function fromJSON(str: string | SerializedCookie | null | undefined) {
   if (!str || validators.isEmptyString(str)) {
     return null;
   }
@@ -821,24 +821,16 @@ const cookieDefaults = {
   key: "",
   value: "",
   expires: "Infinity",
-  // @ts-ignore
   maxAge: null,
-  // @ts-ignore
   domain: null,
-  // @ts-ignore
   path: null,
   secure: false,
   httpOnly: false,
-  // @ts-ignore
   extensions: null,
   // set by the CookieJar:
-  // @ts-ignore
   hostOnly: null,
-  // @ts-ignore
   pathIsDefault: null,
-  // @ts-ignore
   creation: null,
-  // @ts-ignore
   lastAccessed: null,
   sameSite: "none"
 };
@@ -860,7 +852,7 @@ export class Cookie {
   lastAccessed: Date | 'Infinity' | null | undefined;
   sameSite: string | undefined;
 
-  constructor(options: { creation?: Date } = {}) {
+  constructor(options: any = {}) {
     if (util.inspect.custom) {
       // @ts-ignore
       this[util.inspect.custom] = this.inspect;
@@ -1072,8 +1064,7 @@ export class Cookie {
       expires = parseDate(expires)
     }
 
-    // @ts-ignore
-    return expires.getTime() - (now || Date.now())
+    return (expires?.getTime() ?? now)- (now || Date.now())
   }
 
   // expiryTime() replaces the "expiry-time" parts of S5.3 step 3 (setCookie()
@@ -1127,11 +1118,11 @@ export class Cookie {
     return this.canonicalizedDomain();
   }
 
-  static parse (cookieString: string, options?: {}): Cookie | undefined {
+  static parse (cookieString: string, options?: {}): Cookie | undefined | null {
     return parse(cookieString, options)
   }
 
-  static fromJSON (jsonString: string): Cookie | null {
+  static fromJSON (jsonString: string | null | undefined): Cookie | null {
     return fromJSON(jsonString)
   }
 
@@ -1244,13 +1235,14 @@ export class CookieJar {
     this.prefixSecurity = getNormalizedPrefixSecurity(options.prefixSecurity);
   }
 
-  private callSync<T>(fn: Function): T {
+  private callSync<T>(fn: Function): T | undefined {
     if (!this.store.synchronous) {
       throw new Error(
         "CookieJar store is not synchronous; use async API instead."
       );
     }
-    let syncErr: Error | undefined, syncResult: T;
+    let syncErr: Error | undefined;
+    let syncResult: T | undefined = undefined;
     fn.call(this, (error: Error, result: T) => {
       syncErr = error
       syncResult = result
@@ -1258,7 +1250,7 @@ export class CookieJar {
     if (syncErr) {
       throw syncErr;
     }
-    // @ts-ignore
+
     return syncResult;
   }
 
@@ -1489,7 +1481,7 @@ export class CookieJar {
     store.findCookie(cookie.domain, cookie.path, cookie.key, withCookie);
     return promiseCallback.promise
   }
-  setCookieSync(cookie: string | Cookie, url: string, options?: SetCookieOptions): Cookie {
+  setCookieSync(cookie: string | Cookie, url: string, options?: SetCookieOptions): Cookie | undefined {
     const setCookieFn = this.setCookie.bind(this, cookie, url, options ?? defaultSetCookieOptions)
     return this.callSync<Cookie>(setCookieFn)
   }
@@ -1642,7 +1634,7 @@ export class CookieJar {
     return promiseCallback.promise
   }
   getCookiesSync(url: string, options: any = {}): Cookie[] {
-    return this.callSync<Cookie[]>(this.getCookies.bind(this, url, options))
+    return this.callSync<Cookie[]>(this.getCookies.bind(this, url, options)) ?? []
   }
 
   getCookieString(url: string, options: any, callback: (error: Error, result: string) => void): void;
@@ -1671,7 +1663,7 @@ export class CookieJar {
     return promiseCallback.promise
   }
   getCookieStringSync(url: string, options: any = {}): string {
-    return this.callSync<string>(this.getCookieString.bind(this, url, options))
+    return this.callSync<string>(this.getCookieString.bind(this, url, options)) ?? ""
   }
 
   getSetCookieStrings (url: string, callback: Callback<string[]>): void
@@ -1699,7 +1691,7 @@ export class CookieJar {
     return promiseCallback.promise
   }
   getSetCookieStringsSync(url: string, options: any = {}): string[] {
-    return this.callSync<string[]>(this.getSetCookieStrings.bind(this, url, options))
+    return this.callSync<string[]>(this.getSetCookieStrings.bind(this, url, options)) ?? []
   }
 
   serialize(callback: Callback<SerializedCookieJar>): void;
@@ -1772,7 +1764,7 @@ export class CookieJar {
 
     return promiseCallback.promise
   }
-  serializeSync(): SerializedCookieJar {
+  serializeSync(): SerializedCookieJar | undefined {
     return this.callSync<SerializedCookieJar>(this.serialize.bind(this))
   }
 
@@ -1840,14 +1832,14 @@ export class CookieJar {
     return promiseCallback.promise
   }
 
-  _cloneSync(newStore?: Store): CookieJar {
+  _cloneSync(newStore?: Store): CookieJar | undefined {
     const cloneFn = newStore && typeof newStore !== 'function' ?
       this.clone.bind(this, newStore) :
       this.clone.bind(this)
     return this.callSync(cloneFn)
   }
 
-  cloneSync(newStore?: Store): CookieJar {
+  cloneSync(newStore?: Store): CookieJar | undefined {
     if (!newStore) {
       return this._cloneSync();
     }

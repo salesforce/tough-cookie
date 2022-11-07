@@ -9,6 +9,7 @@ describe('Cookie sorting', () => {
       const cookie2 = new Cookie()
       expect(typeof cookie1.creationIndex).toBe('number')
       expect(typeof cookie2.creationIndex).toBe('number')
+      // @ts-ignore
       expect(cookie1.creationIndex).toBeLessThan(cookie2.creationIndex)
     })
 
@@ -19,6 +20,7 @@ describe('Cookie sorting', () => {
       expect(cookie1.creation).toEqual(cookie2.creation)
       expect(typeof cookie1.creationIndex).toBe('number')
       expect(typeof cookie2.creationIndex).toBe('number')
+      // @ts-ignore
       expect(cookie1.creationIndex).toBeLessThan(cookie2.creationIndex)
     })
 

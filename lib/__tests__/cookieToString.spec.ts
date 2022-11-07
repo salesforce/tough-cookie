@@ -2,19 +2,23 @@ import {Cookie} from "../cookie";
 
 describe('Cookie.toString()', () => {
   it('should produce a string from a simple cookie', () => {
+    // @ts-ignore
     expect(Cookie.parse("a=b").toString()).toBe('a=b')
   })
 
   it('should trim spaces from the cookie value', () => {
+    // @ts-ignore
     expect(Cookie.parse("a= b ").toString()).toBe('a=b')
   })
 
   it('should produce a string with an empty value and an attribute', () => {
+    // @ts-ignore
     expect(Cookie.parse("a=;HttpOnly").toString()).toBe('a=; HttpOnly')
   })
 
   it('should produce a string from a cookie with several attributes', () => {
     expect(
+      // @ts-ignore
       Cookie.parse("a=b;Expires=Tue, 18 Oct 2011 07:05:03 GMT;Max-Age=12345;Domain=example.com;Path=/foo;Secure;HttpOnly;MyExtension").toString()
     ).toBe('a=b; Expires=Tue, 18 Oct 2011 07:05:03 GMT; Max-Age=12345; Domain=example.com; Path=/foo; Secure; HttpOnly; MyExtension')
   })
