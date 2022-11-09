@@ -1264,7 +1264,7 @@ export class CookieJar {
   setCookie(cookie: string | Cookie, url: string): Promise<Cookie>
   setCookie(cookie: string | Cookie, url: string, options: SetCookieOptions): Promise<Cookie>
   setCookie(cookie: string | Cookie, url: string, options: SetCookieOptions | Callback<Cookie>, callback?: Callback<Cookie>): unknown;
-  setCookie(cookie: string | Cookie, url: string, options: SetCookieOptions | Callback<Cookie> = defaultSetCookieOptions, callback?: Callback<Cookie>): unknown {
+  setCookie(cookie: string | Cookie, url: string, options?: SetCookieOptions | Callback<Cookie>, callback?: Callback<Cookie>): unknown {
     const promiseCallback = createPromiseCallback<Cookie>(arguments)
     const cb = promiseCallback.callback
 
@@ -1287,10 +1287,10 @@ export class CookieJar {
     }
 
     const host = canonicalDomain(context.hostname);
-    const loose = options.loose || this.enableLooseMode;
+    const loose = options?.loose || this.enableLooseMode;
 
     let sameSiteContext = null;
-    if (options.sameSiteContext) {
+    if (options?.sameSiteContext) {
       sameSiteContext = checkSameSiteContext(options.sameSiteContext);
       if (!sameSiteContext) {
         return cb(new Error(SAME_SITE_CONTEXT_VAL_ERR));
@@ -1302,7 +1302,7 @@ export class CookieJar {
       const parsedCookie = Cookie.parse(cookie.toString(), {loose: loose});
       if (!parsedCookie) {
         err = new Error("Cookie failed to parse");
-        return cb(options.ignoreError ? null : err);
+        return cb(options?.ignoreError ? null : err);
       }
       cookie = parsedCookie
     } else if (!(cookie instanceof Cookie)) {
@@ -1311,11 +1311,11 @@ export class CookieJar {
       err = new Error(
         "First argument to setCookie must be a Cookie object or string"
       );
-      return cb(options.ignoreError ? null : err);
+      return cb(options?.ignoreError ? null : err);
     }
 
     // S5.3 step 2
-    const now = options.now || new Date(); // will assign later to save effort in the face of errors
+    const now = options?.now || new Date(); // will assign later to save effort in the face of errors
 
     // S5.3 step 3: NOOP; persistent-flag and expiry-time is handled by getCookie()
 
@@ -1327,15 +1327,15 @@ export class CookieJar {
         const cdomain = cookie.cdomain()
         const suffix = typeof cdomain === 'string' ? pubsuffix.getPublicSuffix(cdomain, {
           allowSpecialUseDomain: this.allowSpecialUseDomain,
-          ignoreError: options.ignoreError
+          ignoreError: options?.ignoreError
         }) : null;
         if (suffix == null && !IP_V6_REGEX_OBJECT.test(cookie.domain)) {
           // e.g. "com"
           err = new Error("Cookie has domain set to a public suffix");
-          return cb(options.ignoreError ? null : err);
+          return cb(options?.ignoreError ? null : err);
         }
       } catch (err) {
-        if (options.ignoreError) {
+        if (options?.ignoreError) {
           return cb(null)
         } else {
           if (err instanceof Error) {
@@ -1353,7 +1353,7 @@ export class CookieJar {
         err = new Error(
           `Cookie not in this host's domain. Cookie:${cookie.cdomain()} Request:${host}`
         );
-        return cb(options.ignoreError ? null : err);
+        return cb(options?.ignoreError ? null : err);
       }
 
       if (cookie.hostOnly == null) {
@@ -1377,9 +1377,9 @@ export class CookieJar {
     // S5.3 step 9: NOOP; httpOnly attribute
 
     // S5.3 step 10
-    if (options.http === false && cookie.httpOnly) {
+    if (options?.http === false && cookie.httpOnly) {
       err = new Error("Cookie is HttpOnly and this isn't an HTTP API");
-      return cb(options.ignoreError ? null : err);
+      return cb(options?.ignoreError ? null : err);
     }
 
     // 6252bis-02 S5.4 Step 13 & 14:
@@ -1392,7 +1392,7 @@ export class CookieJar {
         err = new Error(
           "Cookie is SameSite but this is a cross-origin request"
         );
-        return cb(options.ignoreError ? null : err);
+        return cb(options?.ignoreError ? null : err);
       }
     }
 
@@ -1417,7 +1417,7 @@ export class CookieJar {
       }
       if (errorFound) {
         return cb(
-          options.ignoreError || ignoreErrorForPrefixSecurity
+          options?.ignoreError || ignoreErrorForPrefixSecurity
             ? null
             : new Error(errorMsg)
         );
@@ -1460,7 +1460,7 @@ export class CookieJar {
       if (oldCookie) {
         // S5.3 step 11 - "If the cookie store contains a cookie with the same name,
         // domain, and path as the newly created cookie:"
-        if ('http' in options && options.http === false && oldCookie.httpOnly) {
+        if (options && 'http' in options && options.http === false && oldCookie.httpOnly) {
           // step 11.2
           err = new Error("old Cookie is HttpOnly and this isn't an HTTP API");
           cb(options.ignoreError ? null : err);
@@ -1487,7 +1487,7 @@ export class CookieJar {
     return promiseCallback.promise
   }
   setCookieSync(cookie: string | Cookie, url: string, options?: SetCookieOptions): Cookie | undefined {
-    const setCookieFn = this.setCookie.bind(this, cookie, url, options ?? defaultSetCookieOptions)
+    const setCookieFn = this.setCookie.bind(this, cookie, url, options as SetCookieOptions)
     return this.callSync<Cookie>(setCookieFn)
   }
 

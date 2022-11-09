@@ -226,6 +226,26 @@ describe('CookieJar', () => {
       )).rejects.toThrowError("Cookie is HttpOnly and this isn't an HTTP API")
     })
 
+    it('should not fail when using an httpOnly cookie when using a non-HTTP API', async () => {
+      assertions(1)
+      await cookieJar.setCookie(
+        "OptionsTest=FooBar; expires=Wed, 13-Jan-2051 22:23:01 GMT; path=/TestPath; HttpOnly",
+        "https://127.0.0.1/TestPath/somewhere",
+      )
+      const cookies = await cookieJar.getCookies("https://127.0.0.1/TestPath/somewhere")
+      expect(cookies).not.toHaveLength(0)
+    })
+
+    it('should not fail when using an httpOnly cookie when using a non-HTTP API (setCookieSync)', () => {
+      assertions(1)
+      cookieJar.setCookieSync(
+        "OptionsTest=FooBar; expires=Wed, 13-Jan-2051 22:23:01 GMT; path=/TestPath; HttpOnly",
+        "https://127.0.0.1/TestPath/somewhere",
+      )
+      const cookies = cookieJar.getCookiesSync("https://127.0.0.1/TestPath/somewhere")
+      expect(cookies).not.toHaveLength(0)
+    })
+
     it.each([
       { testCase: 'basic', IPv6: '[::1]' },
       { testCase: 'prefix', IPv6: '[::ffff:127.0.0.1]' },
