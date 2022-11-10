@@ -769,7 +769,7 @@ describe('CookieJar', () => {
       }
     }, async () => {
       const expected: SerializedCookieJar = {
-        "allowSpecialUseDomain": false,
+        "allowSpecialUseDomain": true,
         "cookies": [
           {
             "creation": now,
@@ -786,7 +786,7 @@ describe('CookieJar', () => {
         "prefixSecurity": "silent",
         "rejectPublicSuffixes": true,
         "storeType": "MemoryCookieStore",
-        "version": "tough-cookie@4.0.0"
+        "version": "tough-cookie@4.1.2"
       }
       expect(data).toEqual(expected)
     })

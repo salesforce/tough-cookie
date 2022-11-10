@@ -33,7 +33,6 @@ describe('Cookie.parse', () => {
         secure: true,
         httpOnly: true,
         maxAge: 1234,
-        sameSite: 'none',
         extensions: ['Foo=Bar', 'Baz']
       }
     },
@@ -302,7 +301,6 @@ describe('Cookie.parse', () => {
       output: {
         key: 'abc',
         value: 'xyzzy',
-        sameSite: 'none',
         extensions: null
       }
     },

@@ -48,7 +48,7 @@ export function permuteDomain(domain: string, allowSpecialUseDomain?: boolean): 
 
   // Nuke trailing dot
   if (domain.slice(-1) == ".") {
-    domain = domain.slice(0, -1)
+    domain = domain.slice(0, -1);
   }
 
   const prefix = domain.slice(0, -(pubSuf.length + 1)); // ".example.com"

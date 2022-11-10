@@ -50,15 +50,15 @@ function matchVows(func, table) {
 }
 
 function transformVows(fn, table) {
-  var theVows = {};
-  table.forEach(function (item) {
-    var str = item[0];
-    var expect = item[1];
-    var label = str + " gives " + expect;
+  const theVows = {};
+  table.forEach(item => {
+    const str = item[0];
+    const expect = item[1];
+    let label = `${str} gives ${expect}`;
     if (item.length >= 3) {
-      label += " (" + item[2] + ")";
+      label += ` (${item[2]})`;
     }
-    theVows[label] = function () {
+    theVows[label] = function() {
       assert.equal(fn(str), expect);
     };
   });
@@ -75,7 +75,7 @@ vows
       ["EXAMPLE.com.", "example.com.", "trailing dot"],
       [".EXAMPLE.com.", "example.com.", "leading and trailing dot"],
       [".EXAMPLE...com.", "example...com.", "internal dots"],
-      ["δοκιμή.δοκιμή","xn--jxalpdlp.xn--jxalpdlp", "IDN: test.test in greek"],
+      ["δοκιμή.δοκιμή", "xn--jxalpdlp.xn--jxalpdlp", "IDN: test.test in greek"]
     ])
   })
   .addBatch({
@@ -105,6 +105,9 @@ vows
       ["www.aaaa.com", "aaa.com", false],
       ["www.aaa.com", "aaa.com", true],
       ["www.aexample.com", "example.com", false], // has to match on "." boundary
+      ["computer.com", "com", true], // suffix string found at start of domain
+      ["becoming.com", "com", true], // suffix string found in middle of domain
+      ["sitcom.com", "com", true], // suffix string found just before the '.' boundary
 
       // S5.1.3 "The string is a host name (i.e., not an IP address)"
       ["192.168.0.1", "168.0.1", false], // because str is an IP (v4)
@@ -142,12 +145,12 @@ vows
       // exact length "TLD" tests:
       ["com", "net", false], // same len, non-match
       ["com", "com", true], // "are identical" rule
-      ["NOTATLD", "notaTLD", true], // "are identical" rule (after canonicalization)
+      ["NOTATLD", "notaTLD", true] // "are identical" rule (after canonicalization)
     ])
   })
 
   .addBatch({
-    "default-path": transformVows(tough.defaultPath,[
+    "default-path": transformVows(tough.defaultPath, [
       [null, "/"],
       ["/", "/"],
       ["/file", "/"],

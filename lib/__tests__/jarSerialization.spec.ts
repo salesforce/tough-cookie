@@ -282,7 +282,7 @@ describe('cookieJar serialization', () => {
 function expectDataToMatchSerializationSchema (serializedJar) {
   expect(serializedJar).not.toBeNull()
   expect(serializedJar).toBeInstanceOf(Object)
-  expect(serializedJar.version).toBe('tough-cookie@4.0.0')
+  expect(serializedJar.version).toBe('tough-cookie@4.1.2')
   expect(serializedJar.storeType).toBe('MemoryCookieStore')
   expect(serializedJar.rejectPublicSuffixes).toBe(true)
   expect(serializedJar.cookies).toBeInstanceOf(Array)

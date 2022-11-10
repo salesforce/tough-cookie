@@ -281,7 +281,7 @@ vows
         assert.equal(c.TTL(), Infinity);
         assert.ok(!c.isPersistent());
       }
-    },
+    }
   })
   .addBatch({
     "Store eight cookies": {
@@ -759,9 +759,12 @@ vows
           GMT; path=/`;
 
           jar.setCookieSync(cookieString, "https://google.com");
-          jar.getCookies("https://google.com", this.callback)
+          jar.getCookies("https://google.com", this.callback);
         },
-        "results in a 1-length array with a valid cookie": function(err, cookies) {
+        "results in a 1-length array with a valid cookie": function(
+          err,
+          cookies
+        ) {
           assert(!err, err);
           assert(cookies.length == 1);
           assert.instanceOf(cookies[0], Cookie);
@@ -780,7 +783,10 @@ vows
             this.callback
           );
         },
-        "results in a error being returned because of missing parameters": function(err, cookies) {
+        "results in a error being returned because of missing parameters": function(
+          err,
+          cookies
+        ) {
           assert(err != null);
           assert(err instanceof tough.ParameterError);
         }
@@ -792,13 +798,12 @@ vows
       "with missing parameters": {
         topic: function() {
           const jar = new tough.CookieJar();
-          jar.setCookie(
-            '',
-            "https://google.com",
-            this.callback
-          );
+          jar.setCookie("", "https://google.com", this.callback);
         },
-        "results in a error being returned because of missing parameters": function(err, cookies) {
+        "results in a error being returned because of missing parameters": function(
+          err,
+          cookies
+        ) {
           assert(cookies == undefined);
         }
       }

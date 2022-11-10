@@ -1,4 +1,5 @@
 {
+  "extends": ["plugin:prettier/recommended"],
   "parserOptions": {
     "ecmaVersion": 6
   },
@@ -7,7 +8,14 @@
     "no-var": "error",
     "prefer-arrow-callback": "error",
     "prefer-const": "error",
-    "prefer-template": "error"
-  },
-  "extends": ["plugin:prettier/recommended"]
+    "prefer-template": "error",
+    "no-restricted-modules": ["error",
+      // we can't rely on node standard modules in "native" or "browser" environments
+      // - exceptions:
+      //     "punycode": since it's a package.json dependency
+      "assert", "buffer", "child_process", "cluster", "crypto", "dgram", "dns", "domain", "events", "freelist", "fs",
+      "http", "https", "module", "net", "os", "path", "querystring", "readline", "repl", "smalloc", "stream",
+      "string_decoder", "sys", "timers", "tls", "tracing", "tty", "url", "util", "vm", "zlib"
+    ]
+  }
 }

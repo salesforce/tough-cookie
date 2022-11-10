@@ -197,12 +197,26 @@ vows
           return cookieJar.setCookieSync(
             "a=b; Domain=localhost",
             "http://localhost"
-          ); // when domain set to 'localhost', will throw 'Error: Cookie has domain set to a public suffix'
+          ); // Users are free to use localhost names as they would any other domain names. [RFC 6761, Sec. 6.3.1]
         },
         works: function(err, c) {
-          // localhost as domain throws an error, cookie should not be defined
-          assert.instanceOf(err, Error);
-          assert.isUndefined(c);
+          assert.instanceOf(c, Cookie);
+          assert.match(c, /Domain=localhost/);
+        }
+      }
+    },
+    {
+      "setCookie with localhost (localhost. domain) (GH-215)": {
+        topic: function() {
+          const cookieJar = new CookieJar();
+          return cookieJar.setCookieSync(
+            "a=b; Domain=localhost.",
+            "http://localhost."
+          ); // Users are free to use localhost names as they would any other domain names. [RFC 6761, Sec. 6.3.1]
+        },
+        works: function(err, c) {
+          assert.instanceOf(c, Cookie);
+          assert.match(c, /Domain=localhost/);
         }
       }
     },
@@ -210,7 +224,7 @@ vows
       "setCookie with localhost (GH-215) (null domain)": {
         topic: function() {
           const cookieJar = new CookieJar();
-          return cookieJar.setCookieSync("a=b; Domain=", "http://localhost"); // when domain set to 'localhost', will throw 'Error: Cookie has domain set to a public suffix'
+          return cookieJar.setCookieSync("a=b; Domain=", "http://localhost");
         },
         works: function(c) {
           assert.instanceOf(c, Cookie);

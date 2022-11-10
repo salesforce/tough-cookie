@@ -75,16 +75,16 @@ describe('Regression Tests', () => {
     cookieJar.getCookies(url, callback)
   })
 
-  it.each([
-    ["a=b; Domain=localhost", 'localhost'],
-    ["a=b; Domain=localhost.local", 'local'],
-    ["a=b; Domain=.localhost", 'localhost']
-  ])('should raise an error if using a special use domain (GH-215) - %s', async (cookieString, publicSuffix) => {
+  it('should allow setCookie with localhost (GH-215)', async () => {
     const cookieJar = new CookieJar();
     await expect(cookieJar.setCookie(
-      cookieString,
+      "a=b; Domain=localhost",
       "http://localhost"
-    )).rejects.toThrowError(`Cookie has domain set to the public suffix "${publicSuffix}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain:true, rejectPublicSuffixes: false}.`)
+    )).resolves.toEqual(objectContaining({
+      key: 'a',
+      value: 'b',
+      domain: 'localhost'
+    }))
   })
 
   it('should allow setCookie with localhost and null domain (GH-215)', async () => {
@@ -99,5 +99,15 @@ describe('Regression Tests', () => {
     }))
   })
 
-
+  it('setCookie with localhost (.localhost domain), (GH-215)', async () => {
+    const cookieJar = new CookieJar();
+    await expect(cookieJar.setCookie(
+      "a=b; Domain=.localhost",
+      "http://localhost"
+    )).resolves.toEqual(objectContaining({
+      key: 'a',
+      value: 'b',
+      domain: 'localhost'
+    }))
+  })
 })

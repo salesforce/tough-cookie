@@ -31,7 +31,7 @@
 "use strict";
 import {Callback, Cookie, createPromiseCallback, pathMatch, permuteDomain} from "./cookie";
 import {Store} from './store'
-import util from 'util'
+import {getCustomInspectSymbol, getUtilInspect} from './utilHelper'
 
 export class MemoryCookieStore extends Store {
   override synchronous: boolean;
@@ -47,13 +47,15 @@ export class MemoryCookieStore extends Store {
     super();
     this.synchronous = true;
     this.idx = {};
-    if (util.inspect.custom) {
+    const customInspectSymbol = getCustomInspectSymbol();
+    if (customInspectSymbol) {
       // @ts-ignore
-      this[util.inspect.custom] = this.inspect;
+      this[customInspectSymbol] = this.inspect;
     }
   }
 
   inspect() {
+    const util = { inspect: getUtilInspect(inspectFallback) };
     return `{ idx: ${util.inspect(this.idx, false, 2)} }`;
   }
 
@@ -89,7 +91,7 @@ export class MemoryCookieStore extends Store {
   override findCookies(domain: string, path: string, allowSpecialUseDomain?: boolean, callback?: Callback<Cookie[]>): void
   override findCookies(domain: string, path: string, allowSpecialUseDomain: boolean | Callback<Cookie[]> = false, _callback?: Callback<Cookie[]>): unknown {
     if (typeof allowSpecialUseDomain === "function") {
-      allowSpecialUseDomain = false;
+      allowSpecialUseDomain = true;
     }
 
     const results: any[] = [];
@@ -265,3 +267,48 @@ export class MemoryCookieStore extends Store {
   }
 }
 
+export function inspectFallback(val: { [x: string]: any; }) {
+  const domains = Object.keys(val);
+  if (domains.length === 0) {
+    return "{}";
+  }
+  let result = "{\n";
+  Object.keys(val).forEach((domain, i) => {
+    result += formatDomain(domain, val[domain]);
+    if (i < domains.length - 1) {
+      result += ",";
+    }
+    result += "\n";
+  });
+  result += "}";
+  return result;
+}
+
+function formatDomain(domainName: string, domainValue: { [x: string]: any; }) {
+  const indent = "  ";
+  let result = `${indent}'${domainName}': {\n`;
+  Object.keys(domainValue).forEach((path, i, paths) => {
+    result += formatPath(path, domainValue[path]);
+    if (i < paths.length - 1) {
+      result += ",";
+    }
+    result += "\n";
+  });
+  result += `${indent}}`;
+  return result;
+}
+
+function formatPath(pathName: string, pathValue: { [x: string]: any; }) {
+  const indent = "    ";
+  let result = `${indent}'${pathName}': {\n`;
+  Object.keys(pathValue).forEach((cookieName, i, cookieNames) => {
+    const cookie = pathValue[cookieName];
+    result += `      ${cookieName}: ${cookie.inspect()}`;
+    if (i < cookieNames.length - 1) {
+      result += ",";
+    }
+    result += "\n";
+  });
+  result += `${indent}}`;
+  return result;
+}

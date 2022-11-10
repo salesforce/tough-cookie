@@ -45,7 +45,6 @@ describe('Same-Site Cookies', function () {
         objectContaining({
           key: 'normal',
           value: 'whatever',
-          sameSite: 'none'
         })
       ])
     })
@@ -61,7 +60,6 @@ describe('Same-Site Cookies', function () {
         objectContaining({
           key: 'normal',
           value: 'whatever',
-          sameSite: 'none'
         })
       ])
     })
@@ -72,7 +70,6 @@ describe('Same-Site Cookies', function () {
         objectContaining({
           key: 'normal',
           value: 'whatever',
-          sameSite: 'none'
         })
       ])
     })
@@ -93,7 +90,6 @@ describe('Same-Site Cookies', function () {
         objectContaining({
           key: 'normal',
           value: 'whatever',
-          sameSite: 'none'
         })
       ])
     })
@@ -103,7 +99,7 @@ describe('Same-Site Cookies', function () {
     describe('from same-site context', () => {
       it('should treat the garbage cookie as sameSite=none', async () => {
         await cookieJar.setCookie(garbage, url, { sameSiteContext: 'strict' })
-        expect(garbage.sameSite).toBe('none')
+        expect(garbage.sameSite).toBeUndefined()
       })
 
       it('should treat the strict cookie as sameSite=strict', async () => {
@@ -118,14 +114,14 @@ describe('Same-Site Cookies', function () {
 
       it('should treat the normal cookie as sameSite=none', async () => {
         await cookieJar.setCookie(normal, url, { sameSiteContext: 'strict' })
-        expect(normal.sameSite).toBe('none')
+        expect(normal.sameSite).toBeUndefined()
       })
     })
 
     describe('from a cross-origin context', () => {
       it('should treat the garbage cookie as sameSite=none', async () => {
         await cookieJar.setCookie(garbage, url, { sameSiteContext: 'none' })
-        expect(garbage.sameSite).toBe('none')
+        expect(garbage.sameSite).toBeUndefined()
       })
 
       it('should not allow strict cookie to be set', async () => {
@@ -142,14 +138,14 @@ describe('Same-Site Cookies', function () {
 
       it('should treat the normal cookie as sameSite=none', async () => {
         await cookieJar.setCookie(normal, url, { sameSiteContext: 'none' })
-        expect(normal.sameSite).toBe('none')
+        expect(normal.sameSite).toBeUndefined()
       })
     })
 
     describe('from an undefined context', () => {
       it('should treat the garbage cookie as sameSite=none', async () => {
         await cookieJar.setCookie(garbage, url)
-        expect(garbage.sameSite).toBe('none')
+        expect(garbage.sameSite).toBeUndefined()
       })
 
       it('should treat the strict cookie as sameSite=strict', async () => {
@@ -164,7 +160,7 @@ describe('Same-Site Cookies', function () {
 
       it('should treat the normal cookie as sameSite=none', async () => {
         await cookieJar.setCookie(normal, url)
-        expect(normal.sameSite).toBe('none')
+        expect(normal.sameSite).toBeUndefined()
       })
     })
   })

@@ -67,7 +67,7 @@
     "RFC6265",
     "RFC2965"
   ],
-  "version": "4.0.0",
+  "version": "4.1.2",
   "homepage": "https://github.com/salesforce/tough-cookie",
   "repository": {
     "type": "git",
@@ -94,6 +94,7 @@
   },
   "devDependencies": {
     "@types/jest": "^27.4.0",
+    "@types/punycode": "^2.1.0",
     "@types/psl": "^1.1.0",
     "async": "^2.6.2",
     "eslint": "^5.16.0",
@@ -109,6 +110,7 @@
   },
   "dependencies": {
     "psl": "^1.1.33",
-    "punycode": "^2.1.1"
+    "punycode": "^2.1.1",
+    "url-parse": "^1.5.3"
   }
 }

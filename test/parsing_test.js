@@ -158,8 +158,8 @@ vows
       "has max-age": function(c) {
         assert.equal(c.maxAge, 1234);
       },
-      "has same-site 'none'": function(c) {
-        assert.equal(c.sameSite, "none");
+      "has same-site 'undefined'": function(c) {
+        assert.equal(c.sameSite, undefined);
       },
       "has extensions": function(c) {
         assert.ok(c.extensions);
@@ -677,15 +677,43 @@ vows
           assert.equal(c.extensions, null);
         }
       },
-      absent: {
+      none: {
+        topic: function() {
+          return Cookie.parse("abc=xyz; SameSite=NoNe") || null;
+        },
+        parsed: function(c) {
+          assert.ok(c);
+        },
+        "is none (lowercased)": function(c) {
+          assert.equal(c.sameSite, "none");
+        },
+        "no extensions": function(c) {
+          assert.equal(c.extensions, null);
+        }
+      },
+      bad: {
         topic: function() {
           return Cookie.parse("abc=xyzzy; SameSite=example.com") || null;
         },
         parsed: function(c) {
           assert.ok(c);
         },
-        "is set to 'none' (by prototype)": function(c) {
-          assert.equal(c.sameSite, "none");
+        "is set to 'undefined'": function(c) {
+          assert.equal(c.sameSite, undefined);
+        },
+        "no extensions": function(c) {
+          assert.equal(c.extensions, null);
+        }
+      },
+      absent: {
+        topic: function() {
+          return Cookie.parse("abc=xyzzy;") || null;
+        },
+        parsed: function(c) {
+          assert.ok(c);
+        },
+        "is set to 'undefined'": function(c) {
+          assert.equal(c.sameSite, undefined);
         },
         "no extensions": function(c) {
           assert.equal(c.extensions, null);
@@ -693,35 +721,35 @@ vows
       }
     },
     "empty string": {
-      topic: function () {
-        return Cookie.parse('');
+      topic: function() {
+        return Cookie.parse("");
       },
-      "is empty": function (c) {
+      "is empty": function(c) {
         assert.isNull(c);
       }
     },
     "missing string": {
-      topic: function () {
+      topic: function() {
         return Cookie.parse();
       },
-      "is empty": function (c) {
+      "is empty": function(c) {
         assert.isNull(c);
       }
     },
     "some string object": {
       topic: function() {
-        return Cookie.parse(new String(''))
+        return Cookie.parse(new String(""));
       },
       "is empty": function(c) {
-        assert.isNull(c,null)
+        assert.isNull(c, null);
       }
     },
     "some empty string object": {
       topic: function() {
-        return Cookie.parse(new String())
+        return Cookie.parse(new String());
       },
       "is empty": function(c) {
-        assert.isNull(c,null)
+        assert.isNull(c, null);
       }
     }
   })
