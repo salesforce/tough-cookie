@@ -89,7 +89,7 @@
     "format": "npm run eslint -- --fix"
   },
   "engines": {
-    "node": ">=6"
+    "node": ">=10"
   },
   "devDependencies": {
     "async": "^2.6.2",
@@ -104,7 +104,7 @@
   "dependencies": {
     "psl": "^1.1.33",
     "punycode": "^2.1.1",
-    "universalify": "^0.2.0",
+    "universalify": "^2.0.0",
     "url-parse": "^1.5.3"
   }
 }
