@@ -55,7 +55,7 @@
     }
   ],
   "license": "BSD-3-Clause",
-  "name": "tough-cookie",
+  "name": "@postman/tough-cookie",
   "description": "RFC6265 Cookies and Cookie Jar for node.js",
   "keywords": [
     "HTTP",
@@ -68,13 +68,13 @@
     "RFC2965"
   ],
   "version": "4.1.2",
-  "homepage": "https://github.com/salesforce/tough-cookie",
+  "homepage": "https://github.com/postmanlabs/tough-cookie",
   "repository": {
     "type": "git",
-    "url": "git://github.com/salesforce/tough-cookie.git"
+    "url": "git://github.com/postmanlabs/tough-cookie.git"
   },
   "bugs": {
-    "url": "https://github.com/salesforce/tough-cookie/issues"
+    "url": "https://github.com/postmanlabs/tough-cookie/issues"
   },
   "main": "./lib/cookie",
   "files": [
