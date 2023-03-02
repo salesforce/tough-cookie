@@ -102,7 +102,6 @@
     "vows": "^0.8.2"
   },
   "dependencies": {
-    "psl": "^1.1.33",
     "punycode": "^2.1.1",
     "universalify": "^0.2.0",
     "url-parse": "^1.5.3"
