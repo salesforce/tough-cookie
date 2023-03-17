@@ -67,6 +67,7 @@ function transformVows(fn, table) {
 
 vows
   .describe("Domain and Path")
+  // see lib/__tests__/canonicalDomain.spec.ts
   .addBatch({
     "domain normalization": transformVows(tough.canonicalDomain, [
       ["example.com", "example.com", "already canonical"],
@@ -78,6 +79,7 @@ vows
       ["δοκιμή.δοκιμή", "xn--jxalpdlp.xn--jxalpdlp", "IDN: test.test in greek"]
     ])
   })
+  // see lib/__tests__/domainMatch.spec.ts
   .addBatch({
     "Domain Match": matchVows(tough.domainMatch, [
       // str,          dom,          expect
@@ -148,7 +150,7 @@ vows
       ["NOTATLD", "notaTLD", true] // "are identical" rule (after canonicalization)
     ])
   })
-
+  // see lib/__tests__/defaultPath.spec.ts
   .addBatch({
     "default-path": transformVows(tough.defaultPath, [
       [null, "/"],
@@ -158,6 +160,7 @@ vows
       ["noslash", "/"]
     ])
   })
+  // see lib/__tests__/pathMatch.spec.ts
   .addBatch({
     "Path-Match": matchVows(tough.pathMatch, [
       // request, cookie, match
@@ -170,6 +173,7 @@ vows
       ["/directory", "/dir", false]
     ])
   })
+  // see lib/__tests__/permuteDomain.spec.ts
   .addBatch({
     permuteDomain: {
       "base case": {
@@ -209,6 +213,7 @@ vows
         }
       }
     },
+    // see lib/__tests__/permutePath.spec.ts
     permutePath: {
       "base case": {
         topic: tough.permutePath.bind(null, "/"),

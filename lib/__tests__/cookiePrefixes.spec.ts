@@ -6,6 +6,7 @@ let cookieJar: CookieJar
 let insecureUrl = 'http://www.example.com'
 let secureUrl = 'https://www.example.com'
 
+// TODO: this should have more of a matrix coverage
 describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
   describe('silent', () => {
     beforeEach(() => {

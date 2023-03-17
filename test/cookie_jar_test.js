@@ -42,6 +42,7 @@ function at(offset) {
   return { now: new Date(atNow + offset) };
 }
 
+// see lib/__tests__/cookie_jar_test.js (set cookie tests)
 vows
   .describe("CookieJar")
   .addBatch({
@@ -676,6 +677,7 @@ vows
         }
       }
     },
+    // TODO: what is this?  git blame and find out
     "Remove all cookies (the underlying store does not support removeAllCookies)": {
       topic: function() {
         const jar = new CookieJar();

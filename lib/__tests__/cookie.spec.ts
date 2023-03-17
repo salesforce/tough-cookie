@@ -33,6 +33,7 @@ import {Cookie} from '../cookie'
 
 jest.useFakeTimers()
 
+// ported from test/api_test.js (cookie tests)
 describe('Cookie', () => {
   let cookie: Cookie
 
@@ -46,7 +47,7 @@ describe('Cookie', () => {
     })
 
     it("should check for key property", () => {
-      expect(cookie.key).toEqual('test')
+      expect(cookie.key).toBe('test')
     })
 
     it('should check for value property', () => {

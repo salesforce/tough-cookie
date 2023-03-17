@@ -1,5 +1,6 @@
 import {defaultPath} from "../cookie";
 
+// port of tests/domain_and_path_test.js (default path tests)
 describe('defaultPath', () => {
   it.each([
     {

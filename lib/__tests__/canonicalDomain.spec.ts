@@ -1,5 +1,6 @@
 import {canonicalDomain} from "../cookie";
 
+// port of tests/domain_and_path_test.js (canonicalDomain tests for domain normalization)
 describe('canonicalDomain', () => {
   it.each([
     {

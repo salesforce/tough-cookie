@@ -34,6 +34,9 @@ import {Cookie, CookieJar, MemoryCookieStore, ParameterError, SerializedCookieJa
 const { objectContaining, assertions } = expect
 jest.useFakeTimers()
 
+// ported from:
+// - test/api_test.js (cookie jar tests)
+// - test/cookie_jar_test.js
 describe('CookieJar', () => {
   let cookieJar: CookieJar
 
@@ -124,7 +127,7 @@ describe('CookieJar', () => {
       })
     })
 
-    it('should set a timestamp when storing a cookie', async () => {
+    it('should set a timestamp when storing or retrieving a cookie', async () => {
       // @ts-ignore
       cookie = Cookie.parse("a=b; Domain=example.com; Path=/")
       const t0 = new Date()
@@ -146,6 +149,18 @@ describe('CookieJar', () => {
       }))
       expect(cookie.TTL()).toBe(Infinity)
       expect(cookie.isPersistent()).toBe(false)
+
+      // updates the last access when retrieving a cookie
+      jest.advanceTimersByTime(10000)
+      const t2 = new Date()
+      const cookies = await cookieJar.getCookies("http://example.com/index.html")
+      expect(cookies).toEqual([
+        objectContaining({
+          hostOnly: false,
+          creation: t1,
+          lastAccessed: t2
+        })
+      ])
     })
 
     it('should be able to set a no-path cookie', async () => {
@@ -171,10 +186,12 @@ describe('CookieJar', () => {
     })
 
     it('should be able to set a session cookie', async () => {
-      cookie = createCookie("a=b")
+      cookie = createCookie("SID=31d4d96e407aad42")
       expect(cookie.path).toBeNull()
       cookie = await cookieJar.setCookie(cookie, "http://www.example.com/dir/index.html")
       expect(cookie).toEqual(objectContaining({
+        key: 'SID',
+        value: '31d4d96e407aad42',
         domain: 'www.example.com',
         path: '/dir',
         hostOnly: true
@@ -226,6 +243,7 @@ describe('CookieJar', () => {
       )).rejects.toThrowError("Cookie is HttpOnly and this isn't an HTTP API")
     })
 
+    // TODO: where did this come from?
     it('should not fail when using an httpOnly cookie when using a non-HTTP API', async () => {
       assertions(1)
       await cookieJar.setCookie(
@@ -236,6 +254,7 @@ describe('CookieJar', () => {
       expect(cookies).not.toHaveLength(0)
     })
 
+    // TODO: where did this come from?
     it('should not fail when using an httpOnly cookie when using a non-HTTP API (setCookieSync)', () => {
       assertions(1)
       cookieJar.setCookieSync(
@@ -248,17 +267,18 @@ describe('CookieJar', () => {
 
     it.each([
       { testCase: 'basic', IPv6: '[::1]' },
-      { testCase: 'prefix', IPv6: '[::ffff:127.0.0.1]' },
+      { testCase: 'prefix', IPv6: '[::ffff:127.0.0.1]' }, // TODO: is this valid IP6?
       { testCase: 'classic', IPv6: '[2001:4860:4860::8888]' },
       { testCase: 'short', IPv6: '[2600::]' }
     ])('should store a $testCase IPv6', async (test) => {
+      const t0 = new Date()
       cookie = await cookieJar.setCookie(
         `a=b; Domain=${test.IPv6}; Path=/`,
         `http://${test.IPv6}/`
       )
       expect(cookie).toEqual(objectContaining({
-        creation: new Date(),
-        lastAccessed: new Date(),
+        creation: t0,
+        lastAccessed: t0,
       }))
       expect(cookie.TTL()).toBe(Infinity)
       expect(cookie.isPersistent()).toBe(false)
@@ -291,7 +311,7 @@ describe('CookieJar', () => {
           objectContaining({
             key: 'foo',
             value: 'bar'
-          })
+          }),
         ])
       })
     })
@@ -397,6 +417,7 @@ describe('CookieJar', () => {
         ])
       })
 
+      // TODO: https vs. secure flag is confusing af!
       it('should be able to get the cookies for https://example.com', async () => {
         const cookies = await cookieJar.getCookies("https://example.com")
         expect(cookies).toEqual([
@@ -648,11 +669,6 @@ describe('CookieJar', () => {
         cookieString = await cookieJar.getCookieString("http://example.com")
         expect(cookieString).toBe("a=1; b=2; e=5")
       })
-
-      it('be able to get the cookie string for http://example.com', async () => {
-        cookieString = await cookieJar.getCookieString("http://example.com")
-        expect(cookieString).toBe("a=1; b=2; e=5")
-      })
     })
   })
 
@@ -834,16 +850,20 @@ describe('CookieJar', () => {
   })
 })
 
+// TODO: remove the 'at' helper,
 it('should allow cookies with the same name under different domains and/or paths', async () => {
   const cookieJar = new CookieJar()
   const url = "http://www.example.com/"
   await Promise.all([
-    cookieJar.setCookie("aaaa=xxxx", url, at(0)),
+    cookieJar.setCookie("aaaa=xxxx; Domain=www.example.com", url, at(0)),
     cookieJar.setCookie("aaaa=1111; Domain=www.example.com", url, at(1000)),
+    cookieJar.setCookie("aaaa=yyyy; Domain=example.com", url, at(1500)),
     cookieJar.setCookie("aaaa=2222; Domain=example.com", url, at(2000)),
+    cookieJar.setCookie("aaaa=zzzz; Domain=www.example.com; Path=/pathA", url, at(2500)),
     cookieJar.setCookie("aaaa=3333; Domain=www.example.com; Path=/pathA", url, at(3000)),
   ])
   const cookies = await cookieJar.getCookies("http://www.example.com/pathA")
+  // may break with sorting; sorting should put 3333 first due to longest path
   expect(cookies).toEqual([
     objectContaining({value: '3333'}),
     objectContaining({value: '1111'}),
@@ -920,6 +940,7 @@ describe('loose mode', () => {
   })
 })
 
+// TODO: carve out a spec file for random issues
 it('should fix issue #132', async () => {
   const cookieJar = new CookieJar()
   await expect(cookieJar.setCookie(
@@ -929,10 +950,11 @@ it('should fix issue #132', async () => {
   )).rejects.toThrowError("First argument to setCookie must be a Cookie object or string")
 })
 
+// TODO: what is this test doing?  how does this parse?
 it('should fix issue #144', async () => {
   const cookieJar = new CookieJar()
   const cookieString = `AWSELB=69b2c0038b16e8e27056d1178e0d556c;
-          Path=/, jses_WS41=5f8dc2f6-ea37-49de-8dfa-b58336c2d9ce; path=/;
+          Path=/foo, jses_WS41=5f8dc2f6-ea37-49de-8dfa-b58336c2d9ce; path=/;
           Secure; HttpOnly, AuthToken=EFKFFFCH@K@GHIHEJCJMMGJM>CDHDEK>CFGK?MHJ
           >>JI@B??@CAEHBJH@H@A@GCFDLIMLJEEJEIFGALA?BIM?@G@DEDI@JE?I?HKJBIDDHJMEFEFM
           >G@J?I??B@C>>LAH?GCGJ@FMEGHBGAF; expires=Sun, 31-Jan-9021 02:39:04 GMT;
@@ -942,12 +964,15 @@ it('should fix issue #144', async () => {
   const cookies = await cookieJar.getCookies("https://google.com")
   expect(cookies).toEqual([
     objectContaining({
+      key: 'AWSELB',
+      value: '69b2c0038b16e8e27056d1178e0d556c',
+      path: '/',
       secure: true
     })
   ])
 })
 
-it('should fix issue #145', async () => {
+it('should fix issue #145 - missing 2nd url parameter', async () => {
   assertions(1)
   const cookieJar = new CookieJar()
   try {
@@ -958,7 +983,7 @@ it('should fix issue #145', async () => {
   }
 })
 
-it('should fix issue #197', async () => {
+it('should fix issue #197 - CookieJar().setCookie throws an error when empty cookie is passed', async () => {
   const cookieJar = new CookieJar()
   await expect(cookieJar.setCookie(
     "",

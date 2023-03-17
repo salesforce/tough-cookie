@@ -1,5 +1,6 @@
 import {permuteDomain} from "../cookie";
 
+// port of tests/domain_and_path_test.js (permute domain tests)
 describe('permuteDomain', () => {
   it.each([
     {
@@ -31,7 +32,8 @@ describe('permuteDomain', () => {
       ]
     },
   ])('permuteDomain("%s", %s") => %o', ({domain, permutations}) => {
-    const allowSpecialUseDomain = undefined
-    expect(permuteDomain(domain, allowSpecialUseDomain)).toEqual(permutations)
+    expect(permuteDomain(domain)).toEqual(permutations)
   })
 })
+
+// TODO: this set of tests only tests when allowSpecialUseDomain is unspecified (needs more coverage)

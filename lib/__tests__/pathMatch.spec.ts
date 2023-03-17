@@ -1,5 +1,6 @@
 import {pathMatch} from "../cookie";
 
+// port of tests/domain_and_path_test.js (path match tests)
 describe('pathMatch', () => {
   it.each([
     // request, cookie, match

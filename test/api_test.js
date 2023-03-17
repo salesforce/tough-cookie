@@ -55,6 +55,7 @@ vows
       assert.equal(tough.version, require("../package.json").version);
     }
   })
+  // see lib/__tests__/cookie.spec.ts
   .addBatch({
     Constructor: {
       topic: function() {
@@ -429,6 +430,7 @@ vows
       }
     }
   })
+  // TODO: confirm these are covered
   .addBatch({
     "Synchronous API on async CookieJar": {
       topic: function() {
@@ -555,7 +557,7 @@ vows
         topic: function() {
           const some = [
             "=a;domain=example.com", // index 0, falsey
-            "=b;domain=example.com", // index 1, truthy
+            "=b;domain=example.com", // index 1, falsey
             "c=d;domain=example.com" // index 2, truthy
           ];
           return some.map(Cookie.parse);

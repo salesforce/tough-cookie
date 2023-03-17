@@ -1508,10 +1508,14 @@ export class CookieJar {
 
   // RFC6365 S5.4
   getCookies(url: string, callback: Callback<Cookie[]>): void;
+  // TODO: provide types for the options
   getCookies(url: string, options: any, callback: Callback<Cookie[]>): void
   getCookies(url: string): Promise<Cookie[]>
+  // TODO: provide types for the options
   getCookies(url: string, options: any): Promise<Cookie[]>
+  // TODO: provide types for the options
   getCookies(url: string, options: any, callback?: (error: Error, result: Cookie[]) => void): unknown;
+  // TODO: provide types for the options
   getCookies(url: string, options: any = {}, _callback?: (error: Error, result: Cookie[]) => void): unknown {
     const promiseCallback = createPromiseCallback<Cookie[]>(arguments)
     const cb = promiseCallback.callback
