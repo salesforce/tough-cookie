@@ -27,6 +27,9 @@ describe('domainMatch', () => {
     ["www.aaaa.com", "aaa.com", false],
     ["www.aaa.com", "aaa.com", true],
     ["www.aexample.com", "example.com", false], // has to match on "." boundary
+    ["computer.com", "com", true], // suffix string found at start of domain
+    ["becoming.com", "com", true], // suffix string found in middle of domain
+    ["sitcom.com", "com", true], // suffix string found just before the '.' boundary
 
     // S5.1.3 "The string is a host name (i.e., not an IP address)"
     ["192.168.0.1", "168.0.1", false], // because str is an IP (v4)

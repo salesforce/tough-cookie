@@ -966,13 +966,31 @@ it('should fix issue #197', async () => {
   )).rejects.toThrowError('Cookie failed to parse')
 })
 
+// special use domains under a sub-domain
 describe.each([
   "local",
   "example",
   "invalid",
   "localhost",
   "test"
-])('when special use domain is %s', (specialUseDomain) => {
+])('when special use domain is dev.%s', (specialUseDomain) => {
+  it('should allow special domain cookies if allowSpecialUseDomain is set to the default value', async () => {
+    const cookieJar = new CookieJar()
+    const cookie = await cookieJar.setCookie(
+      `settingThisShouldPass=true; Domain=dev.${specialUseDomain}; Path=/;`,
+      `http://dev.${specialUseDomain}`
+    )
+    expect(cookie).toEqual(objectContaining({
+      key: 'settingThisShouldPass',
+      value: 'true',
+      domain: `dev.${specialUseDomain}`
+    }))
+    const cookies = await cookieJar.getCookies(`http://dev.${specialUseDomain}`, {
+      http: true
+    })
+    expect(cookies).toEqual([cookie])
+  })
+
   it('should allow special domain cookies if allowSpecialUseDomain: true', async () => {
     const cookieJar = new CookieJar(new MemoryCookieStore(), {
       rejectPublicSuffixes: true,
@@ -1003,6 +1021,108 @@ describe.each([
       await cookieJar.setCookie(
         `settingThisShouldPass=true; Domain=dev.${specialUseDomain}; Path=/;`,
         `http://dev.${specialUseDomain}`
+      )
+    } catch(e) {
+      // @ts-ignore
+      expect(e.message).toBe(`Cookie has domain set to the public suffix "${specialUseDomain}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain:true, rejectPublicSuffixes: false}.`)
+    }
+  })
+})
+
+// special use domains under the top-level domain
+describe.each([
+  "local",
+  "example",
+  "invalid",
+  "localhost",
+  "test"
+])('when special use domain is %s', (specialUseDomain) => {
+  // the restriction on special use domains at the top-level is loosened for
+  // the following domains due to legacy behavior
+  const isAllowed = ['localhost', 'invalid'].includes(specialUseDomain)
+
+  if (isAllowed) {
+    it('should allow special domain cookies if allowSpecialUseDomain is set to the default value', async () => {
+      const cookieJar = new CookieJar()
+      const cookie = await cookieJar.setCookie(
+        `settingThisShouldPass=true; Domain=${specialUseDomain}; Path=/;`,
+        `http://${specialUseDomain}`
+      )
+      expect(cookie).toEqual(objectContaining({
+        key: 'settingThisShouldPass',
+        value: 'true',
+        domain: `${specialUseDomain}`
+      }))
+      const cookies = await cookieJar.getCookies(`http://${specialUseDomain}`, {
+        http: true
+      })
+      expect(cookies).toEqual([cookie])
+    })
+  } else {
+    it('should reject special domain cookies if allowSpecialUseDomain is set to the default value', async () => {
+      assertions(1)
+      const cookieJar = new CookieJar()
+      try {
+        await cookieJar.setCookie(
+          `settingThisShouldPass=true; Domain=${specialUseDomain}; Path=/;`,
+          `http://${specialUseDomain}`
+        )
+      } catch(e) {
+        // @ts-ignore
+        expect(e.message).toBe(`Cookie has domain set to the public suffix "${specialUseDomain}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain:true, rejectPublicSuffixes: false}.`)
+      }
+    })
+  }
+
+  if (isAllowed) {
+    it('should allow special domain cookies if allowSpecialUseDomain: true', async () => {
+      const cookieJar = new CookieJar(new MemoryCookieStore(), {
+        rejectPublicSuffixes: true,
+        allowSpecialUseDomain: true
+      })
+      const cookie = await cookieJar.setCookie(
+        `settingThisShouldPass=true; Domain=${specialUseDomain}; Path=/;`,
+        `http://${specialUseDomain}`
+      )
+      expect(cookie).toEqual(objectContaining({
+        key: 'settingThisShouldPass',
+        value: 'true',
+        domain: `${specialUseDomain}`
+      }))
+      const cookies = await cookieJar.getCookies(`http://${specialUseDomain}`, {
+        http: true
+      })
+      expect(cookies).toEqual([cookie])
+    })
+  } else {
+    it('should reject special domain cookies if allowSpecialUseDomain: true', async () => {
+      assertions(1)
+      const cookieJar = new CookieJar(new MemoryCookieStore(), {
+        rejectPublicSuffixes: true,
+        allowSpecialUseDomain: true
+      })
+      try {
+        await cookieJar.setCookie(
+          `settingThisShouldPass=true; Domain=${specialUseDomain}; Path=/;`,
+          `http://${specialUseDomain}`
+        )
+      } catch(e) {
+        // @ts-ignore
+        expect(e.message).toBe(`Cookie has domain set to the public suffix "${specialUseDomain}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain:true, rejectPublicSuffixes: false}.`)
+      }
+    })
+  }
+
+  it('should reject special domain cookies if allowSpecialUseDomain: true', async () => {
+    assertions(1)
+    const cookieJar = new CookieJar(new MemoryCookieStore(), {
+      rejectPublicSuffixes: true,
+      allowSpecialUseDomain: false
+    })
+    try {
+      await cookieJar.setCookie(
+        `settingThisShouldPass=true; Domain=${specialUseDomain}; Path=/;`,
+        `http://${specialUseDomain}`
       )
     } catch(e) {
       // @ts-ignore

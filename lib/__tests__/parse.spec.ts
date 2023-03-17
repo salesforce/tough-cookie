@@ -3,6 +3,15 @@ import {performance} from 'node:perf_hooks'
 
 describe('Cookie.parse', () => {
   it.each([
+    // simple
+    {
+      input: 'a=bcd',
+      output: {
+        key: 'a',
+        value: 'bcd'
+      }
+    },
+    // with expiry
     {
       input: 'a=bcd; Expires=Tue, 18 Oct 2011 07:05:03 GMT',
       output: {
@@ -11,6 +20,7 @@ describe('Cookie.parse', () => {
         expires: new Date(Date.parse('Tue, 18 Oct 2011 07:05:03 GMT'))
       }
     },
+    // with expiry and path
     {
       input: 'abc="xyzzy!"; Expires=Tue, 18 Oct 2011 07:05:03 GMT; Path=/aBc',
       output: {
@@ -22,6 +32,7 @@ describe('Cookie.parse', () => {
         secure: false
       }
     },
+    // with most things
     {
       input: 'abc="xyzzy!"; Expires=Tue, 18 Oct 2011 07:05:03 GMT; Path=/aBc; Domain=example.com; Secure; HTTPOnly; Max-Age=1234; Foo=Bar; Baz',
       output: {
@@ -36,6 +47,7 @@ describe('Cookie.parse', () => {
         extensions: ['Foo=Bar', 'Baz']
       }
     },
+    // invalid expires
     {
       input: 'a=b; Expires=xyzzy',
       output: {
@@ -44,6 +56,7 @@ describe('Cookie.parse', () => {
         expires: "Infinity"
       }
     },
+    // zero max-age
     {
       input: 'a=b; Max-Age=0',
       output: {
@@ -52,6 +65,7 @@ describe('Cookie.parse', () => {
         maxAge: 0
       }
     },
+    // negative max-age
     {
       input: 'a=b; Max-Age=-1',
       output: {
@@ -60,6 +74,7 @@ describe('Cookie.parse', () => {
         maxAge: -1
       }
     },
+    // empty domain
     {
       input: 'a=b; domain=',
       output: {
@@ -68,6 +83,7 @@ describe('Cookie.parse', () => {
         domain: null
       }
     },
+    // dot domain
     {
       input: 'a=b; domain=.',
       output: {
@@ -76,6 +92,7 @@ describe('Cookie.parse', () => {
         domain: null
       }
     },
+    // uppercase domain
     {
       input: 'a=b; domain=EXAMPLE.COM',
       output: {
@@ -84,14 +101,17 @@ describe('Cookie.parse', () => {
         domain: "example.com"
       }
     },
+    // trailing dot in domain
     {
       input: 'a=b; Domain=example.com.',
       output: {
         key: 'a',
         value: 'b',
         domain: "example.com."
-      }
+      },
+      assertValidateReturns: false
     },
+    // empty path
     {
       input: 'a=b; path=',
       output: {
@@ -100,6 +120,7 @@ describe('Cookie.parse', () => {
         path: null
       }
     },
+    // no-slash path
     {
       input: 'a=b; path=xyzzy',
       output: {
@@ -108,6 +129,7 @@ describe('Cookie.parse', () => {
         path: null
       }
     },
+    // trailing semi-colons after path #1
     {
       input: 'a=b; path=/;',
       output: {
@@ -116,6 +138,7 @@ describe('Cookie.parse', () => {
         path: '/'
       }
     },
+    // trailing semi-colons after path #2
     {
       input: 'c=d;;;;',
       output: {
@@ -124,6 +147,7 @@ describe('Cookie.parse', () => {
         path: null
       }
     },
+    // secure-with-value
     {
       input: 'a=b; Secure=xyzzy',
       output: {
@@ -132,6 +156,7 @@ describe('Cookie.parse', () => {
         secure: true
       }
     },
+    // httponly-with-value
     {
       input: 'a=b; HttpOnly=xyzzy',
       output: {
@@ -140,10 +165,12 @@ describe('Cookie.parse', () => {
         httpOnly: true
       }
     },
+    // garbage
     {
       input: '\x08',
       output: undefined
     },
+    // public suffix domain
     {
       input: 'a=b; domain=kyoto.jp',
       output: {
@@ -151,7 +178,9 @@ describe('Cookie.parse', () => {
         value: 'b',
         domain: 'kyoto.jp'
       },
+      assertValidateReturns: false
     },
+    // public suffix foonet.net - top level
     {
       input: 'a=b; domain=foonet.net',
       output: {
@@ -159,7 +188,9 @@ describe('Cookie.parse', () => {
         value: 'b',
         domain: 'foonet.net'
       },
+      assertValidateReturns: true
     },
+    // public suffix foonet.net - www
     {
       input: 'a=b; domain=www.foonet.net',
       output: {
@@ -167,7 +198,9 @@ describe('Cookie.parse', () => {
         value: 'b',
         domain: 'www.foonet.net'
       },
+      assertValidateReturns: true
     },
+    // public suffix foonet.net - with a dot
     {
       input: 'a=b; domain=.foonet.net',
       output: {
@@ -175,7 +208,9 @@ describe('Cookie.parse', () => {
         value: 'b',
         domain: 'foonet.net'
       },
+      assertValidateReturns: true
     },
+    // Ironically, Google 'GAPS' cookie has very little whitespace
     {
       input: 'GAPS=1:A1aaaaAaAAa1aaAaAaaAAAaaa1a11a:aaaAaAaAa-aaaA1-;Path=/;Expires=Thu, 17-Apr-2014 02:12:29 GMT;Secure;HttpOnly',
       output: {
@@ -187,6 +222,7 @@ describe('Cookie.parse', () => {
         httpOnly: true
       },
     },
+    // lots of equal signs
     {
       input: 'queryPref=b=c&d=e; Path=/f=g; Expires=Thu, 17 Apr 2014 02:12:29 GMT; HttpOnly',
       output: {
@@ -197,6 +233,7 @@ describe('Cookie.parse', () => {
         httpOnly: true
       },
     },
+    // spaces in value
     {
       input: 'a=one two three',
       output: {
@@ -207,6 +244,7 @@ describe('Cookie.parse', () => {
         extensions: null
       },
     },
+    // quoted spaces in value
     {
       input: 'a="one two three"',
       output: {
@@ -217,6 +255,7 @@ describe('Cookie.parse', () => {
         extensions: null
       },
     },
+    // non-ASCII in value
     {
       input: 'farbe=weiß',
       output: {
@@ -227,6 +266,7 @@ describe('Cookie.parse', () => {
         extensions: null
       },
     },
+    // empty key
     {
       input: '=abc',
       output: {
@@ -238,6 +278,7 @@ describe('Cookie.parse', () => {
       },
       parseOptions: { loose: true }
     },
+    // non-existent key
     {
       input: 'abc',
       output: {
@@ -249,6 +290,7 @@ describe('Cookie.parse', () => {
       },
       parseOptions: { loose: true }
     },
+    // weird format
     {
       input: '=foo=bar',
       output: {
@@ -260,6 +302,7 @@ describe('Cookie.parse', () => {
       },
       parseOptions: { loose: true }
     },
+    // way too many semicolons followed by non-semicolon
     {
       input: `foo=bar${";".repeat(65535)} domain=example.com`,
       output: {
@@ -270,14 +313,17 @@ describe('Cookie.parse', () => {
         extensions: null
       }
     },
+    // way too many spaces - small one doesn't parse
     {
       input: `x x`,
       output: undefined
     },
+    // way too many spaces - large one doesn't parse
     {
       input: `x${" ".repeat(65535)}x`,
       output: undefined
     },
+    // same-site - lax
     {
       input: `abc=xyzzy; SameSite=Lax`,
       output: {
@@ -287,6 +333,7 @@ describe('Cookie.parse', () => {
         extensions: null
       }
     },
+    // same-site - strict
     {
       input: `abc=xyzzy; SameSite=StRiCt`,
       output: {
@@ -296,31 +343,60 @@ describe('Cookie.parse', () => {
         extensions: null
       }
     },
+    // same-site - none
+    {
+      input: `abc=xyzzy; SameSite=NoNe`,
+      output: {
+        key: 'abc',
+        value: 'xyzzy',
+        sameSite: 'none',
+        extensions: null
+      }
+    },
+    // same-site - bad
     {
       input: `abc=xyzzy; SameSite=example.com`,
       output: {
         key: 'abc',
         value: 'xyzzy',
+        sameSite: undefined,
         extensions: null
       }
     },
+    // same-site - absent
+    {
+      input: `abc=xyzzy;`,
+      output: {
+        key: 'abc',
+        value: 'xyzzy',
+        sameSite: undefined,
+        extensions: null
+      }
+    },
+    // empty string
     {
       input: ``,
       output: null
     },
+    // missing string
     {
       input: undefined,
       output: null
     },
+    // some string object
     {
       input: new String(''),
       output: null
     },
+    // some empty string object
     {
       input: new String(),
       output: null
     }
-  ])('Cookie.parse("$input")', ({input, output, parseOptions = {}}) => {
+  ])('Cookie.parse("$input")', (testCase) => {
+    const {input, output } = testCase
+    const parseOptions = testCase.parseOptions || {}
+
     const value = input === undefined ? undefined : input.valueOf()
     // @ts-ignore
     const cookie = Cookie.parse(value, parseOptions)
@@ -329,8 +405,17 @@ describe('Cookie.parse', () => {
     } else {
       expect(cookie).toBe(output)
     }
+
+    if (cookie && typeof testCase.assertValidateReturns === 'boolean') {
+      expect(cookie.validate()).toBe(testCase.assertValidateReturns)
+    }
   })
 
+  // perf cases for:
+  // - way too many spaces (loose mode)
+  // - way too many spaces (strict mode)
+  // - way too many spaces with value (loose mode)
+  // - way too many spaces with value (strict mode)
   it.each([
     {
       shortVersion: 'x x',
@@ -364,7 +449,7 @@ describe('Cookie.parse', () => {
   })
 })
 
-
+// way too many spaces - takes about the same time for each
 it('should parse a long cookie string with spaces in roughly the same amount of time as one with short spaces', () => {
   const longCookie = `x${" ".repeat(65535)}x`
   const shortCookie = `x x`
