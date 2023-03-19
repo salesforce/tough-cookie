@@ -31,9 +31,9 @@
 
 import {CookieJar, parseDate} from '../cookie'
 import url from 'url'
-import parserData from '../../test/ietf_data/parser.json'
-import bsdExampleDates from '../../test/ietf_data/dates/bsd-examples.json'
-import exampleDates from '../../test/ietf_data/dates/examples.json'
+import parserData from './data/parser'
+import bsdExampleDates from './data/dates/bsd-examples'
+import exampleDates from './data/dates/examples'
 
 describe('IETF http state tests', () => {
   describe('Set/get cookie tests', () => {

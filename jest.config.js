@@ -8,5 +8,6 @@ module.exports = {
       isolatedModules: false
     }
   },
-  testPathIgnorePatterns: ["<rootDir>/dist/"]
+  rootDir: './lib/',
+  testPathIgnorePatterns: ['./lib/__tests__/data/']
 };
