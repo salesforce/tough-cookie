@@ -76,8 +76,8 @@
   "bugs": {
     "url": "https://github.com/salesforce/tough-cookie/issues"
   },
-  "main": "./dist/lib/cookie",
-  "types": "./dist/lib/cookie",
+  "main": "./dist/cookie",
+  "types": "./dist/cookie",
   "files": [
     "lib"
   ],

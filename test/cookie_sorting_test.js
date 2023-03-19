@@ -31,7 +31,7 @@
 "use strict";
 const vows = require("vows");
 const assert = require("assert");
-const tough = require("../dist/lib/cookie");
+const tough = require("../dist/cookie");
 const Cookie = tough.Cookie;
 const CookieJar = tough.CookieJar;
 
