@@ -27,6 +27,8 @@ SOFTWARE.
 ************************************************************************************ */
 "use strict";
 
+const toString = Object.prototype.toString
+
 /* Validation functions copied from check-types package - https://www.npmjs.com/package/check-types */
 export function isFunction(data: any): boolean {
   return typeof data === 'function';
