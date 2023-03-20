@@ -82,8 +82,13 @@
     "lib"
   ],
   "scripts": {
+    "build": "npm run clean && tsc",
+    "clean": "rm -rf dist",
     "version": "genversion lib/version.js && git add lib/version.js",
-    "test": "jest && tsc && vows test/*_test.js",
+    "test": "npm run test:ts && npm run test:legacy",
+    "test:ts": "jest",
+    "test:legacy": "npm run build -- --declaration false && vows test/*_test.js",
+    "typecheck": "tsc --noEmit",
     "cover": "nyc --reporter=lcov --reporter=html vows test/*_test.js",
     "eslint": "eslint --env node --ext .js .",
     "prettier": "prettier '**/*.{json,ts,yaml,md}'",
