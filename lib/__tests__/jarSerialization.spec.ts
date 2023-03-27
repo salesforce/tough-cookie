@@ -36,6 +36,10 @@ const { any, objectContaining } = expect
 jest.useFakeTimers()
 
 describe('cookieJar serialization', () => {
+  it('should use the expected version', () => {
+    expect(version).toBe('4.1.2')
+  })
+
   it('should provide the list of serialized properties available for a Cookie with `Cookie.serializableProperties`', () => {
     expect(Cookie.serializableProperties).toEqual([
       "key",
@@ -282,7 +286,7 @@ describe('cookieJar serialization', () => {
 function expectDataToMatchSerializationSchema (serializedJar) {
   expect(serializedJar).not.toBeNull()
   expect(serializedJar).toBeInstanceOf(Object)
-  expect(serializedJar.version).toBe('tough-cookie@4.1.2')
+  expect(serializedJar.version).toBe(`tough-cookie@${version}`)
   expect(serializedJar.storeType).toBe('MemoryCookieStore')
   expect(serializedJar.rejectPublicSuffixes).toBe(true)
   expect(serializedJar.cookies).toBeInstanceOf(Array)
