@@ -76,15 +76,15 @@
   "bugs": {
     "url": "https://github.com/salesforce/tough-cookie/issues"
   },
-  "main": "./dist/lib/cookie",
-  "types": "./dist/lib/cookie",
+  "main": "./dist/cookie.js",
+  "types": "./dist/cookie.d.ts",
   "files": [
-    "lib"
+    "dist"
   ],
   "scripts": {
     "version": "genversion lib/version.js && git add lib/version.js",
     "test": "jest && tsc && vows test/*_test.js",
-    "cover": "nyc --reporter=lcov --reporter=html vows test/*_test.js",
+    "cover": "jest --coverage",
     "eslint": "eslint --env node --ext .js .",
     "prettier": "prettier '**/*.{json,ts,yaml,md}'",
     "format": "npm run eslint -- --fix"
