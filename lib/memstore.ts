@@ -213,6 +213,7 @@ export class MemoryCookieStore extends Store {
     callback?: Callback<void>,
   ): unknown {
     // this seems wrong but it stops typescript from complaining and all the test pass...
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     callback = callback ?? function () {}
 
     // updateCookie() may avoid updating cookies that are identical.  For example,

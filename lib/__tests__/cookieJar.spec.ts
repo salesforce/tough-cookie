@@ -29,7 +29,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Cookie, CookieJar, MemoryCookieStore, ParameterError, SerializedCookieJar, Store } from "../cookie";
+import {
+  Cookie,
+  CookieJar,
+  MemoryCookieStore,
+  ParameterError,
+  SerializedCookieJar,
+  Store,
+} from '../cookie'
 
 const { objectContaining, assertions } = expect
 jest.useFakeTimers()
@@ -135,7 +142,7 @@ describe('CookieJar', () => {
           '=a;domain=example.com',
           '=b;domain=example.com',
           'c=d;domain=example.com',
-        ].map(Cookie.parse)
+        ].map((value) => Cookie.parse(value))
         expect(cookies).toEqual([
           undefined,
           undefined,
@@ -965,7 +972,7 @@ describe('CookieJar', () => {
           prefixSecurity: 'silent',
           rejectPublicSuffixes: true,
           storeType: 'MemoryCookieStore',
-          version: 'tough-cookie@4.1.2',
+          version: 'tough-cookie@5.0.0',
         }
         expect(data).toEqual(expected)
       },

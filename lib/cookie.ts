@@ -29,16 +29,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import * as punycode from "punycode/";
-import { parse as urlParse } from "url";
-import * as pubsuffix from "./pubsuffix-psl";
-import { Store } from "./store";
-import { MemoryCookieStore } from "./memstore";
-import { pathMatch } from "./pathMatch";
-import * as validators from "./validators";
-import VERSION from "./version";
-import { permuteDomain } from "./permuteDomain";
-import { getCustomInspectSymbol } from "./utilHelper";
+import * as punycode from 'punycode/'
+import { parse as urlParse } from 'url'
+import * as pubsuffix from './pubsuffix-psl'
+import { Store } from './store'
+import { MemoryCookieStore } from './memstore'
+import { pathMatch } from './pathMatch'
+import * as validators from './validators'
+import { version } from './version'
+import { permuteDomain } from './permuteDomain'
+import { getCustomInspectSymbol } from './utilHelper'
 
 // From RFC6265 S4.1.1
 // note that it excludes \x3B ";"
@@ -527,7 +527,10 @@ function parseCookiePair(cookiePair: string, looseMode: boolean) {
   return c
 }
 
-function parse(str: string, options: any = {}): Cookie | undefined | null {
+function parse(
+  str: string,
+  options?: ParseCookieOptions,
+): Cookie | undefined | null {
   if (validators.isEmptyString(str) || !validators.isString(str)) {
     return null
   }
@@ -537,7 +540,7 @@ function parse(str: string, options: any = {}): Cookie | undefined | null {
   // We use a regex to parse the "name-value-pair" part of S5.2
   const firstSemi = str.indexOf(';') // S5.2 step 1
   const cookiePair = firstSemi === -1 ? str : str.substr(0, firstSemi)
-  const c = parseCookiePair(cookiePair, !!options.loose)
+  const c = parseCookiePair(cookiePair, options?.loose ?? false)
   if (!c) {
     return undefined
   }
@@ -659,8 +662,7 @@ function parse(str: string, options: any = {}): Cookie | undefined | null {
         break
 
       case 'samesite': // RFC6265bis-02 S5.3.7
-        const enforcement = av_value ? av_value.toLowerCase() : ''
-        switch (enforcement) {
+        switch (av_value ? av_value.toLowerCase() : '') {
           case 'strict':
             c.sameSite = 'strict'
             break
@@ -1159,7 +1161,10 @@ export class Cookie {
     return this.canonicalizedDomain()
   }
 
-  static parse(cookieString: string, options?: {}): Cookie | undefined | null {
+  static parse(
+    cookieString: string,
+    options?: ParseCookieOptions,
+  ): Cookie | undefined | null {
     return parse(cookieString, options)
   }
 
@@ -1709,6 +1714,7 @@ export class CookieJar {
       // deferred from S5.3
       // non-RFC: allow retention of expired cookies by choice
       if (expireCheck && c.expiryTime() <= now) {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         store.removeCookie(c.domain, c.path, c.key, () => {}) // result ignored
         return false
       }
@@ -1882,7 +1888,7 @@ export class CookieJar {
       // The version of tough-cookie that serialized this jar. Generally a good
       // practice since future versions can make data import decisions based on
       // known past behavior. When/if this matters, use `semver`.
-      version: `tough-cookie@${VERSION}`,
+      version: `tough-cookie@${version}`,
 
       // add the store type, to make humans happy:
       storeType: type,
@@ -2180,7 +2186,7 @@ export class CookieJar {
 const getPublicSuffix = pubsuffix.getPublicSuffix
 const ParameterError = validators.ParameterError
 
-export { VERSION as version }
+export { version as version }
 export { Store as Store }
 export { MemoryCookieStore as MemoryCookieStore }
 export { parseDate as parseDate }
@@ -2212,6 +2218,10 @@ type GetCookiesOptions = {
   allPaths?: boolean | undefined
   sameSiteContext?: 'none' | 'lax' | 'strict' | undefined
   sort?: boolean | undefined
+}
+
+type ParseCookieOptions = {
+  loose?: boolean | undefined
 }
 
 interface PromiseCallback<T> {

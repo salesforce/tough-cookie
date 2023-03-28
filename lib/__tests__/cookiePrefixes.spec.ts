@@ -3,8 +3,8 @@ import { CookieJar, PrefixSecurityEnum } from '../cookie'
 const { objectContaining } = expect
 
 let cookieJar: CookieJar
-let insecureUrl = 'http://www.example.com'
-let secureUrl = 'https://www.example.com'
+const insecureUrl = 'http://www.example.com'
+const secureUrl = 'https://www.example.com'
 
 describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
   describe('silent', () => {

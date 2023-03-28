@@ -29,7 +29,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 'use strict'
-/*jshint unused:false */
 
 import type { Callback, Cookie } from './cookie'
 

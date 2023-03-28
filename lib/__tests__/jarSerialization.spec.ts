@@ -37,7 +37,7 @@ jest.useFakeTimers()
 
 describe('cookieJar serialization', () => {
   it('should use the expected version', () => {
-    expect(version).toBe('4.1.2')
+    expect(version).toBe('5.0.0')
   })
 
   it('should provide the list of serialized properties available for a Cookie with `Cookie.serializableProperties`', () => {

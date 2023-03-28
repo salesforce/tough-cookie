@@ -67,7 +67,7 @@
     "RFC6265",
     "RFC2965"
   ],
-  "version": "4.1.2",
+  "version": "5.0.0",
   "homepage": "https://github.com/salesforce/tough-cookie",
   "repository": {
     "type": "git",
@@ -82,12 +82,15 @@
     "dist"
   ],
   "scripts": {
-    "version": "genversion lib/version.js && git add lib/version.js",
-    "test": "jest && tsc && vows test/*_test.js",
-    "cover": "jest --coverage",
-    "lint": "eslint --fix lib",
-    "prettier": "prettier --write '**/*.{json,ts,yaml,md}'",
-    "format": "npm run eslint -- --fix"
+    "build": "npm run version && tsc",
+    "lint": "eslint --quiet --fix lib",
+    "lint:everything": "eslint --fix lib",
+    "format": "prettier --write '**/*.{json,ts,yaml,md}'",
+    "prepack": "npm run version",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "test:legacy": "npm run build && vows test/*_test.js",
+    "version": "genversion --es6 lib/version.ts"
   },
   "engines": {
     "node": ">=6"
@@ -102,7 +105,7 @@
     "@typescript-eslint/eslint-plugin": "^5.57.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "genversion": "^2.1.0",
+    "genversion": "^3.1.1",
     "jest": "^29.5.0",
     "prettier": "^2.8.7",
     "ts-jest": "^29.0.5",

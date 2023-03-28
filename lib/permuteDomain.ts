@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 'use strict'
-const pubsuffix = require('./pubsuffix-psl')
+import { getPublicSuffix } from './pubsuffix-psl'
 
 // Gives the permutation of all possible domainMatch()es of a given domain. The
 // array is in shortest-to-longest order.  Handy for indexing.
@@ -38,7 +38,7 @@ export function permuteDomain(
   domain: string,
   allowSpecialUseDomain?: boolean,
 ): string[] | null {
-  const pubSuf = pubsuffix.getPublicSuffix(domain, {
+  const pubSuf = getPublicSuffix(domain, {
     allowSpecialUseDomain: allowSpecialUseDomain,
   })
 
