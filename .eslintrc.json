@@ -1,14 +1,13 @@
 {
-  "extends": ["plugin:prettier/recommended"],
-  "parserOptions": {
-    "ecmaVersion": 6
-  },
+  "root": true,
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
+  ],
   "rules": {
-    "no-debugger": "error",
-    "no-var": "error",
-    "prefer-arrow-callback": "error",
-    "prefer-const": "error",
-    "prefer-template": "error",
+    "no-control-regex": "off",
+    "@typescript-eslint/ban-ts-comment": "off",
     "no-restricted-modules": ["error",
       // we can't rely on node standard modules in "native" or "browser" environments
       // - exceptions:

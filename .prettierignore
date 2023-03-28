@@ -1,2 +1,2 @@
-lib/version.js
 dist/*.js
+test/*.js
