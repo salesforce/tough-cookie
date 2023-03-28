@@ -28,36 +28,39 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-"use strict";
-const pubsuffix = require("./pubsuffix-psl");
+'use strict'
+const pubsuffix = require('./pubsuffix-psl')
 
 // Gives the permutation of all possible domainMatch()es of a given domain. The
 // array is in shortest-to-longest order.  Handy for indexing.
 
-export function permuteDomain(domain: string, allowSpecialUseDomain?: boolean): string[] | null {
+export function permuteDomain(
+  domain: string,
+  allowSpecialUseDomain?: boolean,
+): string[] | null {
   const pubSuf = pubsuffix.getPublicSuffix(domain, {
-    allowSpecialUseDomain: allowSpecialUseDomain
-  });
+    allowSpecialUseDomain: allowSpecialUseDomain,
+  })
 
   if (!pubSuf) {
-    return null;
+    return null
   }
   if (pubSuf == domain) {
-    return [domain];
+    return [domain]
   }
 
   // Nuke trailing dot
-  if (domain.slice(-1) == ".") {
-    domain = domain.slice(0, -1);
+  if (domain.slice(-1) == '.') {
+    domain = domain.slice(0, -1)
   }
 
-  const prefix = domain.slice(0, -(pubSuf.length + 1)); // ".example.com"
-  const parts = prefix.split(".").reverse();
-  let cur = pubSuf;
-  const permutations = [cur];
+  const prefix = domain.slice(0, -(pubSuf.length + 1)) // ".example.com"
+  const parts = prefix.split('.').reverse()
+  let cur = pubSuf
+  const permutations = [cur]
   while (parts.length) {
-    cur = `${parts.shift()}.${cur}`;
-    permutations.push(cur);
+    cur = `${parts.shift()}.${cur}`
+    permutations.push(cur)
   }
-  return permutations;
+  return permutations
 }

@@ -1,4 +1,4 @@
-import {Cookie, cookieCompare, CookieJar} from "../cookie";
+import { Cookie, cookieCompare, CookieJar } from '../cookie'
 
 jest.useFakeTimers()
 
@@ -34,12 +34,20 @@ describe('Cookie sorting', () => {
 
     it('should preserve the creation index during update with setCookie', async () => {
       const cookieJar = new CookieJar()
-      const cookie = new Cookie({ key: 'k', value: 'v1', domain: 'example.com' })
+      const cookie = new Cookie({
+        key: 'k',
+        value: 'v1',
+        domain: 'example.com',
+      })
       const { creationIndex } = cookie
       await cookieJar.setCookie(cookie, 'http://example.com/')
       expect(cookie.creationIndex).toBe(creationIndex)
 
-      const updatedCookie = new Cookie({ key: 'k', value: 'v2', domain: 'example.com' })
+      const updatedCookie = new Cookie({
+        key: 'k',
+        value: 'v2',
+        domain: 'example.com',
+      })
       await cookieJar.setCookie(updatedCookie, 'http://example.com/')
       expect(cookie.creationIndex).toBe(updatedCookie.creationIndex)
     })
@@ -51,9 +59,26 @@ describe('Cookie sorting', () => {
       new Cookie({ key: 'b', value: '' }),
       new Cookie({ key: 'c', value: '', path: '/path' }),
       new Cookie({ key: 'd', value: '', path: '/path' }),
-      new Cookie({ key: 'e', value: '', path: '/longer/path', creation: new Date(Date.now() + 1) }),
-      new Cookie({ key: 'f', value: '', path: '/longer/path', creation: new Date(Date.now() + 2) }),
+      new Cookie({
+        key: 'e',
+        value: '',
+        path: '/longer/path',
+        creation: new Date(Date.now() + 1),
+      }),
+      new Cookie({
+        key: 'f',
+        value: '',
+        path: '/longer/path',
+        creation: new Date(Date.now() + 2),
+      }),
     ].sort(cookieCompare)
-    expect(cookies.map(cookie => cookie.key)).toEqual(['e', 'f', 'c', 'd', 'a', 'b'])
+    expect(cookies.map((cookie) => cookie.key)).toEqual([
+      'e',
+      'f',
+      'c',
+      'd',
+      'a',
+      'b',
+    ])
   })
 })

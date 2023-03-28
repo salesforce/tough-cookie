@@ -9,31 +9,31 @@
 ## Synopsis
 
 ```javascript
-var tough = require("tough-cookie");
-var Cookie = tough.Cookie;
-var cookie = Cookie.parse(header);
-cookie.value = "somethingdifferent";
-header = cookie.toString();
-var cookiejar = new tough.CookieJar();
+var tough = require('tough-cookie')
+var Cookie = tough.Cookie
+var cookie = Cookie.parse(header)
+cookie.value = 'somethingdifferent'
+header = cookie.toString()
+var cookiejar = new tough.CookieJar()
 
 // Asynchronous!
 var cookie = await cookiejar.setCookie(
   cookie,
-  "https://currentdomain.example.com/path"
-);
-var cookies = await cookiejar.getCookies("https://example.com/otherpath");
+  'https://currentdomain.example.com/path',
+)
+var cookies = await cookiejar.getCookies('https://example.com/otherpath')
 
 // Or with callbacks!
 cookiejar.setCookie(
   cookie,
-  "https://currentdomain.example.com/path",
+  'https://currentdomain.example.com/path',
   function (err, cookie) {
     /* ... */
-  }
-);
-cookiejar.getCookies("http://example.com/otherpath", function (err, cookies) {
+  },
+)
+cookiejar.getCookies('http://example.com/otherpath', function (err, cookies) {
   /* ... */
-});
+})
 ```
 
 Why the name? NPM modules `cookie`, `cookies` and `cookiejar` were already taken.
@@ -113,8 +113,8 @@ For use with `.sort()`, sorts a list of cookies into the recommended order given
 ```javascript
 var cookies = [
   /* unsorted array of Cookie objects */
-];
-cookies = cookies.sort(cookieCompare);
+]
+cookies = cookies.sort(cookieCompare)
 ```
 
 > **Note**: Since the JavaScript `Date` is limited to a 1-ms precision, cookies within the same millisecond are entirely possible. This is especially true when using the `now` option to `.setCookie()`. The `.creationIndex` property is a per-process global counter, assigned during construction with `new Cookie()`, which preserves the spirit of the RFC sorting: older cookies go first. This works great for `MemoryCookieStore` since `Set-Cookie` headers are parsed in order, but is not so great for distributed systems. Sophisticated `Store`s may wish to set this to some other _logical clock_ so that if cookies A and B are created in the same millisecond, but cookie A is created before cookie B, then `A.creationIndex < B.creationIndex`. If you want to alter the global counter, which you probably _shouldn't_ do, it's stored in `Cookie.cookiesCreated`.
@@ -144,9 +144,9 @@ If options is not an object it is ignored, which means it can be used with [`Arr
 To process the Set-Cookie header(s) on a node HTTP/HTTPS response:
 
 ```javascript
-if (Array.isArray(res.headers["set-cookie"]))
-  cookies = res.headers["set-cookie"].map(Cookie.parse);
-else cookies = [Cookie.parse(res.headers["set-cookie"])];
+if (Array.isArray(res.headers['set-cookie']))
+  cookies = res.headers['set-cookie'].map(Cookie.parse)
+else cookies = [Cookie.parse(res.headers['set-cookie'])]
 ```
 
 _Note:_ In version 2.3.3, tough-cookie limited the number of spaces before the `=` to 256 characters. This limitation was removed in version 2.3.4.

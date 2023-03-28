@@ -25,23 +25,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ************************************************************************************ */
-"use strict";
+'use strict'
 
 /* Validation functions copied from check-types package - https://www.npmjs.com/package/check-types */
 export function isFunction(data: any): boolean {
-  return typeof data === 'function';
+  return typeof data === 'function'
 }
 
 export function isNonEmptyString(data: any): boolean {
-  return isString(data) && data !== '';
+  return isString(data) && data !== ''
 }
 
 export function isDate(data: any): boolean {
-  return isInstanceStrict(data, Date) && isInteger(data.getTime());
+  return isInstanceStrict(data, Date) && isInteger(data.getTime())
 }
 
 export function isEmptyString(data: any): boolean {
-  return data === '' || (data instanceof String && data.toString() === '');
+  return data === '' || (data instanceof String && data.toString() === '')
 }
 
 export function isString(data: any): boolean {
@@ -49,42 +49,42 @@ export function isString(data: any): boolean {
 }
 
 export function isObject(data: any): boolean {
-  return toString.call(data) === '[object Object]';
+  return toString.call(data) === '[object Object]'
 }
 
 export function isInstanceStrict(data: any, prototype: Function): boolean {
   try {
-    return data instanceof prototype;
+    return data instanceof prototype
   } catch (error) {
-    return false;
+    return false
   }
 }
 
 export function isInteger(data: any): boolean {
-  return typeof data === 'number' && data % 1 === 0;
+  return typeof data === 'number' && data % 1 === 0
 }
 /* End validation functions */
 
 export function validate(bool: boolean, cb?: any, options?: any): void {
   if (!isFunction(cb)) {
-    options = cb;
-    cb = null;
+    options = cb
+    cb = null
   }
-  if (!isObject(options)) options = { Error: "Failed Check" };
+  if (!isObject(options)) options = { Error: 'Failed Check' }
   if (!bool) {
     if (cb) {
-      cb(new ParameterError(options));
+      cb(new ParameterError(options))
     } else {
-      throw new ParameterError(options);
+      throw new ParameterError(options)
     }
   }
 }
 
 export class ParameterError extends Error {
   constructor(...params: any[]) {
-    super(...params);
+    super(...params)
     if (Object.setPrototypeOf) {
-      Object.setPrototypeOf(this, ParameterError.prototype);
+      Object.setPrototypeOf(this, ParameterError.prototype)
     }
   }
 }

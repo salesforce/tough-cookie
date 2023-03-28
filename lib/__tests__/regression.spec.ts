@@ -1,6 +1,6 @@
-import {CookieJar} from "../cookie";
+import { CookieJar } from '../cookie'
 
-const { objectContaining, assertions } = expect;
+const { objectContaining, assertions } = expect
 const url = 'http://www.example.com'
 
 describe('Regression Tests', () => {
@@ -13,13 +13,13 @@ describe('Regression Tests', () => {
       objectContaining({
         key: 'broken_path',
         value: 'testme',
-        path: '/'
+        path: '/',
       }),
       objectContaining({
         key: 'b',
         value: '2',
-        path: '/'
-      })
+        path: '/',
+      }),
     ])
   })
 
@@ -27,7 +27,9 @@ describe('Regression Tests', () => {
     const malformedUri = `${url}/?test=100%`
     const cookieJar = new CookieJar()
     await cookieJar.setCookie('Test=Test', malformedUri)
-    await expect(cookieJar.getCookieString(malformedUri)).resolves.toBe('Test=Test')
+    await expect(cookieJar.getCookieString(malformedUri)).resolves.toBe(
+      'Test=Test',
+    )
   })
 
   it('should allow setCookie (without options) callback works even if it is not instanceof Function (GH-158/GH-175)', () => {
@@ -35,12 +37,14 @@ describe('Regression Tests', () => {
     const cookieJar = new CookieJar()
 
     // @ts-ignore
-    const callback = function(err, cookie) {
+    const callback = function (err, cookie) {
       expect(err).toBeNull()
-      expect(cookie).toEqual(objectContaining({
-        key: 'a',
-        value: 'b'
-      }))
+      expect(cookie).toEqual(
+        objectContaining({
+          key: 'a',
+          value: 'b',
+        }),
+      )
     }
 
     Object.setPrototypeOf(callback, null)
@@ -56,13 +60,13 @@ describe('Regression Tests', () => {
     const cookieJar = new CookieJar()
 
     // @ts-ignore
-    const callback = function(err, cookie) {
+    const callback = function (err, cookie) {
       expect(err).toBeNull()
       expect(cookie).toEqual([
         objectContaining({
           key: 'a',
-          value: 'b'
-        })
+          value: 'b',
+        }),
       ])
     }
 
@@ -76,38 +80,41 @@ describe('Regression Tests', () => {
   })
 
   it('should allow setCookie with localhost (GH-215)', async () => {
-    const cookieJar = new CookieJar();
-    await expect(cookieJar.setCookie(
-      "a=b; Domain=localhost",
-      "http://localhost"
-    )).resolves.toEqual(objectContaining({
-      key: 'a',
-      value: 'b',
-      domain: 'localhost'
-    }))
+    const cookieJar = new CookieJar()
+    await expect(
+      cookieJar.setCookie('a=b; Domain=localhost', 'http://localhost'),
+    ).resolves.toEqual(
+      objectContaining({
+        key: 'a',
+        value: 'b',
+        domain: 'localhost',
+      }),
+    )
   })
 
   it('should allow setCookie with localhost and null domain (GH-215)', async () => {
-    const cookieJar = new CookieJar();
-    await expect(cookieJar.setCookie(
-      "a=b; Domain=",
-      "http://localhost"
-    )).resolves.toEqual(objectContaining({
-      key: 'a',
-      value: 'b',
-      domain: 'localhost'
-    }))
+    const cookieJar = new CookieJar()
+    await expect(
+      cookieJar.setCookie('a=b; Domain=', 'http://localhost'),
+    ).resolves.toEqual(
+      objectContaining({
+        key: 'a',
+        value: 'b',
+        domain: 'localhost',
+      }),
+    )
   })
 
   it('setCookie with localhost (.localhost domain), (GH-215)', async () => {
-    const cookieJar = new CookieJar();
-    await expect(cookieJar.setCookie(
-      "a=b; Domain=.localhost",
-      "http://localhost"
-    )).resolves.toEqual(objectContaining({
-      key: 'a',
-      value: 'b',
-      domain: 'localhost'
-    }))
+    const cookieJar = new CookieJar()
+    await expect(
+      cookieJar.setCookie('a=b; Domain=.localhost', 'http://localhost'),
+    ).resolves.toEqual(
+      objectContaining({
+        key: 'a',
+        value: 'b',
+        domain: 'localhost',
+      }),
+    )
   })
 })

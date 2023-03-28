@@ -1,6 +1,6 @@
-import {CookieJar, PrefixSecurityEnum} from "../cookie";
+import { CookieJar, PrefixSecurityEnum } from '../cookie'
 
-const {objectContaining} = expect
+const { objectContaining } = expect
 
 let cookieJar: CookieJar
 let insecureUrl = 'http://www.example.com'
@@ -10,7 +10,7 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
   describe('silent', () => {
     beforeEach(() => {
       cookieJar = new CookieJar(null, {
-        prefixSecurity: 'silent'
+        prefixSecurity: 'silent',
       })
       expect(cookieJar.prefixSecurity).toBe(PrefixSecurityEnum.SILENT)
     })
@@ -18,9 +18,9 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
     describe('__Secure prefix', () => {
       it('should fail silently with no Secure attribute', async () => {
         await cookieJar.setCookie(
-          "__Secure-SID=12345; Domain=example.com",
+          '__Secure-SID=12345; Domain=example.com',
           insecureUrl,
-          {}
+          {},
         )
         const cookies = await cookieJar.getCookies(insecureUrl)
         expect(cookies).toEqual([])
@@ -28,24 +28,24 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
 
       it('should work if cookie has Secure attribute and domain is https', async () => {
         await cookieJar.setCookie(
-          "__Secure-SID=12345; Domain=example.com; Secure",
+          '__Secure-SID=12345; Domain=example.com; Secure',
           secureUrl,
-          {}
+          {},
         )
         const cookies = await cookieJar.getCookies(secureUrl)
         expect(cookies).toEqual([
           objectContaining({
             key: '__Secure-SID',
-            value: '12345'
-          })
+            value: '12345',
+          }),
         ])
       })
 
       it('should fail silently if cookie has Secure attribute but domain is http', async () => {
         await cookieJar.setCookie(
-          "__Secure-SID=12345; Domain=example.com; Secure",
+          '__Secure-SID=12345; Domain=example.com; Secure',
           insecureUrl,
-          {}
+          {},
         )
         const cookies = await cookieJar.getCookies(insecureUrl)
         expect(cookies).toEqual([])
@@ -54,30 +54,22 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
 
     describe('__Host prefix', () => {
       it('should fail silently when no Secure attribute, Domain, or Path', async () => {
-        await cookieJar.setCookie(
-          "__Host-SID=12345",
-          insecureUrl,
-          {}
-        )
+        await cookieJar.setCookie('__Host-SID=12345', insecureUrl, {})
         const cookies = await cookieJar.getCookies(insecureUrl)
         expect(cookies).toEqual([])
       })
 
       it('should fail silently when no Domain or Path', async () => {
-        await cookieJar.setCookie(
-          "__Host-SID=12345; Secure",
-          insecureUrl,
-          {}
-        )
+        await cookieJar.setCookie('__Host-SID=12345; Secure', insecureUrl, {})
         const cookies = await cookieJar.getCookies(insecureUrl)
         expect(cookies).toEqual([])
       })
 
       it('should fail silently when no Path', async () => {
         await cookieJar.setCookie(
-          "__Host-SID=12345; Secure; Domain=example.com",
+          '__Host-SID=12345; Secure; Domain=example.com',
           insecureUrl,
-          {}
+          {},
         )
         const cookies = await cookieJar.getCookies(insecureUrl)
         expect(cookies).toEqual([])
@@ -85,9 +77,9 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
 
       it('should fail silently with Domain', async () => {
         await cookieJar.setCookie(
-          "__Host-SID=12345; Secure; Domain=example.com; Path=/",
+          '__Host-SID=12345; Secure; Domain=example.com; Path=/',
           insecureUrl,
-          {}
+          {},
         )
         const cookies = await cookieJar.getCookies(insecureUrl)
         expect(cookies).toEqual([])
@@ -95,16 +87,16 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
 
       it('should work with Secure and Path but no Domain over https', async () => {
         await cookieJar.setCookie(
-          "__Host-SID=12345; Secure; Path=/",
+          '__Host-SID=12345; Secure; Path=/',
           secureUrl,
-          {}
+          {},
         )
         const cookies = await cookieJar.getCookies(secureUrl)
         expect(cookies).toEqual([
           objectContaining({
             key: '__Host-SID',
-            value: '12345'
-          })
+            value: '12345',
+          }),
         ])
       })
     })
@@ -113,7 +105,7 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
   describe('strict', () => {
     beforeEach(() => {
       cookieJar = new CookieJar(null, {
-        prefixSecurity: 'strict'
+        prefixSecurity: 'strict',
       })
       expect(cookieJar.prefixSecurity).toBe(PrefixSecurityEnum.STRICT)
     })
@@ -121,50 +113,58 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
     describe('__Secure prefix', () => {
       it('should work for a valid cookie', async () => {
         await cookieJar.setCookie(
-          "__Secure-SID=12345; Secure; Domain=example.com",
+          '__Secure-SID=12345; Secure; Domain=example.com',
           secureUrl,
-          {}
+          {},
         )
         const cookies = await cookieJar.getCookies(secureUrl)
         expect(cookies).toEqual([
           objectContaining({
             key: '__Secure-SID',
-            value: '12345'
-          })
+            value: '12345',
+          }),
         ])
       })
 
       it('should error for an invalid cookie', async () => {
-        await expect(cookieJar.setCookie(
-          "__Secure-SID=12345; Domain=example.com",
-          insecureUrl,
-          {}
-        )).rejects.toThrowError('Cookie has __Secure prefix but Secure attribute is not set')
+        await expect(
+          cookieJar.setCookie(
+            '__Secure-SID=12345; Domain=example.com',
+            insecureUrl,
+            {},
+          ),
+        ).rejects.toThrowError(
+          'Cookie has __Secure prefix but Secure attribute is not set',
+        )
       })
     })
 
     describe('__Host prefix', () => {
       it('should work for a valid cookie', async () => {
         await cookieJar.setCookie(
-          "___Host-SID=12345; Secure; Path=/",
+          '___Host-SID=12345; Secure; Path=/',
           secureUrl,
-          {}
+          {},
         )
         const cookies = await cookieJar.getCookies(secureUrl)
         expect(cookies).toEqual([
           objectContaining({
             key: '___Host-SID',
-            value: '12345'
-          })
+            value: '12345',
+          }),
         ])
       })
 
       it('should error for an invalid cookie', async () => {
-        await expect(cookieJar.setCookie(
-          "__Host-SID=12345; Secure; Domain=example.com",
-          secureUrl,
-          {}
-        )).rejects.toThrowError(`Cookie has __Host prefix but either Secure or HostOnly attribute is not set or Path is not '/'`)
+        await expect(
+          cookieJar.setCookie(
+            '__Host-SID=12345; Secure; Domain=example.com',
+            secureUrl,
+            {},
+          ),
+        ).rejects.toThrowError(
+          `Cookie has __Host prefix but either Secure or HostOnly attribute is not set or Path is not '/'`,
+        )
       })
     })
   })
@@ -172,7 +172,7 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
   describe('disabled', () => {
     beforeEach(() => {
       cookieJar = new CookieJar(null, {
-        prefixSecurity: 'unsafe-disabled'
+        prefixSecurity: 'unsafe-disabled',
       })
       expect(cookieJar.prefixSecurity).toBe(PrefixSecurityEnum.DISABLED)
     })
@@ -180,16 +180,16 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
     describe('__Secure prefix', () => {
       it('does not fail', async () => {
         await cookieJar.setCookie(
-          "__Secure-SID=12345; Domain=example.com",
+          '__Secure-SID=12345; Domain=example.com',
           insecureUrl,
-          {}
+          {},
         )
         const cookies = await cookieJar.getCookies(insecureUrl)
         expect(cookies).toEqual([
           objectContaining({
             key: '__Secure-SID',
-            value: '12345'
-          })
+            value: '12345',
+          }),
         ])
       })
     })
@@ -197,16 +197,16 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
     describe('__Host prefix', () => {
       it('does not fail', async () => {
         await cookieJar.setCookie(
-          "__Host-SID=12345; Domain=example.com",
+          '__Host-SID=12345; Domain=example.com',
           insecureUrl,
-          {}
+          {},
         )
         const cookies = await cookieJar.getCookies(insecureUrl)
         expect(cookies).toEqual([
           objectContaining({
             key: '__Host-SID',
-            value: '12345'
-          })
+            value: '12345',
+          }),
         ])
       })
     })
