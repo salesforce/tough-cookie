@@ -34,7 +34,7 @@ const pubsuffix = require("./pubsuffix-psl");
 // Gives the permutation of all possible domainMatch()es of a given domain. The
 // array is in shortest-to-longest order.  Handy for indexing.
 
-function permuteDomain(domain, allowSpecialUseDomain) {
+export function permuteDomain(domain: string, allowSpecialUseDomain?: boolean): string[] | null {
   const pubSuf = pubsuffix.getPublicSuffix(domain, {
     allowSpecialUseDomain: allowSpecialUseDomain
   });
@@ -61,5 +61,3 @@ function permuteDomain(domain, allowSpecialUseDomain) {
   }
   return permutations;
 }
-
-exports.permuteDomain = permuteDomain;

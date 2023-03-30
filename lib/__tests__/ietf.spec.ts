@@ -29,76 +29,59 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-"use strict";
-const vows = require("vows");
-const assert = require("assert");
-const fs = require("fs");
-const path = require("path");
-const url = require("url");
-const tough = require("../dist/cookie");
-const CookieJar = tough.CookieJar;
+import {CookieJar, parseDate} from '../cookie'
+import url from 'url'
+import parserData from '../../test/ietf_data/parser.json'
+import bsdExampleDates from '../../test/ietf_data/dates/bsd-examples.json'
+import exampleDates from '../../test/ietf_data/dates/examples.json'
 
-function readJson(filePath) {
-  filePath = path.join(__dirname, filePath);
-  return JSON.parse(fs.readFileSync(filePath).toString());
-}
-
-function setGetCookieVows() {
-  const theVows = {};
-  const data = readJson("./ietf_data/parser.json");
-
-  data.forEach(testCase => {
-    theVows[testCase.test] = function() {
+describe('IETF http state tests', () => {
+  describe('Set/get cookie tests', () => {
+    it.each(parserData)
+    (`$test`, (testCase) => {
       const jar = new CookieJar();
-      const expected = testCase["sent"];
+      const expected = testCase.sent
       const sentFrom = `http://home.example.org/cookie-parser?${testCase.test}`;
       const sentTo = testCase["sent-to"]
         ? url.resolve("http://home.example.org", testCase["sent-to"])
         : `http://home.example.org/cookie-parser-result?${testCase.test}`;
 
       testCase["received"].forEach(cookieStr => {
-        jar.setCookieSync(cookieStr, sentFrom, { ignoreError: true });
+        jar.setCookieSync(cookieStr, sentFrom, {ignoreError: true});
       });
 
-      const actual = jar.getCookiesSync(sentTo, { sort: true });
+      const actual = jar.getCookiesSync(sentTo, {sort: true}) as Array<{ key: string, value: string }>;
 
-      assert.strictEqual(actual.length, expected.length);
-
+      expect(actual.length).toBe(expected.length)
       actual.forEach((actualCookie, idx) => {
         const expectedCookie = expected[idx];
-        assert.strictEqual(actualCookie.key, expectedCookie.name);
-        assert.strictEqual(actualCookie.value, expectedCookie.value);
+        // @ts-ignore
+        expect(actualCookie.key).toBe(expectedCookie.name)
+        // @ts-ignore
+        expect(actualCookie.value).toBe(expectedCookie.value)
       });
-    };
-  });
+    })
+  })
 
-  return { "Set/get cookie tests": theVows };
-}
+  describe('Date handling', () => {
+    it.each(exampleDates)
+    (`ietf_data/dates/examples: $test`, ({test, expected}) => {
+      if (expected) {
+        // @ts-ignore
+        expect(parseDate(test).toUTCString()).toBe(expected)
+      } else {
+        expect(parseDate(test)).toBeUndefined()
+      }
+    })
 
-function dateVows() {
-  const theVows = {};
-
-  [
-    "./ietf_data/dates/bsd-examples.json",
-    "./ietf_data/dates/examples.json"
-  ].forEach(filePath => {
-    const data = readJson(filePath);
-    const fileName = path.basename(filePath);
-
-    data.forEach(testCase => {
-      theVows[`${fileName} : ${testCase.test}`] = function() {
-        let actual = tough.parseDate(testCase.test);
-        actual = actual ? actual.toUTCString() : null;
-        assert.strictEqual(actual, testCase.expected);
-      };
-    });
-  });
-
-  return { Date: theVows };
-}
-
-vows
-  .describe("IETF http state tests")
-  .addBatch(setGetCookieVows())
-  .addBatch(dateVows())
-  .export(module);
+    it.each(bsdExampleDates)
+    (`ietf_data/dates/bsd_examples: $test`, ({test, expected}) => {
+      if (expected) {
+        // @ts-ignore
+        expect(parseDate(test).toUTCString()).toBe(expected)
+      } else {
+        expect(parseDate(test)).toBeUndefined()
+      }
+    })
+  })
+})

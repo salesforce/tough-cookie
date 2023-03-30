@@ -28,30 +28,31 @@ SOFTWARE.
 "use strict";
 
 /* Validation functions copied from check-types package - https://www.npmjs.com/package/check-types */
-function isFunction(data) {
-  return typeof data === "function";
+export function isFunction(data: any): boolean {
+  return typeof data === 'function';
 }
 
-function isNonEmptyString(data) {
-  return isString(data) && data !== "";
+export function isNonEmptyString(data: any): boolean {
+  return isString(data) && data !== '';
 }
 
-function isDate(data) {
+export function isDate(data: any): boolean {
   return isInstanceStrict(data, Date) && isInteger(data.getTime());
 }
 
-function isEmptyString(data) {
-  return data === "" || (data instanceof String && data.toString() === "");
+export function isEmptyString(data: any): boolean {
+  return data === '' || (data instanceof String && data.toString() === '');
 }
 
-function isString(data) {
-  return typeof data === "string" || data instanceof String;
+export function isString(data: any): boolean {
+  return typeof data === 'string' || data instanceof String
 }
 
-function isObject(data) {
-  return toString.call(data) === "[object Object]";
+export function isObject(data: any): boolean {
+  return toString.call(data) === '[object Object]';
 }
-function isInstanceStrict(data, prototype) {
+
+export function isInstanceStrict(data: any, prototype: Function): boolean {
   try {
     return data instanceof prototype;
   } catch (error) {
@@ -59,12 +60,12 @@ function isInstanceStrict(data, prototype) {
   }
 }
 
-function isInteger(data) {
-  return typeof data === "number" && data % 1 === 0;
+export function isInteger(data: any): boolean {
+  return typeof data === 'number' && data % 1 === 0;
 }
 /* End validation functions */
 
-function validate(bool, cb, options) {
+export function validate(bool: boolean, cb?: any, options?: any): void {
   if (!isFunction(cb)) {
     options = cb;
     cb = null;
@@ -79,17 +80,11 @@ function validate(bool, cb, options) {
   }
 }
 
-class ParameterError extends Error {
-  constructor(...params) {
+export class ParameterError extends Error {
+  constructor(...params: any[]) {
     super(...params);
+    if (Object.setPrototypeOf) {
+      Object.setPrototypeOf(this, ParameterError.prototype);
+    }
   }
 }
-
-exports.ParameterError = ParameterError;
-exports.isFunction = isFunction;
-exports.isNonEmptyString = isNonEmptyString;
-exports.isDate = isDate;
-exports.isEmptyString = isEmptyString;
-exports.isString = isString;
-exports.isObject = isObject;
-exports.validate = validate;

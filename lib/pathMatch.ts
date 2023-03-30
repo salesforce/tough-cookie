@@ -28,49 +28,32 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-"use strict";
-/*jshint unused:false */
 
-class Store {
-  constructor() {
-    this.synchronous = false;
+/*
+ * "A request-path path-matches a given cookie-path if at least one of the
+ * following conditions holds:"
+ */
+export function pathMatch(reqPath: string, cookiePath: string): boolean {
+  // "o  The cookie-path and the request-path are identical."
+  if (cookiePath === reqPath) {
+    return true;
   }
 
-  findCookie(domain, path, key, cb) {
-    throw new Error("findCookie is not implemented");
+  const idx = reqPath.indexOf(cookiePath);
+  if (idx === 0) {
+    // "o  The cookie-path is a prefix of the request-path, and the last
+    // character of the cookie-path is %x2F ("/")."
+    if (cookiePath[cookiePath.length - 1] === "/") {
+      return true;
+    }
+
+    // " o  The cookie-path is a prefix of the request-path, and the first
+    // character of the request-path that is not included in the cookie- path
+    // is a %x2F ("/") character."
+    if (new RegExp(`^${cookiePath}`).test(reqPath) && reqPath[cookiePath.length] === "/") {
+      return true;
+    }
   }
 
-  findCookies(domain, path, allowSpecialUseDomain, cb) {
-    throw new Error("findCookies is not implemented");
-  }
-
-  putCookie(cookie, cb) {
-    throw new Error("putCookie is not implemented");
-  }
-
-  updateCookie(oldCookie, newCookie, cb) {
-    // recommended default implementation:
-    // return this.putCookie(newCookie, cb);
-    throw new Error("updateCookie is not implemented");
-  }
-
-  removeCookie(domain, path, key, cb) {
-    throw new Error("removeCookie is not implemented");
-  }
-
-  removeCookies(domain, path, cb) {
-    throw new Error("removeCookies is not implemented");
-  }
-
-  removeAllCookies(cb) {
-    throw new Error("removeAllCookies is not implemented");
-  }
-
-  getAllCookies(cb) {
-    throw new Error(
-      "getAllCookies is not implemented (therefore jar cannot be serialized)"
-    );
-  }
+  return false;
 }
-
-exports.Store = Store;

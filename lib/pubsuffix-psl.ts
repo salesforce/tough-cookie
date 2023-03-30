@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 "use strict";
-const psl = require("psl");
+import * as psl from 'psl'
 
 // RFC 6761
 const SPECIAL_USE_DOMAINS = [
@@ -42,13 +42,24 @@ const SPECIAL_USE_DOMAINS = [
 
 const SPECIAL_TREATMENT_DOMAINS = ["localhost", "invalid"];
 
-function getPublicSuffix(domain, options = {}) {
+type GetPublicSuffixOptions = {
+  allowSpecialUseDomain?: boolean | undefined;
+  ignoreError?: boolean | undefined;
+}
+
+const defaultGetPublicSuffixOptions: GetPublicSuffixOptions = {
+  allowSpecialUseDomain: false,
+  ignoreError: false
+}
+
+export function getPublicSuffix(domain: string, options: GetPublicSuffixOptions = {}): string | null {
+  options = { ...defaultGetPublicSuffixOptions, ...options }
   const domainParts = domain.split(".");
   const topLevelDomain = domainParts[domainParts.length - 1];
   const allowSpecialUseDomain = !!options.allowSpecialUseDomain;
   const ignoreError = !!options.ignoreError;
 
-  if (allowSpecialUseDomain && SPECIAL_USE_DOMAINS.includes(topLevelDomain)) {
+  if (allowSpecialUseDomain && typeof topLevelDomain === 'string' && SPECIAL_USE_DOMAINS.includes(topLevelDomain)) {
     if (domainParts.length > 1) {
       const secondLevelDomain = domainParts[domainParts.length - 2];
       // In aforementioned example, the eTLD/pubSuf will be apple.localhost
@@ -61,7 +72,7 @@ function getPublicSuffix(domain, options = {}) {
     }
   }
 
-  if (!ignoreError && SPECIAL_USE_DOMAINS.includes(topLevelDomain)) {
+  if (!ignoreError && typeof topLevelDomain === 'string' && SPECIAL_USE_DOMAINS.includes(topLevelDomain)) {
     throw new Error(
       `Cookie has domain set to the public suffix "${topLevelDomain}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain:true, rejectPublicSuffixes: false}.`
     );
@@ -69,5 +80,3 @@ function getPublicSuffix(domain, options = {}) {
 
   return psl.get(domain);
 }
-
-exports.getPublicSuffix = getPublicSuffix;

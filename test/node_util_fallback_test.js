@@ -32,10 +32,13 @@
 "use strict";
 const vows = require("vows");
 const assert = require("assert");
-const tough = require("../lib/cookie");
+const tough = require("../dist/cookie");
 const util = require("util");
-const inspectFallback = require("../lib/memstore").inspectFallback;
-const { getCustomInspectSymbol, getUtilInspect } = require("../lib/utilHelper");
+const inspectFallback = require("../dist/memstore").inspectFallback;
+const {
+  getCustomInspectSymbol,
+  getUtilInspect
+} = require("../dist/utilHelper");
 const Cookie = tough.Cookie;
 const CookieJar = tough.CookieJar;
 

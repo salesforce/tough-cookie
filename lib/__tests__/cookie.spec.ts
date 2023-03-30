@@ -28,34 +28,40 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-"use strict";
-/*
- * "A request-path path-matches a given cookie-path if at least one of the
- * following conditions holds:"
- */
-function pathMatch(reqPath, cookiePath) {
-  // "o  The cookie-path and the request-path are identical."
-  if (cookiePath === reqPath) {
-    return true;
-  }
 
-  const idx = reqPath.indexOf(cookiePath);
-  if (idx === 0) {
-    // "o  The cookie-path is a prefix of the request-path, and the last
-    // character of the cookie-path is %x2F ("/")."
-    if (cookiePath.substr(-1) === "/") {
-      return true;
-    }
+import {Cookie} from '../cookie'
 
-    // " o  The cookie-path is a prefix of the request-path, and the first
-    // character of the request-path that is not included in the cookie- path
-    // is a %x2F ("/") character."
-    if (reqPath.substr(cookiePath.length, 1) === "/") {
-      return true;
-    }
-  }
+jest.useFakeTimers()
 
-  return false;
-}
+// ported from test/api_test.js (cookie tests)
+describe('Cookie', () => {
+  let cookie: Cookie
 
-exports.pathMatch = pathMatch;
+  describe('constructor', () => {
+    beforeEach(() => {
+      cookie = new Cookie({
+        key: "test",
+        value: "b",
+        maxAge: 60
+      })
+    })
+
+    it("should check for key property", () => {
+      expect(cookie.key).toBe('test')
+    })
+
+    it('should check for value property', () => {
+      expect(cookie.value).toBe("b");
+    })
+
+    it("should check for maxAge", () => {
+      expect(cookie.maxAge).toBe(60);
+    })
+
+    it("should check for default values for unspecified properties", () => {
+      expect(cookie.expires).toBe('Infinity')
+      expect(cookie.secure).toBe(false)
+      expect(cookie.httpOnly).toBe(false)
+    })
+  })
+})
