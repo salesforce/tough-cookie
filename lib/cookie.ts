@@ -1184,7 +1184,15 @@ const defaultSetCookieOptions: SetCookieOptions = {
   loose: false,
   sameSiteContext: undefined,
   ignoreError: false,
-  http: false
+  http: true,
+}
+
+const defaultGetCookieOptions: GetCookiesOptions = {
+  http: true,
+  expire: true,
+  allPaths: false,
+  sameSiteContext: undefined,
+  sort: undefined
 }
 
 export function createPromiseCallback<T>(args: IArguments): PromiseCallback<T> {
@@ -1508,22 +1516,18 @@ export class CookieJar {
 
   // RFC6365 S5.4
   getCookies(url: string, callback: Callback<Cookie[]>): void;
-  // TODO: provide types for the options
-  getCookies(url: string, options: any, callback: Callback<Cookie[]>): void
+  getCookies(url: string, options: GetCookiesOptions | undefined, callback: Callback<Cookie[]>): void
   getCookies(url: string): Promise<Cookie[]>
-  // TODO: provide types for the options
-  getCookies(url: string, options: any): Promise<Cookie[]>
-  // TODO: provide types for the options
-  getCookies(url: string, options: any, callback?: (error: Error, result: Cookie[]) => void): unknown;
-  // TODO: provide types for the options
-  getCookies(url: string, options: any = {}, _callback?: (error: Error, result: Cookie[]) => void): unknown {
+  getCookies(url: string, options: GetCookiesOptions | undefined): Promise<Cookie[]>
+  getCookies(url: string, options: GetCookiesOptions | undefined | Callback<Cookie[]>, callback?: Callback<Cookie[]>): unknown
+  getCookies(url: string, options?: GetCookiesOptions | Callback<Cookie[]>, _callback?: Callback<Cookie[]>): unknown {
     const promiseCallback = createPromiseCallback<Cookie[]>(arguments)
     const cb = promiseCallback.callback
 
     validators.validate(validators.isNonEmptyString(url), cb, url);
     const context = getCookieContext(url);
-    if (validators.isFunction(options)) {
-      options = {};
+    if (typeof options === 'function' || options === undefined) {
+      options = defaultGetCookieOptions;
     }
     validators.validate(validators.isObject(options), cb, options);
     validators.validate(validators.isFunction(cb), cb);
@@ -1531,17 +1535,10 @@ export class CookieJar {
     const host = canonicalDomain(context.hostname);
     const path = context.pathname || "/";
 
-    let secure = options.secure;
-    if (
-      secure == null &&
-      context.protocol &&
-      (context.protocol == "https:" || context.protocol == "wss:")
-    ) {
-      secure = true;
-    }
+    let secure = context.protocol && (context.protocol == "https:" || context.protocol == "wss:")
 
     let sameSiteLevel = 0;
-    if (options.sameSiteContext) {
+    if (options?.sameSiteContext) {
       const sameSiteContext = checkSameSiteContext(options.sameSiteContext)
       if (sameSiteContext == null) {
         return cb(new Error(SAME_SITE_CONTEXT_VAL_ERR));
@@ -1552,14 +1549,11 @@ export class CookieJar {
       }
     }
 
-    let http = options.http;
-    if (http == null) {
-      http = true;
-    }
+    let http = options?.http ?? true;
 
-    const now = options.now || Date.now();
-    const expireCheck = options.expire !== false;
-    const allPaths = !!options.allPaths;
+    const now = Date.now();
+    const expireCheck = options?.expire ?? true;
+    const allPaths = options?.allPaths ?? false;
     const store = this.store;
 
     function matchingCookie(c: Cookie) {
@@ -1640,7 +1634,7 @@ export class CookieJar {
         cookies = cookies.filter(matchingCookie);
 
         // sorting of S5.4 part 2
-        if (options.sort !== false) {
+        if (options && 'sort' in options && options.sort !== false) {
           cookies = cookies.sort(cookieCompare);
         }
 
@@ -1657,24 +1651,28 @@ export class CookieJar {
 
     return promiseCallback.promise
   }
-  getCookiesSync(url: string, options: any = {}): Cookie[] {
+  getCookiesSync(url: string, options?: GetCookiesOptions): Cookie[] {
     return this.callSync<Cookie[]>(this.getCookies.bind(this, url, options)) ?? []
   }
 
-  getCookieString(url: string, options: any, callback: (error: Error, result: string) => void): void;
-  getCookieString(url: string, callback: (error: Error, result: string) => void): void;
+  getCookieString(url: string, options: GetCookiesOptions, callback: Callback<string>): void;
+  getCookieString(url: string, callback: Callback<string>): void;
   getCookieString(url: string): Promise<string>;
-  getCookieString(url: string, options: any): Promise<string>;
-  getCookieString(url: string, options: any, callback?: (error: Error, result: string) => void): unknown;
-  getCookieString(url: string, options: any = {}, _callback?: (error: Error, result: string) => void): unknown {
+  getCookieString(url: string, options: GetCookiesOptions): Promise<string>;
+  getCookieString(url: string, options: GetCookiesOptions | Callback<string>, callback?: Callback<string>): unknown;
+  getCookieString(url: string, options?: GetCookiesOptions | Callback<string>, _callback?: Callback<string>): unknown {
     const promiseCallback = createPromiseCallback<string>(arguments)
 
-    const next = function(err: Error, cookies: Cookie[]) {
-      if (err) {
+    if (typeof options === 'function') {
+      options = undefined
+    }
+
+    const next: Callback<Cookie[]> = function(err: Error | undefined, cookies: Cookie[] | undefined) {
+      if (err || cookies === undefined) {
         promiseCallback.callback(err);
       } else {
         promiseCallback.callback(
-          null,
+          undefined,
           cookies
             .sort(cookieCompare)
             .map(c => c.cookieString())
@@ -1686,20 +1684,24 @@ export class CookieJar {
     this.getCookies(url, options, next)
     return promiseCallback.promise
   }
-  getCookieStringSync(url: string, options: any = {}): string {
-    return this.callSync<string>(this.getCookieString.bind(this, url, options)) ?? ""
+  getCookieStringSync(url: string, options?: GetCookiesOptions): string {
+    return this.callSync<string>(this.getCookieString.bind(this, url, options as GetCookiesOptions)) ?? ""
   }
 
   getSetCookieStrings (url: string, callback: Callback<string[]>): void
-  getSetCookieStrings (url: string, options: any, callback: Callback<string[]>): void
+  getSetCookieStrings (url: string, options: GetCookiesOptions, callback: Callback<string[]>): void
   getSetCookieStrings (url: string): Promise<string[]>
-  getSetCookieStrings (url: string, options: any): Promise<string[]>
-  getSetCookieStrings (url: string, options: any, callback?: Callback<string[]>): unknown;
-  getSetCookieStrings (url: string, options: any = {}, _callback?: Callback<string[]>): unknown {
+  getSetCookieStrings (url: string, options: GetCookiesOptions): Promise<string[]>
+  getSetCookieStrings (url: string, options: GetCookiesOptions, callback?: Callback<string[]>): unknown;
+  getSetCookieStrings (url: string, options?: GetCookiesOptions | Callback<string[]>, _callback?: Callback<string[]>): unknown {
     const promiseCallback = createPromiseCallback<string[]>(arguments)
 
-    const next = function(err: Error, cookies: Cookie[]) {
-      if (err) {
+    if (typeof options === 'function') {
+      options = undefined
+    }
+
+    const next: Callback<Cookie[]> = function(err: Error | undefined, cookies: Cookie[] | undefined) {
+      if (err || cookies === undefined) {
         promiseCallback.callback(err);
       } else {
         promiseCallback.callback(
@@ -2032,6 +2034,14 @@ type SetCookieOptions = {
   ignoreError?: boolean | undefined;
   http?: boolean | undefined;
   now?: Date | undefined;
+}
+
+type GetCookiesOptions = {
+  http?: boolean | undefined
+  expire?: boolean | undefined
+  allPaths?: boolean | undefined
+  sameSiteContext?: 'none' | 'lax' | 'strict' | undefined
+  sort?: boolean | undefined
 }
 
 interface PromiseCallback<T> {

@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import {Cookie, CookieJar, MemoryCookieStore, ParameterError, SerializedCookieJar} from '../cookie'
+import {Cookie, CookieJar, MemoryCookieStore, ParameterError, SerializedCookieJar, Store} from '../cookie'
 
 const { objectContaining, assertions } = expect
 jest.useFakeTimers()
@@ -243,7 +243,6 @@ describe('CookieJar', () => {
       )).rejects.toThrowError("Cookie is HttpOnly and this isn't an HTTP API")
     })
 
-    // TODO: where did this come from?
     it('should not fail when using an httpOnly cookie when using a non-HTTP API', async () => {
       assertions(1)
       await cookieJar.setCookie(
@@ -254,7 +253,6 @@ describe('CookieJar', () => {
       expect(cookies).not.toHaveLength(0)
     })
 
-    // TODO: where did this come from?
     it('should not fail when using an httpOnly cookie when using a non-HTTP API (setCookieSync)', () => {
       assertions(1)
       cookieJar.setCookieSync(
@@ -267,7 +265,7 @@ describe('CookieJar', () => {
 
     it.each([
       { testCase: 'basic', IPv6: '[::1]' },
-      { testCase: 'prefix', IPv6: '[::ffff:127.0.0.1]' }, // TODO: is this valid IP6?
+      { testCase: 'prefix', IPv6: '[::ffff:127.0.0.1]' },
       { testCase: 'classic', IPv6: '[2001:4860:4860::8888]' },
       { testCase: 'short', IPv6: '[2600::]' }
     ])('should store a $testCase IPv6', async (test) => {
@@ -384,25 +382,34 @@ describe('CookieJar', () => {
       beforeEach(async () => {
         const url = "http://example.com/index.html"
 
-        const cookies = await Promise.all([
-          cookieJar.setCookie("a=1; Domain=example.com; Path=/", url, at(0)),
-          cookieJar.setCookie("b=2; Domain=example.com; Path=/; HttpOnly", url, at(1000)),
-          cookieJar.setCookie("c=3; Domain=example.com; Path=/; Secure", url, at(2000)),
-          // path
-          cookieJar.setCookie("d=4; Domain=example.com; Path=/foo", url, at(3000)),
-          // host only
-          cookieJar.setCookie("e=5", url, at(4000)),
-          // other domain
-          cookieJar.setCookie("f=6; Domain=nodejs.org; Path=/", "http://nodejs.org", at(5000)),
-          // expired
-          cookieJar.setCookie("g=7; Domain=example.com; Path=/; Expires=Tue, 18 Oct 2011 00:00:00 GMT", url, at(6000)),
-          // expired via Max-Age
-          cookieJar.setCookie("h=8; Domain=example.com; Path=/; Max-Age=1", url),
-        ])
+        await cookieJar.setCookie("a=1; Domain=example.com; Path=/", url)
+        jest.advanceTimersByTime(1000)
 
+        await cookieJar.setCookie("b=2; Domain=example.com; Path=/; HttpOnly", url)
+        jest.advanceTimersByTime(1000)
+
+        await cookieJar.setCookie("c=3; Domain=example.com; Path=/; Secure", url)
+        jest.advanceTimersByTime(1000)
+
+        // path
+        await cookieJar.setCookie("d=4; Domain=example.com; Path=/foo", url)
+        jest.advanceTimersByTime(1000)
+
+        // host only
+        await cookieJar.setCookie("e=5", url)
+        jest.advanceTimersByTime(1000)
+
+        // other domain
+        await cookieJar.setCookie("f=6; Domain=nodejs.org; Path=/", "http://nodejs.org")
+        jest.advanceTimersByTime(1000)
+
+        // expired
+        await cookieJar.setCookie("g=7; Domain=example.com; Path=/; Expires=Tue, 18 Oct 2011 00:00:00 GMT", url)
+        jest.advanceTimersByTime(1000)
+
+        // expired via Max-Age
+        await cookieJar.setCookie("h=8; Domain=example.com; Path=/; Max-Age=1", url)
         jest.advanceTimersByTime(2000) // so that 'h=8' expires
-
-        expect(cookies).toHaveLength(8)
       })
 
       it('should be able to get the cookies for http://nodejs.org', async () => {
@@ -417,7 +424,6 @@ describe('CookieJar', () => {
         ])
       })
 
-      // TODO: https vs. secure flag is confusing af!
       it('should be able to get the cookies for https://example.com', async () => {
         const cookies = await cookieJar.getCookies("https://example.com")
         expect(cookies).toEqual([
@@ -451,9 +457,7 @@ describe('CookieJar', () => {
       })
 
       it('should be able to get the cookies for https://example.com with the secure: true option', async () => {
-        const cookies = await cookieJar.getCookies("https://example.com", {
-          secure: true
-        })
+        const cookies = await cookieJar.getCookies("https://example.com")
         expect(cookies).toEqual([
           objectContaining({
             key: 'a',
@@ -623,8 +627,12 @@ describe('CookieJar', () => {
       apiVariants('resolves to a string', {
         callbackStyle(done) {
           cookieJar.getCookieString("http://example.com", (_err, result) => {
-            cookieString = result
-            done()
+            if (typeof result === 'string') {
+              cookieString = result
+              done()
+            } else {
+              fail("Result should not have been undefined")
+            }
           })
         },
         async asyncStyle() {
@@ -850,18 +858,28 @@ describe('CookieJar', () => {
   })
 })
 
-// TODO: remove the 'at' helper,
 it('should allow cookies with the same name under different domains and/or paths', async () => {
   const cookieJar = new CookieJar()
   const url = "http://www.example.com/"
-  await Promise.all([
-    cookieJar.setCookie("aaaa=xxxx; Domain=www.example.com", url, at(0)),
-    cookieJar.setCookie("aaaa=1111; Domain=www.example.com", url, at(1000)),
-    cookieJar.setCookie("aaaa=yyyy; Domain=example.com", url, at(1500)),
-    cookieJar.setCookie("aaaa=2222; Domain=example.com", url, at(2000)),
-    cookieJar.setCookie("aaaa=zzzz; Domain=www.example.com; Path=/pathA", url, at(2500)),
-    cookieJar.setCookie("aaaa=3333; Domain=www.example.com; Path=/pathA", url, at(3000)),
-  ])
+
+  await cookieJar.setCookie("aaaa=xxxx; Domain=www.example.com", url)
+  jest.advanceTimersByTime(1000)
+
+  await cookieJar.setCookie("aaaa=1111; Domain=www.example.com", url)
+  jest.advanceTimersByTime(1000)
+
+  await cookieJar.setCookie("aaaa=yyyy; Domain=example.com", url)
+  jest.advanceTimersByTime(1000)
+
+  await cookieJar.setCookie("aaaa=2222; Domain=example.com", url)
+  jest.advanceTimersByTime(1000)
+
+  await cookieJar.setCookie("aaaa=zzzz; Domain=www.example.com; Path=/pathA", url)
+  jest.advanceTimersByTime(1000)
+
+  await cookieJar.setCookie("aaaa=3333; Domain=www.example.com; Path=/pathA", url)
+  jest.advanceTimersByTime(1000)
+
   const cookies = await cookieJar.getCookies("http://www.example.com/pathA")
   // may break with sorting; sorting should put 3333 first due to longest path
   expect(cookies).toEqual([
@@ -940,7 +958,6 @@ describe('loose mode', () => {
   })
 })
 
-// TODO: carve out a spec file for random issues
 it('should fix issue #132', async () => {
   const cookieJar = new CookieJar()
   await expect(cookieJar.setCookie(
@@ -1156,6 +1173,34 @@ describe.each([
   })
 })
 
+describe("Synchronous API on async CookieJar", () => {
+  let store: Store
+
+  beforeEach(() => {
+    store = new Store()
+  })
+
+  it('should throw an error when calling `setCookieSync` if store is not synchronous', () => {
+    const cookieJar = new CookieJar(store)
+    expect(() => cookieJar.setCookieSync("a=b", "http://example.com/index.html")).toThrow("CookieJar store is not synchronous; use async API instead.")
+  })
+
+  it('should throw an error when calling `getCookieSync` if store is not synchronous', () => {
+    const cookieJar = new CookieJar(store)
+    expect(() => cookieJar.getCookiesSync("http://example.com/index.html")).toThrow("CookieJar store is not synchronous; use async API instead.")
+  })
+
+  it('should throw an error when calling `getSetCookieStringsSync` if store is not synchronous', () => {
+    const cookieJar = new CookieJar(store)
+    expect(() => cookieJar.getSetCookieStringsSync("http://example.com/index.html")).toThrow("CookieJar store is not synchronous; use async API instead.")
+  })
+
+  it('should throw an error when calling `removeAllCookiesSync` if store is not synchronous', () => {
+    const cookieJar = new CookieJar(store)
+    expect(() => cookieJar.removeAllCookiesSync()).toThrow("CookieJar store is not synchronous; use async API instead.")
+  })
+})
+
 function createCookie(
   cookieString: string,
   options: {
@@ -1196,10 +1241,4 @@ interface ApiVariants {
   callbackStyle: CallbackApiVariant,
   asyncStyle: PromiseApiVariant,
   syncStyle: SyncApiVariant
-}
-
-function at (timeFromNow: number) {
-  return {
-    now: new Date(Date.now() + timeFromNow)
-  }
 }

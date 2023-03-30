@@ -430,7 +430,6 @@ vows
       }
     }
   })
-  // TODO: confirm these are covered
   .addBatch({
     "Synchronous API on async CookieJar": {
       topic: function() {

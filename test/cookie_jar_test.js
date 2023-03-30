@@ -677,7 +677,6 @@ vows
         }
       }
     },
-    // TODO: what is this?  git blame and find out
     "Remove all cookies (the underlying store does not support removeAllCookies)": {
       topic: function() {
         const jar = new CookieJar();

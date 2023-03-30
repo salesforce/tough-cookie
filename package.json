@@ -76,10 +76,10 @@
   "bugs": {
     "url": "https://github.com/salesforce/tough-cookie/issues"
   },
-  "main": "./dist/cookie",
-  "types": "./dist/cookie",
+  "main": "./dist/cookie.js",
+  "types": "./dist/cookie.d.ts",
   "files": [
-    "lib"
+    "dist"
   ],
   "scripts": {
     "build": "npm run clean && tsc",
@@ -89,7 +89,7 @@
     "test:ts": "jest",
     "test:legacy": "npm run build -- --declaration false && vows test/*_test.js",
     "typecheck": "tsc --noEmit",
-    "cover": "nyc --reporter=lcov --reporter=html vows test/*_test.js",
+    "cover": "jest --coverage",
     "eslint": "eslint --env node --ext .js .",
     "prettier": "prettier '**/*.{json,ts,yaml,md}'",
     "format": "npm run eslint -- --fix"

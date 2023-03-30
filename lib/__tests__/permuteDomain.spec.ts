@@ -35,5 +35,3 @@ describe('permuteDomain', () => {
     expect(permuteDomain(domain)).toEqual(permutations)
   })
 })
-
-// TODO: this set of tests only tests when allowSpecialUseDomain is unspecified (needs more coverage)
