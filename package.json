@@ -79,26 +79,30 @@
   "main": "./dist/cookie.js",
   "types": "./dist/cookie.d.ts",
   "files": [
-    "dist"
+    "dist/*.js",
+    "dist/*.d.ts"
   ],
   "scripts": {
-    "build": "npm run version && tsc",
-    "lint": "eslint --quiet --fix lib",
-    "lint:everything": "eslint --fix lib",
-    "format": "prettier --write '**/*.{json,ts,yaml,md}'",
-    "prepack": "npm run version",
-    "test": "jest",
-    "test:coverage": "jest --coverage",
-    "test:legacy": "npm run build && vows test/*_test.js",
-    "version": "genversion --es6 lib/version.ts"
+    "build": "npm run clean && tsc",
+    "clean": "rm -rf dist",
+    "version": "genversion lib/version.js && git add lib/version.js",
+    "test": "npm run test:ts && npm run test:legacy",
+    "test:ts": "jest",
+    "test:legacy": "npm run build -- --declaration false && vows test/*_test.js",
+    "typecheck": "tsc --noEmit",
+    "cover": "jest --coverage",
+    "eslint": "eslint --env node --ext .js .",
+    "prettier": "prettier '**/*.{json,ts,yaml,md}'",
+    "format": "npm run eslint -- --fix"
   },
   "engines": {
-    "node": ">=6"
+    "node": ">=16"
   },
   "devDependencies": {
     "@types/jest": "^29",
     "@types/psl": "^1",
     "@types/punycode": "^2",
+    "@types/url-parse": "^1.4.8",
     "async": "2.6.4",
     "eslint": "^8.36.0",
     "@typescript-eslint/parser": "^5.57.0",

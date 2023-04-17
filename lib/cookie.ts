@@ -29,21 +29,22 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import * as punycode from 'punycode/'
-import { parse as urlParse } from 'url'
-import * as pubsuffix from './pubsuffix-psl'
-import { Store } from './store'
-import { MemoryCookieStore } from './memstore'
-import { pathMatch } from './pathMatch'
-import * as validators from './validators'
-import { version } from './version'
-import { permuteDomain } from './permuteDomain'
-import { getCustomInspectSymbol } from './utilHelper'
+import * as punycode from "punycode/";
+import urlParse from "url-parse";
+import * as pubsuffix from "./pubsuffix-psl";
+import { Store } from "./store";
+import { MemoryCookieStore } from "./memstore";
+import { pathMatch } from "./pathMatch";
+import * as validators from "./validators";
+import { version } from "./version";
+import { permuteDomain } from "./permuteDomain";
+import { getCustomInspectSymbol } from "./utilHelper";
 
 // From RFC6265 S4.1.1
 // note that it excludes \x3B ";"
 const COOKIE_OCTETS = /^[\x21\x23-\x2B\x2D-\x3A\x3C-\x5B\x5D-\x7E]+$/
 
+// eslint-disable-next-line no-control-regex
 const CONTROL_CHARS = /[\x00-\x1F]/
 
 // From Chromium // '\r', '\n' and '\0' should be treated as a terminator in
@@ -57,6 +58,7 @@ const PATH_VALUE = /[\x20-\x3A\x3C-\x7E]+/
 
 // date-time parsing constants (RFC6265 S5.1.1)
 
+// eslint-disable-next-line no-control-regex
 const DATE_DELIM = /[\x09\x20-\x2F\x3B-\x40\x5B-\x60\x7B-\x7E]/
 
 const MONTH_TO_NUM = {
@@ -371,6 +373,7 @@ function canonicalDomain(str: string | null) {
   }
 
   // convert to IDN if any non-ASCII characters
+  // eslint-disable-next-line no-control-regex
   if (punycode && /[^\u0001-\u007f]/.test(_str)) {
     _str = punycode.toASCII(_str)
   }

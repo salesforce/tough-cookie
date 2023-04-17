@@ -89,7 +89,12 @@ vows
     "util usage in Cookie": {
       "custom inspect for Cookie still works": function() {
         const cookie = Cookie.parse("a=1; Domain=example.com; Path=/");
-        assert.equal(cookie.inspect(), util.inspect(cookie));
+        // The custom inspect uses Date.now(), so the two invocations cannot be directly compared,
+        // as "cAge" will not necessarily be the same value (sometimes 0ms, sometimes 1ms).
+        // assert.equal(cookie.inspect(), util.inspect(cookie));
+        const expected = /^Cookie="a=1; Domain=example\.com; Path=\/; hostOnly=\?; aAge=\?; cAge=\dms"$/
+        assert.match(cookie.inspect(), expected)
+        assert.match(util.inspect(cookie), expected)
       }
     },
     "util usage in MemoryCookie": {

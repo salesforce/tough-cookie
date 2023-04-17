@@ -1,6 +1,5 @@
-import { CookieJar } from '../cookie'
+import { Cookie, CookieJar } from "../cookie";
 
-const { objectContaining, assertions } = expect
 const url = 'http://www.example.com'
 
 describe('Regression Tests', () => {
@@ -10,12 +9,12 @@ describe('Regression Tests', () => {
     await cookieJar.setCookie('b=2; Path=/;;;;', url)
     const cookies = await cookieJar.getCookies(url)
     expect(cookies).toEqual([
-      objectContaining({
+      expect.objectContaining({
         key: 'broken_path',
         value: 'testme',
         path: '/',
       }),
-      objectContaining({
+      expect.objectContaining({
         key: 'b',
         value: '2',
         path: '/',
@@ -33,14 +32,13 @@ describe('Regression Tests', () => {
   })
 
   it('should allow setCookie (without options) callback works even if it is not instanceof Function (GH-158/GH-175)', () => {
-    assertions(2)
+    expect.assertions(2)
     const cookieJar = new CookieJar()
 
-    // @ts-ignore
-    const callback = function (err, cookie) {
+    const callback = function (err: null, cookie: Cookie) {
       expect(err).toBeNull()
       expect(cookie).toEqual(
-        objectContaining({
+        expect.objectContaining({
           key: 'a',
           value: 'b',
         }),
@@ -49,21 +47,20 @@ describe('Regression Tests', () => {
 
     Object.setPrototypeOf(callback, null)
     if (callback instanceof Function) {
-      fail('clearing callback prototype chain failed')
+      throw new Error('clearing callback prototype chain failed')
     }
 
     cookieJar.setCookie('a=b', url, callback)
   })
 
   it('getCookies (without options) callback works even if it is not instanceof Function (GH-175)', async () => {
-    assertions(2)
+    expect.assertions(2)
     const cookieJar = new CookieJar()
 
-    // @ts-ignore
-    const callback = function (err, cookie) {
+    const callback = function (err: null, cookie: Cookie) {
       expect(err).toBeNull()
       expect(cookie).toEqual([
-        objectContaining({
+        expect.objectContaining({
           key: 'a',
           value: 'b',
         }),
@@ -72,7 +69,7 @@ describe('Regression Tests', () => {
 
     Object.setPrototypeOf(callback, null)
     if (callback instanceof Function) {
-      fail('clearing callback prototype chain failed')
+      throw new Error('clearing callback prototype chain failed')
     }
 
     await cookieJar.setCookie('a=b', url)
@@ -84,7 +81,7 @@ describe('Regression Tests', () => {
     await expect(
       cookieJar.setCookie('a=b; Domain=localhost', 'http://localhost'),
     ).resolves.toEqual(
-      objectContaining({
+      expect.objectContaining({
         key: 'a',
         value: 'b',
         domain: 'localhost',
@@ -97,7 +94,7 @@ describe('Regression Tests', () => {
     await expect(
       cookieJar.setCookie('a=b; Domain=', 'http://localhost'),
     ).resolves.toEqual(
-      objectContaining({
+      expect.objectContaining({
         key: 'a',
         value: 'b',
         domain: 'localhost',
@@ -110,7 +107,7 @@ describe('Regression Tests', () => {
     await expect(
       cookieJar.setCookie('a=b; Domain=.localhost', 'http://localhost'),
     ).resolves.toEqual(
-      objectContaining({
+      expect.objectContaining({
         key: 'a',
         value: 'b',
         domain: 'localhost',

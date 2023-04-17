@@ -29,11 +29,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { CookieJar, parseDate } from '../cookie'
-import url from 'url'
-import parserData from '../../test/ietf_data/parser.json'
-import bsdExampleDates from '../../test/ietf_data/dates/bsd-examples.json'
-import exampleDates from '../../test/ietf_data/dates/examples.json'
+import { CookieJar, parseDate } from "../cookie";
+import url from "url";
+import parserData from "./data/parser";
+import bsdExampleDates from "./data/dates/bsd-examples";
+import exampleDates from "./data/dates/examples";
 
 describe('IETF http state tests', () => {
   describe('Set/get cookie tests', () => {
@@ -57,9 +57,10 @@ describe('IETF http state tests', () => {
       expect(actual.length).toBe(expected.length)
       actual.forEach((actualCookie, idx) => {
         const expectedCookie = expected[idx]
-        // @ts-ignore
+        if (!expectedCookie) {
+          throw new Error("This should not be undefined")
+        }
         expect(actualCookie.key).toBe(expectedCookie.name)
-        // @ts-ignore
         expect(actualCookie.value).toBe(expectedCookie.value)
       })
     })
@@ -70,8 +71,11 @@ describe('IETF http state tests', () => {
       `ietf_data/dates/examples: $test`,
       ({ test, expected }) => {
         if (expected) {
-          // @ts-ignore
-          expect(parseDate(test).toUTCString()).toBe(expected)
+          const date = parseDate(test)
+          if (!date) {
+            throw new Error("This should have parsed")
+          }
+          expect(date.toUTCString()).toBe(expected)
         } else {
           expect(parseDate(test)).toBeUndefined()
         }
@@ -82,8 +86,11 @@ describe('IETF http state tests', () => {
       `ietf_data/dates/bsd_examples: $test`,
       ({ test, expected }) => {
         if (expected) {
-          // @ts-ignore
-          expect(parseDate(test).toUTCString()).toBe(expected)
+          const date = parseDate(test)
+          if (!date) {
+            throw new Error("This should have parsed")
+          }
+          expect(date.toUTCString()).toBe(expected)
         } else {
           expect(parseDate(test)).toBeUndefined()
         }

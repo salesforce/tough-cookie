@@ -1,26 +1,30 @@
 {
   "compilerOptions": {
-    "experimentalDecorators": true,
-    "outDir": "./dist",
-    "allowJs": true,
-    "target": "es5",
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
+    /* Language and Environment */
+    "target": "ES2021",
+    "lib": ["ES2021"],
+    /* Modules */
+    "module": "Node16",
+    "rootDir": "./lib/",
+    /* Emit */
     "declaration": true,
+    "outDir": "./dist/",
+    "importsNotUsedAsValues": "error",
+    /* Interop Constraints */
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    /* Type Checking */
     "strict": true,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "noImplicitOverride": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "exactOptionalPropertyTypes": true,
+    "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
-    "importsNotUsedAsValues": "error",
+    "noImplicitOverride": true,
     "allowUnusedLabels": false,
-    "allowUnreachableCode": false,
-    "exactOptionalPropertyTypes": true
+    "allowUnreachableCode": false
   },
-  "include": ["./lib/**/*"],
-  "exclude": ["./lib/**/*.spec.ts"]
+  "exclude": [
+    "jest.config.ts"
+  ]
 }

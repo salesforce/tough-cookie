@@ -1,7 +1,6 @@
-import { Cookie, CookieJar } from '../cookie'
+import { Cookie, CookieJar } from "../cookie";
 
 const url = 'http://example.com/index.html'
-const { objectContaining } = expect
 
 describe('Same-Site Cookies', function () {
   let cookieJar: CookieJar
@@ -10,16 +9,20 @@ describe('Same-Site Cookies', function () {
   let lax: Cookie
   let normal: Cookie
 
+  const parse = (cookieString: string): Cookie => {
+    const result = Cookie.parse(cookieString)
+    if (!result) {
+      throw new Error('This should not be undefined')
+    }
+    return result
+  }
+
   beforeEach(() => {
     cookieJar = new CookieJar()
-    // @ts-ignore
-    garbage = Cookie.parse('garbageIn=treatedAsNone; SameSite=garbage')
-    // @ts-ignore
-    strict = Cookie.parse('strict=authorized; SameSite=sTrIcT')
-    // @ts-ignore
-    lax = Cookie.parse('lax=okay; SameSite=lax')
-    // @ts-ignore
-    normal = Cookie.parse('normal=whatever')
+    garbage = parse('garbageIn=treatedAsNone; SameSite=garbage')
+    strict = parse('strict=authorized; SameSite=sTrIcT')
+    lax = parse('lax=okay; SameSite=lax')
+    normal = parse('normal=whatever')
   })
 
   describe('Retrieval', () => {
@@ -34,17 +37,17 @@ describe('Same-Site Cookies', function () {
         sameSiteContext: 'strict',
       })
       expect(cookies).toEqual([
-        objectContaining({
+        expect.objectContaining({
           key: 'strict',
           value: 'authorized',
           sameSite: 'strict',
         }),
-        objectContaining({
+        expect.objectContaining({
           key: 'lax',
           value: 'okay',
           sameSite: 'lax',
         }),
-        objectContaining({
+        expect.objectContaining({
           key: 'normal',
           value: 'whatever',
         }),
@@ -56,12 +59,12 @@ describe('Same-Site Cookies', function () {
         sameSiteContext: 'lax',
       })
       expect(cookies).toEqual([
-        objectContaining({
+        expect.objectContaining({
           key: 'lax',
           value: 'okay',
           sameSite: 'lax',
         }),
-        objectContaining({
+        expect.objectContaining({
           key: 'normal',
           value: 'whatever',
         }),
@@ -73,7 +76,7 @@ describe('Same-Site Cookies', function () {
         sameSiteContext: 'none',
       })
       expect(cookies).toEqual([
-        objectContaining({
+        expect.objectContaining({
           key: 'normal',
           value: 'whatever',
         }),
@@ -85,17 +88,17 @@ describe('Same-Site Cookies', function () {
         sameSiteContext: undefined,
       })
       expect(cookies).toEqual([
-        objectContaining({
+        expect.objectContaining({
           key: 'strict',
           value: 'authorized',
           sameSite: 'strict',
         }),
-        objectContaining({
+        expect.objectContaining({
           key: 'lax',
           value: 'okay',
           sameSite: 'lax',
         }),
-        objectContaining({
+        expect.objectContaining({
           key: 'normal',
           value: 'whatever',
         }),

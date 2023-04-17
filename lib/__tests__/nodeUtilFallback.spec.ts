@@ -1,7 +1,7 @@
-import { getCustomInspectSymbol, getUtilInspect } from '../utilHelper'
-import util from 'util'
-import { Cookie, CookieJar, MemoryCookieStore } from '../cookie'
-import { inspectFallback } from '../memstore'
+import { getCustomInspectSymbol, getUtilInspect } from "../utilHelper";
+import util from "util";
+import { Cookie, CookieJar, MemoryCookieStore } from "../cookie";
+import { inspectFallback } from "../memstore";
 
 jest.useFakeTimers()
 
@@ -48,7 +48,9 @@ describe('Node util module fallback for non-node environments', () => {
   describe('util usage in Cookie', () => {
     it('custom inspect for Cookie still works', () => {
       const cookie = Cookie.parse('a=1; Domain=example.com; Path=/')
-      // @ts-ignore
+      if (!cookie) {
+        throw new Error("This should not be undefined")
+      }
       expect(cookie.inspect()).toEqual(util.inspect(cookie))
     })
   })

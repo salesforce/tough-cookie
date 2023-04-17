@@ -29,16 +29,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import {
-  Cookie,
-  CookieJar,
-  MemoryCookieStore,
-  ParameterError,
-  SerializedCookieJar,
-  Store,
-} from '../cookie'
+import { Cookie, CookieJar, MemoryCookieStore, ParameterError, SerializedCookieJar, Store } from "../cookie";
 
-const { objectContaining, assertions } = expect
 jest.useFakeTimers()
 
 // ported from:
@@ -63,7 +55,7 @@ describe('CookieJar', () => {
             'http://example.com',
             (_error, result) => {
               if (result == null) {
-                throw new Error('should not be null')
+                throw new Error('Result should not have been undefined')
               }
               cookie = result
               done()
@@ -74,11 +66,14 @@ describe('CookieJar', () => {
           cookie = await cookieJar.setCookie('foo=bar', 'http://example.com')
         },
         syncStyle() {
-          // @ts-ignore
-          cookie = cookieJar.setCookieSync('foo=bar', 'http://example.com')
+          const result = cookieJar.setCookieSync('foo=bar', 'http://example.com')
+          if (result == null) {
+            throw new Error('Result should not have been undefined')
+          }
+          cookie = result
         },
       },
-      async () => {
+      () => {
         expect(cookie).toBeInstanceOf(Cookie)
         expect(cookie.key).toBe('foo')
         expect(cookie.value).toBe('bar')
@@ -92,7 +87,7 @@ describe('CookieJar', () => {
         { now: new Date(Date.now() - 1) },
       )
       expect(cookie).toEqual(
-        objectContaining({
+        expect.objectContaining({
           key: 'near',
           value: 'expiry',
         }),
@@ -104,7 +99,7 @@ describe('CookieJar', () => {
       })
       expect(cookies).toHaveLength(1)
       expect(cookies[0]).toEqual(
-        objectContaining({
+        expect.objectContaining({
           key: 'near',
           value: 'expiry',
         }),
@@ -121,7 +116,7 @@ describe('CookieJar', () => {
           },
         )
         expect(cookie).toEqual(
-          objectContaining({
+          expect.objectContaining({
             key: '',
             value: 'b',
           }),
@@ -129,7 +124,7 @@ describe('CookieJar', () => {
       })
 
       it('should not allow keyless cookie to be accepted when loose: false', async () => {
-        assertions(1)
+        expect.assertions(1)
         await expect(
           cookieJar.setCookie('=b', 'http://example.com/index.html', {
             loose: false,
@@ -146,7 +141,7 @@ describe('CookieJar', () => {
         expect(cookies).toEqual([
           undefined,
           undefined,
-          objectContaining({
+          expect.objectContaining({
             key: 'c',
             value: 'd',
           }),
@@ -160,7 +155,7 @@ describe('CookieJar', () => {
       const t0 = new Date()
 
       expect(cookie).toEqual(
-        objectContaining({
+        expect.objectContaining({
           hostOnly: null,
           creation: t0,
           lastAccessed: null,
@@ -175,7 +170,7 @@ describe('CookieJar', () => {
       )
 
       expect(cookie).toEqual(
-        objectContaining({
+        expect.objectContaining({
           hostOnly: false,
           creation: t1,
           lastAccessed: t1,
@@ -191,7 +186,7 @@ describe('CookieJar', () => {
         'http://example.com/index.html',
       )
       expect(cookies).toEqual([
-        objectContaining({
+        expect.objectContaining({
           hostOnly: false,
           creation: t1,
           lastAccessed: t2,
@@ -205,7 +200,7 @@ describe('CookieJar', () => {
         'http://example.com/index.html',
       )
       expect(cookie).toEqual(
-        objectContaining({
+        expect.objectContaining({
           domain: 'example.com',
           path: '/',
           pathIsDefault: true,
@@ -221,7 +216,7 @@ describe('CookieJar', () => {
         'http://example.com/index.html',
       )
       expect(cookie).toEqual(
-        objectContaining({
+        expect.objectContaining({
           domain: 'example.com',
           hostOnly: true,
         }),
@@ -236,7 +231,7 @@ describe('CookieJar', () => {
         'http://www.example.com/dir/index.html',
       )
       expect(cookie).toEqual(
-        objectContaining({
+        expect.objectContaining({
           key: 'SID',
           value: '31d4d96e407aad42',
           domain: 'www.example.com',
@@ -247,7 +242,7 @@ describe('CookieJar', () => {
     })
 
     it('should fail when the cookie domain does not match the provided domain', async () => {
-      assertions(1)
+      expect.assertions(1)
       await expect(
         cookieJar.setCookie(
           'a=b; Domain=fooxample.com; Path=/',
@@ -259,7 +254,7 @@ describe('CookieJar', () => {
     })
 
     it('should fail when the cookie has a sub-domain but the provided domain is the root', async () => {
-      assertions(1)
+      expect.assertions(1)
       await expect(
         cookieJar.setCookie(
           'a=b; Domain=www.example.com; Path=/',
@@ -284,7 +279,7 @@ describe('CookieJar', () => {
         'http://www.example.com/index.html',
       )
       expect(cookie).toEqual(
-        objectContaining({
+        expect.objectContaining({
           domain: 'example.com',
           path: '/subpath',
           pathIsDefault: null,
@@ -293,7 +288,7 @@ describe('CookieJar', () => {
     })
 
     it('should fail when using an httpOnly cookie when using a non-HTTP API', async () => {
-      assertions(1)
+      expect.assertions(1)
       await expect(
         cookieJar.setCookie(
           'a=b; Domain=example.com; Path=/; HttpOnly',
@@ -304,7 +299,7 @@ describe('CookieJar', () => {
     })
 
     it('should not fail when using an httpOnly cookie when using a non-HTTP API', async () => {
-      assertions(1)
+      expect.assertions(1)
       await cookieJar.setCookie(
         'OptionsTest=FooBar; expires=Wed, 13-Jan-2051 22:23:01 GMT; path=/TestPath; HttpOnly',
         'https://127.0.0.1/TestPath/somewhere',
@@ -316,7 +311,7 @@ describe('CookieJar', () => {
     })
 
     it('should not fail when using an httpOnly cookie when using a non-HTTP API (setCookieSync)', () => {
-      assertions(1)
+      expect.assertions(1)
       cookieJar.setCookieSync(
         'OptionsTest=FooBar; expires=Wed, 13-Jan-2051 22:23:01 GMT; path=/TestPath; HttpOnly',
         'https://127.0.0.1/TestPath/somewhere',
@@ -339,7 +334,7 @@ describe('CookieJar', () => {
         `http://${test.IPv6}/`,
       )
       expect(cookie).toEqual(
-        objectContaining({
+        expect.objectContaining({
           creation: t0,
           lastAccessed: t0,
         }),
@@ -373,9 +368,9 @@ describe('CookieJar', () => {
             cookies = cookieJar.getCookiesSync('http://example.com')
           },
         },
-        async () => {
+        ()=> {
           expect(cookies).toEqual([
-            objectContaining({
+            expect.objectContaining({
               key: 'foo',
               value: 'bar',
             }),
@@ -418,7 +413,6 @@ describe('CookieJar', () => {
         const allHaveRootPath = cookies.every((cookie) => cookie.path === '/')
         expect(allHaveRootPath).toBe(true)
 
-        // @ts-ignore
         const noCookiesWithAnOtherKeyRetrieved = cookies.every(
           (cookie) => !/^other/.test(cookie.key as string),
         )
@@ -429,7 +423,6 @@ describe('CookieJar', () => {
         const cookies = await cookieJar.getCookies('http://www.example.com/foo')
         expect(cookies).toHaveLength(4)
 
-        // @ts-ignore
         const noCookiesWithAnOtherKeyRetrieved = cookies.every(
           (cookie) => !/^other/.test(cookie.key as string),
         )
@@ -442,7 +435,6 @@ describe('CookieJar', () => {
         })
         expect(cookies).toHaveLength(4)
 
-        // @ts-ignore
         const noCookiesWithAnOtherKeyRetrieved = cookies.every(
           (cookie) => !/^other/.test(cookie.key as string),
         )
@@ -502,7 +494,7 @@ describe('CookieJar', () => {
       it('should be able to get the cookies for http://nodejs.org', async () => {
         const cookies = await cookieJar.getCookies('http://nodejs.org')
         expect(cookies).toEqual([
-          objectContaining({
+          expect.objectContaining({
             key: 'f',
             value: '6',
             path: '/',
@@ -514,27 +506,27 @@ describe('CookieJar', () => {
       it('should be able to get the cookies for https://example.com', async () => {
         const cookies = await cookieJar.getCookies('https://example.com')
         expect(cookies).toEqual([
-          objectContaining({
+          expect.objectContaining({
             key: 'a',
             value: '1',
             path: '/',
             domain: 'example.com',
           }),
-          objectContaining({
+          expect.objectContaining({
             key: 'b',
             value: '2',
             path: '/',
             domain: 'example.com',
             httpOnly: true,
           }),
-          objectContaining({
+          expect.objectContaining({
             key: 'c',
             value: '3',
             path: '/',
             domain: 'example.com',
             secure: true,
           }),
-          objectContaining({
+          expect.objectContaining({
             key: 'e',
             value: '5',
             path: '/',
@@ -546,27 +538,27 @@ describe('CookieJar', () => {
       it('should be able to get the cookies for https://example.com with the secure: true option', async () => {
         const cookies = await cookieJar.getCookies('https://example.com')
         expect(cookies).toEqual([
-          objectContaining({
+          expect.objectContaining({
             key: 'a',
             value: '1',
             path: '/',
             domain: 'example.com',
           }),
-          objectContaining({
+          expect.objectContaining({
             key: 'b',
             value: '2',
             path: '/',
             domain: 'example.com',
             httpOnly: true,
           }),
-          objectContaining({
+          expect.objectContaining({
             key: 'c',
             value: '3',
             path: '/',
             domain: 'example.com',
             secure: true,
           }),
-          objectContaining({
+          expect.objectContaining({
             key: 'e',
             value: '5',
             path: '/',
@@ -578,20 +570,20 @@ describe('CookieJar', () => {
       it('should be able to get the cookies for http://example.com', async () => {
         const cookies = await cookieJar.getCookies('http://example.com')
         expect(cookies).toEqual([
-          objectContaining({
+          expect.objectContaining({
             key: 'a',
             value: '1',
             path: '/',
             domain: 'example.com',
           }),
-          objectContaining({
+          expect.objectContaining({
             key: 'b',
             value: '2',
             path: '/',
             domain: 'example.com',
             httpOnly: true,
           }),
-          objectContaining({
+          expect.objectContaining({
             key: 'e',
             value: '5',
             path: '/',
@@ -603,20 +595,20 @@ describe('CookieJar', () => {
       it('should be able to get the cookies for http://EXAMPlE.com (case-insensitive)', async () => {
         const cookies = await cookieJar.getCookies('http://EXAMPlE.com')
         expect(cookies).toEqual([
-          objectContaining({
+          expect.objectContaining({
             key: 'a',
             value: '1',
             path: '/',
             domain: 'example.com',
           }),
-          objectContaining({
+          expect.objectContaining({
             key: 'b',
             value: '2',
             path: '/',
             domain: 'example.com',
             httpOnly: true,
           }),
-          objectContaining({
+          expect.objectContaining({
             key: 'e',
             value: '5',
             path: '/',
@@ -630,13 +622,13 @@ describe('CookieJar', () => {
           http: false,
         })
         expect(cookies).toEqual([
-          objectContaining({
+          expect.objectContaining({
             key: 'a',
             value: '1',
             path: '/',
             domain: 'example.com',
           }),
-          objectContaining({
+          expect.objectContaining({
             key: 'e',
             value: '5',
             path: '/',
@@ -648,26 +640,26 @@ describe('CookieJar', () => {
       it('should be able to get the cookies for http://example.com/foo/bar', async () => {
         const cookies = await cookieJar.getCookies('http://example.com/foo/bar')
         expect(cookies).toEqual([
-          objectContaining({
+          expect.objectContaining({
             key: 'd',
             value: '4',
             path: '/foo',
             domain: 'example.com',
           }),
-          objectContaining({
+          expect.objectContaining({
             key: 'a',
             value: '1',
             path: '/',
             domain: 'example.com',
           }),
-          objectContaining({
+          expect.objectContaining({
             key: 'b',
             value: '2',
             path: '/',
             domain: 'example.com',
             httpOnly: true,
           }),
-          objectContaining({
+          expect.objectContaining({
             key: 'e',
             value: '5',
             path: '/',
@@ -681,19 +673,19 @@ describe('CookieJar', () => {
           'http://www.example.com/foo/bar',
         )
         expect(cookies).toEqual([
-          objectContaining({
+          expect.objectContaining({
             key: 'd',
             value: '4',
             path: '/foo',
             domain: 'example.com',
           }),
-          objectContaining({
+          expect.objectContaining({
             key: 'a',
             value: '1',
             path: '/',
             domain: 'example.com',
           }),
-          objectContaining({
+          expect.objectContaining({
             key: 'b',
             value: '2',
             path: '/',
@@ -722,7 +714,7 @@ describe('CookieJar', () => {
                 cookieString = result
                 done()
               } else {
-                fail('Result should not have been undefined')
+                throw new Error('Result should not have been undefined')
               }
             })
           },
@@ -733,7 +725,7 @@ describe('CookieJar', () => {
             cookieString = cookieJar.getCookieStringSync('http://example.com')
           },
         },
-        async () => {
+        () => {
           expect(cookieString).toBe('foo=bar')
         },
       )
@@ -742,8 +734,8 @@ describe('CookieJar', () => {
     describe('retrieving cookie strings', () => {
       beforeEach(async () => {
         const url = 'http://example.com/index.html'
-        // @ts-ignore
-        const at = (timeFromNow) => ({
+
+        const at = (timeFromNow: number) => ({
           now: new Date(Date.now() + timeFromNow),
         })
 
@@ -813,7 +805,9 @@ describe('CookieJar', () => {
             cookieJar.getSetCookieStrings(
               'http://example.com',
               (_error, result) => {
-                // @ts-ignore
+                if (!result) {
+                  throw new Error('Result should not have been undefined')
+                }
                 cookieHeaders = result
                 done()
               },
@@ -829,7 +823,7 @@ describe('CookieJar', () => {
               cookieJar.getSetCookieStringsSync('http://example.com')
           },
         },
-        async () => {
+        () => {
           expect(cookieHeaders).toEqual(['foo=bar; Path=/'])
         },
       )
@@ -838,8 +832,8 @@ describe('CookieJar', () => {
     describe('retrieving cookie strings', () => {
       beforeEach(async () => {
         const url = 'http://example.com/index.html'
-        // @ts-ignore
-        const at = (timeFromNow) => ({
+
+        const at = (timeFromNow: number) => ({
           now: new Date(Date.now() + timeFromNow),
         })
 
@@ -920,8 +914,8 @@ describe('CookieJar', () => {
           cookieJar.removeAllCookiesSync()
         },
       },
-      async () => {
-        expect(await cookieJar.getCookies('http://example.com')).toHaveLength(0)
+      () => {
+        expect(cookieJar.getCookiesSync('http://example.com')).toHaveLength(0)
       },
     )
   })
@@ -940,7 +934,9 @@ describe('CookieJar', () => {
       {
         callbackStyle(done) {
           cookieJar.serialize((_error, result) => {
-            // @ts-ignore
+            if (!result) {
+              throw new Error()
+            }
             data = result
             done()
           })
@@ -949,11 +945,14 @@ describe('CookieJar', () => {
           data = await cookieJar.serialize()
         },
         syncStyle() {
-          // @ts-ignore
-          data = cookieJar.serializeSync()
+          const result = cookieJar.serializeSync()
+          if (!result) {
+            throw new Error("This should have been undefined")
+          }
+          data = result
         },
       },
-      async () => {
+      () => {
         const expected: SerializedCookieJar = {
           allowSpecialUseDomain: true,
           cookies: [
@@ -992,8 +991,7 @@ describe('CookieJar', () => {
       }
       for await (const [path, cookies] of Object.entries(cookiesByDomain)) {
         for await (const cookie of cookies) {
-          // @ts-ignore
-          await cookieJar.setCookie(cookie, path)
+          await cookieJar.setCookie(cookie as Cookie, path)
         }
       }
     })
@@ -1016,7 +1014,7 @@ describe('CookieJar', () => {
       await cookieJar.store.removeCookie('foo.com', '/', 'foo')
       const cookies = await cookieJar.store.findCookies('foo.com', null)
       expect(cookies).toEqual([
-        objectContaining({
+        expect.objectContaining({
           key: 'a',
         }),
       ])
@@ -1055,9 +1053,9 @@ it('should allow cookies with the same name under different domains and/or paths
   const cookies = await cookieJar.getCookies('http://www.example.com/pathA')
   // may break with sorting; sorting should put 3333 first due to longest path
   expect(cookies).toEqual([
-    objectContaining({ value: '3333' }),
-    objectContaining({ value: '1111' }),
-    objectContaining({ value: '2222' }),
+    expect.objectContaining({ value: '3333' }),
+    expect.objectContaining({ value: '1111' }),
+    expect.objectContaining({ value: '2222' }),
   ])
 })
 
@@ -1109,7 +1107,7 @@ describe('loose mode', () => {
     await cookieJar.setCookie('FooBar', 'http://www.foonet.net')
     const cookies = await cookieJar.getCookies('http://www.foonet.net')
     expect(cookies).toEqual([
-      objectContaining({
+      expect.objectContaining({
         key: '',
         value: 'FooBar',
       }),
@@ -1118,12 +1116,15 @@ describe('loose mode', () => {
 
   it('should retain loose mode when cloning cookie store with loose mode enabled', async () => {
     const cookieJar = new CookieJar(null, { looseMode: true })
-    // @ts-ignore
-    const clonedCookieJar = CookieJar.fromJSON(cookieJar.toJSON())
+    const cookieJarAsJson = cookieJar.toJSON()
+    if (!cookieJarAsJson) {
+      throw new Error("This should not have been undefined")
+    }
+    const clonedCookieJar = CookieJar.fromJSON(cookieJarAsJson)
     await clonedCookieJar.setCookie('FooBar', 'http://www.foonet.net')
     const cookies = await clonedCookieJar.getCookies('http://www.foonet.net')
     expect(cookies).toEqual([
-      objectContaining({
+      expect.objectContaining({
         key: '',
         value: 'FooBar',
       }),
@@ -1157,7 +1158,7 @@ it('should fix issue #144', async () => {
   await cookieJar.setCookie(cookieString, 'https://google.com')
   const cookies = await cookieJar.getCookies('https://google.com')
   expect(cookies).toEqual([
-    objectContaining({
+    expect.objectContaining({
       key: 'AWSELB',
       value: '69b2c0038b16e8e27056d1178e0d556c',
       path: '/',
@@ -1167,7 +1168,7 @@ it('should fix issue #144', async () => {
 })
 
 it('should fix issue #145 - missing 2nd url parameter', async () => {
-  assertions(1)
+  expect.assertions(1)
   const cookieJar = new CookieJar()
   try {
     // @ts-ignore
@@ -1195,7 +1196,7 @@ describe.each(['local', 'example', 'invalid', 'localhost', 'test'])(
         `http://dev.${specialUseDomain}`,
       )
       expect(cookie).toEqual(
-        objectContaining({
+        expect.objectContaining({
           key: 'settingThisShouldPass',
           value: 'true',
           domain: `dev.${specialUseDomain}`,
@@ -1220,7 +1221,7 @@ describe.each(['local', 'example', 'invalid', 'localhost', 'test'])(
         `http://dev.${specialUseDomain}`,
       )
       expect(cookie).toEqual(
-        objectContaining({
+        expect.objectContaining({
           key: 'settingThisShouldPass',
           value: 'true',
           domain: `dev.${specialUseDomain}`,
@@ -1236,7 +1237,7 @@ describe.each(['local', 'example', 'invalid', 'localhost', 'test'])(
     })
 
     it('should reject special domain cookies if allowSpecialUseDomain: false', async () => {
-      assertions(1)
+      expect.assertions(1)
       const cookieJar = new CookieJar(new MemoryCookieStore(), {
         rejectPublicSuffixes: true,
         allowSpecialUseDomain: false,
@@ -1247,7 +1248,9 @@ describe.each(['local', 'example', 'invalid', 'localhost', 'test'])(
           `http://dev.${specialUseDomain}`,
         )
       } catch (e) {
-        // @ts-ignore
+        if (!(e instanceof Error)) {
+          throw new Error("This should be an error instance")
+        }
         expect(e.message).toBe(
           `Cookie has domain set to the public suffix "${specialUseDomain}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain:true, rejectPublicSuffixes: false}.`,
         )
@@ -1272,7 +1275,7 @@ describe.each(['local', 'example', 'invalid', 'localhost', 'test'])(
           `http://${specialUseDomain}`,
         )
         expect(cookie).toEqual(
-          objectContaining({
+          expect.objectContaining({
             key: 'settingThisShouldPass',
             value: 'true',
             domain: `${specialUseDomain}`,
@@ -1288,7 +1291,7 @@ describe.each(['local', 'example', 'invalid', 'localhost', 'test'])(
       })
     } else {
       it('should reject special domain cookies if allowSpecialUseDomain is set to the default value', async () => {
-        assertions(1)
+        expect.assertions(1)
         const cookieJar = new CookieJar()
         try {
           await cookieJar.setCookie(
@@ -1296,7 +1299,9 @@ describe.each(['local', 'example', 'invalid', 'localhost', 'test'])(
             `http://${specialUseDomain}`,
           )
         } catch (e) {
-          // @ts-ignore
+          if (!(e instanceof Error)) {
+            throw new Error("This should be an error instance")
+          }
           expect(e.message).toBe(
             `Cookie has domain set to the public suffix "${specialUseDomain}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain:true, rejectPublicSuffixes: false}.`,
           )
@@ -1315,7 +1320,7 @@ describe.each(['local', 'example', 'invalid', 'localhost', 'test'])(
           `http://${specialUseDomain}`,
         )
         expect(cookie).toEqual(
-          objectContaining({
+          expect.objectContaining({
             key: 'settingThisShouldPass',
             value: 'true',
             domain: `${specialUseDomain}`,
@@ -1331,7 +1336,7 @@ describe.each(['local', 'example', 'invalid', 'localhost', 'test'])(
       })
     } else {
       it('should reject special domain cookies if allowSpecialUseDomain: true', async () => {
-        assertions(1)
+        expect.assertions(1)
         const cookieJar = new CookieJar(new MemoryCookieStore(), {
           rejectPublicSuffixes: true,
           allowSpecialUseDomain: true,
@@ -1342,7 +1347,9 @@ describe.each(['local', 'example', 'invalid', 'localhost', 'test'])(
             `http://${specialUseDomain}`,
           )
         } catch (e) {
-          // @ts-ignore
+          if (!(e instanceof Error)) {
+            throw new Error("This should be an error instance")
+          }
           expect(e.message).toBe(
             `Cookie has domain set to the public suffix "${specialUseDomain}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain:true, rejectPublicSuffixes: false}.`,
           )
@@ -1351,7 +1358,7 @@ describe.each(['local', 'example', 'invalid', 'localhost', 'test'])(
     }
 
     it('should reject special domain cookies if allowSpecialUseDomain: true', async () => {
-      assertions(1)
+      expect.assertions(1)
       const cookieJar = new CookieJar(new MemoryCookieStore(), {
         rejectPublicSuffixes: true,
         allowSpecialUseDomain: false,
@@ -1362,7 +1369,9 @@ describe.each(['local', 'example', 'invalid', 'localhost', 'test'])(
           `http://${specialUseDomain}`,
         )
       } catch (e) {
-        // @ts-ignore
+        if (!(e instanceof Error)) {
+          throw new Error("This should be an error instance")
+        }
         expect(e.message).toBe(
           `Cookie has domain set to the public suffix "${specialUseDomain}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain:true, rejectPublicSuffixes: false}.`,
         )
@@ -1414,34 +1423,35 @@ function createCookie(
   } = {},
 ): Cookie {
   const cookie = Cookie.parse(cookieString)
+  if (!cookie) {
+    throw new Error("This should not be undefined")
+  }
   if (options?.hostOnly) {
-    // @ts-ignore
     cookie.hostOnly = options.hostOnly
   }
-  // @ts-ignore
   return cookie
 }
 
 function apiVariants(
   testName: string,
   apiVariants: ApiVariants,
-  assertions: () => Promise<void>,
+  assertions: () => void,
 ) {
   it(`${testName} (callback)`, async () => {
     await new Promise((resolve) =>
       apiVariants.callbackStyle(() => resolve(undefined)),
     )
-    await assertions()
+    assertions()
   })
 
   it(`${testName} (async)`, async () => {
     await apiVariants.asyncStyle()
-    await assertions()
+    assertions()
   })
 
-  it(`${testName} (sync)`, async () => {
+  it(`${testName} (sync)`, () => {
     apiVariants.syncStyle()
-    await assertions()
+    assertions()
   })
 }
 

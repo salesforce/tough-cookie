@@ -1,4 +1,4 @@
-import { Cookie } from '../cookie'
+import { Cookie } from "../cookie";
 
 jest.useFakeTimers()
 
@@ -7,7 +7,9 @@ describe('Cookie.toJSON()', () => {
     const cookie = Cookie.parse(
       'alpha=beta; Domain=example.com; Path=/foo; Expires=Tue, 19 Jan 2038 03:14:07 GMT; HttpOnly',
     )
-    // @ts-ignore
+    if (!cookie) {
+      throw new Error("This should not be undefined")
+    }
     expect(cookie.toJSON()).toEqual({
       creation: new Date().toISOString(),
       domain: 'example.com',
@@ -31,8 +33,9 @@ describe('Cookie.fromJSON()', () => {
       httpOnly: true,
       lastAccessed: 2000000000123,
     })
-    expect(Cookie.fromJSON(json)).toEqual(
-      new Cookie({
+    const cookie = Cookie.fromJSON(json)
+    expect(cookie).toEqual(
+      expect.objectContaining({
         creation: new Date(),
         domain: 'example.com',
         expires: new Date(Date.parse('2038-01-19T03:14:07.000Z')),
@@ -41,8 +44,8 @@ describe('Cookie.fromJSON()', () => {
         path: '/foo',
         value: 'beta',
         lastAccessed: new Date(2000000000123),
-      }),
-    )
+      },
+    ))
   })
 
   it('should be able to handle a null value deserialization', () => {
@@ -55,11 +58,12 @@ describe('Cookie.fromJSON()', () => {
       creation: 'Infinity',
       lastAccessed: 'Infinity',
     })
-    // @ts-ignore
-    expect(Cookie.fromJSON(json).expires).toBe('Infinity')
-    // @ts-ignore
-    expect(Cookie.fromJSON(json).creation).toBe('Infinity')
-    // @ts-ignore
-    expect(Cookie.fromJSON(json).lastAccessed).toBe('Infinity')
+    const cookie = Cookie.fromJSON(json)
+    if (!cookie) {
+      throw new Error("This should not be null")
+    }
+    expect(cookie.expires).toBe('Infinity')
+    expect(cookie.creation).toBe('Infinity')
+    expect(cookie.lastAccessed).toBe('Infinity')
   })
 })

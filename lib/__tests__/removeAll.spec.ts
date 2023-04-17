@@ -1,12 +1,6 @@
-import {
-  Callback,
-  Cookie,
-  CookieJar,
-  MemoryCookieStore,
-  Store,
-} from '../cookie'
-import spyOn = jest.spyOn
-import SpyInstance = jest.SpyInstance
+import { Callback, Cookie, CookieJar, MemoryCookieStore, Store } from "../cookie";
+import spyOn = jest.spyOn;
+import SpyInstance = jest.SpyInstance;
 
 const url = 'http://example.com/index.html'
 
@@ -29,27 +23,27 @@ describe('store removeAllCookies API', () => {
       const store = new StoreWithoutRemoveAll()
       const jar = new CookieJar(store)
 
-      await jar.setCookieSync('a=b', url)
-      await jar.setCookieSync('c=d', url)
-      await jar.setCookieSync('e=f', url)
-      await jar.setCookieSync('g=h', url)
+      await jar.setCookie('a=b', url)
+      await jar.setCookie('c=d', url)
+      await jar.setCookie('e=f', url)
+      await jar.setCookie('g=h', url)
 
       // replace remove cookie behavior to throw an error on the 4th invocation
-      const _removeCookie = store.removeCookie
+      const _removeCookie = store.removeCookie.bind(store)
       const spy: SpyInstance<ReturnType<typeof _removeCookie>> = spyOn(
         store,
         'removeCookie',
       )
-      spy.mockImplementationOnce((domain, path, key, callback) =>
+      spy.mockImplementationOnce((domain: string, path: string, key: string, callback: Callback<void>) =>
         _removeCookie.call(store, domain, path, key, callback),
       )
-      spy.mockImplementationOnce((domain, path, key, callback) =>
+      spy.mockImplementationOnce((domain: string, path: string, key: string, callback: Callback<void>) =>
         _removeCookie.call(store, domain, path, key, callback),
       )
-      spy.mockImplementationOnce((domain, path, key, callback) =>
+      spy.mockImplementationOnce((domain: string, path: string, key: string, callback: Callback<void>) =>
         _removeCookie.call(store, domain, path, key, callback),
       )
-      spy.mockImplementationOnce((_domain, _path, _key, callback) =>
+      spy.mockImplementationOnce((_domain, _path, _key, callback: Callback<void>) =>
         callback(new Error('something happened 4')),
       )
 
@@ -68,18 +62,18 @@ describe('store removeAllCookies API', () => {
       const store = new StoreWithoutRemoveAll()
       const jar = new CookieJar(store)
 
-      await jar.setCookieSync('a=b', url)
-      await jar.setCookieSync('c=d', url)
-      await jar.setCookieSync('e=f', url)
-      await jar.setCookieSync('g=h', url)
+      await jar.setCookie('a=b', url)
+      await jar.setCookie('c=d', url)
+      await jar.setCookie('e=f', url)
+      await jar.setCookie('g=h', url)
 
       // replace remove cookie behavior to throw an error on the 4th invocation
-      const _removeCookie = store.removeCookie
+      const _removeCookie = store.removeCookie.bind(store)
       const spy: SpyInstance<ReturnType<typeof _removeCookie>> = spyOn(
         store,
         'removeCookie',
       )
-      spy.mockImplementation((domain, path, key, callback) => {
+      spy.mockImplementation((domain: string, path: string, key: string, callback: Callback<void>) => {
         if (spy.mock.calls.length % 2 === 1) {
           return callback(
             new Error(`something happened ${spy.mock.calls.length}`),
@@ -150,8 +144,10 @@ class StoreWithoutRemoveAll extends Store {
     _key: string,
     callback?: Callback<Cookie>,
   ): unknown {
-    // @ts-ignore
-    return callback(null, null)
+    if (!callback) {
+      throw new Error("This should not be undefined")
+    }
+    return callback(undefined, undefined)
   }
 
   override findCookies(
@@ -168,11 +164,13 @@ class StoreWithoutRemoveAll extends Store {
   override findCookies(
     _domain: string,
     _path: string,
-    _allowSpecialUseDomain: boolean | Callback<Cookie[]> = false,
+    _allowSpecialUseDomain: boolean,
     callback?: Callback<Cookie[]>,
   ): unknown {
-    // @ts-ignore
-    return callback(null, [])
+    if (!callback) {
+      throw new Error("This should not be undefined")
+    }
+    return callback(undefined, [])
   }
 
   override putCookie(cookie: Cookie): Promise<void>
@@ -180,16 +178,20 @@ class StoreWithoutRemoveAll extends Store {
   override putCookie(cookie: Cookie, callback?: Callback<void>): unknown {
     this.stats.put++
     this.cookies.push(cookie)
-    // @ts-ignore
-    return callback(null)
+    if (!callback) {
+      throw new Error("This should not be undefined")
+    }
+    return callback(undefined)
   }
 
   override getAllCookies(): Promise<Cookie[]>
   override getAllCookies(callback: Callback<Cookie[]>): void
   override getAllCookies(callback?: Callback<Cookie[]>): unknown {
     this.stats.getAll++
-    // @ts-ignore
-    return callback(null, this.cookies.slice())
+    if (!callback) {
+      throw new Error("This should not be undefined")
+    }
+    return callback(undefined, this.cookies.slice())
   }
 
   override removeCookie(
@@ -210,8 +212,10 @@ class StoreWithoutRemoveAll extends Store {
     callback?: Callback<void>,
   ): unknown {
     this.stats.remove++
-    // @ts-ignore
-    return callback(null, null)
+    if (!callback) {
+      throw new Error("This should not be undefined")
+    }
+    return callback(undefined)
   }
 }
 
@@ -231,7 +235,9 @@ class MemoryStoreExtension extends MemoryCookieStore {
   override getAllCookies(callback: Callback<Cookie[]>): void
   override getAllCookies(callback?: Callback<Cookie[]>): unknown {
     this.stats.getAll++
-    // @ts-ignore
+    if (!callback) {
+      throw new Error("This should not be undefined")
+    }
     return super.getAllCookies(callback)
   }
 
@@ -253,7 +259,9 @@ class MemoryStoreExtension extends MemoryCookieStore {
     callback?: Callback<void>,
   ): unknown {
     this.stats.remove++
-    // @ts-ignore
+    if (!callback) {
+      throw new Error("This should not be undefined")
+    }
     return super.removeCookie(domain, path, key, callback)
   }
 
@@ -261,7 +269,9 @@ class MemoryStoreExtension extends MemoryCookieStore {
   override removeAllCookies(callback: Callback<void>): void
   override removeAllCookies(callback?: Callback<void>): unknown {
     this.stats.removeAll++
-    // @ts-ignore
+    if (!callback) {
+      throw new Error("This should not be undefined")
+    }
     return super.removeAllCookies(callback)
   }
 }

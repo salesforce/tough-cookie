@@ -1,5 +1,5 @@
-import { Cookie } from '../cookie'
-import { performance } from 'node:perf_hooks'
+import { Cookie } from "../cookie";
+import { performance } from "node:perf_hooks";
 
 describe('Cookie.parse', () => {
   it.each([
@@ -401,8 +401,7 @@ describe('Cookie.parse', () => {
     const parseOptions = testCase.parseOptions || {}
 
     const value = input === undefined ? undefined : input.valueOf()
-    // @ts-ignore
-    const cookie = Cookie.parse(value, parseOptions)
+    const cookie = Cookie.parse(value as string, parseOptions)
     if (output !== undefined) {
       expect(cookie).toEqual(expect.objectContaining(output))
     } else {
