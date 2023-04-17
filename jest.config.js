@@ -4,9 +4,6 @@ module.exports = {
   testEnvironment: "node",
   testRegex: "(/__tests__/.*|(\\.|/)(test|spec))\\.ts$",
   maxWorkers: 1,
-  globals: {
-    "ts-jest": {
-      isolatedModules: false
-    }
-  }
+  rootDir: './lib/',
+  testPathIgnorePatterns: ['./lib/__tests__/data/']
 };

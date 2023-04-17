@@ -27,6 +27,8 @@ SOFTWARE.
 ************************************************************************************ */
 "use strict";
 
+const toString = Object.prototype.toString
+
 /* Validation functions copied from check-types package - https://www.npmjs.com/package/check-types */
 export function isFunction(data: any): boolean {
   return typeof data === 'function';
@@ -80,11 +82,4 @@ export function validate(bool: boolean, cb?: any, options?: any): void {
   }
 }
 
-export class ParameterError extends Error {
-  constructor(...params: any[]) {
-    super(...params);
-    if (Object.setPrototypeOf) {
-      Object.setPrototypeOf(this, ParameterError.prototype);
-    }
-  }
-}
+export class ParameterError extends Error {}
