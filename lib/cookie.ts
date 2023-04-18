@@ -983,7 +983,11 @@ export class Cookie {
     ) {
       return false
     }
-    if (this.maxAge != null && this.maxAge <= 0) {
+    if (
+      this.maxAge != null &&
+      this.maxAge !== 'Infinity' &&
+      (this.maxAge === '-Infinity' || this.maxAge <= 0)
+    ) {
       return false // "Max-Age=" non-zero-digit *DIGIT
     }
     if (this.path != null && !PATH_VALUE.test(this.path)) {
