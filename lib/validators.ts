@@ -25,58 +25,86 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ************************************************************************************ */
-'use strict'
 
-const toString = Object.prototype.toString
+import type { ErrorCallback } from './utils'
 
 /* Validation functions copied from check-types package - https://www.npmjs.com/package/check-types */
-export function isFunction(data: unknown): boolean {
+
+/** Determines whether the argument is a function. */
+export function isFunction(data: unknown): data is Function {
   return typeof data === 'function'
 }
 
+/** Determines whether the argument is a non-empty string. */
 export function isNonEmptyString(data: unknown): boolean {
   return isString(data) && data !== ''
 }
 
+/** Determines whether the argument is a *valid* Date. */
 export function isDate(data: unknown): boolean {
-  if (data instanceof Date) {
-    return isInteger(data.getTime())
-  }
-  return false
+  return isInstanceStrict(data, Date) && isInteger(data.getTime())
 }
 
+/** Determines whether the argument is the empty string. */
 export function isEmptyString(data: unknown): boolean {
   return data === '' || (data instanceof String && data.toString() === '')
 }
+
+/** Determines whether the argument is a string. */
 
 export function isString(data: unknown): boolean {
   return typeof data === 'string' || data instanceof String
 }
 
+/** Determines whether the string representation of the argument is "[object Object]". */
 export function isObject(data: unknown): boolean {
-  return toString.call(data) === '[object Object]'
+  return String(data) === '[object Object]'
 }
 
+/** Determines whether the first argument is an instance of the second. */
+export function isInstanceStrict<T extends Function>(
+  data: unknown,
+  Constructor: T,
+): data is T['prototype'] {
+  try {
+    return data instanceof Constructor
+  } catch {
+    return false
+  }
+}
+
+/** Determines whether the argument is an integer. */
 export function isInteger(data: unknown): boolean {
   return typeof data === 'number' && data % 1 === 0
 }
 /* End validation functions */
 
-export function validate(bool: boolean, cb?: unknown, options?: unknown): void {
-  if (!isFunction(cb)) {
-    options = cb
-    cb = null
+/**
+ * When the first argument is false, an error is created with the given message. If a callback is
+ * provided, the error is passed to the callback, otherwise the error is thrown.
+ */
+export function validate(
+  bool: boolean,
+  callback?: ErrorCallback,
+  message?: string,
+): void
+export function validate(bool: boolean, message?: string): void
+export function validate(
+  bool: boolean,
+  cbOrMessage?: ErrorCallback | string,
+  message?: string,
+): void {
+  if (bool) return
+  const cb = isFunction(cbOrMessage) && cbOrMessage
+  if (!message) {
+    message =
+      typeof cbOrMessage === 'string' && cbOrMessage !== ''
+        ? cbOrMessage
+        : '[object Object]'
   }
-  if (!isObject(options)) options = { Error: 'Failed Check' }
-  if (!bool) {
-    if (typeof cb === 'function') {
-      // @ts-ignore
-      cb(new ParameterError(options))
-    } else {
-      // @ts-ignore
-      throw new ParameterError(options)
-    }
-  }
+  const err = new ParameterError(message)
+  if (cb) cb(err)
+  else throw err
 }
 
 export class ParameterError extends Error {}
