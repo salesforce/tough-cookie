@@ -29,16 +29,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import * as punycode from "punycode/";
-import urlParse from "url-parse";
-import * as pubsuffix from "./pubsuffix-psl";
-import { Store } from "./store";
-import { MemoryCookieStore } from "./memstore";
-import { pathMatch } from "./pathMatch";
-import * as validators from "./validators";
-import { version } from "./version";
-import { permuteDomain } from "./permuteDomain";
-import { getCustomInspectSymbol } from "./utilHelper";
+import * as punycode from 'punycode/'
+import urlParse from 'url-parse'
+import * as pubsuffix from './pubsuffix-psl'
+import { Store } from './store'
+import { MemoryCookieStore } from './memstore'
+import { pathMatch } from './pathMatch'
+import * as validators from './validators'
+import { version } from './version'
+import { permuteDomain } from './permuteDomain'
+import { getCustomInspectSymbol } from './utilHelper'
 
 // From RFC6265 S4.1.1
 // note that it excludes \x3B ";"

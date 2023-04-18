@@ -29,7 +29,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Cookie, CookieJar, MemoryCookieStore, ParameterError, SerializedCookieJar, Store } from "../cookie";
+import {
+  Cookie,
+  CookieJar,
+  MemoryCookieStore,
+  ParameterError,
+  SerializedCookieJar,
+  Store,
+} from '../cookie'
 
 jest.useFakeTimers()
 
@@ -66,7 +73,10 @@ describe('CookieJar', () => {
           cookie = await cookieJar.setCookie('foo=bar', 'http://example.com')
         },
         syncStyle() {
-          const result = cookieJar.setCookieSync('foo=bar', 'http://example.com')
+          const result = cookieJar.setCookieSync(
+            'foo=bar',
+            'http://example.com',
+          )
           if (result == null) {
             throw new Error('Result should not have been undefined')
           }
@@ -368,7 +378,7 @@ describe('CookieJar', () => {
             cookies = cookieJar.getCookiesSync('http://example.com')
           },
         },
-        ()=> {
+        () => {
           expect(cookies).toEqual([
             expect.objectContaining({
               key: 'foo',
@@ -947,7 +957,7 @@ describe('CookieJar', () => {
         syncStyle() {
           const result = cookieJar.serializeSync()
           if (!result) {
-            throw new Error("This should have been undefined")
+            throw new Error('This should have been undefined')
           }
           data = result
         },
@@ -1118,7 +1128,7 @@ describe('loose mode', () => {
     const cookieJar = new CookieJar(null, { looseMode: true })
     const cookieJarAsJson = cookieJar.toJSON()
     if (!cookieJarAsJson) {
-      throw new Error("This should not have been undefined")
+      throw new Error('This should not have been undefined')
     }
     const clonedCookieJar = CookieJar.fromJSON(cookieJarAsJson)
     await clonedCookieJar.setCookie('FooBar', 'http://www.foonet.net')
@@ -1249,7 +1259,7 @@ describe.each(['local', 'example', 'invalid', 'localhost', 'test'])(
         )
       } catch (e) {
         if (!(e instanceof Error)) {
-          throw new Error("This should be an error instance")
+          throw new Error('This should be an error instance')
         }
         expect(e.message).toBe(
           `Cookie has domain set to the public suffix "${specialUseDomain}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain:true, rejectPublicSuffixes: false}.`,
@@ -1300,7 +1310,7 @@ describe.each(['local', 'example', 'invalid', 'localhost', 'test'])(
           )
         } catch (e) {
           if (!(e instanceof Error)) {
-            throw new Error("This should be an error instance")
+            throw new Error('This should be an error instance')
           }
           expect(e.message).toBe(
             `Cookie has domain set to the public suffix "${specialUseDomain}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain:true, rejectPublicSuffixes: false}.`,
@@ -1348,7 +1358,7 @@ describe.each(['local', 'example', 'invalid', 'localhost', 'test'])(
           )
         } catch (e) {
           if (!(e instanceof Error)) {
-            throw new Error("This should be an error instance")
+            throw new Error('This should be an error instance')
           }
           expect(e.message).toBe(
             `Cookie has domain set to the public suffix "${specialUseDomain}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain:true, rejectPublicSuffixes: false}.`,
@@ -1370,7 +1380,7 @@ describe.each(['local', 'example', 'invalid', 'localhost', 'test'])(
         )
       } catch (e) {
         if (!(e instanceof Error)) {
-          throw new Error("This should be an error instance")
+          throw new Error('This should be an error instance')
         }
         expect(e.message).toBe(
           `Cookie has domain set to the public suffix "${specialUseDomain}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain:true, rejectPublicSuffixes: false}.`,
@@ -1424,7 +1434,7 @@ function createCookie(
 ): Cookie {
   const cookie = Cookie.parse(cookieString)
   if (!cookie) {
-    throw new Error("This should not be undefined")
+    throw new Error('This should not be undefined')
   }
   if (options?.hostOnly) {
     cookie.hostOnly = options.hostOnly

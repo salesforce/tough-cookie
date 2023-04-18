@@ -1,4 +1,4 @@
-import { CookieJar, PrefixSecurityEnum } from "../cookie";
+import { CookieJar, PrefixSecurityEnum } from '../cookie'
 
 let cookieJar: CookieJar
 const insecureUrl = 'http://www.example.com'
