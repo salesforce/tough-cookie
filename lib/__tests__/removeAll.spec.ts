@@ -1,6 +1,12 @@
-import { Callback, Cookie, CookieJar, MemoryCookieStore, Store } from "../cookie";
-import spyOn = jest.spyOn;
-import SpyInstance = jest.SpyInstance;
+import {
+  Callback,
+  Cookie,
+  CookieJar,
+  MemoryCookieStore,
+  Store,
+} from '../cookie'
+import spyOn = jest.spyOn
+import SpyInstance = jest.SpyInstance
 
 const url = 'http://example.com/index.html'
 
@@ -34,17 +40,21 @@ describe('store removeAllCookies API', () => {
         store,
         'removeCookie',
       )
-      spy.mockImplementationOnce((domain: string, path: string, key: string, callback: Callback<void>) =>
-        _removeCookie.call(store, domain, path, key, callback),
+      spy.mockImplementationOnce(
+        (domain: string, path: string, key: string, callback: Callback<void>) =>
+          _removeCookie.call(store, domain, path, key, callback),
       )
-      spy.mockImplementationOnce((domain: string, path: string, key: string, callback: Callback<void>) =>
-        _removeCookie.call(store, domain, path, key, callback),
+      spy.mockImplementationOnce(
+        (domain: string, path: string, key: string, callback: Callback<void>) =>
+          _removeCookie.call(store, domain, path, key, callback),
       )
-      spy.mockImplementationOnce((domain: string, path: string, key: string, callback: Callback<void>) =>
-        _removeCookie.call(store, domain, path, key, callback),
+      spy.mockImplementationOnce(
+        (domain: string, path: string, key: string, callback: Callback<void>) =>
+          _removeCookie.call(store, domain, path, key, callback),
       )
-      spy.mockImplementationOnce((_domain, _path, _key, callback: Callback<void>) =>
-        callback(new Error('something happened 4')),
+      spy.mockImplementationOnce(
+        (_domain, _path, _key, callback: Callback<void>) =>
+          callback(new Error('something happened 4')),
       )
 
       await expect(jar.removeAllCookies()).rejects.toThrowError(
@@ -73,14 +83,21 @@ describe('store removeAllCookies API', () => {
         store,
         'removeCookie',
       )
-      spy.mockImplementation((domain: string, path: string, key: string, callback: Callback<void>) => {
-        if (spy.mock.calls.length % 2 === 1) {
-          return callback(
-            new Error(`something happened ${spy.mock.calls.length}`),
-          )
-        }
-        return _removeCookie.call(store, domain, path, key, callback)
-      })
+      spy.mockImplementation(
+        (
+          domain: string,
+          path: string,
+          key: string,
+          callback: Callback<void>,
+        ) => {
+          if (spy.mock.calls.length % 2 === 1) {
+            return callback(
+              new Error(`something happened ${spy.mock.calls.length}`),
+            )
+          }
+          return _removeCookie.call(store, domain, path, key, callback)
+        },
+      )
 
       await expect(jar.removeAllCookies()).rejects.toThrowError(
         'something happened 1',
@@ -145,7 +162,7 @@ class StoreWithoutRemoveAll extends Store {
     callback?: Callback<Cookie>,
   ): unknown {
     if (!callback) {
-      throw new Error("This should not be undefined")
+      throw new Error('This should not be undefined')
     }
     return callback(undefined, undefined)
   }
@@ -168,7 +185,7 @@ class StoreWithoutRemoveAll extends Store {
     callback?: Callback<Cookie[]>,
   ): unknown {
     if (!callback) {
-      throw new Error("This should not be undefined")
+      throw new Error('This should not be undefined')
     }
     return callback(undefined, [])
   }
@@ -179,7 +196,7 @@ class StoreWithoutRemoveAll extends Store {
     this.stats.put++
     this.cookies.push(cookie)
     if (!callback) {
-      throw new Error("This should not be undefined")
+      throw new Error('This should not be undefined')
     }
     return callback(undefined)
   }
@@ -189,7 +206,7 @@ class StoreWithoutRemoveAll extends Store {
   override getAllCookies(callback?: Callback<Cookie[]>): unknown {
     this.stats.getAll++
     if (!callback) {
-      throw new Error("This should not be undefined")
+      throw new Error('This should not be undefined')
     }
     return callback(undefined, this.cookies.slice())
   }
@@ -213,7 +230,7 @@ class StoreWithoutRemoveAll extends Store {
   ): unknown {
     this.stats.remove++
     if (!callback) {
-      throw new Error("This should not be undefined")
+      throw new Error('This should not be undefined')
     }
     return callback(undefined)
   }
@@ -236,7 +253,7 @@ class MemoryStoreExtension extends MemoryCookieStore {
   override getAllCookies(callback?: Callback<Cookie[]>): unknown {
     this.stats.getAll++
     if (!callback) {
-      throw new Error("This should not be undefined")
+      throw new Error('This should not be undefined')
     }
     return super.getAllCookies(callback)
   }
@@ -260,7 +277,7 @@ class MemoryStoreExtension extends MemoryCookieStore {
   ): unknown {
     this.stats.remove++
     if (!callback) {
-      throw new Error("This should not be undefined")
+      throw new Error('This should not be undefined')
     }
     return super.removeCookie(domain, path, key, callback)
   }
@@ -270,7 +287,7 @@ class MemoryStoreExtension extends MemoryCookieStore {
   override removeAllCookies(callback?: Callback<void>): unknown {
     this.stats.removeAll++
     if (!callback) {
-      throw new Error("This should not be undefined")
+      throw new Error('This should not be undefined')
     }
     return super.removeAllCookies(callback)
   }

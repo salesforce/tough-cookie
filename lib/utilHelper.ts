@@ -1,6 +1,5 @@
 function requireUtil() {
   try {
-    // eslint-disable-next-line no-restricted-modules
     return require('util')
   } catch (e) {
     return null

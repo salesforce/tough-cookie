@@ -29,11 +29,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { CookieJar, parseDate } from "../cookie";
-import url from "url";
-import parserData from "./data/parser";
-import bsdExampleDates from "./data/dates/bsd-examples";
-import exampleDates from "./data/dates/examples";
+import { CookieJar, parseDate } from '../cookie'
+import url from 'url'
+import parserData from './data/parser'
+import bsdExampleDates from './data/dates/bsd-examples'
+import exampleDates from './data/dates/examples'
 
 describe('IETF http state tests', () => {
   describe('Set/get cookie tests', () => {
@@ -58,7 +58,7 @@ describe('IETF http state tests', () => {
       actual.forEach((actualCookie, idx) => {
         const expectedCookie = expected[idx]
         if (!expectedCookie) {
-          throw new Error("This should not be undefined")
+          throw new Error('This should not be undefined')
         }
         expect(actualCookie.key).toBe(expectedCookie.name)
         expect(actualCookie.value).toBe(expectedCookie.value)
@@ -73,7 +73,7 @@ describe('IETF http state tests', () => {
         if (expected) {
           const date = parseDate(test)
           if (!date) {
-            throw new Error("This should have parsed")
+            throw new Error('This should have parsed')
           }
           expect(date.toUTCString()).toBe(expected)
         } else {
@@ -88,7 +88,7 @@ describe('IETF http state tests', () => {
         if (expected) {
           const date = parseDate(test)
           if (!date) {
-            throw new Error("This should have parsed")
+            throw new Error('This should have parsed')
           }
           expect(date.toUTCString()).toBe(expected)
         } else {

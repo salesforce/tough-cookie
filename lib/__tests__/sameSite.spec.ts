@@ -1,4 +1,4 @@
-import { Cookie, CookieJar } from "../cookie";
+import { Cookie, CookieJar } from '../cookie'
 
 const url = 'http://example.com/index.html'
 

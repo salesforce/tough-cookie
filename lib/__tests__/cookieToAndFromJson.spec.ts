@@ -1,4 +1,4 @@
-import { Cookie } from "../cookie";
+import { Cookie } from '../cookie'
 
 jest.useFakeTimers()
 
@@ -8,7 +8,7 @@ describe('Cookie.toJSON()', () => {
       'alpha=beta; Domain=example.com; Path=/foo; Expires=Tue, 19 Jan 2038 03:14:07 GMT; HttpOnly',
     )
     if (!cookie) {
-      throw new Error("This should not be undefined")
+      throw new Error('This should not be undefined')
     }
     expect(cookie.toJSON()).toEqual({
       creation: new Date().toISOString(),
@@ -44,8 +44,8 @@ describe('Cookie.fromJSON()', () => {
         path: '/foo',
         value: 'beta',
         lastAccessed: new Date(2000000000123),
-      },
-    ))
+      }),
+    )
   })
 
   it('should be able to handle a null value deserialization', () => {
@@ -60,7 +60,7 @@ describe('Cookie.fromJSON()', () => {
     })
     const cookie = Cookie.fromJSON(json)
     if (!cookie) {
-      throw new Error("This should not be null")
+      throw new Error('This should not be null')
     }
     expect(cookie.expires).toBe('Infinity')
     expect(cookie.creation).toBe('Infinity')

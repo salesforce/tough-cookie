@@ -1,10 +1,10 @@
-import { Cookie } from "../cookie";
+import { Cookie } from '../cookie'
 
 describe('Cookie.toString()', () => {
   const parse = (cookieString: string): Cookie => {
     const cookie = Cookie.parse(cookieString)
     if (!cookie) {
-      throw new Error("This should have parsed")
+      throw new Error('This should have parsed')
     }
     return cookie
   }
