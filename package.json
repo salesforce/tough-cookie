@@ -91,7 +91,7 @@
     "test:legacy": "npm run build -- --declaration false && vows test/*_test.js",
     "typecheck": "tsc --noEmit",
     "cover": "jest --coverage",
-    "eslint": "eslint --env node --ext .js .",
+    "eslint": "eslint --env node --ext .ts .",
     "prettier": "prettier '**/*.{json,ts,yaml,md}'",
     "format": "npm run eslint -- --fix"
   },

@@ -2,9 +2,9 @@ name: Actions-CI
 
 on:
   push:
-    branches: [master]
+    branches: [master, v5]
   pull_request:
-    branches: [master]
+    branches: [master, v5]
 
 jobs:
   build:
@@ -23,3 +23,5 @@ jobs:
       - name: Install dependencies and test
         run: npm install
       - run: npm test
+      - run: npm eslint
+      - run: npm prettier
