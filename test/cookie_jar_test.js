@@ -530,7 +530,7 @@ vows
           const cj = new CookieJar();
           cj.setCookie(
             "i=9; Domain=kyoto.jp; Path=/",
-            "kyoto.jp",
+            "https://kyoto.jp",
             this.callback
           );
         },
