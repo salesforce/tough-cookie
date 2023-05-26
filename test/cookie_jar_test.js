@@ -219,12 +219,12 @@ vows
     "Setting a prefix IPv6 cookie": {
       topic: function() {
         const cj = new CookieJar();
-        const c = Cookie.parse("a=b; Domain=[::ffff:127.0.0.1]; Path=/");
+        const c = Cookie.parse("a=b; Domain=[::ffff:127:0:0:1]; Path=/");
         assert.strictEqual(c.hostOnly, null);
         assert.instanceOf(c.creation, Date);
         assert.strictEqual(c.lastAccessed, null);
         c.creation = new Date(Date.now() - 10000);
-        cj.setCookie(c, "http://[::ffff:127.0.0.1]/", this.callback);
+        cj.setCookie(c, "http://[::ffff:127:0:0:1]/", this.callback);
       },
       works: function(c) {
         assert.instanceOf(c, Cookie);
