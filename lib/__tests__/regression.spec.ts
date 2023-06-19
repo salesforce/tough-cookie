@@ -1,6 +1,5 @@
-import {CookieJar} from "../cookie";
+import { Cookie, CookieJar } from '../cookie'
 
-const { objectContaining, assertions } = expect;
 const url = 'http://www.example.com'
 
 describe('Regression Tests', () => {
@@ -10,16 +9,16 @@ describe('Regression Tests', () => {
     await cookieJar.setCookie('b=2; Path=/;;;;', url)
     const cookies = await cookieJar.getCookies(url)
     expect(cookies).toEqual([
-      objectContaining({
+      expect.objectContaining({
         key: 'broken_path',
         value: 'testme',
-        path: '/'
+        path: '/',
       }),
-      objectContaining({
+      expect.objectContaining({
         key: 'b',
         value: '2',
-        path: '/'
-      })
+        path: '/',
+      }),
     ])
   })
 
@@ -27,48 +26,50 @@ describe('Regression Tests', () => {
     const malformedUri = `${url}/?test=100%`
     const cookieJar = new CookieJar()
     await cookieJar.setCookie('Test=Test', malformedUri)
-    await expect(cookieJar.getCookieString(malformedUri)).resolves.toBe('Test=Test')
+    await expect(cookieJar.getCookieString(malformedUri)).resolves.toBe(
+      'Test=Test',
+    )
   })
 
   it('should allow setCookie (without options) callback works even if it is not instanceof Function (GH-158/GH-175)', () => {
-    assertions(2)
+    expect.assertions(2)
     const cookieJar = new CookieJar()
 
-    // @ts-ignore
-    const callback = function(err, cookie) {
+    const callback = function (err: null, cookie: Cookie) {
       expect(err).toBeNull()
-      expect(cookie).toEqual(objectContaining({
-        key: 'a',
-        value: 'b'
-      }))
+      expect(cookie).toEqual(
+        expect.objectContaining({
+          key: 'a',
+          value: 'b',
+        }),
+      )
     }
 
     Object.setPrototypeOf(callback, null)
     if (callback instanceof Function) {
-      fail('clearing callback prototype chain failed')
+      throw new Error('clearing callback prototype chain failed')
     }
 
     cookieJar.setCookie('a=b', url, callback)
   })
 
   it('getCookies (without options) callback works even if it is not instanceof Function (GH-175)', async () => {
-    assertions(2)
+    expect.assertions(2)
     const cookieJar = new CookieJar()
 
-    // @ts-ignore
-    const callback = function(err, cookie) {
+    const callback = function (err: null, cookie: Cookie) {
       expect(err).toBeNull()
       expect(cookie).toEqual([
-        objectContaining({
+        expect.objectContaining({
           key: 'a',
-          value: 'b'
-        })
+          value: 'b',
+        }),
       ])
     }
 
     Object.setPrototypeOf(callback, null)
     if (callback instanceof Function) {
-      fail('clearing callback prototype chain failed')
+      throw new Error('clearing callback prototype chain failed')
     }
 
     await cookieJar.setCookie('a=b', url)
@@ -76,38 +77,41 @@ describe('Regression Tests', () => {
   })
 
   it('should allow setCookie with localhost (GH-215)', async () => {
-    const cookieJar = new CookieJar();
-    await expect(cookieJar.setCookie(
-      "a=b; Domain=localhost",
-      "http://localhost"
-    )).resolves.toEqual(objectContaining({
-      key: 'a',
-      value: 'b',
-      domain: 'localhost'
-    }))
+    const cookieJar = new CookieJar()
+    await expect(
+      cookieJar.setCookie('a=b; Domain=localhost', 'http://localhost'),
+    ).resolves.toEqual(
+      expect.objectContaining({
+        key: 'a',
+        value: 'b',
+        domain: 'localhost',
+      }),
+    )
   })
 
   it('should allow setCookie with localhost and null domain (GH-215)', async () => {
-    const cookieJar = new CookieJar();
-    await expect(cookieJar.setCookie(
-      "a=b; Domain=",
-      "http://localhost"
-    )).resolves.toEqual(objectContaining({
-      key: 'a',
-      value: 'b',
-      domain: 'localhost'
-    }))
+    const cookieJar = new CookieJar()
+    await expect(
+      cookieJar.setCookie('a=b; Domain=', 'http://localhost'),
+    ).resolves.toEqual(
+      expect.objectContaining({
+        key: 'a',
+        value: 'b',
+        domain: 'localhost',
+      }),
+    )
   })
 
   it('setCookie with localhost (.localhost domain), (GH-215)', async () => {
-    const cookieJar = new CookieJar();
-    await expect(cookieJar.setCookie(
-      "a=b; Domain=.localhost",
-      "http://localhost"
-    )).resolves.toEqual(objectContaining({
-      key: 'a',
-      value: 'b',
-      domain: 'localhost'
-    }))
+    const cookieJar = new CookieJar()
+    await expect(
+      cookieJar.setCookie('a=b; Domain=.localhost', 'http://localhost'),
+    ).resolves.toEqual(
+      expect.objectContaining({
+        key: 'a',
+        value: 'b',
+        domain: 'localhost',
+      }),
+    )
   })
 })

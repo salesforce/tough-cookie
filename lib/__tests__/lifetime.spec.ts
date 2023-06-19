@@ -1,4 +1,4 @@
-import {Cookie} from "../cookie";
+import { Cookie } from '../cookie'
 
 jest.useFakeTimers()
 
@@ -25,19 +25,28 @@ describe('Lifetime', () => {
   })
 
   it('should be able control the TTL with max-age and expiry in the future', () => {
-    const cookie = new Cookie({ key: 'a', value: 'b', maxAge: 123, expires: new Date(Date.now() + 9_000) })
+    const cookie = new Cookie({
+      key: 'a',
+      value: 'b',
+      maxAge: 123,
+      expires: new Date(Date.now() + 9_000),
+    })
     expect(cookie.TTL()).toBe(123_000)
     expect(cookie.isPersistent()).toBe(true)
   })
 
   it('should be able control the TTL with expiry in the future', () => {
-    const cookie = new Cookie({ key: 'a', value: 'b', expires: new Date(Date.now() + 9_000) })
+    const cookie = new Cookie({
+      key: 'a',
+      value: 'b',
+      expires: new Date(Date.now() + 9_000),
+    })
     expect(cookie.TTL()).toBe(9_000)
     expect(cookie.expiryTime()).toEqual((cookie.expires as Date).getTime())
   })
 
   it('should be able control the TTL with expiry in the past', () => {
-    const cookie = new Cookie({ key: 'a', value: 'b'})
+    const cookie = new Cookie({ key: 'a', value: 'b' })
     cookie.setExpires('17 Oct 2010 00:00:00 GMT')
     expect(cookie.TTL()).toBeLessThan(0)
     expect(cookie.isPersistent()).toBe(true)

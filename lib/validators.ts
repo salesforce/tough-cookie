@@ -25,59 +25,56 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ************************************************************************************ */
-"use strict";
+'use strict'
 
 const toString = Object.prototype.toString
 
 /* Validation functions copied from check-types package - https://www.npmjs.com/package/check-types */
-export function isFunction(data: any): boolean {
-  return typeof data === 'function';
+export function isFunction(data: unknown): boolean {
+  return typeof data === 'function'
 }
 
-export function isNonEmptyString(data: any): boolean {
-  return isString(data) && data !== '';
+export function isNonEmptyString(data: unknown): boolean {
+  return isString(data) && data !== ''
 }
 
-export function isDate(data: any): boolean {
-  return isInstanceStrict(data, Date) && isInteger(data.getTime());
+export function isDate(data: unknown): boolean {
+  if (data instanceof Date) {
+    return isInteger(data.getTime())
+  }
+  return false
 }
 
-export function isEmptyString(data: any): boolean {
-  return data === '' || (data instanceof String && data.toString() === '');
+export function isEmptyString(data: unknown): boolean {
+  return data === '' || (data instanceof String && data.toString() === '')
 }
 
-export function isString(data: any): boolean {
+export function isString(data: unknown): boolean {
   return typeof data === 'string' || data instanceof String
 }
 
-export function isObject(data: any): boolean {
-  return toString.call(data) === '[object Object]';
+export function isObject(data: unknown): boolean {
+  return toString.call(data) === '[object Object]'
 }
 
-export function isInstanceStrict(data: any, prototype: Function): boolean {
-  try {
-    return data instanceof prototype;
-  } catch (error) {
-    return false;
-  }
-}
-
-export function isInteger(data: any): boolean {
-  return typeof data === 'number' && data % 1 === 0;
+export function isInteger(data: unknown): boolean {
+  return typeof data === 'number' && data % 1 === 0
 }
 /* End validation functions */
 
-export function validate(bool: boolean, cb?: any, options?: any): void {
+export function validate(bool: boolean, cb?: unknown, options?: unknown): void {
   if (!isFunction(cb)) {
-    options = cb;
-    cb = null;
+    options = cb
+    cb = null
   }
-  if (!isObject(options)) options = { Error: "Failed Check" };
+  if (!isObject(options)) options = { Error: 'Failed Check' }
   if (!bool) {
-    if (cb) {
-      cb(new ParameterError(options));
+    if (typeof cb === 'function') {
+      // @ts-ignore
+      cb(new ParameterError(options))
     } else {
-      throw new ParameterError(options);
+      // @ts-ignore
+      throw new ParameterError(options)
     }
   }
 }
