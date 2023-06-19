@@ -188,10 +188,12 @@ export class MemoryCookieStore extends Store {
       return promiseCallback.promise
     }
 
-    const domainEntry: { [key: string]: any } = this.idx[domain] ?? Object.create(null)
+    const domainEntry: { [key: string]: any } =
+      this.idx[domain] ?? Object.create(null)
     this.idx[domain] = domainEntry
 
-    const pathEntry: { [key: string]: any } = domainEntry[path] ?? Object.create(null)
+    const pathEntry: { [key: string]: any } =
+      domainEntry[path] ?? Object.create(null)
     domainEntry[path] = pathEntry
 
     pathEntry[key] = cookie
@@ -335,9 +337,9 @@ export class MemoryCookieStore extends Store {
 export function inspectFallback(val: { [x: string]: any }) {
   const domains = Object.keys(val)
   if (domains.length === 0) {
-    return "[Object: null prototype] {}"
+    return '[Object: null prototype] {}'
   }
-  let result = "[Object: null prototype] {\n";
+  let result = '[Object: null prototype] {\n'
   Object.keys(val).forEach((domain, i) => {
     result += formatDomain(domain, val[domain])
     if (i < domains.length - 1) {
