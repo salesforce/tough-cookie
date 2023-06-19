@@ -1195,6 +1195,24 @@ it('should fix issue #197 - CookieJar().setCookie throws an error when empty coo
   ).rejects.toThrowError('Cookie failed to parse')
 })
 
+it('should fix issue #282 - Prototype pollution when setting a cookie with the domain __proto__', async () => {
+  const jar = new CookieJar(undefined, {
+    rejectPublicSuffixes: false,
+  })
+  // try to pollute the prototype
+  jar.setCookieSync(
+    'Slonser=polluted; Domain=__proto__; Path=/notauth',
+    'https://__proto__/admin',
+  )
+  jar.setCookieSync(
+    'Auth=Lol; Domain=google.com; Path=/notauth',
+    'https://google.com/',
+  )
+
+  const pollutedObject = {}
+  expect('/notauth' in pollutedObject).toBe(false)
+})
+
 // special use domains under a sub-domain
 describe.each(['local', 'example', 'invalid', 'localhost', 'test'])(
   'when special use domain is dev.%s',
