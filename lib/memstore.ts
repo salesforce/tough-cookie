@@ -29,9 +29,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 "use strict";
-import {Callback, Cookie, createPromiseCallback, pathMatch, permuteDomain} from "./cookie";
-import {Store} from './store'
-import {getCustomInspectSymbol, getUtilInspect} from './utilHelper'
+import { Callback, Cookie, createPromiseCallback, pathMatch, permuteDomain } from "./cookie";
+import { Store } from "./store";
+import { getCustomInspectSymbol, getUtilInspect } from "./utilHelper";
 
 export class MemoryCookieStore extends Store {
   override synchronous: boolean;
@@ -46,7 +46,7 @@ export class MemoryCookieStore extends Store {
   constructor() {
     super();
     this.synchronous = true;
-    this.idx = {};
+    this.idx = Object.create(null);
     const customInspectSymbol = getCustomInspectSymbol();
     if (customInspectSymbol) {
       // @ts-ignore
@@ -154,10 +154,10 @@ export class MemoryCookieStore extends Store {
       return promiseCallback.promise
     }
 
-    const domainEntry: { [key: string]: any } = this.idx[domain] ?? {}
+    const domainEntry: { [key: string]: any } = this.idx[domain] ?? Object.create(null)
     this.idx[domain] = domainEntry
 
-    const pathEntry: { [key: string]: any } = domainEntry[path] ?? {}
+    const pathEntry: { [key: string]: any } = domainEntry[path] ?? Object.create(null)
     domainEntry[path] = pathEntry
 
     pathEntry[key] = cookie
@@ -225,7 +225,7 @@ export class MemoryCookieStore extends Store {
     const promiseCallback = createPromiseCallback<void>(arguments)
     const cb = promiseCallback.callback
 
-    this.idx = {};
+    this.idx = Object.create(null);
 
     cb(null);
     return promiseCallback.promise
@@ -270,9 +270,9 @@ export class MemoryCookieStore extends Store {
 export function inspectFallback(val: { [x: string]: any; }) {
   const domains = Object.keys(val);
   if (domains.length === 0) {
-    return "{}";
+    return "[Object: null prototype] {}";
   }
-  let result = "{\n";
+  let result = "[Object: null prototype] {\n";
   Object.keys(val).forEach((domain, i) => {
     result += formatDomain(domain, val[domain]);
     if (i < domains.length - 1) {
@@ -286,7 +286,7 @@ export function inspectFallback(val: { [x: string]: any; }) {
 
 function formatDomain(domainName: string, domainValue: { [x: string]: any; }) {
   const indent = "  ";
-  let result = `${indent}'${domainName}': {\n`;
+  let result = `${indent}'${domainName}': [Object: null prototype] {\n`;
   Object.keys(domainValue).forEach((path, i, paths) => {
     result += formatPath(path, domainValue[path]);
     if (i < paths.length - 1) {
@@ -300,7 +300,7 @@ function formatDomain(domainName: string, domainValue: { [x: string]: any; }) {
 
 function formatPath(pathName: string, pathValue: { [x: string]: any; }) {
   const indent = "    ";
-  let result = `${indent}'${pathName}': {\n`;
+  let result = `${indent}'${pathName}': [Object: null prototype] {\n`;
   Object.keys(pathValue).forEach((cookieName, i, cookieNames) => {
     const cookie = pathValue[cookieName];
     result += `      ${cookieName}: ${cookie.inspect()}`;
