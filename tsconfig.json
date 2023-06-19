@@ -23,5 +23,8 @@
     "noImplicitOverride": true,
     "allowUnusedLabels": false,
     "allowUnreachableCode": false
-  }
+  },
+  "exclude": [
+    "jest.config.ts"
+  ]
 }

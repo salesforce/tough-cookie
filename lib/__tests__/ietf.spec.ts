@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import {CookieJar, parseDate} from '../cookie'
+import { CookieJar, parseDate } from '../cookie'
 import url from 'url'
 import parserData from './data/parser'
 import bsdExampleDates from './data/dates/bsd-examples'
@@ -37,51 +37,64 @@ import exampleDates from './data/dates/examples'
 
 describe('IETF http state tests', () => {
   describe('Set/get cookie tests', () => {
-    it.each(parserData)
-    (`$test`, (testCase) => {
-      const jar = new CookieJar();
+    it.each(parserData)(`$test`, (testCase) => {
+      const jar = new CookieJar()
       const expected = testCase.sent
-      const sentFrom = `http://home.example.org/cookie-parser?${testCase.test}`;
-      const sentTo = testCase["sent-to"]
-        ? url.resolve("http://home.example.org", testCase["sent-to"])
-        : `http://home.example.org/cookie-parser-result?${testCase.test}`;
+      const sentFrom = `http://home.example.org/cookie-parser?${testCase.test}`
+      const sentTo = testCase['sent-to']
+        ? url.resolve('http://home.example.org', testCase['sent-to'])
+        : `http://home.example.org/cookie-parser-result?${testCase.test}`
 
-      testCase["received"].forEach(cookieStr => {
-        jar.setCookieSync(cookieStr, sentFrom, {ignoreError: true});
-      });
+      testCase['received'].forEach((cookieStr) => {
+        jar.setCookieSync(cookieStr, sentFrom, { ignoreError: true })
+      })
 
-      const actual = jar.getCookiesSync(sentTo, {sort: true}) as Array<{ key: string, value: string }>;
+      const actual = jar.getCookiesSync(sentTo, { sort: true }) as Array<{
+        key: string
+        value: string
+      }>
 
       expect(actual.length).toBe(expected.length)
       actual.forEach((actualCookie, idx) => {
-        const expectedCookie = expected[idx];
-        // @ts-ignore
+        const expectedCookie = expected[idx]
+        if (!expectedCookie) {
+          throw new Error('This should not be undefined')
+        }
         expect(actualCookie.key).toBe(expectedCookie.name)
-        // @ts-ignore
         expect(actualCookie.value).toBe(expectedCookie.value)
-      });
+      })
     })
   })
 
   describe('Date handling', () => {
-    it.each(exampleDates)
-    (`ietf_data/dates/examples: $test`, ({test, expected}) => {
-      if (expected) {
-        // @ts-ignore
-        expect(parseDate(test).toUTCString()).toBe(expected)
-      } else {
-        expect(parseDate(test)).toBeUndefined()
-      }
-    })
+    it.each(exampleDates)(
+      `ietf_data/dates/examples: $test`,
+      ({ test, expected }) => {
+        if (expected) {
+          const date = parseDate(test)
+          if (!date) {
+            throw new Error('This should have parsed')
+          }
+          expect(date.toUTCString()).toBe(expected)
+        } else {
+          expect(parseDate(test)).toBeUndefined()
+        }
+      },
+    )
 
-    it.each(bsdExampleDates)
-    (`ietf_data/dates/bsd_examples: $test`, ({test, expected}) => {
-      if (expected) {
-        // @ts-ignore
-        expect(parseDate(test).toUTCString()).toBe(expected)
-      } else {
-        expect(parseDate(test)).toBeUndefined()
-      }
-    })
+    it.each(bsdExampleDates)(
+      `ietf_data/dates/bsd_examples: $test`,
+      ({ test, expected }) => {
+        if (expected) {
+          const date = parseDate(test)
+          if (!date) {
+            throw new Error('This should have parsed')
+          }
+          expect(date.toUTCString()).toBe(expected)
+        } else {
+          expect(parseDate(test)).toBeUndefined()
+        }
+      },
+    )
   })
 })

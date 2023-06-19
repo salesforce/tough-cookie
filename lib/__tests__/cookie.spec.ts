@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import {Cookie} from '../cookie'
+import { Cookie } from '../cookie'
 
 jest.useFakeTimers()
 
@@ -40,25 +40,25 @@ describe('Cookie', () => {
   describe('constructor', () => {
     beforeEach(() => {
       cookie = new Cookie({
-        key: "test",
-        value: "b",
-        maxAge: 60
+        key: 'test',
+        value: 'b',
+        maxAge: 60,
       })
     })
 
-    it("should check for key property", () => {
+    it('should check for key property', () => {
       expect(cookie.key).toBe('test')
     })
 
     it('should check for value property', () => {
-      expect(cookie.value).toBe("b");
+      expect(cookie.value).toBe('b')
     })
 
-    it("should check for maxAge", () => {
-      expect(cookie.maxAge).toBe(60);
+    it('should check for maxAge', () => {
+      expect(cookie.maxAge).toBe(60)
     })
 
-    it("should check for default values for unspecified properties", () => {
+    it('should check for default values for unspecified properties', () => {
       expect(cookie.expires).toBe('Infinity')
       expect(cookie.secure).toBe(false)
       expect(cookie.httpOnly).toBe(false)

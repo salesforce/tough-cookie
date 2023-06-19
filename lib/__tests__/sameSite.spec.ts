@@ -1,7 +1,6 @@
-import {Cookie, CookieJar} from "../cookie";
+import { Cookie, CookieJar } from '../cookie'
 
-const url = "http://example.com/index.html"
-const {objectContaining} = expect
+const url = 'http://example.com/index.html'
 
 describe('Same-Site Cookies', function () {
   let cookieJar: CookieJar
@@ -10,87 +9,99 @@ describe('Same-Site Cookies', function () {
   let lax: Cookie
   let normal: Cookie
 
+  const parse = (cookieString: string): Cookie => {
+    const result = Cookie.parse(cookieString)
+    if (!result) {
+      throw new Error('This should not be undefined')
+    }
+    return result
+  }
+
   beforeEach(() => {
     cookieJar = new CookieJar()
-    // @ts-ignore
-    garbage = Cookie.parse("garbageIn=treatedAsNone; SameSite=garbage")
-    // @ts-ignore
-    strict = Cookie.parse("strict=authorized; SameSite=sTrIcT")
-    // @ts-ignore
-    lax = Cookie.parse("lax=okay; SameSite=lax")
-    // @ts-ignore
-    normal = Cookie.parse("normal=whatever")
+    garbage = parse('garbageIn=treatedAsNone; SameSite=garbage')
+    strict = parse('strict=authorized; SameSite=sTrIcT')
+    lax = parse('lax=okay; SameSite=lax')
+    normal = parse('normal=whatever')
   })
 
   describe('Retrieval', () => {
     beforeEach(async () => {
-      await cookieJar.setCookie("strict=authorized; SameSite=strict", url)
-      await cookieJar.setCookie("lax=okay; SameSite=lax", url)
-      await cookieJar.setCookie("normal=whatever", url)
+      await cookieJar.setCookie('strict=authorized; SameSite=strict', url)
+      await cookieJar.setCookie('lax=okay; SameSite=lax', url)
+      await cookieJar.setCookie('normal=whatever', url)
     })
 
     it('should return all cookies when making a "strict" same-site request', async () => {
-      const cookies = await cookieJar.getCookies(url, { sameSiteContext: 'strict' })
+      const cookies = await cookieJar.getCookies(url, {
+        sameSiteContext: 'strict',
+      })
       expect(cookies).toEqual([
-        objectContaining({
+        expect.objectContaining({
           key: 'strict',
           value: 'authorized',
-          sameSite: 'strict'
+          sameSite: 'strict',
         }),
-        objectContaining({
+        expect.objectContaining({
           key: 'lax',
           value: 'okay',
-          sameSite: 'lax'
+          sameSite: 'lax',
         }),
-        objectContaining({
+        expect.objectContaining({
           key: 'normal',
           value: 'whatever',
-        })
+        }),
       ])
     })
 
     it('should return no "strict" cookies when making a "lax" same-site request', async () => {
-      const cookies = await cookieJar.getCookies(url, { sameSiteContext: 'lax' })
+      const cookies = await cookieJar.getCookies(url, {
+        sameSiteContext: 'lax',
+      })
       expect(cookies).toEqual([
-        objectContaining({
+        expect.objectContaining({
           key: 'lax',
           value: 'okay',
-          sameSite: 'lax'
+          sameSite: 'lax',
         }),
-        objectContaining({
+        expect.objectContaining({
           key: 'normal',
           value: 'whatever',
-        })
+        }),
       ])
     })
 
     it('should return only the "none" cookie when making a cross-origin request', async () => {
-      const cookies = await cookieJar.getCookies(url, { sameSiteContext: 'none' })
+      const cookies = await cookieJar.getCookies(url, {
+        sameSiteContext: 'none',
+      })
       expect(cookies).toEqual([
-        objectContaining({
+        expect.objectContaining({
           key: 'normal',
           value: 'whatever',
-        })
+        }),
       ])
     })
 
     it('should return all cookies when making an unqualified request', async () => {
-      const cookies = await cookieJar.getCookies(url, { sameSiteContext: undefined })
+      const cookies = await cookieJar.getCookies(url, {
+        sameSiteContext: undefined,
+      })
       expect(cookies).toEqual([
-        objectContaining({
+        expect.objectContaining({
           key: 'strict',
           value: 'authorized',
-          sameSite: 'strict'
+          sameSite: 'strict',
         }),
-        objectContaining({
+        expect.objectContaining({
           key: 'lax',
           value: 'okay',
-          sameSite: 'lax'
+          sameSite: 'lax',
         }),
-        objectContaining({
+        expect.objectContaining({
           key: 'normal',
           value: 'whatever',
-        })
+        }),
       ])
     })
   })
@@ -125,15 +136,19 @@ describe('Same-Site Cookies', function () {
       })
 
       it('should not allow strict cookie to be set', async () => {
-        await expect(cookieJar.setCookie(strict, url, { sameSiteContext: 'none' }))
-          .rejects
-          .toThrowError('Cookie is SameSite but this is a cross-origin request')
+        await expect(
+          cookieJar.setCookie(strict, url, { sameSiteContext: 'none' }),
+        ).rejects.toThrowError(
+          'Cookie is SameSite but this is a cross-origin request',
+        )
       })
 
       it('should not allow lax cookie to be set', async () => {
-        await expect(cookieJar.setCookie(lax, url, { sameSiteContext: 'none' }))
-          .rejects
-          .toThrowError('Cookie is SameSite but this is a cross-origin request')
+        await expect(
+          cookieJar.setCookie(lax, url, { sameSiteContext: 'none' }),
+        ).rejects.toThrowError(
+          'Cookie is SameSite but this is a cross-origin request',
+        )
       })
 
       it('should treat the normal cookie as sameSite=none', async () => {
@@ -168,7 +183,9 @@ describe('Same-Site Cookies', function () {
   describe('Canonicalized Strings', () => {
     it('garbage in = garbage out', () => {
       garbage.sameSite = 'GaRbAGe'
-      expect(garbage.toString()).toBe('garbageIn=treatedAsNone; SameSite=GaRbAGe')
+      expect(garbage.toString()).toBe(
+        'garbageIn=treatedAsNone; SameSite=GaRbAGe',
+      )
     })
 
     it('turn strict to "Strict"', () => {
@@ -183,4 +200,4 @@ describe('Same-Site Cookies', function () {
       expect(normal.toString()).toBe('normal=whatever')
     })
   })
-});
+})
