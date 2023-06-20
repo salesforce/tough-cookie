@@ -26,7 +26,7 @@ SOFTWARE.
 
 ************************************************************************************ */
 
-import type { ErrorCallback } from './utils'
+import { ErrorCallback, objectToString, safeToString } from './utils'
 
 /* Validation functions copied from check-types package - https://www.npmjs.com/package/check-types */
 
@@ -51,14 +51,13 @@ export function isEmptyString(data: unknown): boolean {
 }
 
 /** Determines whether the argument is a string. */
-
 export function isString(data: unknown): boolean {
   return typeof data === 'string' || data instanceof String
 }
 
 /** Determines whether the string representation of the argument is "[object Object]". */
 export function isObject(data: unknown): boolean {
-  return String(data) === '[object Object]'
+  return objectToString(data) === '[object Object]'
 }
 
 /** Determines whether the first argument is an instance of the second. */
@@ -77,7 +76,8 @@ export function isInstanceStrict<T extends Function>(
 export function isInteger(data: unknown): boolean {
   return typeof data === 'number' && data % 1 === 0
 }
-/* End validation functions */
+
+/* -- End validation functions -- */
 
 /**
  * When the first argument is false, an error is created with the given message. If a callback is
@@ -85,24 +85,17 @@ export function isInteger(data: unknown): boolean {
  */
 export function validate(
   bool: boolean,
-  callback?: ErrorCallback,
-  message?: string,
-): void
-export function validate(bool: boolean, message?: string): void
-export function validate(
-  bool: boolean,
   cbOrMessage?: ErrorCallback | string,
   message?: string,
 ): void {
-  if (bool) return
-  const cb = isFunction(cbOrMessage) && cbOrMessage
-  if (!message) {
-    message =
-      typeof cbOrMessage === 'string' && cbOrMessage !== ''
-        ? cbOrMessage
-        : '[object Object]'
-  }
-  const err = new ParameterError(message)
+  if (bool) return // Validation passes
+  const cb = isFunction(cbOrMessage) ? cbOrMessage : null
+  let options = isFunction(cbOrMessage) ? message : cbOrMessage
+  // The default message prior to v5 was '[object Object]' due to a bug, and the message is kept
+  // for backwards compatibility.
+  if (!isObject(options)) options = '[object Object]'
+
+  const err = new ParameterError(safeToString(options))
   if (cb) cb(err)
   else throw err
 }
