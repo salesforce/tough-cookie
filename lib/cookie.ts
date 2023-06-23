@@ -383,8 +383,8 @@ function canonicalDomain(str: string | null) {
 
 // S5.1.3 Domain Matching
 function domainMatch(
-  str?: string,
-  domStr?: string,
+  str?: string | null,
+  domStr?: string | null,
   canonicalize?: boolean,
 ): boolean | null {
   if (str == null || domStr == null) {
@@ -456,7 +456,7 @@ function domainMatch(
  *
  * Assumption: the path (and not query part or absolute uri) is passed in.
  */
-function defaultPath(path?: string): string {
+function defaultPath(path?: string | null): string {
   // "2. If the uri-path is empty or if the first character of the uri-path is not
   // a %x2F ("/") character, output %x2F ("/") and skip the remaining steps.
   if (!path || path.substr(0, 1) !== '/') {
@@ -757,9 +757,7 @@ function fromJSON(str: string | SerializedCookie | null | undefined) {
   }
 
   const c = new Cookie()
-  for (let i = 0; i < Cookie.serializableProperties.length; i++) {
-    const prop = Cookie.serializableProperties[i]
-    // @ts-ignore
+  for (const prop of Cookie.serializableProperties) {
     if (obj[prop] === undefined || obj[prop] === cookieDefaults[prop]) {
       continue // leave as prototype default
     }
@@ -771,7 +769,6 @@ function fromJSON(str: string | SerializedCookie | null | undefined) {
         c[prop] = obj[prop] == 'Infinity' ? 'Infinity' : new Date(obj[prop])
       }
     } else {
-      // @ts-ignore
       c[prop] = obj[prop]
     }
   }
@@ -926,7 +923,6 @@ export class Cookie {
     const obj: SerializedCookie = {}
 
     for (const prop of Cookie.serializableProperties) {
-      // @ts-ignore
       if (this[prop] === cookieDefaults[prop]) {
         continue // leave as prototype default
       }
@@ -957,9 +953,7 @@ export class Cookie {
               : maxAge
         }
       } else {
-        // @ts-ignore
         if (this[prop] !== cookieDefaults[prop]) {
-          // @ts-ignore
           obj[prop] = this[prop]
         }
       }
@@ -983,6 +977,7 @@ export class Cookie {
     ) {
       return false
     }
+    // @ts-ignore
     if (this.maxAge != null && this.maxAge <= 0) {
       return false // "Max-Age=" non-zero-digit *DIGIT
     }
@@ -1105,7 +1100,6 @@ export class Cookie {
       return Infinity
     }
 
-    // @ts-ignore
     if (typeof expires === 'string') {
       expires = parseDate(expires)
     }
@@ -1181,12 +1175,12 @@ export class Cookie {
     strict: 3,
     lax: 2,
     none: 1,
-  }
+  } as const
 
   static sameSiteCanonical = {
     strict: 'Strict',
     lax: 'Lax',
-  }
+  } as const
 
   static serializableProperties = [
     'key',
@@ -1203,7 +1197,7 @@ export class Cookie {
     'creation',
     'lastAccessed',
     'sameSite',
-  ]
+  ] as const
 }
 
 function getNormalizedPrefixSecurity(prefixSecurity: string) {

@@ -121,11 +121,15 @@ export class Store {
     throw new Error('removeCookie is not implemented')
   }
 
-  removeCookies(domain: string, path: string): Promise<void>
-  removeCookies(domain: string, path: string, callback: Callback<void>): void
+  removeCookies(domain: string, path: string | null): Promise<void>
+  removeCookies(
+    domain: string,
+    path: string | null,
+    callback: Callback<void>,
+  ): void
   removeCookies(
     _domain: string,
-    _path: string,
+    _path: string | null,
     _callback?: Callback<void>,
   ): unknown {
     throw new Error('removeCookies is not implemented')

@@ -70,7 +70,6 @@ describe('domainMatch', () => {
     ['com', 'com', true], // "are identical" rule
     ['NOTATLD', 'notaTLD', true], // "are identical" rule (after canonicalization)
   ])('domainMatch(%s, %s) => %s', (string, domain, expectedValue) => {
-    // @ts-ignore
     expect(domainMatch(string, domain)).toBe(expectedValue)
   })
 })
