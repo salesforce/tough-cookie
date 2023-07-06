@@ -382,8 +382,8 @@ function canonicalDomain(str: string | null) {
 
 // S5.1.3 Domain Matching
 function domainMatch(
-  str?: string,
-  domStr?: string,
+  str?: string | null,
+  domStr?: string | null,
   canonicalize?: boolean,
 ): boolean | null {
   if (str == null || domStr == null) {
@@ -451,7 +451,7 @@ function domainMatch(
  *
  * Assumption: the path (and not query part or absolute uri) is passed in.
  */
-function defaultPath(path?: string): string {
+function defaultPath(path?: string | null): string {
   // "2. If the uri-path is empty or if the first character of the uri-path is not
   // a %x2F ("/") character, output %x2F ("/") and skip the remaining steps.
   if (!path || path.substr(0, 1) !== '/') {
@@ -986,50 +986,66 @@ export class Cookie {
     const obj: SerializedCookie = {}
 
     for (const prop of Cookie.serializableProperties) {
-      if (
-        inOperator(prop, this) &&
-        inOperator(prop, cookieDefaults) &&
-        this[prop] === cookieDefaults[prop]
-      ) {
+      const val = this[prop]
+
+      if (val === cookieDefaults[prop]) {
         continue // leave as prototype default
       }
 
-      if (
-        prop === 'expires' ||
-        prop === 'creation' ||
-        prop === 'lastAccessed'
-      ) {
-        if (inOperator(prop, this)) {
-          if (this[prop] == null) {
-            obj[prop] = null
-          } else {
-            const value = this[prop]
-            if (value === 'Infinity') {
-              obj[prop] = value
-            } else if (value instanceof Date) {
-              obj[prop] = value.toISOString()
-            } else {
-              obj[prop] = value
-            }
+      switch (prop) {
+        case 'key':
+        case 'value':
+        case 'sameSite':
+          if (typeof val === 'string') {
+            obj[prop] = val
           }
-        }
-      } else if (prop === 'maxAge' && inOperator(prop, this)) {
-        const maxAge = this[prop]
-        if (maxAge != null) {
-          // again, intentionally not ===
-          obj[prop] =
-            maxAge == Infinity || maxAge == -Infinity
-              ? maxAge.toString()
-              : maxAge
-        }
-      } else {
-        if (
-          inOperator(prop, this) &&
-          inOperator(prop, cookieDefaults) &&
-          this[prop] !== cookieDefaults[prop]
-        ) {
-          obj[prop] = this[prop]
-        }
+          break
+        case 'expires':
+        case 'creation':
+        case 'lastAccessed':
+          if (
+            typeof val === 'number' ||
+            typeof val === 'string' ||
+            val instanceof Date
+          ) {
+            obj[prop] =
+              val == 'Infinity' ? 'Infinity' : new Date(val).toISOString()
+          } else if (val === null) {
+            obj[prop] = null
+          }
+          break
+        case 'maxAge':
+          if (
+            typeof val === 'number' ||
+            val === 'Infinity' ||
+            val === '-Infinity'
+          ) {
+            obj[prop] = val
+          }
+          break
+        case 'domain':
+        case 'path':
+          if (typeof val === 'string' || val === null) {
+            obj[prop] = val
+          }
+          break
+        case 'secure':
+        case 'httpOnly':
+          if (typeof val === 'boolean') {
+            obj[prop] = val
+          }
+          break
+        case 'extensions':
+          if (Array.isArray(val)) {
+            obj[prop] = val
+          }
+          break
+        case 'hostOnly':
+        case 'pathIsDefault':
+          if (typeof val === 'boolean' || val === null) {
+            obj[prop] = val
+          }
+          break
       }
     }
 
@@ -1225,12 +1241,12 @@ export class Cookie {
     strict: 3,
     lax: 2,
     none: 1,
-  }
+  } as const
 
   static sameSiteCanonical = {
     strict: 'Strict',
     lax: 'Lax',
-  }
+  } as const
 
   static serializableProperties = [
     'key',
@@ -1247,7 +1263,7 @@ export class Cookie {
     'creation',
     'lastAccessed',
     'sameSite',
-  ]
+  ] as const
 }
 
 function getNormalizedPrefixSecurity(prefixSecurity: string) {

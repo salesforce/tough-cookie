@@ -160,8 +160,9 @@ describe('CookieJar', () => {
     })
 
     it('should set a timestamp when storing or retrieving a cookie', async () => {
-      // @ts-ignore
-      cookie = Cookie.parse('a=b; Domain=example.com; Path=/')
+      // We know that we're passing a valid cookie, so we can use the non-null assertion
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      cookie = Cookie.parse('a=b; Domain=example.com; Path=/')!
       const t0 = new Date()
 
       expect(cookie).toEqual(
@@ -1011,7 +1012,6 @@ describe('CookieJar', () => {
     })
 
     it('should remove all from matching domain', async () => {
-      // @ts-ignore
       await cookieJar.store.removeCookies('example.com', null)
 
       const exampleCookies = await cookieJar.store.findCookies(
@@ -1149,11 +1149,8 @@ describe('loose mode', () => {
 it('should fix issue #132', async () => {
   const cookieJar = new CookieJar()
   await expect(
-    cookieJar.setCookie(
-      // @ts-ignore
-      { key: 'x', value: 'y' },
-      'http://example.com/',
-    ),
+    // @ts-expect-error test case is explicitly testing invalid input
+    cookieJar.setCookie({ key: 'x', value: 'y' }, 'http://example.com/'),
   ).rejects.toThrowError(
     'First argument to setCookie must be a Cookie object or string',
   )
@@ -1181,15 +1178,12 @@ it('should fix issue #144', async () => {
   ])
 })
 
-it('should fix issue #145 - missing 2nd url parameter', async () => {
-  expect.assertions(1)
+it('should fix issue #145 - missing 2nd url parameter', () => {
   const cookieJar = new CookieJar()
-  try {
-    // @ts-ignore
-    await cookieJar.setCookie('x=y; Domain=example.com; Path=/')
-  } catch (e) {
-    expect(e).toBeInstanceOf(ParameterError)
-  }
+  expect(
+    // @ts-expect-error test case explicitly violates the expected function signature
+    () => cookieJar.setCookie('x=y; Domain=example.com; Path=/'),
+  ).toThrow(ParameterError)
 })
 
 it('should fix issue #197 - CookieJar().setCookie throws an error when empty cookie is passed', async () => {
