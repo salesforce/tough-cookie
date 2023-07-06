@@ -24,7 +24,6 @@ describe('defaultPath', () => {
       output: '/',
     },
   ])('defaultPath("$input") => $output', ({ input, output }) => {
-    // @ts-ignore
     expect(defaultPath(input)).toBe(output)
   })
 })
