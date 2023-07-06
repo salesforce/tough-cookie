@@ -13,21 +13,12 @@ describe('Node util module fallback for non-node environments', () => {
       )
     })
 
-    it('should not be null in a node environment when custom inspect symbol cannot be retrieved (< node v10.12.0', () => {
+    it('should not be null in a non-node environment since we create the symbol if it does not exist', () => {
       expect(
         getCustomInspectSymbol({
-          lookupCustomInspectSymbol: () => null,
+          requireUtil: () => undefined,
         }),
       ).toEqual(Symbol.for('nodejs.util.inspect.custom') || util.inspect.custom)
-    })
-
-    it('should be null in a non-node environment since `util` features cannot be relied on', () => {
-      expect(
-        getCustomInspectSymbol({
-          lookupCustomInspectSymbol: () => null,
-          requireUtil: () => null,
-        }),
-      ).toBeNull()
     })
   })
 
@@ -39,7 +30,7 @@ describe('Node util module fallback for non-node environments', () => {
 
     it('should use fallback inspect function in a non-node environment', () => {
       const inspect = getUtilInspect(() => 'fallback', {
-        requireUtil: () => null,
+        requireUtil: () => undefined,
       })
       expect(inspect('util.inspect')).toEqual('fallback')
     })

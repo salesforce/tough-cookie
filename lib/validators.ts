@@ -27,8 +27,6 @@ SOFTWARE.
 ************************************************************************************ */
 'use strict'
 
-const toString = Object.prototype.toString
-
 /* Validation functions copied from check-types package - https://www.npmjs.com/package/check-types */
 export function isFunction(data: unknown): boolean {
   return typeof data === 'function'
@@ -54,7 +52,7 @@ export function isString(data: unknown): boolean {
 }
 
 export function isObject(data: unknown): boolean {
-  return toString.call(data) === '[object Object]'
+  return Object.prototype.toString.call(data) === '[object Object]'
 }
 
 export function isInteger(data: unknown): boolean {
@@ -62,19 +60,21 @@ export function isInteger(data: unknown): boolean {
 }
 /* End validation functions */
 
-export function validate(bool: boolean, cb?: unknown, options?: unknown): void {
+export function validate(
+  bool: boolean,
+  cb?: unknown,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _deprecated?: unknown,
+): void {
   if (!isFunction(cb)) {
-    options = cb
     cb = null
   }
-  if (!isObject(options)) options = { Error: 'Failed Check' }
+
   if (!bool) {
     if (typeof cb === 'function') {
-      // @ts-ignore
-      cb(new ParameterError(options))
+      cb(new ParameterError('Failed Check'))
     } else {
-      // @ts-ignore
-      throw new ParameterError(options)
+      throw new ParameterError('Failed Check')
     }
   }
 }

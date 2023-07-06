@@ -59,8 +59,13 @@ export function permuteDomain(
   let cur = pubSuf
   const permutations = [cur]
   while (parts.length) {
-    cur = `${parts.shift()}.${cur}`
-    permutations.push(cur)
+    const part = parts.shift()
+    if (part !== undefined) {
+      cur = `${part}.${cur}`
+      permutations.push(cur)
+    } else {
+      throw new Error('domain part value should be a string but was undefined')
+    }
   }
   return permutations
 }

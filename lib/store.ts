@@ -32,6 +32,7 @@
 
 import type { Callback, Cookie } from './cookie'
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 export class Store {
   synchronous: boolean
 
@@ -145,5 +146,3 @@ export class Store {
     )
   }
 }
-
-exports.Store = Store

@@ -39,24 +39,30 @@ import {
 import { Store } from './store'
 import { getCustomInspectSymbol, getUtilInspect } from './utilHelper'
 
-export class MemoryCookieStore extends Store {
-  override synchronous: boolean
-  idx: {
-    [domain: string]: {
-      [path: string]: {
-        [key: string]: Cookie
-      }
+export type MemoryCookieStoreIndex = {
+  [domain: string]: {
+    [path: string]: {
+      [key: string]: Cookie
     }
   }
+}
+
+export class MemoryCookieStore extends Store {
+  override synchronous: boolean
+  idx: MemoryCookieStoreIndex
 
   constructor() {
     super()
     this.synchronous = true
-    this.idx = Object.create(null)
+    this.idx = Object.create(null) as MemoryCookieStoreIndex
     const customInspectSymbol = getCustomInspectSymbol()
     if (customInspectSymbol) {
-      // @ts-ignore
-      this[customInspectSymbol] = this.inspect
+      Object.defineProperty(this, customInspectSymbol, {
+        value: this.inspect.bind(this),
+        enumerable: false,
+        writable: false,
+        configurable: false,
+      })
     }
   }
 
@@ -80,27 +86,28 @@ export class MemoryCookieStore extends Store {
     domain: string | null,
     path: string | null,
     key: string | undefined,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _callback?: Callback<Cookie | null | undefined>,
   ): unknown {
     const promiseCallback = createPromiseCallback(arguments)
     const cb = promiseCallback.callback
 
     if (domain == null || path == null) {
-      return cb(null, undefined)
+      return promiseCallback.resolve(undefined)
     }
 
     const domainEntry = this.idx[domain]
     if (!domainEntry) {
-      return cb(null, undefined)
+      return promiseCallback.resolve(undefined)
     }
 
     const pathEntry = domainEntry[path]
     if (!pathEntry) {
-      return cb(null, undefined)
+      return promiseCallback.resolve(undefined)
     }
 
     if (key == null) {
-      return cb(null, null)
+      return promiseCallback.resolve(null)
     }
 
     cb(null, pathEntry[key] || null)
@@ -122,28 +129,34 @@ export class MemoryCookieStore extends Store {
     domain: string,
     path: string,
     allowSpecialUseDomain: boolean | Callback<Cookie[]> = false,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _callback?: Callback<Cookie[]>,
   ): unknown {
     if (typeof allowSpecialUseDomain === 'function') {
       allowSpecialUseDomain = true
     }
 
-    const results: any[] = []
+    const results: Cookie[] = []
     const promiseCallback = createPromiseCallback<Cookie[]>(arguments)
     const cb = promiseCallback.callback
 
     if (!domain) {
-      return cb(null, [])
+      return promiseCallback.resolve([])
     }
 
-    let pathMatcher: (domainIndex: any) => void
+    let pathMatcher: (
+      domainIndex: { [p: string]: { [p: string]: Cookie } } | undefined,
+    ) => void
     if (!path) {
       // null means "all paths"
       pathMatcher = function matchAll(domainIndex) {
         for (const curPath in domainIndex) {
           const pathIndex = domainIndex[curPath]
           for (const key in pathIndex) {
-            results.push(pathIndex[key])
+            const value = pathIndex[key]
+            if (value) {
+              results.push(value)
+            }
           }
         }
       }
@@ -151,14 +164,17 @@ export class MemoryCookieStore extends Store {
       pathMatcher = function matchRFC(domainIndex) {
         //NOTE: we should use path-match algorithm from S5.1.4 here
         //(see : https://github.com/ChromiumWebApps/chromium/blob/b3d3b4da8bb94c1b2e061600df106d590fda3620/net/cookies/canonical_cookie.cc#L299)
-        Object.keys(domainIndex).forEach((cookiePath) => {
+        for (const cookiePath in domainIndex) {
           if (pathMatch(path, cookiePath)) {
             const pathIndex = domainIndex[cookiePath]
             for (const key in pathIndex) {
-              results.push(pathIndex[key])
+              const value = pathIndex[key]
+              if (value) {
+                results.push(value)
+              }
             }
           }
-        })
+        }
       }
     }
 
@@ -178,6 +194,7 @@ export class MemoryCookieStore extends Store {
 
   override putCookie(cookie: Cookie): Promise<void>
   override putCookie(cookie: Cookie, callback: Callback<void>): void
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   override putCookie(cookie: Cookie, _callback?: Callback<void>): unknown {
     const promiseCallback = createPromiseCallback<void>(arguments)
     const cb = promiseCallback.callback
@@ -188,12 +205,23 @@ export class MemoryCookieStore extends Store {
       return promiseCallback.promise
     }
 
-    const domainEntry: { [key: string]: any } =
-      this.idx[domain] ?? Object.create(null)
+    const domainEntry: {
+      [path: string]: {
+        [key: string]: Cookie
+      }
+    } =
+      this.idx[domain] ??
+      (Object.create(null) as {
+        [path: string]: {
+          [key: string]: Cookie
+        }
+      })
+
     this.idx[domain] = domainEntry
 
-    const pathEntry: { [key: string]: any } =
-      domainEntry[path] ?? Object.create(null)
+    const pathEntry: { [key: string]: Cookie } =
+      domainEntry[path] ?? (Object.create(null) as { [key: string]: Cookie })
+
     domainEntry[path] = pathEntry
 
     pathEntry[key] = cookie
@@ -239,6 +267,7 @@ export class MemoryCookieStore extends Store {
     domain: string,
     path: string,
     key: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _callback?: Callback<void>,
   ): unknown {
     const promiseCallback = createPromiseCallback<void>(arguments)
@@ -268,6 +297,7 @@ export class MemoryCookieStore extends Store {
   override removeCookies(
     domain: string,
     path: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _callback?: Callback<void>,
   ): unknown {
     const promiseCallback = createPromiseCallback<void>(arguments)
@@ -288,11 +318,12 @@ export class MemoryCookieStore extends Store {
 
   override removeAllCookies(): Promise<void>
   override removeAllCookies(callback: Callback<void>): void
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   override removeAllCookies(_callback?: Callback<void>): unknown {
     const promiseCallback = createPromiseCallback<void>(arguments)
     const cb = promiseCallback.callback
 
-    this.idx = Object.create(null)
+    this.idx = Object.create(null) as MemoryCookieStoreIndex
 
     cb(null)
     return promiseCallback.promise
@@ -300,6 +331,7 @@ export class MemoryCookieStore extends Store {
 
   override getAllCookies(): Promise<Cookie[]>
   override getAllCookies(callback: Callback<Cookie[]>): void
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   override getAllCookies(_callback?: Callback<Cookie[]>): unknown {
     const promiseCallback = createPromiseCallback<Cookie[]>(arguments)
     const cb = promiseCallback.callback
@@ -334,48 +366,119 @@ export class MemoryCookieStore extends Store {
   }
 }
 
-export function inspectFallback(val: { [x: string]: any }) {
-  const domains = Object.keys(val)
-  if (domains.length === 0) {
-    return '[Object: null prototype] {}'
+export function inspectFallback(val: unknown): string {
+  if (val === null) {
+    return 'null'
   }
-  let result = '[Object: null prototype] {\n'
-  Object.keys(val).forEach((domain, i) => {
-    result += formatDomain(domain, val[domain])
-    if (i < domains.length - 1) {
-      result += ','
+
+  if (val === undefined) {
+    return 'undefined'
+  }
+
+  if (typeof val === 'string') {
+    return `'${val}'`
+  }
+
+  if (typeof val === 'object') {
+    const domains = Object.keys(val)
+    if (domains.length === 0) {
+      return '[Object: null prototype] {}'
     }
-    result += '\n'
-  })
-  result += '}'
-  return result
+    let result = '[Object: null prototype] {\n'
+    Object.keys(val).forEach((domain, i) => {
+      if (inOperator(domain, val)) {
+        result += formatDomain(domain, val[domain])
+        if (i < domains.length - 1) {
+          result += ','
+        }
+        result += '\n'
+      }
+    })
+    result += '}'
+    return result
+  }
+
+  return val.toString()
 }
 
-function formatDomain(domainName: string, domainValue: { [x: string]: any }) {
-  const indent = '  '
-  let result = `${indent}'${domainName}': [Object: null prototype] {\n`
-  Object.keys(domainValue).forEach((path, i, paths) => {
-    result += formatPath(path, domainValue[path])
-    if (i < paths.length - 1) {
-      result += ','
-    }
-    result += '\n'
-  })
-  result += `${indent}}`
-  return result
+function formatDomain(domainName: string, domainValue: unknown) {
+  if (domainValue === null) {
+    return 'null'
+  }
+
+  if (domainValue === undefined) {
+    return 'undefined'
+  }
+
+  if (typeof domainValue === 'string') {
+    return `'${domainValue}'`
+  }
+
+  if (typeof domainValue === 'object') {
+    const indent = '  '
+    let result = `${indent}'${domainName}': [Object: null prototype] {\n`
+    Object.keys(domainValue).forEach((path, i, paths) => {
+      if (inOperator(path, domainValue)) {
+        result += formatPath(path, domainValue[path])
+        if (i < paths.length - 1) {
+          result += ','
+        }
+        result += '\n'
+      }
+    })
+    result += `${indent}}`
+    return result
+  }
+
+  return domainValue.toString()
 }
 
-function formatPath(pathName: string, pathValue: { [x: string]: any }) {
-  const indent = '    '
-  let result = `${indent}'${pathName}': [Object: null prototype] {\n`
-  Object.keys(pathValue).forEach((cookieName, i, cookieNames) => {
-    const cookie = pathValue[cookieName]
-    result += `      ${cookieName}: ${cookie.inspect()}`
-    if (i < cookieNames.length - 1) {
-      result += ','
-    }
-    result += '\n'
-  })
-  result += `${indent}}`
-  return result
+function formatPath(pathName: string, pathValue: unknown) {
+  if (pathValue === null) {
+    return 'null'
+  }
+
+  if (pathValue === undefined) {
+    return 'undefined'
+  }
+
+  if (typeof pathValue === 'string') {
+    return `'${pathValue}'`
+  }
+
+  if (typeof pathValue === 'object') {
+    const indent = '    '
+    let result = `${indent}'${pathName}': [Object: null prototype] {\n`
+    Object.keys(pathValue).forEach((cookieName, i, cookieNames) => {
+      if (inOperator(cookieName, pathValue)) {
+        const cookie = pathValue[cookieName]
+        if (
+          cookie != null &&
+          typeof cookie === 'object' &&
+          inOperator('inspect', cookie) &&
+          typeof cookie.inspect === 'function'
+        ) {
+          const inspectedValue: unknown = cookie.inspect()
+          if (typeof inspectedValue === 'string') {
+            result += `      ${cookieName}: ${inspectedValue}`
+            if (i < cookieNames.length - 1) {
+              result += ','
+            }
+            result += '\n'
+          }
+        }
+      }
+    })
+    result += `${indent}}`
+    return result
+  }
+
+  return pathValue.toString()
+}
+
+function inOperator<K extends string, T extends object>(
+  k: K,
+  o: T,
+): o is T & Record<K, unknown> {
+  return k in o
 }

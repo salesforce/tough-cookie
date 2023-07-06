@@ -3,7 +3,7 @@
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    //"plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "plugin:prettier/recommended"
   ],
   "parser": "@typescript-eslint/parser",
@@ -16,16 +16,9 @@
     // this is only needed because `createPromiseCallback` uses arguments to support the callback-style api
     // we should strongly consider dropping the callback and sync api variants (in say v6) to reduce the
     // surface area and complexity of tough-cookie
-    "prefer-rest-params": "warn",
-    "@typescript-eslint/no-unused-vars": "warn",
-
-    // used by callSync which needs to use Function because it's used by several apis
-    "@typescript-eslint/ban-types": "warn",
+    "prefer-rest-params": "off",
 
     // there are several areas that still have ts-ignore comments, let's try to eliminate those
-    "@typescript-eslint/ban-ts-comment": "warn",
-
-    // i'd like to clean up all usages of any but the current api is just too loose
-    "@typescript-eslint/no-explicit-any": "warn"
+    "@typescript-eslint/ban-ts-comment": "warn"
   }
 }

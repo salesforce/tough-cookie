@@ -201,33 +201,52 @@ describe('cookieJar serialization', () => {
       }
 
       // corner cases
-      const cornerCases = [
-        { expires: 'Infinity', key: 'infExp', value: 'infExp' },
-        { maxAge: 3600, key: 'max', value: 'max' },
-        {
-          expires,
-          key: 'flags',
-          value: 'flags',
-          secure: true,
-          httpOnly: true,
-        },
-        {
-          expires,
-          key: 'honly',
-          value: 'honly',
-          hostOnly: true,
-          domain: 'www.example.org',
-        },
-      ]
+      const corner_case_1 = new Cookie({
+        expires: 'Infinity',
+        key: 'infExp',
+        value: 'infExp',
+        domain: 'example.org',
+        path: '/',
+      })
+      await jar.setCookie(corner_case_1, 'https://www.example.org/', {
+        ignoreError: true,
+      })
 
-      for await (const cornerCase of cornerCases) {
-        const domain = cornerCase.domain ?? 'example.org'
-        const path = '/'
-        const cookie = new Cookie({ ...cornerCase, domain, path })
-        await jar.setCookie(cookie, 'https://www.example.org/', {
-          ignoreError: true,
-        })
-      }
+      const corner_case_2 = new Cookie({
+        maxAge: 3600,
+        key: 'max',
+        value: 'max',
+        domain: 'example.org',
+        path: '/',
+      })
+      await jar.setCookie(corner_case_2, 'https://www.example.org/', {
+        ignoreError: true,
+      })
+
+      const corner_case_3 = new Cookie({
+        expires,
+        key: 'flags',
+        value: 'flags',
+        secure: true,
+        httpOnly: true,
+        domain: 'example.org',
+        path: '/',
+      })
+      await jar.setCookie(corner_case_3, 'https://www.example.org/', {
+        ignoreError: true,
+      })
+
+      const corner_case_4 = new Cookie({
+        expires,
+        key: 'honly',
+        value: 'honly',
+        hostOnly: true,
+        domain: 'www.example.org',
+        path: '/',
+      })
+      await jar.setCookie(corner_case_4, 'https://www.example.org/', {
+        ignoreError: true,
+      })
     })
 
     it('should have the expected metadata', async () => {

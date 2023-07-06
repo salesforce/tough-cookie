@@ -58,13 +58,17 @@ export function getPublicSuffix(
 
   if (
     allowSpecialUseDomain &&
-    typeof topLevelDomain === 'string' &&
+    topLevelDomain !== undefined &&
     SPECIAL_USE_DOMAINS.includes(topLevelDomain)
   ) {
     if (domainParts.length > 1) {
       const secondLevelDomain = domainParts[domainParts.length - 2]
-      // In aforementioned example, the eTLD/pubSuf will be apple.localhost
-      return `${secondLevelDomain}.${topLevelDomain}`
+      if (secondLevelDomain !== undefined) {
+        // In aforementioned example, the eTLD/pubSuf will be apple.localhost
+        return `${secondLevelDomain}.${topLevelDomain}`
+      } else {
+        throw new Error('expected secondLevelDomain to be a string')
+      }
     } else if (SPECIAL_TREATMENT_DOMAINS.includes(topLevelDomain)) {
       // For a single word special use domain, e.g. 'localhost' or 'invalid', per RFC 6761,
       // "Application software MAY recognize {localhost/invalid} names as special, or
@@ -75,7 +79,7 @@ export function getPublicSuffix(
 
   if (
     !ignoreError &&
-    typeof topLevelDomain === 'string' &&
+    topLevelDomain !== undefined &&
     SPECIAL_USE_DOMAINS.includes(topLevelDomain)
   ) {
     throw new Error(
