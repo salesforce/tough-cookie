@@ -413,12 +413,8 @@ describe('CookieJar', () => {
       })
 
       it('should set all the cookies', async () => {
-        try {
-          const { cookies } = await cookieJar.serialize()
-          expect(cookies).toHaveLength(6)
-        } catch (e) {
-          console.log(e)
-        }
+        const { cookies } = await cookieJar.serialize()
+        expect(cookies).toHaveLength(6)
       })
 
       it('should scope cookies by path as the default behavior', async () => {
