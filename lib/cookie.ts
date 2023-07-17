@@ -39,6 +39,7 @@ import * as validators from './validators'
 import { version } from './version'
 import { permuteDomain } from './permuteDomain'
 import { getCustomInspectSymbol } from './utilHelper'
+import { ErrorCallback, safeToString } from './utils'
 
 // From RFC6265 S4.1.1
 // note that it excludes \x3B ";"
@@ -357,7 +358,7 @@ function parseDate(str: string | undefined | null): Date | undefined {
 }
 
 function formatDate(date: Date) {
-  validators.validate(validators.isDate(date), date)
+  validators.validate(validators.isDate(date), safeToString(date))
   return date.toUTCString()
 }
 
@@ -699,7 +700,7 @@ function parse(
  * @returns boolean
  */
 function isSecurePrefixConditionMet(cookie: Cookie) {
-  validators.validate(validators.isObject(cookie), cookie)
+  validators.validate(validators.isObject(cookie), safeToString(cookie))
   const startsWithSecurePrefix =
     typeof cookie.key === 'string' && cookie.key.startsWith('__Secure-')
   return !startsWithSecurePrefix || cookie.secure
@@ -786,8 +787,8 @@ function fromJSON(str: string | SerializedCookie | null | undefined) {
  */
 
 function cookieCompare(a: Cookie, b: Cookie) {
-  validators.validate(validators.isObject(a), a)
-  validators.validate(validators.isObject(b), b)
+  validators.validate(validators.isObject(a), safeToString(a))
+  validators.validate(validators.isObject(b), safeToString(b))
   let cmp = 0
 
   // descending for length: b CMP a
@@ -977,8 +978,11 @@ export class Cookie {
     ) {
       return false
     }
-    // @ts-ignore
-    if (this.maxAge != null && this.maxAge <= 0) {
+    if (
+      this.maxAge != null &&
+      this.maxAge !== 'Infinity' &&
+      (this.maxAge === '-Infinity' || this.maxAge <= 0)
+    ) {
       return false // "Max-Age=" non-zero-digit *DIGIT
     }
     if (this.path != null && !PATH_VALUE.test(this.path)) {
@@ -1343,7 +1347,11 @@ export class CookieJar {
     const promiseCallback = createPromiseCallback<Cookie>(arguments)
     const cb = promiseCallback.callback
 
-    validators.validate(validators.isNonEmptyString(url), callback, options)
+    validators.validate(
+      validators.isNonEmptyString(url),
+      callback,
+      safeToString(options),
+    )
     let err
 
     if (validators.isFunction(url)) {
@@ -1629,7 +1637,7 @@ export class CookieJar {
     if (typeof options === 'function' || options === undefined) {
       options = defaultGetCookieOptions
     }
-    validators.validate(validators.isObject(options), cb, options)
+    validators.validate(validators.isObject(options), cb, safeToString(options))
     validators.validate(validators.isFunction(cb), cb)
 
     const host = canonicalDomain(context.hostname)
@@ -2247,4 +2255,3 @@ export type Callback<T> = (
   error: Error | undefined,
   result: T | undefined,
 ) => void
-export type ErrorCallback = (error: Error) => void
