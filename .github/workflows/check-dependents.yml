@@ -42,7 +42,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          repository: https://github.com/jsdom/jsdom.git
+          repository: jsdom/jsdom
           submodules: recursive
       - name: Restore cached assets
         uses: actions/cache/restore@v3
