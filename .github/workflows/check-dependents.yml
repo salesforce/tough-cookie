@@ -1,6 +1,9 @@
 name: Check Dependents
 
 on:
+  push:
+    branches:
+      - automation_improvements
   workflow_dispatch:
     inputs:
       ref:
