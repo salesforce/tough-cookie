@@ -1,7 +1,6 @@
 name: Check Dependents
 
 on:
-  pull_request:
   push:
   workflow_dispatch:
     inputs:
