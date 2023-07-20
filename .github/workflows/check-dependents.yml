@@ -1,0 +1,64 @@
+name: Check Dependents
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        default: master
+        description: The branch, tag, or sha to test against
+        type: string
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ inputs.ref }}
+      - uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+          cache: npm
+      - name: Install dependencies
+        run: npm install
+      - name: Set version
+        run: npm run version
+      - name: Build
+        run: npm run build
+      - name: Package
+        run: |
+          package=$(npm pack)
+          mv $package tough-cookie.tgz
+      - name: Cache artifacts
+        uses: actions/cache/save@v3
+        with:
+          key: ${{ github.run_id }}-tough-cookie
+          path: tough-cookie.tgz
+
+  jsdom:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: https://github.com/jsdom/jsdom.git
+          submodules: recursive
+      - name: Restore cached assets
+        uses: actions/cache/restore@v3
+        with:
+          fail-on-cache-miss: true
+          key: ${{ github.run_id }}-tough-cookie
+          path: tough-cookie.tgz
+      - uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+          cache: yarn
+      - name: Setup HOSTS file for Web Platform Test server
+        run: ./test/web-platform-tests/tests/wpt make-hosts-file | sudo tee -a /etc/hosts
+      - name: Install dependencies
+        run: |
+          yarn add tough-cookie.tgz
+          yarn install
+      - name: Run tests
+        run: yarn test --retries 1
+
+

@@ -1,4 +1,4 @@
-name: Actions-CI
+name: CI
 
 on:
   push:
@@ -21,8 +21,11 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm
-      - name: Install dependencies and test
+      - name: Install dependencies
         run: npm install
-      - run: npm test
-      - run: npm run eslint
-      - run: npm run prettier
+      - name: Run tests
+        run: npm test
+      - name: Linter
+        run: npm run eslint
+      - name: Formatter
+        run: npm run prettier
