@@ -25,58 +25,62 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ************************************************************************************ */
-'use strict'
+
+import { ErrorCallback, objectToString, safeToString } from './utils'
 
 /* Validation functions copied from check-types package - https://www.npmjs.com/package/check-types */
-export function isFunction(data: unknown): boolean {
-  return typeof data === 'function'
-}
 
+/** Determines whether the argument is a non-empty string. */
 export function isNonEmptyString(data: unknown): boolean {
   return isString(data) && data !== ''
 }
 
+/** Determines whether the argument is a *valid* Date. */
 export function isDate(data: unknown): boolean {
-  if (data instanceof Date) {
-    return isInteger(data.getTime())
-  }
-  return false
+  return data instanceof Date && isInteger(data.getTime())
 }
 
+/** Determines whether the argument is the empty string. */
 export function isEmptyString(data: unknown): boolean {
   return data === '' || (data instanceof String && data.toString() === '')
 }
 
+/** Determines whether the argument is a string. */
 export function isString(data: unknown): boolean {
   return typeof data === 'string' || data instanceof String
 }
 
+/** Determines whether the string representation of the argument is "[object Object]". */
 export function isObject(data: unknown): boolean {
-  return Object.prototype.toString.call(data) === '[object Object]'
+  return objectToString(data) === '[object Object]'
 }
 
+/** Determines whether the argument is an integer. */
 export function isInteger(data: unknown): boolean {
   return typeof data === 'number' && data % 1 === 0
 }
-/* End validation functions */
 
+/* -- End validation functions -- */
+
+/**
+ * When the first argument is false, an error is created with the given message. If a callback is
+ * provided, the error is passed to the callback, otherwise the error is thrown.
+ */
 export function validate(
   bool: boolean,
-  cb?: unknown,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _deprecated?: unknown,
+  cbOrMessage?: ErrorCallback | string,
+  message?: string,
 ): void {
-  if (!isFunction(cb)) {
-    cb = null
-  }
+  if (bool) return // Validation passes
+  const cb = typeof cbOrMessage === 'function' ? cbOrMessage : null
+  let options = typeof cbOrMessage === 'function' ? message : cbOrMessage
+  // The default message prior to v5 was '[object Object]' due to a bug, and the message is kept
+  // for backwards compatibility.
+  if (!isObject(options)) options = '[object Object]'
 
-  if (!bool) {
-    if (typeof cb === 'function') {
-      cb(new ParameterError('Failed Check'))
-    } else {
-      throw new ParameterError('Failed Check')
-    }
-  }
+  const err = new ParameterError(safeToString(options))
+  if (cb) cb(err)
+  else throw err
 }
 
 export class ParameterError extends Error {}

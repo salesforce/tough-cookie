@@ -39,6 +39,7 @@ import * as validators from './validators'
 import { version } from './version'
 import { permuteDomain } from './permuteDomain'
 import { getCustomInspectSymbol } from './utilHelper'
+import { ErrorCallback, safeToString } from './utils'
 
 // From RFC6265 S4.1.1
 // note that it excludes \x3B ";"
@@ -356,7 +357,7 @@ function parseDate(str: string | undefined | null): Date | undefined {
 }
 
 function formatDate(date: Date) {
-  validators.validate(validators.isDate(date), date)
+  validators.validate(validators.isDate(date), safeToString(date))
   return date.toUTCString()
 }
 
@@ -694,7 +695,7 @@ function parse(
  * @returns boolean
  */
 function isSecurePrefixConditionMet(cookie: Cookie) {
-  validators.validate(validators.isObject(cookie), cookie)
+  validators.validate(validators.isObject(cookie), safeToString(cookie))
   const startsWithSecurePrefix =
     typeof cookie.key === 'string' && cookie.key.startsWith('__Secure-')
   return !startsWithSecurePrefix || cookie.secure
@@ -826,8 +827,8 @@ function fromJSON(str: string | SerializedCookie | null | undefined | unknown) {
  */
 
 function cookieCompare(a: Cookie, b: Cookie) {
-  validators.validate(validators.isObject(a), a)
-  validators.validate(validators.isObject(b), b)
+  validators.validate(validators.isObject(a), safeToString(a))
+  validators.validate(validators.isObject(b), safeToString(b))
   let cmp: number
 
   // descending for length: b CMP a
@@ -1420,10 +1421,14 @@ export class CookieJar {
     const promiseCallback = createPromiseCallback<Cookie>(arguments)
     const cb = promiseCallback.callback
 
-    validators.validate(validators.isNonEmptyString(url), callback, options)
+    validators.validate(
+      validators.isNonEmptyString(url),
+      callback,
+      safeToString(options),
+    )
     let err
 
-    if (validators.isFunction(url)) {
+    if (typeof url === 'function') {
       return promiseCallback.reject(new Error('No URL was specified'))
     }
 
@@ -1432,7 +1437,7 @@ export class CookieJar {
       options = defaultSetCookieOptions
     }
 
-    validators.validate(validators.isFunction(cb), cb)
+    validators.validate(typeof cb === 'function', cb)
 
     if (
       !validators.isNonEmptyString(cookie) &&
@@ -1709,8 +1714,8 @@ export class CookieJar {
     if (typeof options === 'function' || options === undefined) {
       options = defaultGetCookieOptions
     }
-    validators.validate(validators.isObject(options), cb, options)
-    validators.validate(validators.isFunction(cb), cb)
+    validators.validate(validators.isObject(options), cb, safeToString(options))
+    validators.validate(typeof cb === 'function', cb)
 
     const host = canonicalDomain(context.hostname)
     const path = context.pathname || '/'
@@ -1961,7 +1966,7 @@ export class CookieJar {
       createPromiseCallback<SerializedCookieJar>(arguments)
     const cb = promiseCallback.callback
 
-    validators.validate(validators.isFunction(cb), cb)
+    validators.validate(typeof cb === 'function', cb)
     let type: string | null = this.store.constructor.name
     if (validators.isObject(type)) {
       type = null
@@ -2400,7 +2405,6 @@ export type Callback<T> = (
   error: Error | undefined,
   result: T | undefined,
 ) => void
-export type ErrorCallback = (error: Error) => void
 
 function inOperator<K extends string, T extends object>(
   k: K,
