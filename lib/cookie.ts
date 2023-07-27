@@ -911,20 +911,20 @@ const cookieDefaults = {
 }
 
 export type CreateCookieOptions = {
-  key?: string | undefined
-  value?: string | undefined
-  expires?: Date | 'Infinity' | null | undefined
-  maxAge?: number | 'Infinity' | '-Infinity' | undefined
-  domain?: string | null | undefined
-  path?: string | null | undefined
-  secure?: boolean | undefined
-  httpOnly?: boolean | undefined
-  extensions?: string[] | null | undefined
+  key?: string
+  value?: string
+  expires?: Date | 'Infinity' | null
+  maxAge?: number | 'Infinity' | '-Infinity'
+  domain?: string | null
+  path?: string | null
+  secure?: boolean
+  httpOnly?: boolean
+  extensions?: string[] | null
   creation?: Date | 'Infinity' | null
-  creationIndex?: number | undefined
-  hostOnly?: boolean | null | undefined
-  pathIsDefault?: boolean | null | undefined
-  lastAccessed?: Date | 'Infinity' | null | undefined
+  creationIndex?: number
+  hostOnly?: boolean | null
+  pathIsDefault?: boolean | null
+  lastAccessed?: Date | 'Infinity' | null
   sameSite?: string | undefined
 }
 

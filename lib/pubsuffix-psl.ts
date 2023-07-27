@@ -62,13 +62,10 @@ export function getPublicSuffix(
     SPECIAL_USE_DOMAINS.includes(topLevelDomain)
   ) {
     if (domainParts.length > 1) {
-      const secondLevelDomain = domainParts[domainParts.length - 2]
-      if (secondLevelDomain !== undefined) {
-        // In aforementioned example, the eTLD/pubSuf will be apple.localhost
-        return `${secondLevelDomain}.${topLevelDomain}`
-      } else {
-        throw new Error('expected secondLevelDomain to be a string')
-      }
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const secondLevelDomain = domainParts[domainParts.length - 2]!
+      // In aforementioned example, the eTLD/pubSuf will be apple.localhost
+      return `${secondLevelDomain}.${topLevelDomain}`
     } else if (SPECIAL_TREATMENT_DOMAINS.includes(topLevelDomain)) {
       // For a single word special use domain, e.g. 'localhost' or 'invalid', per RFC 6761,
       // "Application software MAY recognize {localhost/invalid} names as special, or

@@ -145,7 +145,7 @@ export class MemoryCookieStore extends Store {
     }
 
     let pathMatcher: (
-      domainIndex: { [p: string]: { [p: string]: Cookie } } | undefined,
+      domainIndex: MemoryCookieStoreIndex[string] | undefined,
     ) => void
     if (!path) {
       // null means "all paths"
@@ -205,22 +205,15 @@ export class MemoryCookieStore extends Store {
       return promiseCallback.promise
     }
 
-    const domainEntry: {
-      [path: string]: {
-        [key: string]: Cookie
-      }
-    } =
+    const domainEntry =
       this.idx[domain] ??
-      (Object.create(null) as {
-        [path: string]: {
-          [key: string]: Cookie
-        }
-      })
+      (Object.create(null) as MemoryCookieStoreIndex[string])
 
     this.idx[domain] = domainEntry
 
-    const pathEntry: { [key: string]: Cookie } =
-      domainEntry[path] ?? (Object.create(null) as { [key: string]: Cookie })
+    const pathEntry =
+      domainEntry[path] ??
+      (Object.create(null) as MemoryCookieStoreIndex[string][string])
 
     domainEntry[path] = pathEntry
 
@@ -367,19 +360,11 @@ export class MemoryCookieStore extends Store {
 }
 
 export function inspectFallback(val: unknown): string {
-  if (val === null) {
-    return 'null'
-  }
-
-  if (val === undefined) {
-    return 'undefined'
-  }
-
   if (typeof val === 'string') {
     return `'${val}'`
   }
 
-  if (typeof val === 'object') {
+  if (val && typeof val === 'object') {
     const domains = Object.keys(val)
     if (domains.length === 0) {
       return '[Object: null prototype] {}'
@@ -398,23 +383,15 @@ export function inspectFallback(val: unknown): string {
     return result
   }
 
-  return val.toString()
+  return String(val)
 }
 
 function formatDomain(domainName: string, domainValue: unknown) {
-  if (domainValue === null) {
-    return 'null'
-  }
-
-  if (domainValue === undefined) {
-    return 'undefined'
-  }
-
   if (typeof domainValue === 'string') {
     return `'${domainValue}'`
   }
 
-  if (typeof domainValue === 'object') {
+  if (domainValue && typeof domainValue === 'object') {
     const indent = '  '
     let result = `${indent}'${domainName}': [Object: null prototype] {\n`
     Object.keys(domainValue).forEach((path, i, paths) => {
@@ -430,23 +407,15 @@ function formatDomain(domainName: string, domainValue: unknown) {
     return result
   }
 
-  return domainValue.toString()
+  return String(domainValue)
 }
 
 function formatPath(pathName: string, pathValue: unknown) {
-  if (pathValue === null) {
-    return 'null'
-  }
-
-  if (pathValue === undefined) {
-    return 'undefined'
-  }
-
   if (typeof pathValue === 'string') {
     return `'${pathValue}'`
   }
 
-  if (typeof pathValue === 'object') {
+  if (pathValue && typeof pathValue === 'object') {
     const indent = '    '
     let result = `${indent}'${pathName}': [Object: null prototype] {\n`
     Object.keys(pathValue).forEach((cookieName, i, cookieNames) => {
@@ -473,7 +442,7 @@ function formatPath(pathName: string, pathValue: unknown) {
     return result
   }
 
-  return pathValue.toString()
+  return String(pathValue)
 }
 
 function inOperator<K extends string, T extends object>(
