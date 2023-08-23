@@ -1,6 +1,3 @@
-// This file contains the exports from v4's lib/cookie.js, provided to minimize
-// the need to update imports in dependent projects.
-
 export { MemoryCookieStore } from '../memstore'
 export { pathMatch } from '../pathMatch'
 export { permuteDomain } from '../permuteDomain'
