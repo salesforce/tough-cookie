@@ -37,7 +37,7 @@ type EquivalenceDateParsingTestCase = {
   [key: string]: string
 }
 
-import { parseDate } from '../cookie'
+import { parseDate } from '../cookie/parseDate'
 
 const dateTests: DateParsingTestCase = {
   'Wed, 09 Jun 2021 10:18:14 GMT': true,

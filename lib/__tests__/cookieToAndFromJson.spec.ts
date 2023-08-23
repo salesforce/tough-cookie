@@ -1,4 +1,4 @@
-import { Cookie } from '../cookie'
+import { Cookie } from '../cookie/cookie'
 
 jest.useFakeTimers()
 

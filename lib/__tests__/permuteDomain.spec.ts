@@ -1,4 +1,4 @@
-import { permuteDomain } from '../cookie'
+import { permuteDomain } from '../permuteDomain'
 
 // port of tests/domain_and_path_test.js (permute domain tests)
 describe('permuteDomain', () => {

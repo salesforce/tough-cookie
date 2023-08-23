@@ -1,4 +1,5 @@
-import { Cookie, MemoryCookieStore } from '../cookie'
+import { Cookie } from '../cookie/cookie'
+import { MemoryCookieStore } from '../memstore'
 
 describe('MemoryCookieStore', () => {
   it('should have no static methods', () => {

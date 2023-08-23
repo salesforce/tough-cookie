@@ -35,7 +35,8 @@
 
 'use strict'
 
-import type { Callback, Cookie } from './cookie'
+import type { Cookie } from './cookie/cookie'
+import type { Callback } from './utils'
 
 export class Store {
   synchronous: boolean

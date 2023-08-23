@@ -1,4 +1,6 @@
-import { Cookie, cookieCompare, CookieJar } from '../cookie'
+import { Cookie } from '../cookie/cookie'
+import { cookieCompare } from '../cookie/cookieCompare'
+import { CookieJar } from '../cookie/cookieJar'
 
 jest.useFakeTimers()
 
