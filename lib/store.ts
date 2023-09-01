@@ -28,6 +28,11 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+
+// disabling this lint on this whole file because Store should be abstract
+// but we have implementations in the wild that may not implement all features
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 'use strict'
 
 import type { Callback, Cookie } from './cookie'
@@ -149,5 +154,3 @@ export class Store {
     )
   }
 }
-
-exports.Store = Store

@@ -59,7 +59,9 @@ export function permuteDomain(
   let cur = pubSuf
   const permutations = [cur]
   while (parts.length) {
-    cur = `${parts.shift()}.${cur}`
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const part = parts.shift()!
+    cur = `${part}.${cur}`
     permutations.push(cur)
   }
   return permutations

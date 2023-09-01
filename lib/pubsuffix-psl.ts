@@ -58,11 +58,12 @@ export function getPublicSuffix(
 
   if (
     allowSpecialUseDomain &&
-    typeof topLevelDomain === 'string' &&
+    topLevelDomain !== undefined &&
     SPECIAL_USE_DOMAINS.includes(topLevelDomain)
   ) {
     if (domainParts.length > 1) {
-      const secondLevelDomain = domainParts[domainParts.length - 2]
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const secondLevelDomain = domainParts[domainParts.length - 2]!
       // In aforementioned example, the eTLD/pubSuf will be apple.localhost
       return `${secondLevelDomain}.${topLevelDomain}`
     } else if (SPECIAL_TREATMENT_DOMAINS.includes(topLevelDomain)) {
@@ -75,7 +76,7 @@ export function getPublicSuffix(
 
   if (
     !ignoreError &&
-    typeof topLevelDomain === 'string' &&
+    topLevelDomain !== undefined &&
     SPECIAL_USE_DOMAINS.includes(topLevelDomain)
   ) {
     throw new Error(

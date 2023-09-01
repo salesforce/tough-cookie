@@ -1,11 +1,9 @@
 /** Signature for a callback function that expects an error to be passed. */
 export type ErrorCallback = (error: Error, result?: never) => void
 
-/** Unbound `Object.prototype.toString`. */
-const unboundToString = Object.prototype.toString
-
 /** Wrapped `Object.prototype.toString`, so that you don't need to remember to use `.call()`. */
-export const objectToString = (obj: unknown) => unboundToString.call(obj)
+export const objectToString = (obj: unknown) =>
+  Object.prototype.toString.call(obj)
 
 /** Safely converts any value to string, using the value's own `toString` when available. */
 export const safeToString = (val: unknown) => {

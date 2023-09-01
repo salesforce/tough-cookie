@@ -59,18 +59,9 @@ vows
       "should not be null in a node environment when custom inspect symbol cannot be retrieved (< node v10.12.0)": function() {
         assert.equal(
           getCustomInspectSymbol({
-            lookupCustomInspectSymbol: () => null
+            lookupCustomInspectSymbol: () => undefined
           }),
           Symbol.for("nodejs.util.inspect.custom") || util.inspect.custom
-        );
-      },
-      "should be null in a non-node environment since 'util' features cannot be relied on": function() {
-        assert.equal(
-          getCustomInspectSymbol({
-            lookupCustomInspectSymbol: () => null,
-            requireUtil: () => null
-          }),
-          null
         );
       }
     },
@@ -81,7 +72,7 @@ vows
       },
       "should use fallback inspect function in a non-node environment": function() {
         const inspect = getUtilInspect(() => "fallback", {
-          requireUtil: () => null
+          requireUtil: () => undefined
         });
         assert.equal(inspect("util.inspect"), "fallback");
       }

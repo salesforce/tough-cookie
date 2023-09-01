@@ -1189,7 +1189,7 @@ it('should fix issue #197 - CookieJar().setCookie throws an error when empty coo
   ).rejects.toThrowError('Cookie failed to parse')
 })
 
-it('should fix issue #282 - Prototype pollution when setting a cookie with the domain __proto__', async () => {
+it('should fix issue #282 - Prototype pollution when setting a cookie with the domain __proto__', () => {
   const jar = new CookieJar(undefined, {
     rejectPublicSuffixes: false,
   })

@@ -85,7 +85,7 @@
   "scripts": {
     "build": "npm run clean && tsc",
     "clean": "rm -rf dist",
-    "version": "genversion lib/version.js && git add lib/version.js",
+    "version": "genversion --es6 lib/version.ts && git add lib/version.ts",
     "test": "npm run test:ts && npm run test:legacy",
     "test:ts": "jest",
     "test:legacy": "npm run build -- --declaration false && vows test/*_test.js",

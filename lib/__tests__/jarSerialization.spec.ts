@@ -218,10 +218,11 @@ describe('cookieJar serialization', () => {
           hostOnly: true,
           domain: 'www.example.org',
         },
-      ]
+      ] as const
 
-      for await (const cornerCase of cornerCases) {
-        const domain = cornerCase.domain ?? 'example.org'
+      for (const cornerCase of cornerCases) {
+        const domain =
+          'domain' in cornerCase ? cornerCase.domain : 'example.org'
         const path = '/'
         const cookie = new Cookie({ ...cornerCase, domain, path })
         await jar.setCookie(cookie, 'https://www.example.org/', {

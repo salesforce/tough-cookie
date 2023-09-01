@@ -78,7 +78,6 @@ const MONTH_TO_NUM = {
 }
 
 const MAX_TIME = 2147483647000 // 31-bit max
-const MIN_TIME = 0 // 31-bit min
 const SAME_SITE_CONTEXT_VAL_ERR =
   'Invalid sameSiteContext option for getCookies(); expected one of "strict", "lax", or "none"'
 
@@ -442,11 +441,7 @@ function domainMatch(
   }
 
   /* "  * The string is a host name (i.e., not an IP address)." */
-  if (IP_REGEX_LOWERCASE.test(_str)) {
-    return false // it's an IP address
-  }
-
-  return true
+  return !IP_REGEX_LOWERCASE.test(_str)
 }
 
 // RFC6265 S5.1.4 Paths and Path-Match
@@ -730,26 +725,16 @@ function isHostPrefixConditionMet(cookie: Cookie) {
   )
 }
 
-// avoid the V8 deoptimization monster!
-function jsonParse(str: string) {
-  let obj
-  try {
-    obj = JSON.parse(str)
-  } catch (e) {
-    return e
-  }
-  return obj
-}
-
-function fromJSON(str: string | SerializedCookie | null | undefined) {
+function fromJSON(str: string | SerializedCookie | null | undefined | unknown) {
   if (!str || validators.isEmptyString(str)) {
     return null
   }
 
-  let obj
+  let obj: unknown
   if (typeof str === 'string') {
-    obj = jsonParse(str)
-    if (obj instanceof Error) {
+    try {
+      obj = JSON.parse(str)
+    } catch (e) {
       return null
     }
   } else {
@@ -758,21 +743,76 @@ function fromJSON(str: string | SerializedCookie | null | undefined) {
   }
 
   const c = new Cookie()
-  for (const prop of Cookie.serializableProperties) {
-    if (obj[prop] === undefined || obj[prop] === cookieDefaults[prop]) {
-      continue // leave as prototype default
-    }
-
-    if (prop === 'expires' || prop === 'creation' || prop === 'lastAccessed') {
-      if (obj[prop] === null) {
-        c[prop] = null
-      } else {
-        c[prop] = obj[prop] == 'Infinity' ? 'Infinity' : new Date(obj[prop])
+  Cookie.serializableProperties.forEach((prop) => {
+    if (obj && typeof obj === 'object' && inOperator(prop, obj)) {
+      const val = obj[prop]
+      if (val === undefined) {
+        return
       }
-    } else {
-      c[prop] = obj[prop]
+
+      if (inOperator(prop, cookieDefaults) && val === cookieDefaults[prop]) {
+        return
+      }
+
+      switch (prop) {
+        case 'key':
+        case 'value':
+        case 'sameSite':
+          if (typeof val === 'string') {
+            c[prop] = val
+          }
+          break
+        case 'expires':
+        case 'creation':
+        case 'lastAccessed':
+          if (
+            typeof val === 'number' ||
+            typeof val === 'string' ||
+            val instanceof Date
+          ) {
+            c[prop] = obj[prop] == 'Infinity' ? 'Infinity' : new Date(val)
+          } else if (val === null) {
+            c[prop] = null
+          }
+          break
+        case 'maxAge':
+          if (
+            typeof val === 'number' ||
+            val === 'Infinity' ||
+            val === '-Infinity'
+          ) {
+            c[prop] = val
+          }
+          break
+        case 'domain':
+        case 'path':
+          if (typeof val === 'string' || val === null) {
+            c[prop] = val
+          }
+          break
+        case 'secure':
+        case 'httpOnly':
+          if (typeof val === 'boolean') {
+            c[prop] = val
+          }
+          break
+        case 'extensions':
+          if (
+            Array.isArray(val) &&
+            val.every((item) => typeof item === 'string')
+          ) {
+            c[prop] = val
+          }
+          break
+        case 'hostOnly':
+        case 'pathIsDefault':
+          if (typeof val === 'boolean' || val === null) {
+            c[prop] = val
+          }
+          break
+      }
     }
-  }
+  })
 
   return c
 }
@@ -789,7 +829,7 @@ function fromJSON(str: string | SerializedCookie | null | undefined) {
 function cookieCompare(a: Cookie, b: Cookie) {
   validators.validate(validators.isObject(a), safeToString(a))
   validators.validate(validators.isObject(b), safeToString(b))
-  let cmp = 0
+  let cmp: number
 
   // descending for length: b CMP a
   const aPathLen = a.path ? a.path.length : 0
@@ -870,6 +910,24 @@ const cookieDefaults = {
   sameSite: undefined,
 }
 
+export type CreateCookieOptions = {
+  key?: string
+  value?: string
+  expires?: Date | 'Infinity' | null
+  maxAge?: number | 'Infinity' | '-Infinity'
+  domain?: string | null
+  path?: string | null
+  secure?: boolean
+  httpOnly?: boolean
+  extensions?: string[] | null
+  creation?: Date | 'Infinity' | null
+  creationIndex?: number
+  hostOnly?: boolean | null
+  pathIsDefault?: boolean | null
+  lastAccessed?: Date | 'Infinity' | null
+  sameSite?: string | undefined
+}
+
 export class Cookie {
   key: string | undefined
   value: string | undefined
@@ -887,11 +945,16 @@ export class Cookie {
   lastAccessed: Date | 'Infinity' | null | undefined
   sameSite: string | undefined
 
-  constructor(options: any = {}) {
+  constructor(options: CreateCookieOptions = {}) {
+    // supports inspect if that feature is available in the environment
     const customInspectSymbol = getCustomInspectSymbol()
     if (customInspectSymbol) {
-      // @ts-ignore
-      this[customInspectSymbol] = this.inspect
+      Object.defineProperty(this, customInspectSymbol, {
+        value: this.inspect.bind(this),
+        enumerable: false,
+        writable: false,
+        configurable: false,
+      })
     }
 
     Object.assign(this, cookieDefaults, options)
@@ -908,7 +971,7 @@ export class Cookie {
 
   inspect() {
     const now = Date.now()
-    const hostOnly = this.hostOnly != null ? this.hostOnly : '?'
+    const hostOnly = this.hostOnly != null ? this.hostOnly.toString() : '?'
     const createAge =
       this.creation && this.creation !== 'Infinity'
         ? `${now - this.creation.getTime()}ms`
@@ -924,39 +987,66 @@ export class Cookie {
     const obj: SerializedCookie = {}
 
     for (const prop of Cookie.serializableProperties) {
-      if (this[prop] === cookieDefaults[prop]) {
+      const val = this[prop]
+
+      if (val === cookieDefaults[prop]) {
         continue // leave as prototype default
       }
 
-      if (
-        prop === 'expires' ||
-        prop === 'creation' ||
-        prop === 'lastAccessed'
-      ) {
-        if (this[prop] == null) {
-          obj[prop] = null
-        } else {
-          const value = this[prop]
-          if (value === 'Infinity') {
-            obj[prop] = value
-          } else {
-            obj[prop] = value && value.toISOString()
+      switch (prop) {
+        case 'key':
+        case 'value':
+        case 'sameSite':
+          if (typeof val === 'string') {
+            obj[prop] = val
           }
-        }
-      } else if (prop === 'maxAge') {
-        const maxAge = this[prop]
-
-        if (maxAge != null) {
-          // again, intentionally not ===
-          obj[prop] =
-            maxAge == Infinity || maxAge == -Infinity
-              ? maxAge.toString()
-              : maxAge
-        }
-      } else {
-        if (this[prop] !== cookieDefaults[prop]) {
-          obj[prop] = this[prop]
-        }
+          break
+        case 'expires':
+        case 'creation':
+        case 'lastAccessed':
+          if (
+            typeof val === 'number' ||
+            typeof val === 'string' ||
+            val instanceof Date
+          ) {
+            obj[prop] =
+              val == 'Infinity' ? 'Infinity' : new Date(val).toISOString()
+          } else if (val === null) {
+            obj[prop] = null
+          }
+          break
+        case 'maxAge':
+          if (
+            typeof val === 'number' ||
+            val === 'Infinity' ||
+            val === '-Infinity'
+          ) {
+            obj[prop] = val
+          }
+          break
+        case 'domain':
+        case 'path':
+          if (typeof val === 'string' || val === null) {
+            obj[prop] = val
+          }
+          break
+        case 'secure':
+        case 'httpOnly':
+          if (typeof val === 'boolean') {
+            obj[prop] = val
+          }
+          break
+        case 'extensions':
+          if (Array.isArray(val)) {
+            obj[prop] = val
+          }
+          break
+        case 'hostOnly':
+        case 'pathIsDefault':
+          if (typeof val === 'boolean' || val === null) {
+            obj[prop] = val
+          }
+          break
       }
     }
 
@@ -978,11 +1068,7 @@ export class Cookie {
     ) {
       return false
     }
-    if (
-      this.maxAge != null &&
-      this.maxAge !== 'Infinity' &&
-      (this.maxAge === '-Infinity' || this.maxAge <= 0)
-    ) {
+    if (this.maxAge != null && this.maxAge <= 0) {
       return false // "Max-Age=" non-zero-digit *DIGIT
     }
     if (this.path != null && !PATH_VALUE.test(this.path)) {
@@ -1022,14 +1108,11 @@ export class Cookie {
   }
 
   cookieString() {
-    let val = this.value
-    if (val == null) {
-      val = ''
+    const val = this.value ?? ''
+    if (this.key) {
+      return `${this.key}=${val}`
     }
-    if (this.key === '') {
-      return val
-    }
-    return `${this.key}=${val}`
+    return val
   }
 
   // gives Set-Cookie header format
@@ -1039,8 +1122,6 @@ export class Cookie {
     if (this.expires != 'Infinity') {
       if (this.expires instanceof Date) {
         str += `; Expires=${formatDate(this.expires)}`
-      } else {
-        str += `; Expires=${this.expires}`
       }
     }
 
@@ -1099,13 +1180,9 @@ export class Cookie {
       return this.maxAge <= 0 ? 0 : this.maxAge * 1000
     }
 
-    let expires = this.expires
+    const expires = this.expires
     if (expires === 'Infinity') {
       return Infinity
-    }
-
-    if (typeof expires === 'string') {
-      expires = parseDate(expires)
     }
 
     return (expires?.getTime() ?? now) - (now || Date.now())
@@ -1113,7 +1190,7 @@ export class Cookie {
 
   // expiryTime() replaces the "expiry-time" parts of S5.3 step 3 (setCookie()
   // elsewhere)
-  expiryTime(now?: Date): number {
+  expiryTime(now?: Date): number | undefined {
     if (this.maxAge != null) {
       const relativeTo = now || this.creation || new Date()
       const maxAge = typeof this.maxAge === 'number' ? this.maxAge : -Infinity
@@ -1128,21 +1205,7 @@ export class Cookie {
       return Infinity
     }
 
-    // @ts-ignore
-    return this.expires.getTime()
-  }
-
-  // expiryDate() replaces the "expiry-time" parts of S5.3 step 3 (setCookie()
-  // elsewhere), except it returns a Date
-  expiryDate(now: Date) {
-    const millisec = this.expiryTime(now)
-    if (millisec == Infinity) {
-      return new Date(MAX_TIME)
-    } else if (millisec == -Infinity) {
-      return new Date(MIN_TIME)
-    } else {
-      return new Date(millisec)
-    }
+    return this.expires ? this.expires.getTime() : undefined
   }
 
   // This replaces the "persistent-flag" parts of S5.3 step 3
@@ -1235,10 +1298,7 @@ const defaultGetCookieOptions: GetCookiesOptions = {
 }
 
 export function createPromiseCallback<T>(args: IArguments): PromiseCallback<T> {
-  let callback: (
-    error: Error | null | undefined,
-    result: T | undefined,
-  ) => Promise<T | undefined>
+  let callback: (error: Error | null | undefined, result: T | undefined) => void
   let resolve: (result: T | undefined) => void
   let reject: (error: Error | null) => void
 
@@ -1247,31 +1307,44 @@ export function createPromiseCallback<T>(args: IArguments): PromiseCallback<T> {
     reject = _reject
   })
 
-  if (typeof args[args.length - 1] === 'function') {
-    const cb = args[args.length - 1]
+  const cb = args[args.length - 1] as unknown
+  if (typeof cb === 'function') {
     callback = (err, result) => {
       try {
         cb(err, result)
       } catch (e) {
-        reject(e instanceof Error ? e : new Error(`${e}`))
+        reject(e instanceof Error ? e : new Error())
       }
-      return promise
     }
   } else {
     callback = (err, result) => {
       try {
         err ? reject(err) : resolve(result)
       } catch (e) {
-        reject(e instanceof Error ? e : new Error(`${e}`))
+        reject(e instanceof Error ? e : new Error())
       }
-      return promise
     }
   }
 
   return {
     promise,
     callback,
+    resolve: (value: T | undefined) => {
+      callback(null, value)
+      return promise
+    },
+    reject: (error: Error | null | undefined) => {
+      callback(error, undefined)
+      return promise
+    },
   }
+}
+
+export type CreateCookieJarOptions = {
+  rejectPublicSuffixes?: boolean | undefined
+  looseMode?: boolean | undefined
+  prefixSecurity?: 'strict' | 'silent' | 'unsafe-disabled' | undefined
+  allowSpecialUseDomain?: boolean | undefined
 }
 
 export class CookieJar {
@@ -1281,22 +1354,23 @@ export class CookieJar {
   private readonly allowSpecialUseDomain: boolean
   readonly prefixSecurity: string
 
-  constructor(store?: any, options: any = { rejectPublicSuffixes: true }) {
+  constructor(
+    store?: Store | null | undefined,
+    options?: CreateCookieJarOptions | boolean,
+  ) {
     if (typeof options === 'boolean') {
       options = { rejectPublicSuffixes: options }
     }
-    validators.validate(validators.isObject(options), options)
-    this.rejectPublicSuffixes = options.rejectPublicSuffixes
-    this.enableLooseMode = !!options.looseMode
-    this.allowSpecialUseDomain =
-      typeof options.allowSpecialUseDomain === 'boolean'
-        ? options.allowSpecialUseDomain
-        : true
-    this.store = store || new MemoryCookieStore()
-    this.prefixSecurity = getNormalizedPrefixSecurity(options.prefixSecurity)
+    this.rejectPublicSuffixes = options?.rejectPublicSuffixes ?? true
+    this.enableLooseMode = options?.looseMode ?? false
+    this.allowSpecialUseDomain = options?.allowSpecialUseDomain ?? true
+    this.prefixSecurity = getNormalizedPrefixSecurity(
+      options?.prefixSecurity ?? 'silent',
+    )
+    this.store = store ?? new MemoryCookieStore()
   }
 
-  private callSync<T>(fn: Function): T | undefined {
+  private callSync<T>(fn: (callback: Callback<T>) => void): T | undefined {
     if (!this.store.synchronous) {
       throw new Error(
         'CookieJar store is not synchronous; use async API instead.',
@@ -1304,7 +1378,7 @@ export class CookieJar {
     }
     let syncErr: Error | undefined
     let syncResult: T | undefined = undefined
-    fn.call(this, (error: Error, result: T) => {
+    fn.call(this, (error, result) => {
       syncErr = error
       syncResult = result
     })
@@ -1354,8 +1428,8 @@ export class CookieJar {
     )
     let err
 
-    if (validators.isFunction(url)) {
-      return cb(new Error('No URL was specified'))
+    if (typeof url === 'function') {
+      return promiseCallback.reject(new Error('No URL was specified'))
     }
 
     const context = getCookieContext(url)
@@ -1363,7 +1437,7 @@ export class CookieJar {
       options = defaultSetCookieOptions
     }
 
-    validators.validate(validators.isFunction(cb), cb)
+    validators.validate(typeof cb === 'function', cb)
 
     if (
       !validators.isNonEmptyString(cookie) &&
@@ -1371,7 +1445,7 @@ export class CookieJar {
       cookie instanceof String &&
       cookie.length == 0
     ) {
-      return cb(null)
+      return promiseCallback.reject(null)
     }
 
     const host = canonicalDomain(context.hostname)
@@ -1381,7 +1455,7 @@ export class CookieJar {
     if (options?.sameSiteContext) {
       sameSiteContext = checkSameSiteContext(options.sameSiteContext)
       if (!sameSiteContext) {
-        return cb(new Error(SAME_SITE_CONTEXT_VAL_ERR))
+        return promiseCallback.reject(new Error(SAME_SITE_CONTEXT_VAL_ERR))
       }
     }
 
@@ -1390,7 +1464,7 @@ export class CookieJar {
       const parsedCookie = Cookie.parse(cookie.toString(), { loose: loose })
       if (!parsedCookie) {
         err = new Error('Cookie failed to parse')
-        return cb(options?.ignoreError ? null : err)
+        return promiseCallback.reject(options?.ignoreError ? null : err)
       }
       cookie = parsedCookie
     } else if (!(cookie instanceof Cookie)) {
@@ -1399,7 +1473,7 @@ export class CookieJar {
       err = new Error(
         'First argument to setCookie must be a Cookie object or string',
       )
-      return cb(options?.ignoreError ? null : err)
+      return promiseCallback.reject(options?.ignoreError ? null : err)
     }
 
     // S5.3 step 2
@@ -1423,16 +1497,16 @@ export class CookieJar {
         if (suffix == null && !IP_V6_REGEX_OBJECT.test(cookie.domain)) {
           // e.g. "com"
           err = new Error('Cookie has domain set to a public suffix')
-          return cb(options?.ignoreError ? null : err)
+          return promiseCallback.reject(options?.ignoreError ? null : err)
         }
       } catch (err) {
         if (options?.ignoreError) {
-          return cb(null)
+          return promiseCallback.reject(null)
         } else {
           if (err instanceof Error) {
-            return cb(err)
+            return promiseCallback.reject(err)
           } else {
-            return cb(null)
+            return promiseCallback.reject(null)
           }
         }
       }
@@ -1444,9 +1518,11 @@ export class CookieJar {
         !domainMatch(host ?? undefined, cookie.cdomain() ?? undefined, false)
       ) {
         err = new Error(
-          `Cookie not in this host's domain. Cookie:${cookie.cdomain()} Request:${host}`,
+          `Cookie not in this host's domain. Cookie:${
+            cookie.cdomain() ?? 'null'
+          } Request:${host ?? 'null'}`,
         )
-        return cb(options?.ignoreError ? null : err)
+        return promiseCallback.reject(options?.ignoreError ? null : err)
       }
 
       if (cookie.hostOnly == null) {
@@ -1472,7 +1548,7 @@ export class CookieJar {
     // S5.3 step 10
     if (options?.http === false && cookie.httpOnly) {
       err = new Error("Cookie is HttpOnly and this isn't an HTTP API")
-      return cb(options?.ignoreError ? null : err)
+      return promiseCallback.reject(options?.ignoreError ? null : err)
     }
 
     // 6252bis-02 S5.4 Step 13 & 14:
@@ -1487,7 +1563,7 @@ export class CookieJar {
       //  abort these steps and ignore the newly created cookie entirely."
       if (sameSiteContext === 'none') {
         err = new Error('Cookie is SameSite but this is a cross-origin request')
-        return cb(options?.ignoreError ? null : err)
+        return promiseCallback.reject(options?.ignoreError ? null : err)
       }
     }
 
@@ -1511,7 +1587,7 @@ export class CookieJar {
           "Cookie has __Host prefix but either Secure or HostOnly attribute is not set or Path is not '/'"
       }
       if (errorFound) {
-        return cb(
+        return promiseCallback.reject(
           options?.ignoreError || ignoreErrorForPrefixSecurity
             ? null
             : new Error(errorMsg),
@@ -1627,6 +1703,7 @@ export class CookieJar {
   getCookies(
     url: string,
     options?: GetCookiesOptions | Callback<Cookie[]>,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _callback?: Callback<Cookie[]>,
   ): unknown {
     const promiseCallback = createPromiseCallback<Cookie[]>(arguments)
@@ -1638,7 +1715,7 @@ export class CookieJar {
       options = defaultGetCookieOptions
     }
     validators.validate(validators.isObject(options), cb, safeToString(options))
-    validators.validate(validators.isFunction(cb), cb)
+    validators.validate(typeof cb === 'function', cb)
 
     const host = canonicalDomain(context.hostname)
     const path = context.pathname || '/'
@@ -1651,11 +1728,11 @@ export class CookieJar {
     if (options?.sameSiteContext) {
       const sameSiteContext = checkSameSiteContext(options.sameSiteContext)
       if (sameSiteContext == null) {
-        return cb(new Error(SAME_SITE_CONTEXT_VAL_ERR))
+        return promiseCallback.reject(new Error(SAME_SITE_CONTEXT_VAL_ERR))
       }
       sameSiteLevel = Cookie.sameSiteLevel[sameSiteContext]
       if (!sameSiteLevel) {
-        return cb(new Error(SAME_SITE_CONTEXT_VAL_ERR))
+        return promiseCallback.reject(new Error(SAME_SITE_CONTEXT_VAL_ERR))
       }
     }
 
@@ -1718,7 +1795,8 @@ export class CookieJar {
 
       // deferred from S5.3
       // non-RFC: allow retention of expired cookies by choice
-      if (expireCheck && c.expiryTime() <= now) {
+      const expiryTime = c.expiryTime()
+      if (expireCheck && expiryTime && expiryTime <= now) {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         store.removeCookie(c.domain, c.path, c.key, () => {}) // result ignored
         return false
@@ -1784,6 +1862,7 @@ export class CookieJar {
   getCookieString(
     url: string,
     options?: GetCookiesOptions | Callback<string>,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _callback?: Callback<string>,
   ): unknown {
     const promiseCallback = createPromiseCallback<string>(arguments)
@@ -1839,6 +1918,7 @@ export class CookieJar {
   getSetCookieStrings(
     url: string,
     options?: GetCookiesOptions | Callback<string[]>,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _callback?: Callback<string[]>,
   ): unknown {
     const promiseCallback = createPromiseCallback<string[]>(arguments)
@@ -1866,7 +1946,10 @@ export class CookieJar {
     this.getCookies(url, options, next)
     return promiseCallback.promise
   }
-  getSetCookieStringsSync(url: string, options: any = {}): string[] {
+  getSetCookieStringsSync(
+    url: string,
+    options: GetCookiesOptions = {},
+  ): string[] {
     return (
       this.callSync<string[]>(
         this.getSetCookieStrings.bind(this, url, options),
@@ -1877,12 +1960,13 @@ export class CookieJar {
   serialize(callback: Callback<SerializedCookieJar>): void
   serialize(): Promise<SerializedCookieJar>
   serialize(callback?: Callback<SerializedCookieJar>): unknown
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   serialize(_callback?: Callback<SerializedCookieJar>): unknown {
     const promiseCallback =
       createPromiseCallback<SerializedCookieJar>(arguments)
     const cb = promiseCallback.callback
 
-    validators.validate(validators.isFunction(cb), cb)
+    validators.validate(typeof cb === 'function', cb)
     let type: string | null = this.store.constructor.name
     if (validators.isObject(type)) {
       type = null
@@ -1914,7 +1998,7 @@ export class CookieJar {
         typeof this.store.getAllCookies === 'function'
       )
     ) {
-      return cb(
+      return promiseCallback.reject(
         new Error(
           'store does not support getAllCookies and cannot be serialized',
         ),
@@ -1923,17 +2007,18 @@ export class CookieJar {
 
     this.store.getAllCookies((err, cookies) => {
       if (err) {
-        return cb(err)
+        promiseCallback.callback(err)
+        return
       }
 
       if (cookies == null) {
-        return cb(undefined, serialized)
+        promiseCallback.callback(undefined, serialized)
+        return
       }
 
       serialized.cookies = cookies.map((cookie) => {
         // convert to serialized 'raw' cookies
-        const serializedCookie =
-          cookie instanceof Cookie ? cookie.toJSON() : cookie
+        const serializedCookie = cookie.toJSON()
 
         // Remove the index so new ones get assigned during deserialization
         delete serializedCookie.creationIndex
@@ -1941,13 +2026,15 @@ export class CookieJar {
         return serializedCookie
       })
 
-      return cb(null, serialized)
+      promiseCallback.callback(undefined, serialized)
     })
 
     return promiseCallback.promise
   }
   serializeSync(): SerializedCookieJar | undefined {
-    return this.callSync<SerializedCookieJar>(this.serialize.bind(this))
+    return this.callSync<SerializedCookieJar>((callback) => {
+      this.serialize(callback)
+    })
   }
 
   toJSON() {
@@ -1955,40 +2042,56 @@ export class CookieJar {
   }
 
   // use the class method CookieJar.deserialize instead of calling this directly
-  _importCookies(serialized: { cookies: any }, cb: Callback<CookieJar>) {
-    let cookies = serialized.cookies
-    if (!cookies || !Array.isArray(cookies)) {
-      return cb(new Error('serialized jar has no cookies array'), undefined)
+  _importCookies(serialized: unknown, callback: Callback<CookieJar>) {
+    let cookies: unknown[] | undefined = undefined
+
+    if (
+      serialized &&
+      typeof serialized === 'object' &&
+      inOperator('cookies', serialized) &&
+      Array.isArray(serialized.cookies)
+    ) {
+      cookies = serialized.cookies
     }
+
+    if (!cookies) {
+      return callback(
+        new Error('serialized jar has no cookies array'),
+        undefined,
+      )
+    }
+
     cookies = cookies.slice() // do not modify the original
 
     const putNext = (err?: Error): void => {
       if (err) {
-        return cb(err, undefined)
+        return callback(err, undefined)
       }
 
-      if (!cookies.length) {
-        return cb(err, this)
-      }
+      if (Array.isArray(cookies)) {
+        if (!cookies.length) {
+          return callback(err, this)
+        }
 
-      let cookie
-      try {
-        cookie = fromJSON(cookies.shift())
-      } catch (e) {
-        return cb(e instanceof Error ? e : new Error(`${e}`), undefined)
-      }
+        let cookie
+        try {
+          cookie = fromJSON(cookies.shift())
+        } catch (e) {
+          return callback(e instanceof Error ? e : new Error(), undefined)
+        }
 
-      if (cookie === null) {
-        return putNext(undefined) // skip this cookie
-      }
+        if (cookie === null) {
+          return putNext(undefined) // skip this cookie
+        }
 
-      this.store.putCookie(cookie, putNext)
+        this.store.putCookie(cookie, putNext)
+      }
     }
 
     putNext()
   }
 
-  _importCookiesSync(serialized: any): void {
+  _importCookiesSync(serialized: unknown): void {
     this.callSync(this._importCookies.bind(this, serialized))
   }
 
@@ -1998,6 +2101,7 @@ export class CookieJar {
   clone(newStore: Store): Promise<CookieJar>
   clone(
     newStore?: Store | Callback<CookieJar>,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _callback?: Callback<CookieJar>,
   ): unknown {
     if (typeof newStore === 'function') {
@@ -2009,7 +2113,7 @@ export class CookieJar {
 
     this.serialize((err, serialized) => {
       if (err) {
-        return cb(err)
+        return promiseCallback.reject(err)
       }
       return CookieJar.deserialize(serialized ?? '', newStore, cb)
     })
@@ -2022,7 +2126,7 @@ export class CookieJar {
       newStore && typeof newStore !== 'function'
         ? this.clone.bind(this, newStore)
         : this.clone.bind(this)
-    return this.callSync(cloneFn)
+    return this.callSync((callback) => cloneFn(callback))
   }
 
   cloneSync(newStore?: Store): CookieJar | undefined {
@@ -2040,6 +2144,7 @@ export class CookieJar {
   removeAllCookies(callback: ErrorCallback): void
   removeAllCookies(): Promise<void>
   removeAllCookies(callback?: ErrorCallback): unknown
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   removeAllCookies(_callback?: ErrorCallback): unknown {
     const promiseCallback = createPromiseCallback<void>(arguments)
     const cb = promiseCallback.callback
@@ -2101,7 +2206,7 @@ export class CookieJar {
     return promiseCallback.promise
   }
   removeAllCookiesSync(): void {
-    return this.callSync<void>(this.removeAllCookies.bind(this))
+    return this.callSync<void>((callback) => this.removeAllCookies(callback))
   }
 
   static deserialize(
@@ -2126,6 +2231,7 @@ export class CookieJar {
   static deserialize(
     strOrObj: string | object,
     store?: Store | Callback<CookieJar>,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _callback?: Callback<CookieJar>,
   ): unknown {
     if (typeof store === 'function') {
@@ -2133,29 +2239,51 @@ export class CookieJar {
     }
 
     const promiseCallback = createPromiseCallback<CookieJar>(arguments)
-    const cb = promiseCallback.callback
 
-    let serialized
+    let serialized: unknown
     if (typeof strOrObj === 'string') {
-      serialized = jsonParse(strOrObj)
-      if (serialized instanceof Error) {
-        return cb(serialized, undefined)
+      try {
+        serialized = JSON.parse(strOrObj)
+      } catch (e) {
+        return promiseCallback.reject(e instanceof Error ? e : new Error())
       }
     } else {
       serialized = strOrObj
     }
 
+    const readSerializedProperty = (property: string): unknown | undefined => {
+      return serialized &&
+        typeof serialized === 'object' &&
+        inOperator(property, serialized)
+        ? serialized[property]
+        : undefined
+    }
+
+    const readSerializedBoolean = (property: string): boolean | undefined => {
+      const value = readSerializedProperty(property)
+      return typeof value === 'boolean' ? value : undefined
+    }
+
+    const readSerializedString = (property: string): string | undefined => {
+      const value = readSerializedProperty(property)
+      return typeof value === 'string' ? value : undefined
+    }
+
     const jar = new CookieJar(store, {
-      rejectPublicSuffixes: serialized.rejectPublicSuffixes,
-      looseMode: serialized.enableLooseMode,
-      allowSpecialUseDomain: serialized.allowSpecialUseDomain,
-      prefixSecurity: serialized.prefixSecurity,
+      rejectPublicSuffixes: readSerializedBoolean('rejectPublicSuffixes'),
+      looseMode: readSerializedBoolean('enableLooseMode'),
+      allowSpecialUseDomain: readSerializedBoolean('allowSpecialUseDomain'),
+      prefixSecurity: getNormalizedPrefixSecurity(
+        readSerializedString('prefixSecurity') ?? 'silent',
+      ),
     })
+
     jar._importCookies(serialized, (err) => {
       if (err) {
-        return cb(err, undefined)
+        promiseCallback.callback(err)
+        return
       }
-      return cb(undefined, jar)
+      promiseCallback.callback(undefined, jar)
     })
 
     return promiseCallback.promise
@@ -2165,11 +2293,34 @@ export class CookieJar {
     strOrObj: string | SerializedCookieJar,
     store?: Store,
   ): CookieJar {
-    const serialized =
+    const serialized: unknown =
       typeof strOrObj === 'string' ? JSON.parse(strOrObj) : strOrObj
+
+    const readSerializedProperty = (property: string): unknown | undefined => {
+      return serialized &&
+        typeof serialized === 'object' &&
+        inOperator(property, serialized)
+        ? serialized[property]
+        : undefined
+    }
+
+    const readSerializedBoolean = (property: string): boolean | undefined => {
+      const value = readSerializedProperty(property)
+      return typeof value === 'boolean' ? value : undefined
+    }
+
+    const readSerializedString = (property: string): string | undefined => {
+      const value = readSerializedProperty(property)
+      return typeof value === 'string' ? value : undefined
+    }
+
     const jar = new CookieJar(store, {
-      rejectPublicSuffixes: serialized.rejectPublicSuffixes,
-      looseMode: serialized.enableLooseMode,
+      rejectPublicSuffixes: readSerializedBoolean('rejectPublicSuffixes'),
+      looseMode: readSerializedBoolean('enableLooseMode'),
+      allowSpecialUseDomain: readSerializedBoolean('allowSpecialUseDomain'),
+      prefixSecurity: getNormalizedPrefixSecurity(
+        readSerializedString('prefixSecurity') ?? 'silent',
+      ),
     })
 
     // catch this mistake early:
@@ -2231,27 +2382,33 @@ type ParseCookieOptions = {
 
 interface PromiseCallback<T> {
   promise: Promise<T | undefined>
-  callback: (
-    error: Error | undefined | null,
-    result?: T,
-  ) => Promise<T | undefined>
+  callback: (error: Error | undefined | null, result?: T) => void
+  resolve: (value: T | undefined) => Promise<T | undefined>
+  reject: (error: Error | undefined | null) => Promise<T | undefined>
 }
 
 export interface SerializedCookieJar {
   version: string
   storeType: string | null
   rejectPublicSuffixes: boolean
-  [key: string]: any
+  [key: string]: unknown
   cookies: SerializedCookie[]
 }
 
 export interface SerializedCookie {
   key?: string
   value?: string
-  [key: string]: any
+  [key: string]: unknown
 }
 
 export type Callback<T> = (
   error: Error | undefined,
   result: T | undefined,
 ) => void
+
+function inOperator<K extends string, T extends object>(
+  k: K,
+  o: T,
+): o is T & Record<K, unknown> {
+  return k in o
+}

@@ -30,11 +30,6 @@ import { ErrorCallback, objectToString, safeToString } from './utils'
 
 /* Validation functions copied from check-types package - https://www.npmjs.com/package/check-types */
 
-/** Determines whether the argument is a function. */
-export function isFunction(data: unknown): data is Function {
-  return typeof data === 'function'
-}
-
 /** Determines whether the argument is a non-empty string. */
 export function isNonEmptyString(data: unknown): boolean {
   return isString(data) && data !== ''
@@ -42,7 +37,7 @@ export function isNonEmptyString(data: unknown): boolean {
 
 /** Determines whether the argument is a *valid* Date. */
 export function isDate(data: unknown): boolean {
-  return isInstanceStrict(data, Date) && isInteger(data.getTime())
+  return data instanceof Date && isInteger(data.getTime())
 }
 
 /** Determines whether the argument is the empty string. */
@@ -58,18 +53,6 @@ export function isString(data: unknown): boolean {
 /** Determines whether the string representation of the argument is "[object Object]". */
 export function isObject(data: unknown): boolean {
   return objectToString(data) === '[object Object]'
-}
-
-/** Determines whether the first argument is an instance of the second. */
-export function isInstanceStrict<T extends Function>(
-  data: unknown,
-  Constructor: T,
-): data is T['prototype'] {
-  try {
-    return data instanceof Constructor
-  } catch {
-    return false
-  }
 }
 
 /** Determines whether the argument is an integer. */
@@ -89,8 +72,8 @@ export function validate(
   message?: string,
 ): void {
   if (bool) return // Validation passes
-  const cb = isFunction(cbOrMessage) ? cbOrMessage : null
-  let options = isFunction(cbOrMessage) ? message : cbOrMessage
+  const cb = typeof cbOrMessage === 'function' ? cbOrMessage : null
+  let options = typeof cbOrMessage === 'function' ? message : cbOrMessage
   // The default message prior to v5 was '[object Object]' due to a bug, and the message is kept
   // for backwards compatibility.
   if (!isObject(options)) options = '[object Object]'
