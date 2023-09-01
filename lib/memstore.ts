@@ -29,15 +29,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 'use strict'
-import {
-  Callback,
-  Cookie,
-  createPromiseCallback,
-  pathMatch,
-  permuteDomain,
-} from './cookie'
+import type { Cookie } from './cookie/cookie'
+import { pathMatch } from './pathMatch'
+import { permuteDomain } from './permuteDomain'
 import { Store } from './store'
 import { getCustomInspectSymbol, getUtilInspect } from './utilHelper'
+import { type Callback, createPromiseCallback, inOperator } from './utils'
 
 export type MemoryCookieStoreIndex = {
   [domain: string]: {
@@ -443,11 +440,4 @@ function formatPath(pathName: string, pathValue: unknown) {
   }
 
   return String(pathValue)
-}
-
-function inOperator<K extends string, T extends object>(
-  k: K,
-  o: T,
-): o is T & Record<K, unknown> {
-  return k in o
 }

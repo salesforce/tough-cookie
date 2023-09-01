@@ -28,16 +28,12 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
-import {
-  Cookie,
-  CookieJar,
-  MemoryCookieStore,
-  SerializedCookie,
-  SerializedCookieJar,
-  Store,
-  version,
-} from '../cookie'
+import { Cookie } from '../cookie/cookie'
+import { CookieJar } from '../cookie/cookieJar'
+import type { SerializedCookie, SerializedCookieJar } from '../cookie/constants'
+import { MemoryCookieStore } from '../memstore'
+import { Store } from '../store'
+import { version } from '../version'
 
 jest.useFakeTimers()
 

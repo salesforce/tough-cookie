@@ -1,12 +1,8 @@
-import {
-  Callback,
-  Cookie,
-  CookieJar,
-  MemoryCookieStore,
-  Store,
-} from '../cookie'
-import spyOn = jest.spyOn
-import SpyInstance = jest.SpyInstance
+import type { Cookie } from '../cookie/cookie'
+import { CookieJar } from '../cookie/cookieJar'
+import { MemoryCookieStore } from '../memstore'
+import { Store } from '../store'
+import type { Callback } from '../utils'
 
 const url = 'http://example.com/index.html'
 
@@ -36,10 +32,7 @@ describe('store removeAllCookies API', () => {
 
       // replace remove cookie behavior to throw an error on the 4th invocation
       const _removeCookie = store.removeCookie.bind(store)
-      const spy: SpyInstance<ReturnType<typeof _removeCookie>> = spyOn(
-        store,
-        'removeCookie',
-      )
+      const spy = jest.spyOn(store, 'removeCookie')
       spy.mockImplementationOnce(
         (domain: string, path: string, key: string, callback: Callback<void>) =>
           _removeCookie.call(store, domain, path, key, callback),
@@ -79,10 +72,7 @@ describe('store removeAllCookies API', () => {
 
       // replace remove cookie behavior to throw an error on the 4th invocation
       const _removeCookie = store.removeCookie.bind(store)
-      const spy: SpyInstance<ReturnType<typeof _removeCookie>> = spyOn(
-        store,
-        'removeCookie',
-      )
+      const spy = jest.spyOn(store, 'removeCookie')
       spy.mockImplementation(
         (
           domain: string,

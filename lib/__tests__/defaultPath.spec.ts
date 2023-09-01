@@ -1,4 +1,4 @@
-import { defaultPath } from '../cookie'
+import { defaultPath } from '../cookie/defaultPath'
 
 // port of tests/domain_and_path_test.js (default path tests)
 describe('defaultPath', () => {

@@ -1,4 +1,4 @@
-import { domainMatch } from '../cookie'
+import { domainMatch } from '../cookie/domainMatch'
 
 // port of tests/domain_and_path_test.js (domain match tests)
 describe('domainMatch', () => {

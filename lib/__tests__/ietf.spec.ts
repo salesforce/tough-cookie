@@ -29,11 +29,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { CookieJar, parseDate } from '../cookie'
 import url from 'url'
 import parserData from './data/parser'
 import bsdExampleDates from './data/dates/bsd-examples'
 import exampleDates from './data/dates/examples'
+import { CookieJar } from '../cookie/cookieJar'
+import { parseDate } from '../cookie/parseDate'
 
 describe('IETF http state tests', () => {
   describe('Set/get cookie tests', () => {

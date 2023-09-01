@@ -1,4 +1,4 @@
-import { Cookie } from '../cookie'
+import { Cookie } from '../cookie/cookie'
 
 describe('Cookie.toString()', () => {
   const parse = (cookieString: string): Cookie => {

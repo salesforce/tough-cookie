@@ -29,14 +29,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import {
-  Cookie,
-  CookieJar,
-  MemoryCookieStore,
-  ParameterError,
-  SerializedCookieJar,
-  Store,
-} from '../cookie'
+import { Cookie } from '../cookie/cookie'
+import { CookieJar } from '../cookie/cookieJar'
+import type { SerializedCookieJar } from '../cookie/constants'
+import { MemoryCookieStore } from '../memstore'
+import { Store } from '../store'
+import { ParameterError } from '../validators'
 
 jest.useFakeTimers()
 

@@ -1,7 +1,8 @@
-import { getCustomInspectSymbol, getUtilInspect } from '../utilHelper'
 import util from 'util'
-import { Cookie, CookieJar, MemoryCookieStore } from '../cookie'
-import { inspectFallback } from '../memstore'
+import { Cookie } from '../cookie/cookie'
+import { CookieJar } from '../cookie/cookieJar'
+import { MemoryCookieStore, inspectFallback } from '../memstore'
+import { getCustomInspectSymbol, getUtilInspect } from '../utilHelper'
 
 jest.useFakeTimers()
 

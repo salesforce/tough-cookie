@@ -22,7 +22,9 @@
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
     "allowUnusedLabels": false,
-    "allowUnreachableCode": false
+    "allowUnreachableCode": false,
+    /* Compatibility */
+    "ignoreDeprecations": "5.0"
   },
   "exclude": [
     "jest.config.ts"

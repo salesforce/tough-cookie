@@ -1,4 +1,5 @@
-import { pathMatch, permutePath } from '../cookie'
+import { permutePath } from '../cookie/permutePath'
+import { pathMatch } from '../pathMatch'
 
 // port of tests/domain_and_path_test.js (permute path tests)
 describe('permutePath', () => {
