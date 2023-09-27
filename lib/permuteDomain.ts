@@ -28,34 +28,41 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-"use strict";
-/*
- * "A request-path path-matches a given cookie-path if at least one of the
- * following conditions holds:"
- */
-function pathMatch(reqPath, cookiePath) {
-  // "o  The cookie-path and the request-path are identical."
-  if (cookiePath === reqPath) {
-    return true;
+'use strict'
+import { getPublicSuffix } from './pubsuffix-psl'
+
+// Gives the permutation of all possible domainMatch()es of a given domain. The
+// array is in shortest-to-longest order.  Handy for indexing.
+
+export function permuteDomain(
+  domain: string,
+  allowSpecialUseDomain?: boolean,
+): string[] | null {
+  const pubSuf = getPublicSuffix(domain, {
+    allowSpecialUseDomain: allowSpecialUseDomain,
+  })
+
+  if (!pubSuf) {
+    return null
+  }
+  if (pubSuf == domain) {
+    return [domain]
   }
 
-  const idx = reqPath.indexOf(cookiePath);
-  if (idx === 0) {
-    // "o  The cookie-path is a prefix of the request-path, and the last
-    // character of the cookie-path is %x2F ("/")."
-    if (cookiePath.substr(-1) === "/") {
-      return true;
-    }
-
-    // " o  The cookie-path is a prefix of the request-path, and the first
-    // character of the request-path that is not included in the cookie- path
-    // is a %x2F ("/") character."
-    if (reqPath.substr(cookiePath.length, 1) === "/") {
-      return true;
-    }
+  // Nuke trailing dot
+  if (domain.slice(-1) == '.') {
+    domain = domain.slice(0, -1)
   }
 
-  return false;
+  const prefix = domain.slice(0, -(pubSuf.length + 1)) // ".example.com"
+  const parts = prefix.split('.').reverse()
+  let cur = pubSuf
+  const permutations = [cur]
+  while (parts.length) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const part = parts.shift()!
+    cur = `${part}.${cur}`
+    permutations.push(cur)
+  }
+  return permutations
 }
-
-exports.pathMatch = pathMatch;

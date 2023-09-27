@@ -1,21 +1,22 @@
 {
-  "extends": ["plugin:prettier/recommended"],
+  "root": true,
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "plugin:prettier/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "ecmaVersion": 6
+    "tsconfigRootDir": "./",
+    "project": ["tsconfig.json"]
   },
+  "reportUnusedDisableDirectives": true,
   "rules": {
-    "no-debugger": "error",
-    "no-var": "error",
-    "prefer-arrow-callback": "error",
-    "prefer-const": "error",
-    "prefer-template": "error",
-    "no-restricted-modules": ["error",
-      // we can't rely on node standard modules in "native" or "browser" environments
-      // - exceptions:
-      //     "punycode": since it's a package.json dependency
-      "assert", "buffer", "child_process", "cluster", "crypto", "dgram", "dns", "domain", "events", "freelist", "fs",
-      "http", "https", "module", "net", "os", "path", "querystring", "readline", "repl", "smalloc", "stream",
-      "string_decoder", "sys", "timers", "tls", "tracing", "tty", "url", "util", "vm", "zlib"
-    ]
+    // this is only needed because `createPromiseCallback` uses arguments to support the callback-style api
+    // we should strongly consider dropping the callback and sync api variants (in say v6) to reduce the
+    // surface area and complexity of tough-cookie
+    "prefer-rest-params": "warn",
+    "max-lines": ["warn", 500]
   }
 }

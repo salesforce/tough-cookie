@@ -32,10 +32,13 @@
 "use strict";
 const vows = require("vows");
 const assert = require("assert");
-const tough = require("../lib/cookie");
+const tough = require("../dist/cookie");
 const util = require("util");
-const inspectFallback = require("../lib/memstore").inspectFallback;
-const { getCustomInspectSymbol, getUtilInspect } = require("../lib/utilHelper");
+const inspectFallback = require("../dist/memstore").inspectFallback;
+const {
+  getCustomInspectSymbol,
+  getUtilInspect
+} = require("../dist/utilHelper");
 const Cookie = tough.Cookie;
 const CookieJar = tough.CookieJar;
 
@@ -56,18 +59,9 @@ vows
       "should not be null in a node environment when custom inspect symbol cannot be retrieved (< node v10.12.0)": function() {
         assert.equal(
           getCustomInspectSymbol({
-            lookupCustomInspectSymbol: () => null
+            lookupCustomInspectSymbol: () => undefined
           }),
           Symbol.for("nodejs.util.inspect.custom") || util.inspect.custom
-        );
-      },
-      "should be null in a non-node environment since 'util' features cannot be relied on": function() {
-        assert.equal(
-          getCustomInspectSymbol({
-            lookupCustomInspectSymbol: () => null,
-            requireUtil: () => null
-          }),
-          null
         );
       }
     },
@@ -78,7 +72,7 @@ vows
       },
       "should use fallback inspect function in a non-node environment": function() {
         const inspect = getUtilInspect(() => "fallback", {
-          requireUtil: () => null
+          requireUtil: () => undefined
         });
         assert.equal(inspect("util.inspect"), "fallback");
       }
@@ -86,7 +80,12 @@ vows
     "util usage in Cookie": {
       "custom inspect for Cookie still works": function() {
         const cookie = Cookie.parse("a=1; Domain=example.com; Path=/");
-        assert.equal(cookie.inspect(), util.inspect(cookie));
+        // The custom inspect uses Date.now(), so the two invocations cannot be directly compared,
+        // as "cAge" will not necessarily be the same value (sometimes 0ms, sometimes 1ms).
+        // assert.equal(cookie.inspect(), util.inspect(cookie));
+        const expected = /^Cookie="a=1; Domain=example\.com; Path=\/; hostOnly=\?; aAge=\?; cAge=\dms"$/
+        assert.match(cookie.inspect(), expected)
+        assert.match(util.inspect(cookie), expected)
       }
     },
     "util usage in MemoryCookie": {

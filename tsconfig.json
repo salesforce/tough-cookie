@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    /* Language and Environment */
+    "target": "ES2021",
+    "lib": ["ES2021"],
+    /* Modules */
+    "module": "Node16",
+    "rootDir": "./lib/",
+    /* Emit */
+    "declaration": true,
+    "outDir": "./dist/",
+    "importsNotUsedAsValues": "error",
+    /* Interop Constraints */
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    /* Type Checking */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "exactOptionalPropertyTypes": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    /* Compatibility */
+    "ignoreDeprecations": "5.0"
+  },
+  "exclude": [
+    "jest.config.ts"
+  ]
+}
