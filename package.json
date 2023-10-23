@@ -100,7 +100,7 @@
   },
   "devDependencies": {
     "@types/jest": "^29",
-    "@types/node": "^16.18.23",
+    "@types/node": "^20.8.7",
     "@types/psl": "^1",
     "@types/punycode": "^2",
     "@types/url-parse": "^1.4.8",
