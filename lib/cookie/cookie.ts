@@ -29,6 +29,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+// This file was too big before we added max-lines, and it's ongoing work to reduce its size.
+/* eslint max-lines: [1, 750] */
+
 import * as pubsuffix from '../pubsuffix-psl'
 import * as validators from '../validators'
 import { getCustomInspectSymbol } from '../utilHelper'
@@ -540,7 +543,11 @@ export class Cookie {
     ) {
       return false
     }
-    if (this.maxAge != null && this.maxAge <= 0) {
+    if (
+      this.maxAge != null &&
+      this.maxAge !== 'Infinity' &&
+      (this.maxAge === '-Infinity' || this.maxAge <= 0)
+    ) {
       return false // "Max-Age=" non-zero-digit *DIGIT
     }
     if (this.path != null && !PATH_VALUE.test(this.path)) {

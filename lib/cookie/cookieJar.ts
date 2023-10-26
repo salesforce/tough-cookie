@@ -24,6 +24,9 @@ import { domainMatch } from './domainMatch'
 import { cookieCompare } from './cookieCompare'
 import { version } from '../version'
 
+// This file was too big before we added max-lines, and it's ongoing work to reduce its size.
+/* eslint max-lines: [1, 1200] */
+
 const defaultSetCookieOptions: SetCookieOptions = {
   loose: false,
   sameSiteContext: undefined,
