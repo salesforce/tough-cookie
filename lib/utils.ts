@@ -1,8 +1,11 @@
-/** A callback function that accepts an error or a result. */
-export type Callback<T> = (error: Error | null, result: T | undefined) => void
+/** A callback function that expects an error to be passed. */
+export type ErrorCallback<Err = Error> = (error: Err, result?: never) => void
 
-/** Signature for a callback function that expects an error to be passed. */
-export type ErrorCallback = (error: Error, result?: never) => void
+/** A callback function that expects a successful result. */
+type SuccessCallback<T> = (error: null, result: T) => void
+
+/** A callback function that accepts an error or a result. */
+export type Callback<T, Err = Error> = SuccessCallback<T> & ErrorCallback<Err>
 
 /** Safely converts any value to string, using the value's own `toString` when available. */
 export const safeToString = (val: unknown) => {
