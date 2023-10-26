@@ -176,7 +176,7 @@ export class CookieJar {
         'CookieJar store is not synchronous; use async API instead.',
       )
     }
-    let syncErr: Error | undefined
+    let syncErr: Error | null = null
     let syncResult: T | undefined = undefined
     fn.call(this, (error, result) => {
       syncErr = error
@@ -406,7 +406,7 @@ export class CookieJar {
         return this.putCookie(newCookie).then(
           () => {
             if (cb) {
-              cb(undefined, undefined)
+              cb(null, undefined)
             }
           },
           (error: Error) => {
@@ -419,7 +419,7 @@ export class CookieJar {
     }
 
     function withCookie(
-      err: Error | undefined,
+      err: Error | null,
       oldCookie: Cookie | undefined | null,
     ): void {
       if (err) {
@@ -427,7 +427,7 @@ export class CookieJar {
         return
       }
 
-      const next = function (err: Error | undefined): void {
+      const next = function (err: Error | null): void {
         if (err || typeof cookie === 'string') {
           cb(err)
         } else {
@@ -616,7 +616,7 @@ export class CookieJar {
         }
 
         if (cookies == null) {
-          cb(undefined, [])
+          cb(null, [])
           return
         }
 
@@ -672,14 +672,14 @@ export class CookieJar {
     }
 
     const next: Callback<Cookie[]> = function (
-      err: Error | undefined,
+      err: Error | null,
       cookies: Cookie[] | undefined,
     ) {
       if (err || cookies === undefined) {
         promiseCallback.callback(err)
       } else {
         promiseCallback.callback(
-          undefined,
+          null,
           cookies
             .sort(cookieCompare)
             .map((c) => c.cookieString())
@@ -728,7 +728,7 @@ export class CookieJar {
     }
 
     const next: Callback<Cookie[]> = function (
-      err: Error | undefined,
+      err: Error | null,
       cookies: Cookie[] | undefined,
     ) {
       if (err || cookies === undefined) {
@@ -812,7 +812,7 @@ export class CookieJar {
       }
 
       if (cookies == null) {
-        promiseCallback.callback(undefined, serialized)
+        promiseCallback.callback(null, serialized)
         return
       }
 
@@ -826,7 +826,7 @@ export class CookieJar {
         return serializedCookie
       })
 
-      promiseCallback.callback(undefined, serialized)
+      promiseCallback.callback(null, serialized)
     })
 
     return promiseCallback.promise
@@ -863,7 +863,7 @@ export class CookieJar {
 
     cookies = cookies.slice() // do not modify the original
 
-    const putNext = (err?: Error): void => {
+    const putNext = (err: Error | null): void => {
       if (err) {
         return callback(err, undefined)
       }
@@ -881,14 +881,14 @@ export class CookieJar {
         }
 
         if (cookie === null) {
-          return putNext(undefined) // skip this cookie
+          return putNext(null) // skip this cookie
         }
 
         this.store.putCookie(cookie, putNext)
       }
     }
 
-    putNext()
+    putNext(null)
   }
 
   _importCookiesSync(serialized: unknown): void {
@@ -980,7 +980,7 @@ export class CookieJar {
       let completedCount = 0
       const removeErrors: Error[] = []
 
-      function removeCookieCb(removeErr: Error | undefined) {
+      function removeCookieCb(removeErr: Error | null) {
         if (removeErr) {
           removeErrors.push(removeErr)
         }
@@ -988,7 +988,7 @@ export class CookieJar {
         completedCount++
 
         if (completedCount === cookies?.length) {
-          cb(removeErrors.length ? removeErrors[0] : null)
+          cb(removeErrors[0] ?? null)
           return
         }
       }
@@ -1083,7 +1083,7 @@ export class CookieJar {
         promiseCallback.callback(err)
         return
       }
-      promiseCallback.callback(undefined, jar)
+      promiseCallback.callback(null, jar)
     })
 
     return promiseCallback.promise

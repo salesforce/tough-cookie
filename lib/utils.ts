@@ -1,8 +1,5 @@
 /** A callback function that accepts an error or a result. */
-export type Callback<T> = (
-  error: Error | undefined,
-  result: T | undefined,
-) => void
+export type Callback<T> = (error: Error | null, result: T | undefined) => void
 
 /** Signature for a callback function that expects an error to be passed. */
 export type ErrorCallback = (error: Error, result?: never) => void
@@ -25,9 +22,9 @@ export const safeToString = (val: unknown) => {
 /** Utility object for promise/callback interop. */
 export interface PromiseCallback<T> {
   promise: Promise<T | undefined>
-  callback: (error: Error | undefined | null, result?: T) => void
+  callback: (error: Error | null, result?: T) => void
   resolve: (value: T | undefined) => Promise<T | undefined>
-  reject: (error: Error | undefined | null) => Promise<T | undefined>
+  reject: (error: Error | null) => Promise<T | undefined>
 }
 
 /** Converts a callback into a utility object where either a callback or a promise can be used. */

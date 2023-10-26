@@ -154,7 +154,7 @@ class StoreWithoutRemoveAll extends Store {
     if (!callback) {
       throw new Error('This should not be undefined')
     }
-    return callback(undefined, undefined)
+    return callback(null, undefined)
   }
 
   override findCookies(
@@ -177,7 +177,7 @@ class StoreWithoutRemoveAll extends Store {
     if (!callback) {
       throw new Error('This should not be undefined')
     }
-    return callback(undefined, [])
+    return callback(null, [])
   }
 
   override putCookie(cookie: Cookie): Promise<void>
@@ -188,7 +188,7 @@ class StoreWithoutRemoveAll extends Store {
     if (!callback) {
       throw new Error('This should not be undefined')
     }
-    return callback(undefined)
+    return callback(null)
   }
 
   override getAllCookies(): Promise<Cookie[]>
@@ -198,7 +198,7 @@ class StoreWithoutRemoveAll extends Store {
     if (!callback) {
       throw new Error('This should not be undefined')
     }
-    return callback(undefined, this.cookies.slice())
+    return callback(null, this.cookies.slice())
   }
 
   override removeCookie(
@@ -222,7 +222,7 @@ class StoreWithoutRemoveAll extends Store {
     if (!callback) {
       throw new Error('This should not be undefined')
     }
-    return callback(undefined)
+    return callback(null)
   }
 }
 
