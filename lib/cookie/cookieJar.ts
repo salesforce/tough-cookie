@@ -8,7 +8,6 @@ import { pathMatch } from '../pathMatch'
 import { Cookie } from './cookie'
 import {
   Callback,
-  ErrorCallback,
   createPromiseCallback,
   inOperator,
   safeToString,
@@ -189,36 +188,38 @@ export class CookieJar {
     return syncResult
   }
 
+  // TODO: We *could* add overloads based on the value of `options.ignoreError`, such that we only
+  // return `undefined` when `ignoreError` is true. But would that be excessive overloading?
   setCookie(
     cookie: string | Cookie,
     url: string,
-    callback: Callback<Cookie>,
+    callback: Callback<Cookie | undefined>,
   ): void
   setCookie(
     cookie: string | Cookie,
     url: string,
     options: SetCookieOptions,
-    callback: Callback<Cookie>,
+    callback: Callback<Cookie | undefined>,
   ): void
-  setCookie(cookie: string | Cookie, url: string): Promise<Cookie>
+  setCookie(cookie: string | Cookie, url: string): Promise<Cookie | undefined>
   setCookie(
     cookie: string | Cookie,
     url: string,
     options: SetCookieOptions,
-  ): Promise<Cookie>
+  ): Promise<Cookie | undefined>
   setCookie(
     cookie: string | Cookie,
     url: string,
-    options: SetCookieOptions | Callback<Cookie>,
-    callback?: Callback<Cookie>,
+    options: SetCookieOptions | Callback<Cookie | undefined>,
+    callback?: Callback<Cookie | undefined>,
   ): unknown
   setCookie(
     cookie: string | Cookie,
     url: string,
     options?: SetCookieOptions | Callback<Cookie>,
-    callback?: Callback<Cookie>,
+    callback?: Callback<Cookie | undefined>,
   ): unknown {
-    const promiseCallback = createPromiseCallback<Cookie | undefined>(arguments)
+    const promiseCallback = createPromiseCallback(callback)
     const cb = promiseCallback.callback
 
     validators.validate(
@@ -494,7 +495,7 @@ export class CookieJar {
       url,
       options as SetCookieOptions,
     )
-    return this.callSync<Cookie>(setCookieFn)
+    return this.callSync<Cookie | undefined>(setCookieFn)
   }
 
   // RFC6365 S5.4
@@ -517,10 +518,9 @@ export class CookieJar {
   getCookies(
     url: string,
     options?: GetCookiesOptions | Callback<Cookie[]>,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _callback?: Callback<Cookie[]>,
+    callback?: Callback<Cookie[]>,
   ): unknown {
-    const promiseCallback = createPromiseCallback<Cookie[]>(arguments)
+    const promiseCallback = createPromiseCallback(callback)
     const cb = promiseCallback.callback
 
     validators.validate(validators.isNonEmptyString(url), cb, url)
@@ -663,23 +663,22 @@ export class CookieJar {
   getCookieString(
     url: string,
     options: GetCookiesOptions,
-    callback: Callback<string>,
+    callback: Callback<string | undefined>,
   ): void
-  getCookieString(url: string, callback: Callback<string>): void
+  getCookieString(url: string, callback: Callback<string | undefined>): void
   getCookieString(url: string): Promise<string>
   getCookieString(url: string, options: GetCookiesOptions): Promise<string>
   getCookieString(
     url: string,
-    options: GetCookiesOptions | Callback<string>,
-    callback?: Callback<string>,
+    options: GetCookiesOptions | Callback<string | undefined>,
+    callback?: Callback<string | undefined>,
   ): unknown
   getCookieString(
     url: string,
-    options?: GetCookiesOptions | Callback<string>,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _callback?: Callback<string>,
+    options?: GetCookiesOptions | Callback<string | undefined>,
+    callback?: Callback<string | undefined>,
   ): unknown {
-    const promiseCallback = createPromiseCallback<string | undefined>(arguments)
+    const promiseCallback = createPromiseCallback(callback)
 
     if (typeof options === 'function') {
       options = undefined
@@ -709,36 +708,38 @@ export class CookieJar {
   }
   getCookieStringSync(url: string, options?: GetCookiesOptions): string {
     return (
-      this.callSync<string>(
+      this.callSync<string | undefined>(
         this.getCookieString.bind(this, url, options as GetCookiesOptions),
       ) ?? ''
     )
   }
 
-  getSetCookieStrings(url: string, callback: Callback<string[]>): void
   getSetCookieStrings(
     url: string,
-    options: GetCookiesOptions,
-    callback: Callback<string[]>,
+    callback: Callback<string[] | undefined>,
   ): void
-  getSetCookieStrings(url: string): Promise<string[]>
   getSetCookieStrings(
     url: string,
     options: GetCookiesOptions,
-  ): Promise<string[]>
+    callback: Callback<string[] | undefined>,
+  ): void
+  getSetCookieStrings(url: string): Promise<string[] | undefined>
   getSetCookieStrings(
     url: string,
     options: GetCookiesOptions,
-    callback?: Callback<string[]>,
+  ): Promise<string[] | undefined>
+  getSetCookieStrings(
+    url: string,
+    options: GetCookiesOptions,
+    callback?: Callback<string[] | undefined>,
   ): unknown
   getSetCookieStrings(
     url: string,
-    options?: GetCookiesOptions | Callback<string[]>,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _callback?: Callback<string[]>,
+    options?: GetCookiesOptions | Callback<string[] | undefined>,
+    callback?: Callback<string[] | undefined>,
   ): unknown {
     const promiseCallback = createPromiseCallback<string[] | undefined>(
-      arguments,
+      callback,
     )
 
     if (typeof options === 'function') {
@@ -771,7 +772,7 @@ export class CookieJar {
     options: GetCookiesOptions = {},
   ): string[] {
     return (
-      this.callSync<string[]>(
+      this.callSync<string[] | undefined>(
         this.getSetCookieStrings.bind(this, url, options),
       ) ?? []
     )
@@ -780,10 +781,8 @@ export class CookieJar {
   serialize(callback: Callback<SerializedCookieJar>): void
   serialize(): Promise<SerializedCookieJar>
   serialize(callback?: Callback<SerializedCookieJar>): unknown
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  serialize(_callback?: Callback<SerializedCookieJar>): unknown {
-    const promiseCallback =
-      createPromiseCallback<SerializedCookieJar>(arguments)
+  serialize(callback?: Callback<SerializedCookieJar>): unknown {
+    const promiseCallback = createPromiseCallback<SerializedCookieJar>(callback)
     const cb = promiseCallback.callback
 
     validators.validate(typeof cb === 'function', cb)
@@ -921,14 +920,13 @@ export class CookieJar {
   clone(newStore: Store): Promise<CookieJar>
   clone(
     newStore?: Store | Callback<CookieJar>,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _callback?: Callback<CookieJar>,
+    callback?: Callback<CookieJar>,
   ): unknown {
     if (typeof newStore === 'function') {
       newStore = undefined
     }
 
-    const promiseCallback = createPromiseCallback<CookieJar>(arguments)
+    const promiseCallback = createPromiseCallback<CookieJar>(callback)
     const cb = promiseCallback.callback
 
     this.serialize((err, serialized) => {
@@ -961,12 +959,11 @@ export class CookieJar {
     return this._cloneSync(newStore)
   }
 
-  removeAllCookies(callback: ErrorCallback): void
+  removeAllCookies(callback: Callback<void>): void
   removeAllCookies(): Promise<void>
-  removeAllCookies(callback?: ErrorCallback): unknown
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  removeAllCookies(_callback?: ErrorCallback): unknown {
-    const promiseCallback = createPromiseCallback<void>(arguments)
+  removeAllCookies(callback?: Callback<void>): unknown
+  removeAllCookies(callback?: Callback<void>): unknown {
+    const promiseCallback = createPromiseCallback<void>(callback)
     const cb = promiseCallback.callback
 
     const store = this.store
@@ -978,7 +975,7 @@ export class CookieJar {
       typeof store.removeAllCookies === 'function' &&
       store.removeAllCookies !== Store.prototype.removeAllCookies
     ) {
-      store.removeAllCookies(cb)
+      void store.removeAllCookies(cb)
       return promiseCallback.promise
     }
 
@@ -1052,14 +1049,13 @@ export class CookieJar {
   static deserialize(
     strOrObj: string | object,
     store?: Store | Callback<CookieJar>,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _callback?: Callback<CookieJar>,
+    callback?: Callback<CookieJar>,
   ): unknown {
     if (typeof store === 'function') {
       store = undefined
     }
 
-    const promiseCallback = createPromiseCallback<CookieJar>(arguments)
+    const promiseCallback = createPromiseCallback<CookieJar>(callback)
 
     let serialized: unknown
     if (typeof strOrObj === 'string') {

@@ -27,7 +27,7 @@ export interface PromiseCallback<T> {
 }
 
 /** Converts a callback into a utility object where either a callback or a promise can be used. */
-export function createPromiseCallback<T>(args: IArguments): PromiseCallback<T> {
+export function createPromiseCallback<T>(cb?: Callback<T>): PromiseCallback<T> {
   let callback: Callback<T>
   let resolve: (result: T) => void
   let reject: (error: Error) => void
@@ -37,11 +37,14 @@ export function createPromiseCallback<T>(args: IArguments): PromiseCallback<T> {
     reject = _reject
   })
 
-  const cb: unknown = args[args.length - 1]
   if (typeof cb === 'function') {
     callback = (err, result) => {
       try {
-        cb(err, result)
+        if (err) cb(err)
+        // If `err` is null, we know `result` must be `T`
+        // The assertion isn't *strictly* correct, as `T` could be nullish, but, ehh, good enough...
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        else cb(null, result!)
       } catch (e) {
         reject(e instanceof Error ? e : new Error())
       }
