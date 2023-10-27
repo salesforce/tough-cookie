@@ -218,7 +218,7 @@ export class CookieJar {
     options?: SetCookieOptions | Callback<Cookie>,
     callback?: Callback<Cookie>,
   ): unknown {
-    const promiseCallback = createPromiseCallback<Cookie>(arguments)
+    const promiseCallback = createPromiseCallback<Cookie | undefined>(arguments)
     const cb = promiseCallback.callback
 
     validators.validate(
@@ -245,7 +245,7 @@ export class CookieJar {
       cookie instanceof String &&
       cookie.length == 0
     ) {
-      return promiseCallback.reject(null)
+      return promiseCallback.resolve(undefined)
     }
 
     const host = canonicalDomain(context.hostname)
@@ -264,7 +264,9 @@ export class CookieJar {
       const parsedCookie = Cookie.parse(cookie.toString(), { loose: loose })
       if (!parsedCookie) {
         err = new Error('Cookie failed to parse')
-        return promiseCallback.reject(options?.ignoreError ? null : err)
+        return options?.ignoreError
+          ? promiseCallback.resolve(undefined)
+          : promiseCallback.reject(err)
       }
       cookie = parsedCookie
     } else if (!(cookie instanceof Cookie)) {
@@ -273,7 +275,10 @@ export class CookieJar {
       err = new Error(
         'First argument to setCookie must be a Cookie object or string',
       )
-      return promiseCallback.reject(options?.ignoreError ? null : err)
+
+      return options?.ignoreError
+        ? promiseCallback.resolve(undefined)
+        : promiseCallback.reject(err)
     }
 
     // S5.3 step 2
@@ -297,18 +302,20 @@ export class CookieJar {
         if (suffix == null && !IP_V6_REGEX_OBJECT.test(cookie.domain)) {
           // e.g. "com"
           err = new Error('Cookie has domain set to a public suffix')
-          return promiseCallback.reject(options?.ignoreError ? null : err)
+
+          return options?.ignoreError
+            ? promiseCallback.resolve(undefined)
+            : promiseCallback.reject(err)
         }
-      } catch (err) {
-        if (options?.ignoreError) {
-          return promiseCallback.reject(null)
-        } else {
-          if (err instanceof Error) {
-            return promiseCallback.reject(err)
-          } else {
-            return promiseCallback.reject(null)
-          }
-        }
+        // Using `any` here rather than `unknown` to avoid a type assertion, at the cost of needing
+        // to disable eslint directives. It's easier to have this one spot of technically incorrect
+        // types, rather than having to deal with _all_ callback errors being `unknown`.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (err: any) {
+        return options?.ignoreError
+          ? promiseCallback.resolve(undefined)
+          : // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+            promiseCallback.reject(err)
       }
     }
 
@@ -322,7 +329,9 @@ export class CookieJar {
             cookie.cdomain() ?? 'null'
           } Request:${host ?? 'null'}`,
         )
-        return promiseCallback.reject(options?.ignoreError ? null : err)
+        return options?.ignoreError
+          ? promiseCallback.resolve(undefined)
+          : promiseCallback.reject(err)
       }
 
       if (cookie.hostOnly == null) {
@@ -348,7 +357,9 @@ export class CookieJar {
     // S5.3 step 10
     if (options?.http === false && cookie.httpOnly) {
       err = new Error("Cookie is HttpOnly and this isn't an HTTP API")
-      return promiseCallback.reject(options?.ignoreError ? null : err)
+      return options?.ignoreError
+        ? promiseCallback.resolve(undefined)
+        : promiseCallback.reject(err)
     }
 
     // 6252bis-02 S5.4 Step 13 & 14:
@@ -363,7 +374,9 @@ export class CookieJar {
       //  abort these steps and ignore the newly created cookie entirely."
       if (sameSiteContext === 'none') {
         err = new Error('Cookie is SameSite but this is a cross-origin request')
-        return promiseCallback.reject(options?.ignoreError ? null : err)
+        return options?.ignoreError
+          ? promiseCallback.resolve(undefined)
+          : promiseCallback.reject(err)
       }
     }
 
@@ -387,11 +400,9 @@ export class CookieJar {
           "Cookie has __Host prefix but either Secure or HostOnly attribute is not set or Path is not '/'"
       }
       if (errorFound) {
-        return promiseCallback.reject(
-          options?.ignoreError || ignoreErrorForPrefixSecurity
-            ? null
-            : new Error(errorMsg),
-        )
+        return options?.ignoreError || ignoreErrorForPrefixSecurity
+          ? promiseCallback.resolve(undefined)
+          : promiseCallback.reject(new Error(errorMsg))
       }
     }
 
@@ -428,8 +439,10 @@ export class CookieJar {
       }
 
       const next = function (err: Error | null): void {
-        if (err || typeof cookie === 'string') {
+        if (err) {
           cb(err)
+        } else if (typeof cookie === 'string') {
+          cb(null, undefined)
         } else {
           cb(null, cookie)
         }
@@ -446,7 +459,8 @@ export class CookieJar {
         ) {
           // step 11.2
           err = new Error("old Cookie is HttpOnly and this isn't an HTTP API")
-          cb(options.ignoreError ? null : err)
+          if (options.ignoreError) cb(null, undefined)
+          else cb(err)
           return
         }
         if (cookie instanceof Cookie) {
@@ -665,7 +679,7 @@ export class CookieJar {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _callback?: Callback<string>,
   ): unknown {
-    const promiseCallback = createPromiseCallback<string>(arguments)
+    const promiseCallback = createPromiseCallback<string | undefined>(arguments)
 
     if (typeof options === 'function') {
       options = undefined
@@ -675,8 +689,10 @@ export class CookieJar {
       err: Error | null,
       cookies: Cookie[] | undefined,
     ) {
-      if (err || cookies === undefined) {
+      if (err) {
         promiseCallback.callback(err)
+      } else if (cookies === undefined) {
+        promiseCallback.callback(null, undefined)
       } else {
         promiseCallback.callback(
           null,
@@ -721,7 +737,9 @@ export class CookieJar {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _callback?: Callback<string[]>,
   ): unknown {
-    const promiseCallback = createPromiseCallback<string[]>(arguments)
+    const promiseCallback = createPromiseCallback<string[] | undefined>(
+      arguments,
+    )
 
     if (typeof options === 'function') {
       options = undefined
@@ -731,8 +749,10 @@ export class CookieJar {
       err: Error | null,
       cookies: Cookie[] | undefined,
     ) {
-      if (err || cookies === undefined) {
+      if (err) {
         promiseCallback.callback(err)
+      } else if (cookies === undefined) {
+        promiseCallback.callback(null, undefined)
       } else {
         promiseCallback.callback(
           null,
@@ -988,7 +1008,8 @@ export class CookieJar {
         completedCount++
 
         if (completedCount === cookies?.length) {
-          cb(removeErrors[0] ?? null)
+          if (removeErrors[0]) cb(removeErrors[0])
+          else cb(null)
           return
         }
       }
