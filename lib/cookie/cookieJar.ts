@@ -216,9 +216,13 @@ export class CookieJar {
   setCookie(
     cookie: string | Cookie,
     url: string,
-    options?: SetCookieOptions | Callback<Cookie>,
+    options?: SetCookieOptions | Callback<Cookie | undefined>,
     callback?: Callback<Cookie | undefined>,
   ): unknown {
+    if (typeof options === 'function') {
+      callback = options
+      options = undefined
+    }
     const promiseCallback = createPromiseCallback(callback)
     const cb = promiseCallback.callback
 
@@ -520,16 +524,19 @@ export class CookieJar {
     options?: GetCookiesOptions | Callback<Cookie[]>,
     callback?: Callback<Cookie[]>,
   ): unknown {
+    if (typeof options === 'function') {
+      callback = options
+      options = defaultGetCookieOptions
+    } else if (options === undefined) {
+      options = defaultGetCookieOptions
+    }
     const promiseCallback = createPromiseCallback(callback)
     const cb = promiseCallback.callback
 
     validators.validate(validators.isNonEmptyString(url), cb, url)
-    const context = getCookieContext(url)
-    if (typeof options === 'function' || options === undefined) {
-      options = defaultGetCookieOptions
-    }
     validators.validate(validators.isObject(options), cb, safeToString(options))
     validators.validate(typeof cb === 'function', cb)
+    const context = getCookieContext(url)
 
     const host = canonicalDomain(context.hostname)
     const path = context.pathname || '/'
@@ -678,12 +685,11 @@ export class CookieJar {
     options?: GetCookiesOptions | Callback<string | undefined>,
     callback?: Callback<string | undefined>,
   ): unknown {
-    const promiseCallback = createPromiseCallback(callback)
-
     if (typeof options === 'function') {
+      callback = options
       options = undefined
     }
-
+    const promiseCallback = createPromiseCallback(callback)
     const next: Callback<Cookie[]> = function (
       err: Error | null,
       cookies: Cookie[] | undefined,
@@ -691,7 +697,7 @@ export class CookieJar {
       if (err) {
         promiseCallback.callback(err)
       } else if (cookies === undefined) {
-        promiseCallback.callback(null, undefined)
+        promiseCallback.callback(null, cookies)
       } else {
         promiseCallback.callback(
           null,
@@ -738,13 +744,13 @@ export class CookieJar {
     options?: GetCookiesOptions | Callback<string[] | undefined>,
     callback?: Callback<string[] | undefined>,
   ): unknown {
+    if (typeof options === 'function') {
+      callback = options
+      options = undefined
+    }
     const promiseCallback = createPromiseCallback<string[] | undefined>(
       callback,
     )
-
-    if (typeof options === 'function') {
-      options = undefined
-    }
 
     const next: Callback<Cookie[]> = function (
       err: Error | null,
@@ -780,7 +786,6 @@ export class CookieJar {
 
   serialize(callback: Callback<SerializedCookieJar>): void
   serialize(): Promise<SerializedCookieJar>
-  serialize(callback?: Callback<SerializedCookieJar>): unknown
   serialize(callback?: Callback<SerializedCookieJar>): unknown {
     const promiseCallback = createPromiseCallback<SerializedCookieJar>(callback)
     const cb = promiseCallback.callback
@@ -923,6 +928,7 @@ export class CookieJar {
     callback?: Callback<CookieJar>,
   ): unknown {
     if (typeof newStore === 'function') {
+      callback = newStore
       newStore = undefined
     }
 
@@ -961,7 +967,6 @@ export class CookieJar {
 
   removeAllCookies(callback: Callback<void>): void
   removeAllCookies(): Promise<void>
-  removeAllCookies(callback?: Callback<void>): unknown
   removeAllCookies(callback?: Callback<void>): unknown {
     const promiseCallback = createPromiseCallback<void>(callback)
     const cb = promiseCallback.callback
@@ -1052,6 +1057,7 @@ export class CookieJar {
     callback?: Callback<CookieJar>,
   ): unknown {
     if (typeof store === 'function') {
+      callback = store
       store = undefined
     }
 

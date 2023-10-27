@@ -128,6 +128,9 @@ export class MemoryCookieStore extends Store {
     callback?: Callback<Cookie[]>,
   ): unknown {
     if (typeof allowSpecialUseDomain === 'function') {
+      callback = allowSpecialUseDomain
+      // TODO: It's weird that `allowSpecialUseDomain` defaults to false with no callback,
+      // but true with a callback. This is legacy behavior from v4.
       allowSpecialUseDomain = true
     }
 
