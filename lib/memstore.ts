@@ -72,42 +72,25 @@ export class MemoryCookieStore extends Store {
     domain: string | null,
     path: string | null,
     key: string | undefined,
-  ): Promise<Cookie | null | undefined>
+  ): Promise<Cookie | undefined>
   override findCookie(
     domain: string | null,
     path: string | null,
     key: string | undefined,
-    callback: Callback<Cookie | null | undefined>,
+    callback: Callback<Cookie | undefined>,
   ): void
   override findCookie(
     domain: string | null,
     path: string | null,
     key: string | undefined,
-    callback?: Callback<Cookie | null | undefined>,
+    callback?: Callback<Cookie | undefined>,
   ): unknown {
     const promiseCallback = createPromiseCallback(callback)
-    const cb = promiseCallback.callback
-
-    if (domain == null || path == null) {
+    if (domain == null || path == null || key == null) {
       return promiseCallback.resolve(undefined)
     }
-
-    const domainEntry = this.idx[domain]
-    if (!domainEntry) {
-      return promiseCallback.resolve(undefined)
-    }
-
-    const pathEntry = domainEntry[path]
-    if (!pathEntry) {
-      return promiseCallback.resolve(undefined)
-    }
-
-    if (key == null) {
-      return promiseCallback.resolve(null)
-    }
-
-    cb(null, pathEntry[key] || null)
-    return promiseCallback.promise
+    const result = this.idx?.[domain]?.[path]?.[key]
+    return promiseCallback.resolve(result)
   }
 
   override findCookies(
