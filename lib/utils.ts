@@ -4,6 +4,10 @@ export interface Callback<T> {
   (error: null, result: T): void
 }
 
+/** Wrapped `Object.prototype.toString`, so that you don't need to remember to use `.call()`. */
+export const objectToString = (obj: unknown) =>
+  Object.prototype.toString.call(obj)
+
 /** Safely converts any value to string, using the value's own `toString` when available. */
 export const safeToString = (val: unknown) => {
   // Ideally, we'd just use String() for everything, but it breaks if `toString` is missing (mostly
@@ -11,7 +15,7 @@ export const safeToString = (val: unknown) => {
   if (val === undefined || val === null || typeof val.toString === 'function') {
     return String(val)
   } else {
-    return Object.prototype.toString.call(val)
+    return objectToString(val)
   }
 }
 

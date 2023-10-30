@@ -26,7 +26,7 @@ SOFTWARE.
 
 ************************************************************************************ */
 
-import { Callback, safeToString } from './utils'
+import { Callback, objectToString, safeToString } from './utils'
 
 /* Validation functions copied from check-types package - https://www.npmjs.com/package/check-types */
 
@@ -52,7 +52,7 @@ export function isString(data: unknown): boolean {
 
 /** Determines whether the string representation of the argument is "[object Object]". */
 export function isObject(data: unknown): boolean {
-  return safeToString(data) === '[object Object]'
+  return objectToString(data) === '[object Object]'
 }
 
 /** Determines whether the argument is an integer. */
