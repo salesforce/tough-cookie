@@ -407,7 +407,7 @@ describe('Cookie.parse', () => {
     const value = input === undefined ? undefined : input.valueOf()
     const cookie = Cookie.parse(value as string, parseOptions)
     if (output !== undefined) {
-      expect(cookie).toEqual(expect.objectContaining(output))
+      expect(cookie).toEqual(output && expect.objectContaining(output))
     } else {
       expect(cookie).toBe(output)
     }
