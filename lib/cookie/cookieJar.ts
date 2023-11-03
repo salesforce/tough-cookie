@@ -618,7 +618,6 @@ export class CookieJar {
       // non-RFC: allow retention of expired cookies by choice
       const expiryTime = c.expiryTime()
       if (expireCheck && expiryTime && expiryTime <= now) {
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
         store.removeCookie(c.domain, c.path, c.key, () => {}) // result ignored
         return false
       }
