@@ -307,7 +307,7 @@ describe('Cookie.parse', () => {
     },
     // way too many semicolons followed by non-semicolon
     {
-      input: `foo=bar${';'.repeat(65535)} domain=example.com`,
+      input: `foo=bar<REPEAT ;> domain=example.com`,
       output: {
         key: 'foo',
         value: 'bar',
@@ -323,7 +323,7 @@ describe('Cookie.parse', () => {
     },
     // way too many spaces - large one doesn't parse
     {
-      input: `x${' '.repeat(65535)}x`,
+      input: `x<REPEAT \u0020>x`, // '\u0020' === ' '
       output: undefined,
     },
     // same-site - lax
@@ -397,8 +397,12 @@ describe('Cookie.parse', () => {
       output: null,
     },
   ])('Cookie.parse("$input")', (testCase) => {
-    const { input, output } = testCase
-    const parseOptions = testCase.parseOptions || {}
+    // Repeating the character in the input makes the jest output obnoxiously long, so instead we
+    // use a template pattern and replace it.
+    const input = testCase.input?.replace(/<REPEAT (.)>/, (_, char: string) =>
+      char.repeat(65535),
+    )
+    const { output, parseOptions = {}, assertValidateReturns } = testCase
 
     const value = input === undefined ? undefined : input.valueOf()
     const cookie = Cookie.parse(value as string, parseOptions)
@@ -408,8 +412,8 @@ describe('Cookie.parse', () => {
       expect(cookie).toBe(output)
     }
 
-    if (cookie && typeof testCase.assertValidateReturns === 'boolean') {
-      expect(cookie.validate()).toBe(testCase.assertValidateReturns)
+    if (cookie && typeof assertValidateReturns === 'boolean') {
+      expect(cookie.validate()).toBe(assertValidateReturns)
     }
   })
 
@@ -420,30 +424,32 @@ describe('Cookie.parse', () => {
   // - way too many spaces with value (strict mode)
   it.each([
     {
-      shortVersion: 'x x',
-      longVersion: `x${' '.repeat(65535)}x`,
+      prefix: 'x',
+      postfix: 'x',
     },
     {
-      shortVersion: 'x x',
-      longVersion: `x${' '.repeat(65535)}x`,
+      prefix: 'x',
+      postfix: 'x',
       parseOptions: { loose: true },
     },
     {
-      shortVersion: 'x =x',
-      longVersion: `x${' '.repeat(65535)}=x`,
+      prefix: 'x',
+      postfix: '=x',
     },
     {
-      shortVersion: 'x =x',
-      longVersion: `x${' '.repeat(65535)}=x`,
+      prefix: 'x',
+      postfix: '=x',
       parseOptions: { loose: true },
     },
   ])(
-    'Cookie.parse("$shortVersion") should not take significantly longer to run than Cookie.parse("$longVersion")',
-    ({ shortVersion, longVersion, parseOptions = {} }) => {
+    'Cookie.parse("$prefix $postfix") should not take significantly longer to run than Cookie.parse("$prefix<TOO MANY SPACES>$postfix")',
+    ({ prefix, postfix, parseOptions = {} }) => {
+      const shortVersion = `${prefix} ${postfix}`
       const startShortVersionParse = performance.now()
       Cookie.parse(shortVersion, parseOptions)
       const endShortVersionParse = performance.now()
 
+      const longVersion = `${prefix}${' '.repeat(65535)}${postfix}`
       const startLongVersionParse = performance.now()
       Cookie.parse(longVersion, parseOptions)
       const endLongVersionParse = performance.now()
@@ -454,23 +460,4 @@ describe('Cookie.parse', () => {
       expect(ratio).toBeLessThan(250) // if broken this ratio goes 2000-4000x higher
     },
   )
-})
-
-// way too many spaces - takes about the same time for each
-it('should parse a long cookie string with spaces in roughly the same amount of time as one with short spaces', () => {
-  const longCookie = `x${' '.repeat(65535)}x`
-  const shortCookie = `x x`
-
-  const startLongCookieParse = performance.now()
-  Cookie.parse(longCookie)
-  const endLongCookieParse = performance.now()
-
-  const startShortCookieParse = performance.now()
-  Cookie.parse(shortCookie)
-  const endShortCookieParse = performance.now()
-
-  const ratio =
-    (endLongCookieParse - startLongCookieParse) /
-    (endShortCookieParse - startShortCookieParse)
-  expect(ratio).toBeLessThan(250) // if broken this ratio goes 2000-4000x higher
 })
