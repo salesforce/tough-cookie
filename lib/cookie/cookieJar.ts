@@ -8,7 +8,6 @@ import { pathMatch } from '../pathMatch'
 import { Cookie } from './cookie'
 import {
   Callback,
-  ErrorCallback,
   createPromiseCallback,
   inOperator,
   safeToString,
@@ -23,6 +22,9 @@ import { defaultPath } from './defaultPath'
 import { domainMatch } from './domainMatch'
 import { cookieCompare } from './cookieCompare'
 import { version } from '../version'
+
+// This file was too big before we added max-lines, and it's ongoing work to reduce its size.
+/* eslint max-lines: [1, 1200] */
 
 const defaultSetCookieOptions: SetCookieOptions = {
   loose: false,
@@ -173,7 +175,7 @@ export class CookieJar {
         'CookieJar store is not synchronous; use async API instead.',
       )
     }
-    let syncErr: Error | undefined
+    let syncErr: Error | null = null
     let syncResult: T | undefined = undefined
     fn.call(this, (error, result) => {
       syncErr = error
@@ -186,36 +188,42 @@ export class CookieJar {
     return syncResult
   }
 
+  // TODO: We *could* add overloads based on the value of `options.ignoreError`, such that we only
+  // return `undefined` when `ignoreError` is true. But would that be excessive overloading?
   setCookie(
     cookie: string | Cookie,
     url: string,
-    callback: Callback<Cookie>,
+    callback: Callback<Cookie | undefined>,
   ): void
   setCookie(
     cookie: string | Cookie,
     url: string,
     options: SetCookieOptions,
-    callback: Callback<Cookie>,
+    callback: Callback<Cookie | undefined>,
   ): void
-  setCookie(cookie: string | Cookie, url: string): Promise<Cookie>
+  setCookie(cookie: string | Cookie, url: string): Promise<Cookie | undefined>
   setCookie(
     cookie: string | Cookie,
     url: string,
     options: SetCookieOptions,
-  ): Promise<Cookie>
+  ): Promise<Cookie | undefined>
   setCookie(
     cookie: string | Cookie,
     url: string,
-    options: SetCookieOptions | Callback<Cookie>,
-    callback?: Callback<Cookie>,
+    options: SetCookieOptions | Callback<Cookie | undefined>,
+    callback?: Callback<Cookie | undefined>,
   ): unknown
   setCookie(
     cookie: string | Cookie,
     url: string,
-    options?: SetCookieOptions | Callback<Cookie>,
-    callback?: Callback<Cookie>,
+    options?: SetCookieOptions | Callback<Cookie | undefined>,
+    callback?: Callback<Cookie | undefined>,
   ): unknown {
-    const promiseCallback = createPromiseCallback<Cookie>(arguments)
+    if (typeof options === 'function') {
+      callback = options
+      options = undefined
+    }
+    const promiseCallback = createPromiseCallback(callback)
     const cb = promiseCallback.callback
 
     validators.validate(
@@ -242,7 +250,7 @@ export class CookieJar {
       cookie instanceof String &&
       cookie.length == 0
     ) {
-      return promiseCallback.reject(null)
+      return promiseCallback.resolve(undefined)
     }
 
     const host = canonicalDomain(context.hostname)
@@ -261,7 +269,9 @@ export class CookieJar {
       const parsedCookie = Cookie.parse(cookie.toString(), { loose: loose })
       if (!parsedCookie) {
         err = new Error('Cookie failed to parse')
-        return promiseCallback.reject(options?.ignoreError ? null : err)
+        return options?.ignoreError
+          ? promiseCallback.resolve(undefined)
+          : promiseCallback.reject(err)
       }
       cookie = parsedCookie
     } else if (!(cookie instanceof Cookie)) {
@@ -270,7 +280,10 @@ export class CookieJar {
       err = new Error(
         'First argument to setCookie must be a Cookie object or string',
       )
-      return promiseCallback.reject(options?.ignoreError ? null : err)
+
+      return options?.ignoreError
+        ? promiseCallback.resolve(undefined)
+        : promiseCallback.reject(err)
     }
 
     // S5.3 step 2
@@ -294,18 +307,20 @@ export class CookieJar {
         if (suffix == null && !IP_V6_REGEX_OBJECT.test(cookie.domain)) {
           // e.g. "com"
           err = new Error('Cookie has domain set to a public suffix')
-          return promiseCallback.reject(options?.ignoreError ? null : err)
+
+          return options?.ignoreError
+            ? promiseCallback.resolve(undefined)
+            : promiseCallback.reject(err)
         }
-      } catch (err) {
-        if (options?.ignoreError) {
-          return promiseCallback.reject(null)
-        } else {
-          if (err instanceof Error) {
-            return promiseCallback.reject(err)
-          } else {
-            return promiseCallback.reject(null)
-          }
-        }
+        // Using `any` here rather than `unknown` to avoid a type assertion, at the cost of needing
+        // to disable eslint directives. It's easier to have this one spot of technically incorrect
+        // types, rather than having to deal with _all_ callback errors being `unknown`.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (err: any) {
+        return options?.ignoreError
+          ? promiseCallback.resolve(undefined)
+          : // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+            promiseCallback.reject(err)
       }
     }
 
@@ -319,7 +334,9 @@ export class CookieJar {
             cookie.cdomain() ?? 'null'
           } Request:${host ?? 'null'}`,
         )
-        return promiseCallback.reject(options?.ignoreError ? null : err)
+        return options?.ignoreError
+          ? promiseCallback.resolve(undefined)
+          : promiseCallback.reject(err)
       }
 
       if (cookie.hostOnly == null) {
@@ -345,7 +362,9 @@ export class CookieJar {
     // S5.3 step 10
     if (options?.http === false && cookie.httpOnly) {
       err = new Error("Cookie is HttpOnly and this isn't an HTTP API")
-      return promiseCallback.reject(options?.ignoreError ? null : err)
+      return options?.ignoreError
+        ? promiseCallback.resolve(undefined)
+        : promiseCallback.reject(err)
     }
 
     // 6252bis-02 S5.4 Step 13 & 14:
@@ -360,7 +379,9 @@ export class CookieJar {
       //  abort these steps and ignore the newly created cookie entirely."
       if (sameSiteContext === 'none') {
         err = new Error('Cookie is SameSite but this is a cross-origin request')
-        return promiseCallback.reject(options?.ignoreError ? null : err)
+        return options?.ignoreError
+          ? promiseCallback.resolve(undefined)
+          : promiseCallback.reject(err)
       }
     }
 
@@ -384,11 +405,9 @@ export class CookieJar {
           "Cookie has __Host prefix but either Secure or HostOnly attribute is not set or Path is not '/'"
       }
       if (errorFound) {
-        return promiseCallback.reject(
-          options?.ignoreError || ignoreErrorForPrefixSecurity
-            ? null
-            : new Error(errorMsg),
-        )
+        return options?.ignoreError || ignoreErrorForPrefixSecurity
+          ? promiseCallback.resolve(undefined)
+          : promiseCallback.reject(new Error(errorMsg))
       }
     }
 
@@ -403,7 +422,7 @@ export class CookieJar {
         return this.putCookie(newCookie).then(
           () => {
             if (cb) {
-              cb(undefined, undefined)
+              cb(null, undefined)
             }
           },
           (error: Error) => {
@@ -416,7 +435,7 @@ export class CookieJar {
     }
 
     function withCookie(
-      err: Error | undefined,
+      err: Error | null,
       oldCookie: Cookie | undefined | null,
     ): void {
       if (err) {
@@ -424,9 +443,11 @@ export class CookieJar {
         return
       }
 
-      const next = function (err: Error | undefined): void {
-        if (err || typeof cookie === 'string') {
+      const next = function (err: Error | null): void {
+        if (err) {
           cb(err)
+        } else if (typeof cookie === 'string') {
+          cb(null, undefined)
         } else {
           cb(null, cookie)
         }
@@ -443,7 +464,8 @@ export class CookieJar {
         ) {
           // step 11.2
           err = new Error("old Cookie is HttpOnly and this isn't an HTTP API")
-          cb(options.ignoreError ? null : err)
+          if (options.ignoreError) cb(null, undefined)
+          else cb(err)
           return
         }
         if (cookie instanceof Cookie) {
@@ -477,7 +499,7 @@ export class CookieJar {
       url,
       options as SetCookieOptions,
     )
-    return this.callSync<Cookie>(setCookieFn)
+    return this.callSync<Cookie | undefined>(setCookieFn)
   }
 
   // RFC6365 S5.4
@@ -500,19 +522,21 @@ export class CookieJar {
   getCookies(
     url: string,
     options?: GetCookiesOptions | Callback<Cookie[]>,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _callback?: Callback<Cookie[]>,
+    callback?: Callback<Cookie[]>,
   ): unknown {
-    const promiseCallback = createPromiseCallback<Cookie[]>(arguments)
+    if (typeof options === 'function') {
+      callback = options
+      options = defaultGetCookieOptions
+    } else if (options === undefined) {
+      options = defaultGetCookieOptions
+    }
+    const promiseCallback = createPromiseCallback(callback)
     const cb = promiseCallback.callback
 
     validators.validate(validators.isNonEmptyString(url), cb, url)
-    const context = getCookieContext(url)
-    if (typeof options === 'function' || options === undefined) {
-      options = defaultGetCookieOptions
-    }
     validators.validate(validators.isObject(options), cb, safeToString(options))
     validators.validate(typeof cb === 'function', cb)
+    const context = getCookieContext(url)
 
     const host = canonicalDomain(context.hostname)
     const path = context.pathname || '/'
@@ -613,7 +637,7 @@ export class CookieJar {
         }
 
         if (cookies == null) {
-          cb(undefined, [])
+          cb(null, [])
           return
         }
 
@@ -646,37 +670,37 @@ export class CookieJar {
   getCookieString(
     url: string,
     options: GetCookiesOptions,
-    callback: Callback<string>,
+    callback: Callback<string | undefined>,
   ): void
-  getCookieString(url: string, callback: Callback<string>): void
+  getCookieString(url: string, callback: Callback<string | undefined>): void
   getCookieString(url: string): Promise<string>
   getCookieString(url: string, options: GetCookiesOptions): Promise<string>
   getCookieString(
     url: string,
-    options: GetCookiesOptions | Callback<string>,
-    callback?: Callback<string>,
+    options: GetCookiesOptions | Callback<string | undefined>,
+    callback?: Callback<string | undefined>,
   ): unknown
   getCookieString(
     url: string,
-    options?: GetCookiesOptions | Callback<string>,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _callback?: Callback<string>,
+    options?: GetCookiesOptions | Callback<string | undefined>,
+    callback?: Callback<string | undefined>,
   ): unknown {
-    const promiseCallback = createPromiseCallback<string>(arguments)
-
     if (typeof options === 'function') {
+      callback = options
       options = undefined
     }
-
+    const promiseCallback = createPromiseCallback(callback)
     const next: Callback<Cookie[]> = function (
-      err: Error | undefined,
+      err: Error | null,
       cookies: Cookie[] | undefined,
     ) {
-      if (err || cookies === undefined) {
+      if (err) {
         promiseCallback.callback(err)
+      } else if (cookies === undefined) {
+        promiseCallback.callback(null, cookies)
       } else {
         promiseCallback.callback(
-          undefined,
+          null,
           cookies
             .sort(cookieCompare)
             .map((c) => c.cookieString())
@@ -690,46 +714,52 @@ export class CookieJar {
   }
   getCookieStringSync(url: string, options?: GetCookiesOptions): string {
     return (
-      this.callSync<string>(
+      this.callSync<string | undefined>(
         this.getCookieString.bind(this, url, options as GetCookiesOptions),
       ) ?? ''
     )
   }
 
-  getSetCookieStrings(url: string, callback: Callback<string[]>): void
   getSetCookieStrings(
     url: string,
-    options: GetCookiesOptions,
-    callback: Callback<string[]>,
+    callback: Callback<string[] | undefined>,
   ): void
-  getSetCookieStrings(url: string): Promise<string[]>
   getSetCookieStrings(
     url: string,
     options: GetCookiesOptions,
-  ): Promise<string[]>
+    callback: Callback<string[] | undefined>,
+  ): void
+  getSetCookieStrings(url: string): Promise<string[] | undefined>
   getSetCookieStrings(
     url: string,
     options: GetCookiesOptions,
-    callback?: Callback<string[]>,
+  ): Promise<string[] | undefined>
+  getSetCookieStrings(
+    url: string,
+    options: GetCookiesOptions,
+    callback?: Callback<string[] | undefined>,
   ): unknown
   getSetCookieStrings(
     url: string,
-    options?: GetCookiesOptions | Callback<string[]>,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _callback?: Callback<string[]>,
+    options?: GetCookiesOptions | Callback<string[] | undefined>,
+    callback?: Callback<string[] | undefined>,
   ): unknown {
-    const promiseCallback = createPromiseCallback<string[]>(arguments)
-
     if (typeof options === 'function') {
+      callback = options
       options = undefined
     }
+    const promiseCallback = createPromiseCallback<string[] | undefined>(
+      callback,
+    )
 
     const next: Callback<Cookie[]> = function (
-      err: Error | undefined,
+      err: Error | null,
       cookies: Cookie[] | undefined,
     ) {
-      if (err || cookies === undefined) {
+      if (err) {
         promiseCallback.callback(err)
+      } else if (cookies === undefined) {
+        promiseCallback.callback(null, undefined)
       } else {
         promiseCallback.callback(
           null,
@@ -748,7 +778,7 @@ export class CookieJar {
     options: GetCookiesOptions = {},
   ): string[] {
     return (
-      this.callSync<string[]>(
+      this.callSync<string[] | undefined>(
         this.getSetCookieStrings.bind(this, url, options),
       ) ?? []
     )
@@ -756,11 +786,8 @@ export class CookieJar {
 
   serialize(callback: Callback<SerializedCookieJar>): void
   serialize(): Promise<SerializedCookieJar>
-  serialize(callback?: Callback<SerializedCookieJar>): unknown
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  serialize(_callback?: Callback<SerializedCookieJar>): unknown {
-    const promiseCallback =
-      createPromiseCallback<SerializedCookieJar>(arguments)
+  serialize(callback?: Callback<SerializedCookieJar>): unknown {
+    const promiseCallback = createPromiseCallback<SerializedCookieJar>(callback)
     const cb = promiseCallback.callback
 
     validators.validate(typeof cb === 'function', cb)
@@ -809,7 +836,7 @@ export class CookieJar {
       }
 
       if (cookies == null) {
-        promiseCallback.callback(undefined, serialized)
+        promiseCallback.callback(null, serialized)
         return
       }
 
@@ -823,7 +850,7 @@ export class CookieJar {
         return serializedCookie
       })
 
-      promiseCallback.callback(undefined, serialized)
+      promiseCallback.callback(null, serialized)
     })
 
     return promiseCallback.promise
@@ -860,7 +887,7 @@ export class CookieJar {
 
     cookies = cookies.slice() // do not modify the original
 
-    const putNext = (err?: Error): void => {
+    const putNext = (err: Error | null): void => {
       if (err) {
         return callback(err, undefined)
       }
@@ -878,14 +905,14 @@ export class CookieJar {
         }
 
         if (cookie === null) {
-          return putNext(undefined) // skip this cookie
+          return putNext(null) // skip this cookie
         }
 
         this.store.putCookie(cookie, putNext)
       }
     }
 
-    putNext()
+    putNext(null)
   }
 
   _importCookiesSync(serialized: unknown): void {
@@ -898,14 +925,14 @@ export class CookieJar {
   clone(newStore: Store): Promise<CookieJar>
   clone(
     newStore?: Store | Callback<CookieJar>,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _callback?: Callback<CookieJar>,
+    callback?: Callback<CookieJar>,
   ): unknown {
     if (typeof newStore === 'function') {
+      callback = newStore
       newStore = undefined
     }
 
-    const promiseCallback = createPromiseCallback<CookieJar>(arguments)
+    const promiseCallback = createPromiseCallback<CookieJar>(callback)
     const cb = promiseCallback.callback
 
     this.serialize((err, serialized) => {
@@ -938,12 +965,10 @@ export class CookieJar {
     return this._cloneSync(newStore)
   }
 
-  removeAllCookies(callback: ErrorCallback): void
+  removeAllCookies(callback: Callback<void>): void
   removeAllCookies(): Promise<void>
-  removeAllCookies(callback?: ErrorCallback): unknown
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  removeAllCookies(_callback?: ErrorCallback): unknown {
-    const promiseCallback = createPromiseCallback<void>(arguments)
+  removeAllCookies(callback?: Callback<void>): unknown {
+    const promiseCallback = createPromiseCallback<void>(callback)
     const cb = promiseCallback.callback
 
     const store = this.store
@@ -955,7 +980,7 @@ export class CookieJar {
       typeof store.removeAllCookies === 'function' &&
       store.removeAllCookies !== Store.prototype.removeAllCookies
     ) {
-      store.removeAllCookies(cb)
+      void store.removeAllCookies(cb)
       return promiseCallback.promise
     }
 
@@ -977,7 +1002,7 @@ export class CookieJar {
       let completedCount = 0
       const removeErrors: Error[] = []
 
-      function removeCookieCb(removeErr: Error | undefined) {
+      function removeCookieCb(removeErr: Error | null) {
         if (removeErr) {
           removeErrors.push(removeErr)
         }
@@ -985,7 +1010,8 @@ export class CookieJar {
         completedCount++
 
         if (completedCount === cookies?.length) {
-          cb(removeErrors.length ? removeErrors[0] : null)
+          if (removeErrors[0]) cb(removeErrors[0])
+          else cb(null)
           return
         }
       }
@@ -1028,14 +1054,14 @@ export class CookieJar {
   static deserialize(
     strOrObj: string | object,
     store?: Store | Callback<CookieJar>,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _callback?: Callback<CookieJar>,
+    callback?: Callback<CookieJar>,
   ): unknown {
     if (typeof store === 'function') {
+      callback = store
       store = undefined
     }
 
-    const promiseCallback = createPromiseCallback<CookieJar>(arguments)
+    const promiseCallback = createPromiseCallback<CookieJar>(callback)
 
     let serialized: unknown
     if (typeof strOrObj === 'string') {
@@ -1080,7 +1106,7 @@ export class CookieJar {
         promiseCallback.callback(err)
         return
       }
-      promiseCallback.callback(undefined, jar)
+      promiseCallback.callback(null, jar)
     })
 
     return promiseCallback.promise

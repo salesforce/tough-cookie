@@ -72,43 +72,25 @@ export class MemoryCookieStore extends Store {
     domain: string | null,
     path: string | null,
     key: string | undefined,
-  ): Promise<Cookie | null | undefined>
+  ): Promise<Cookie | undefined>
   override findCookie(
     domain: string | null,
     path: string | null,
     key: string | undefined,
-    callback: Callback<Cookie | null | undefined>,
+    callback: Callback<Cookie | undefined>,
   ): void
   override findCookie(
     domain: string | null,
     path: string | null,
     key: string | undefined,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _callback?: Callback<Cookie | null | undefined>,
+    callback?: Callback<Cookie | undefined>,
   ): unknown {
-    const promiseCallback = createPromiseCallback(arguments)
-    const cb = promiseCallback.callback
-
-    if (domain == null || path == null) {
+    const promiseCallback = createPromiseCallback(callback)
+    if (domain == null || path == null || key == null) {
       return promiseCallback.resolve(undefined)
     }
-
-    const domainEntry = this.idx[domain]
-    if (!domainEntry) {
-      return promiseCallback.resolve(undefined)
-    }
-
-    const pathEntry = domainEntry[path]
-    if (!pathEntry) {
-      return promiseCallback.resolve(undefined)
-    }
-
-    if (key == null) {
-      return promiseCallback.resolve(null)
-    }
-
-    cb(null, pathEntry[key] || null)
-    return promiseCallback.promise
+    const result = this.idx?.[domain]?.[path]?.[key]
+    return promiseCallback.resolve(result)
   }
 
   override findCookies(
@@ -126,15 +108,17 @@ export class MemoryCookieStore extends Store {
     domain: string,
     path: string,
     allowSpecialUseDomain: boolean | Callback<Cookie[]> = false,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _callback?: Callback<Cookie[]>,
+    callback?: Callback<Cookie[]>,
   ): unknown {
     if (typeof allowSpecialUseDomain === 'function') {
+      callback = allowSpecialUseDomain
+      // TODO: It's weird that `allowSpecialUseDomain` defaults to false with no callback,
+      // but true with a callback. This is legacy behavior from v4.
       allowSpecialUseDomain = true
     }
 
     const results: Cookie[] = []
-    const promiseCallback = createPromiseCallback<Cookie[]>(arguments)
+    const promiseCallback = createPromiseCallback<Cookie[]>(callback)
     const cb = promiseCallback.callback
 
     if (!domain) {
@@ -191,9 +175,8 @@ export class MemoryCookieStore extends Store {
 
   override putCookie(cookie: Cookie): Promise<void>
   override putCookie(cookie: Cookie, callback: Callback<void>): void
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  override putCookie(cookie: Cookie, _callback?: Callback<void>): unknown {
-    const promiseCallback = createPromiseCallback<void>(arguments)
+  override putCookie(cookie: Cookie, callback?: Callback<void>): unknown {
+    const promiseCallback = createPromiseCallback<void>(callback)
     const cb = promiseCallback.callback
 
     const { domain, path, key } = cookie
@@ -257,10 +240,9 @@ export class MemoryCookieStore extends Store {
     domain: string,
     path: string,
     key: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _callback?: Callback<void>,
+    callback?: Callback<void>,
   ): unknown {
-    const promiseCallback = createPromiseCallback<void>(arguments)
+    const promiseCallback = createPromiseCallback<void>(callback)
     const cb = promiseCallback.callback
 
     const domainEntry = this.idx[domain]
@@ -287,10 +269,9 @@ export class MemoryCookieStore extends Store {
   override removeCookies(
     domain: string,
     path: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _callback?: Callback<void>,
+    callback?: Callback<void>,
   ): unknown {
-    const promiseCallback = createPromiseCallback<void>(arguments)
+    const promiseCallback = createPromiseCallback<void>(callback)
     const cb = promiseCallback.callback
 
     const domainEntry = this.idx[domain]
@@ -308,9 +289,8 @@ export class MemoryCookieStore extends Store {
 
   override removeAllCookies(): Promise<void>
   override removeAllCookies(callback: Callback<void>): void
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  override removeAllCookies(_callback?: Callback<void>): unknown {
-    const promiseCallback = createPromiseCallback<void>(arguments)
+  override removeAllCookies(callback?: Callback<void>): unknown {
+    const promiseCallback = createPromiseCallback<void>(callback)
     const cb = promiseCallback.callback
 
     this.idx = Object.create(null) as MemoryCookieStoreIndex
@@ -321,9 +301,8 @@ export class MemoryCookieStore extends Store {
 
   override getAllCookies(): Promise<Cookie[]>
   override getAllCookies(callback: Callback<Cookie[]>): void
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  override getAllCookies(_callback?: Callback<Cookie[]>): unknown {
-    const promiseCallback = createPromiseCallback<Cookie[]>(arguments)
+  override getAllCookies(callback?: Callback<Cookie[]>): unknown {
+    const promiseCallback = createPromiseCallback<Cookie[]>(callback)
     const cb = promiseCallback.callback
 
     const cookies: Cookie[] = []
