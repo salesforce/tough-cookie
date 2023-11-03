@@ -19,3 +19,9 @@ updates:
         update-types:
           - "minor"
           - "patch"
+    ignore:
+      # We want @types/node to match the *lowest* version of node.js that we support
+      - dependency-name: "@types/node"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
