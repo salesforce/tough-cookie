@@ -13,10 +13,6 @@
   },
   "reportUnusedDisableDirectives": true,
   "rules": {
-    // this is only needed because `createPromiseCallback` uses arguments to support the callback-style api
-    // we should strongly consider dropping the callback and sync api variants (in say v6) to reduce the
-    // surface area and complexity of tough-cookie
-    "prefer-rest-params": "warn",
     "max-lines": ["warn", 500]
   }
 }

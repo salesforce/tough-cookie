@@ -26,6 +26,9 @@
     /* Compatibility */
     "ignoreDeprecations": "5.0"
   },
+  "include": [
+    "lib"
+  ],
   "exclude": [
     "jest.config.ts"
   ]

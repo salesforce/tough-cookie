@@ -49,7 +49,7 @@ describe('CookieJar', () => {
   })
 
   describe('setCookie', () => {
-    let cookie: Cookie
+    let cookie: Cookie | undefined
 
     apiVariants(
       'should resolve to a Cookie',
@@ -83,8 +83,8 @@ describe('CookieJar', () => {
       },
       () => {
         expect(cookie).toBeInstanceOf(Cookie)
-        expect(cookie.key).toBe('foo')
-        expect(cookie.value).toBe('bar')
+        expect(cookie?.key).toBe('foo')
+        expect(cookie?.value).toBe('bar')
       },
     )
 
@@ -185,8 +185,8 @@ describe('CookieJar', () => {
           lastAccessed: t1,
         }),
       )
-      expect(cookie.TTL()).toBe(Infinity)
-      expect(cookie.isPersistent()).toBe(false)
+      expect(cookie?.TTL()).toBe(Infinity)
+      expect(cookie?.isPersistent()).toBe(false)
 
       // updates the last access when retrieving a cookie
       jest.advanceTimersByTime(10000)
@@ -279,7 +279,7 @@ describe('CookieJar', () => {
         'a=b; Domain=example.com; Path=/',
         'http://www.app.example.com/index.html',
       )
-      expect(cookie.domain).toBe('example.com')
+      expect(cookie?.domain).toBe('example.com')
     })
 
     it('should allow a sub-path cookie on a super-domain', async () => {
@@ -348,8 +348,8 @@ describe('CookieJar', () => {
           lastAccessed: t0,
         }),
       )
-      expect(cookie.TTL()).toBe(Infinity)
-      expect(cookie.isPersistent()).toBe(false)
+      expect(cookie?.TTL()).toBe(Infinity)
+      expect(cookie?.isPersistent()).toBe(false)
     })
   })
 
@@ -800,7 +800,7 @@ describe('CookieJar', () => {
   })
 
   describe('getSetCookieStrings', () => {
-    let cookieHeaders: string[]
+    let cookieHeaders: string[] | undefined
 
     describe('api', () => {
       beforeEach(async () => {

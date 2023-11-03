@@ -1,11 +1,8 @@
 /** A callback function that accepts an error or a result. */
-export type Callback<T> = (
-  error: Error | undefined,
-  result: T | undefined,
-) => void
-
-/** Signature for a callback function that expects an error to be passed. */
-export type ErrorCallback = (error: Error, result?: never) => void
+export interface Callback<T> {
+  (error: Error, result?: never): void
+  (error: null, result: T): void
+}
 
 /** Wrapped `Object.prototype.toString`, so that you don't need to remember to use `.call()`. */
 export const objectToString = (obj: unknown) =>
@@ -24,28 +21,31 @@ export const safeToString = (val: unknown) => {
 
 /** Utility object for promise/callback interop. */
 export interface PromiseCallback<T> {
-  promise: Promise<T | undefined>
-  callback: (error: Error | undefined | null, result?: T) => void
-  resolve: (value: T | undefined) => Promise<T | undefined>
-  reject: (error: Error | undefined | null) => Promise<T | undefined>
+  promise: Promise<T>
+  callback: Callback<T>
+  resolve: (value: T) => Promise<T>
+  reject: (error: Error) => Promise<T>
 }
 
 /** Converts a callback into a utility object where either a callback or a promise can be used. */
-export function createPromiseCallback<T>(args: IArguments): PromiseCallback<T> {
-  let callback: (error: Error | null | undefined, result: T | undefined) => void
-  let resolve: (result: T | undefined) => void
-  let reject: (error: Error | null) => void
+export function createPromiseCallback<T>(cb?: Callback<T>): PromiseCallback<T> {
+  let callback: Callback<T>
+  let resolve: (result: T) => void
+  let reject: (error: Error) => void
 
-  const promise = new Promise<T | undefined>((_resolve, _reject) => {
+  const promise = new Promise<T>((_resolve, _reject) => {
     resolve = _resolve
     reject = _reject
   })
 
-  const cb: unknown = args[args.length - 1]
   if (typeof cb === 'function') {
     callback = (err, result) => {
       try {
-        cb(err, result)
+        if (err) cb(err)
+        // If `err` is null, we know `result` must be `T`
+        // The assertion isn't *strictly* correct, as `T` could be nullish, but, ehh, good enough...
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        else cb(null, result!)
       } catch (e) {
         reject(e instanceof Error ? e : new Error())
       }
@@ -53,7 +53,10 @@ export function createPromiseCallback<T>(args: IArguments): PromiseCallback<T> {
   } else {
     callback = (err, result) => {
       try {
-        err ? reject(err) : resolve(result)
+        // If `err` is null, we know `result` must be `T`
+        // The assertion isn't *strictly* correct, as `T` could be nullish, but, ehh, good enough...
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        err ? reject(err) : resolve(result!)
       } catch (e) {
         reject(e instanceof Error ? e : new Error())
       }
@@ -63,12 +66,12 @@ export function createPromiseCallback<T>(args: IArguments): PromiseCallback<T> {
   return {
     promise,
     callback,
-    resolve: (value: T | undefined) => {
+    resolve: (value: T) => {
       callback(null, value)
       return promise
     },
-    reject: (error: Error | null | undefined) => {
-      callback(error, undefined)
+    reject: (error: Error) => {
+      callback(error)
       return promise
     },
   }
