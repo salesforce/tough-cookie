@@ -25,3 +25,6 @@ updates:
         update-types:
           - "version-update:semver-major"
           - "version-update:semver-minor"
+      # As a library, upgrading TypeScript and using new language features would
+      # be a breaking change for users who have not yet upgraded their TS version
+      - dependency-name: "typescript"
