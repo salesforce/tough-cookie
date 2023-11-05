@@ -418,22 +418,14 @@ export class CookieJar {
     const store = this.store
 
     if (!store.updateCookie) {
-      store.updateCookie = function (
+      store.updateCookie = async function (
         _oldCookie: Cookie,
         newCookie: Cookie,
         cb?: ErrorCallback,
       ): Promise<void> {
         return this.putCookie(newCookie).then(
-          () => {
-            if (cb) {
-              cb(null)
-            }
-          },
-          (error: Error) => {
-            if (cb) {
-              cb(error)
-            }
-          },
+          () => cb?.(null),
+          (error: Error) => cb?.(error),
         )
       }
     }
@@ -497,13 +489,10 @@ export class CookieJar {
     url: string,
     options?: SetCookieOptions,
   ): Cookie | undefined {
-    const setCookieFn = this.setCookie.bind(
-      this,
-      cookie,
-      url,
-      options as SetCookieOptions,
-    )
-    return this.callSync<Cookie | undefined>(setCookieFn)
+    const setCookieFn = options
+      ? this.setCookie.bind(this, cookie, url, options)
+      : this.setCookie.bind(this, cookie, url)
+    return this.callSync(setCookieFn)
   }
 
   // RFC6365 S5.4
@@ -664,9 +653,7 @@ export class CookieJar {
     return promiseCallback.promise
   }
   getCookiesSync(url: string, options?: GetCookiesOptions): Cookie[] {
-    return (
-      this.callSync<Cookie[]>(this.getCookies.bind(this, url, options)) ?? []
-    )
+    return this.callSync(this.getCookies.bind(this, url, options)) ?? []
   }
 
   getCookieString(
@@ -691,19 +678,14 @@ export class CookieJar {
       options = undefined
     }
     const promiseCallback = createPromiseCallback(callback)
-    const next: Callback<Cookie[]> = function (
-      err: Error | null,
-      cookies: Cookie[] | undefined,
-    ) {
+    const next: Callback<Cookie[]> = function (err, cookies) {
       if (err) {
         promiseCallback.callback(err)
-      } else if (cookies === undefined) {
-        promiseCallback.callback(null, cookies)
       } else {
         promiseCallback.callback(
           null,
           cookies
-            .sort(cookieCompare)
+            ?.sort(cookieCompare)
             .map((c) => c.cookieString())
             .join('; '),
         )
@@ -715,8 +697,10 @@ export class CookieJar {
   }
   getCookieStringSync(url: string, options?: GetCookiesOptions): string {
     return (
-      this.callSync<string | undefined>(
-        this.getCookieString.bind(this, url, options as GetCookiesOptions),
+      this.callSync(
+        options
+          ? this.getCookieString.bind(this, url, options)
+          : this.getCookieString.bind(this, url),
       ) ?? ''
     )
   }
@@ -778,9 +762,7 @@ export class CookieJar {
     options: GetCookiesOptions = {},
   ): string[] {
     return (
-      this.callSync<string[] | undefined>(
-        this.getSetCookieStrings.bind(this, url, options),
-      ) ?? []
+      this.callSync(this.getSetCookieStrings.bind(this, url, options)) ?? []
     )
   }
 
@@ -856,9 +838,7 @@ export class CookieJar {
     return promiseCallback.promise
   }
   serializeSync(): SerializedCookieJar | undefined {
-    return this.callSync<SerializedCookieJar>((callback) => {
-      this.serialize(callback)
-    })
+    return this.callSync((callback) => this.serialize(callback))
   }
 
   toJSON() {
