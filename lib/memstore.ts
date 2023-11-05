@@ -220,13 +220,12 @@ export class MemoryCookieStore extends Store {
     newCookie: Cookie,
     callback?: ErrorCallback,
   ): unknown {
-    // this seems wrong but it stops typescript from complaining and all the test pass...
-    callback = callback ?? function () {}
-
     // updateCookie() may avoid updating cookies that are identical.  For example,
     // lastAccessed may not be important to some stores and an equality
     // comparison could exclude that field.
-    return this.putCookie(newCookie, callback)
+    return callback
+      ? this.putCookie(newCookie, callback)
+      : this.putCookie(newCookie)
   }
 
   override removeCookie(
