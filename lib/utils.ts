@@ -1,6 +1,3 @@
-/** A callback function that only accepts an error. */
-export type ErrorCallback = (err: Error | null) => void
-
 /** A callback function that accepts an error or a result. */
 export interface Callback<T> {
   (error: Error, result?: never): void
