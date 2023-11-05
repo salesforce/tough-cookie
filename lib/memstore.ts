@@ -124,7 +124,6 @@ export class MemoryCookieStore extends Store {
 
     const results: Cookie[] = []
     const promiseCallback = createPromiseCallback<Cookie[]>(callback)
-    const cb = promiseCallback.callback
 
     if (!domain) {
       return promiseCallback.resolve([])
@@ -174,20 +173,17 @@ export class MemoryCookieStore extends Store {
       pathMatcher(domainIndex)
     })
 
-    cb(null, results)
-    return promiseCallback.promise
+    return promiseCallback.resolve(results)
   }
 
   override putCookie(cookie: Cookie): Promise<void>
   override putCookie(cookie: Cookie, callback: ErrorCallback): void
   override putCookie(cookie: Cookie, callback?: ErrorCallback): unknown {
     const promiseCallback = createPromiseCallback<undefined>(callback)
-    const cb = promiseCallback.callback
 
     const { domain, path, key } = cookie
     if (domain == null || path == null || key == null) {
-      cb(null, undefined)
-      return promiseCallback.promise
+      return promiseCallback.resolve(undefined)
     }
 
     const domainEntry =
@@ -204,9 +200,7 @@ export class MemoryCookieStore extends Store {
 
     pathEntry[key] = cookie
 
-    cb(null, undefined)
-
-    return promiseCallback.promise
+    return promiseCallback.resolve(undefined)
   }
 
   override updateCookie(oldCookie: Cookie, newCookie: Cookie): Promise<void>
@@ -246,10 +240,8 @@ export class MemoryCookieStore extends Store {
     callback?: ErrorCallback,
   ): unknown {
     const promiseCallback = createPromiseCallback<undefined>(callback)
-    const cb = promiseCallback.callback
     delete this.idx[domain]?.[path]?.[key]
-    cb(null, undefined)
-    return promiseCallback.promise
+    return promiseCallback.resolve(undefined)
   }
 
   override removeCookies(domain: string, path: string): Promise<void>
@@ -264,7 +256,6 @@ export class MemoryCookieStore extends Store {
     callback?: ErrorCallback,
   ): unknown {
     const promiseCallback = createPromiseCallback<undefined>(callback)
-    const cb = promiseCallback.callback
 
     const domainEntry = this.idx[domain]
     if (domainEntry) {
@@ -275,8 +266,7 @@ export class MemoryCookieStore extends Store {
       }
     }
 
-    cb(null, undefined)
-    return promiseCallback.promise
+    return promiseCallback.resolve(undefined)
   }
 
   override removeAllCookies(): Promise<void>
