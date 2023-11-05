@@ -3,8 +3,7 @@
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended-type-checked",
-    // TODO: Implement!
-    // "plugin:@typescript-eslint/strict",
+    "plugin:@typescript-eslint/strict",
     "plugin:prettier/recommended"
   ],
   "parser": "@typescript-eslint/parser",
@@ -14,10 +13,10 @@
   },
   "reportUnusedDisableDirectives": true,
   "rules": {
-    // Previously in recommended, now in strict. Can be removed here when we implement strict!
-    "@typescript-eslint/no-non-null-assertion": "warn",
-    // // Seems to have false positives?
-    "@typescript-eslint/no-redundant-type-constituents": "off",
+    // Causes a lot of errors - will address separately
+    "@typescript-eslint/no-invalid-void-type": "off",
+    // Seems to have false positives?
+    // "@typescript-eslint/no-redundant-type-constituents": "off",
     "max-lines": ["warn", 500]
   }
 }
