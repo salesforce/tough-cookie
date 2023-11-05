@@ -34,7 +34,12 @@ import { pathMatch } from './pathMatch'
 import { permuteDomain } from './permuteDomain'
 import { Store } from './store'
 import { getCustomInspectSymbol, getUtilInspect } from './utilHelper'
-import { type Callback, createPromiseCallback, inOperator } from './utils'
+import {
+  Callback,
+  createPromiseCallback,
+  inOperator,
+  ErrorCallback,
+} from './utils'
 
 export type MemoryCookieStoreIndex = {
   [domain: string]: {
@@ -174,9 +179,9 @@ export class MemoryCookieStore extends Store {
   }
 
   override putCookie(cookie: Cookie): Promise<void>
-  override putCookie(cookie: Cookie, callback: Callback<void>): void
-  override putCookie(cookie: Cookie, callback?: Callback<void>): unknown {
-    const promiseCallback = createPromiseCallback<void>(callback)
+  override putCookie(cookie: Cookie, callback: ErrorCallback): void
+  override putCookie(cookie: Cookie, callback?: ErrorCallback): unknown {
+    const promiseCallback = createPromiseCallback<undefined>(callback)
     const cb = promiseCallback.callback
 
     const { domain, path, key } = cookie
@@ -208,12 +213,12 @@ export class MemoryCookieStore extends Store {
   override updateCookie(
     oldCookie: Cookie,
     newCookie: Cookie,
-    callback: Callback<void>,
+    callback: ErrorCallback,
   ): void
   override updateCookie(
     _oldCookie: Cookie,
     newCookie: Cookie,
-    callback?: Callback<void>,
+    callback?: ErrorCallback,
   ): unknown {
     // this seems wrong but it stops typescript from complaining and all the test pass...
     callback = callback ?? function () {}
@@ -233,15 +238,15 @@ export class MemoryCookieStore extends Store {
     domain: string,
     path: string,
     key: string,
-    callback: Callback<void>,
+    callback: ErrorCallback,
   ): void
   override removeCookie(
     domain: string,
     path: string,
     key: string,
-    callback?: Callback<void>,
+    callback?: ErrorCallback,
   ): unknown {
-    const promiseCallback = createPromiseCallback<void>(callback)
+    const promiseCallback = createPromiseCallback<undefined>(callback)
     const cb = promiseCallback.callback
     delete this.idx[domain]?.[path]?.[key]
     cb(null, undefined)
@@ -252,14 +257,14 @@ export class MemoryCookieStore extends Store {
   override removeCookies(
     domain: string,
     path: string,
-    callback: Callback<void>,
+    callback: ErrorCallback,
   ): void
   override removeCookies(
     domain: string,
     path: string,
-    callback?: Callback<void>,
+    callback?: ErrorCallback,
   ): unknown {
-    const promiseCallback = createPromiseCallback<void>(callback)
+    const promiseCallback = createPromiseCallback<undefined>(callback)
     const cb = promiseCallback.callback
 
     const domainEntry = this.idx[domain]
@@ -271,27 +276,22 @@ export class MemoryCookieStore extends Store {
       }
     }
 
-    cb(null)
+    cb(null, undefined)
     return promiseCallback.promise
   }
 
   override removeAllCookies(): Promise<void>
-  override removeAllCookies(callback: Callback<void>): void
-  override removeAllCookies(callback?: Callback<void>): unknown {
-    const promiseCallback = createPromiseCallback<void>(callback)
-    const cb = promiseCallback.callback
-
+  override removeAllCookies(callback: ErrorCallback): void
+  override removeAllCookies(callback?: ErrorCallback): unknown {
+    const promiseCallback = createPromiseCallback<undefined>(callback)
     this.idx = Object.create(null) as MemoryCookieStoreIndex
-
-    cb(null)
-    return promiseCallback.promise
+    return promiseCallback.resolve(undefined)
   }
 
   override getAllCookies(): Promise<Cookie[]>
   override getAllCookies(callback: Callback<Cookie[]>): void
   override getAllCookies(callback?: Callback<Cookie[]>): unknown {
     const promiseCallback = createPromiseCallback<Cookie[]>(callback)
-    const cb = promiseCallback.callback
 
     const cookies: Cookie[] = []
     const idx = this.idx
@@ -318,8 +318,7 @@ export class MemoryCookieStore extends Store {
       return (a.creationIndex || 0) - (b.creationIndex || 0)
     })
 
-    cb(null, cookies)
-    return promiseCallback.promise
+    return promiseCallback.resolve(cookies)
   }
 }
 
