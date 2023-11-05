@@ -15,8 +15,6 @@
   "rules": {
     // Causes a lot of errors - will address separately
     "@typescript-eslint/no-invalid-void-type": "off",
-    // Seems to have false positives?
-    // "@typescript-eslint/no-redundant-type-constituents": "off",
     "max-lines": ["warn", 500]
   }
 }
