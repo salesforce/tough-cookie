@@ -35,7 +35,7 @@
 import * as pubsuffix from '../pubsuffix-psl'
 import * as validators from '../validators'
 import { getCustomInspectSymbol } from '../utilHelper'
-import { inOperator } from '../utils'
+import { Nullable, inOperator } from '../utils'
 
 import { formatDate } from './formatDate'
 import { parseDate } from './parseDate'
@@ -388,18 +388,18 @@ const cookieDefaults = {
 type CreateCookieOptions = {
   key?: string
   value?: string
-  expires?: Date | 'Infinity' | null
+  expires?: Nullable<Date | 'Infinity'>
   maxAge?: number | 'Infinity' | '-Infinity'
-  domain?: string | null
-  path?: string | null
+  domain?: Nullable<string>
+  path?: Nullable<string>
   secure?: boolean
   httpOnly?: boolean
-  extensions?: string[] | null
-  creation?: Date | 'Infinity' | null
+  extensions?: Nullable<string[]>
+  creation?: Nullable<Date | 'Infinity'>
   creationIndex?: number
-  hostOnly?: boolean | null
-  pathIsDefault?: boolean | null
-  lastAccessed?: Date | 'Infinity' | null
+  hostOnly?: Nullable<boolean>
+  pathIsDefault?: Nullable<boolean>
+  lastAccessed?: Nullable<Date | 'Infinity'>
   sameSite?: string | undefined
 }
 

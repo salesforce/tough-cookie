@@ -1,8 +1,9 @@
 import * as punycode from 'punycode/'
 import { IP_V6_REGEX_OBJECT } from './constants'
+import type { Nullable } from '../utils'
 
 // S5.1.2 Canonicalized Host Names
-export function canonicalDomain(str: string | null) {
+export function canonicalDomain(str: Nullable<string>) {
   if (str == null) {
     return null
   }

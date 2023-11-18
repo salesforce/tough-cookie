@@ -12,7 +12,7 @@ type RequireUtil = () => typeof util | undefined
 type InspectCompatFunction = (
   object: unknown,
   showHidden?: boolean,
-  depth?: number | null,
+  depth?: number,
   color?: boolean,
 ) => string
 
@@ -48,7 +48,7 @@ export function getUtilInspect(
   return function inspect(
     object: unknown,
     showHidden?: boolean,
-    depth?: number | null,
+    depth?: number,
     color?: boolean,
   ): string {
     return nodeUtil

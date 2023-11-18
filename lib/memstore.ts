@@ -39,6 +39,7 @@ import {
   createPromiseCallback,
   inOperator,
   ErrorCallback,
+  Nullable,
 } from './utils'
 
 export type MemoryCookieStoreIndex = {
@@ -74,20 +75,20 @@ export class MemoryCookieStore extends Store {
   }
 
   override findCookie(
-    domain: string | null,
-    path: string | null,
-    key: string | undefined,
-  ): Promise<Cookie | undefined>
+    domain: Nullable<string>,
+    path: Nullable<string>,
+    key: Nullable<string>,
+  ): Promise<Nullable<Cookie>>
   override findCookie(
-    domain: string | null,
-    path: string | null,
-    key: string | undefined,
+    domain: Nullable<string>,
+    path: Nullable<string>,
+    key: Nullable<string>,
     callback: Callback<Cookie | undefined>,
   ): void
   override findCookie(
-    domain: string | null,
-    path: string | null,
-    key: string | undefined,
+    domain: Nullable<string>,
+    path: Nullable<string>,
+    key: Nullable<string>,
     callback?: Callback<Cookie | undefined>,
   ): unknown {
     const promiseCallback = createPromiseCallback(callback)
