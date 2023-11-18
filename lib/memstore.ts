@@ -33,7 +33,12 @@ import type { Cookie } from './cookie/cookie'
 import { pathMatch } from './pathMatch'
 import { permuteDomain } from './permuteDomain'
 import { Store } from './store'
-import { Callback, createPromiseCallback, ErrorCallback } from './utils'
+import {
+  Callback,
+  createPromiseCallback,
+  ErrorCallback,
+  Nullable,
+} from './utils'
 
 export type MemoryCookieStoreIndex = {
   [domain: string]: {
@@ -54,20 +59,20 @@ export class MemoryCookieStore extends Store {
   }
 
   override findCookie(
-    domain: string | null,
-    path: string | null,
-    key: string | undefined,
-  ): Promise<Cookie | undefined>
+    domain: Nullable<string>,
+    path: Nullable<string>,
+    key: Nullable<string>,
+  ): Promise<Nullable<Cookie>>
   override findCookie(
-    domain: string | null,
-    path: string | null,
-    key: string | undefined,
+    domain: Nullable<string>,
+    path: Nullable<string>,
+    key: Nullable<string>,
     callback: Callback<Cookie | undefined>,
   ): void
   override findCookie(
-    domain: string | null,
-    path: string | null,
-    key: string | undefined,
+    domain: Nullable<string>,
+    path: Nullable<string>,
+    key: Nullable<string>,
     callback?: Callback<Cookie | undefined>,
   ): unknown {
     const promiseCallback = createPromiseCallback(callback)
