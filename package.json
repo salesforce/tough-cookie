@@ -104,7 +104,7 @@
     "@types/psl": "^1",
     "@types/punycode": "^2",
     "@types/url-parse": "^1.4.8",
-    "@typescript-eslint/eslint-plugin": "^5.57.0",
+    "@typescript-eslint/eslint-plugin": "^6.11.0",
     "@typescript-eslint/parser": "^5.57.0",
     "async": "3.2.4",
     "eslint": "^8.36.0",
