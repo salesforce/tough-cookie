@@ -106,7 +106,7 @@
     "@types/url-parse": "^1.4.8",
     "@typescript-eslint/eslint-plugin": "^5.57.0",
     "@typescript-eslint/parser": "^5.57.0",
-    "async": "3.2.4",
+    "async": "3.2.5",
     "eslint": "^8.36.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^4.2.1",
