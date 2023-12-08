@@ -274,7 +274,7 @@ function parse(
   return c
 }
 
-function fromJSON(str: string | SerializedCookie | null | undefined | unknown) {
+function fromJSON(str: unknown) {
   if (!str || validators.isEmptyString(str)) {
     return null
   }

@@ -823,9 +823,8 @@ describe('CookieJar', () => {
             )
           },
           async asyncStyle() {
-            cookieHeaders = await cookieJar.getSetCookieStrings(
-              'http://example.com',
-            )
+            cookieHeaders =
+              await cookieJar.getSetCookieStrings('http://example.com')
           },
           syncStyle() {
             cookieHeaders =
@@ -891,9 +890,8 @@ describe('CookieJar', () => {
       })
 
       it('be able to get the set-cookie header strings for http://example.com', async () => {
-        cookieHeaders = await cookieJar.getSetCookieStrings(
-          'http://example.com',
-        )
+        cookieHeaders =
+          await cookieJar.getSetCookieStrings('http://example.com')
         expect(cookieHeaders).toEqual([
           'a=1; Domain=example.com; Path=/',
           'b=2; Domain=example.com; Path=/; HttpOnly',

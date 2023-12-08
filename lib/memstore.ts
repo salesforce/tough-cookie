@@ -216,7 +216,6 @@ export class MemoryCookieStore extends Store {
     callback?: Callback<void>,
   ): unknown {
     // this seems wrong but it stops typescript from complaining and all the test pass...
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     callback = callback ?? function () {}
 
     // updateCookie() may avoid updating cookies that are identical.  For example,
@@ -244,18 +243,7 @@ export class MemoryCookieStore extends Store {
   ): unknown {
     const promiseCallback = createPromiseCallback<void>(callback)
     const cb = promiseCallback.callback
-
-    const domainEntry = this.idx[domain]
-    if (domainEntry) {
-      const pathEntry = domainEntry[path]
-      if (pathEntry) {
-        const keyEntry = pathEntry[key]
-        if (keyEntry) {
-          delete pathEntry[key]
-        }
-      }
-    }
-
+    delete this.idx[domain]?.[path]?.[key]
     cb(null, undefined)
     return promiseCallback.promise
   }
@@ -277,9 +265,9 @@ export class MemoryCookieStore extends Store {
     const domainEntry = this.idx[domain]
     if (domainEntry) {
       if (path) {
-        delete domainEntry[path]
+        delete domainEntry?.[path]
       } else {
-        delete this.idx[domain]
+        delete this.idx?.[domain]
       }
     }
 

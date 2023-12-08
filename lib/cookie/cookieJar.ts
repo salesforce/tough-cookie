@@ -201,11 +201,10 @@ export class CookieJar {
     options: SetCookieOptions,
     callback: Callback<Cookie | undefined>,
   ): void
-  setCookie(cookie: string | Cookie, url: string): Promise<Cookie | undefined>
   setCookie(
     cookie: string | Cookie,
     url: string,
-    options: SetCookieOptions,
+    options?: SetCookieOptions,
   ): Promise<Cookie | undefined>
   setCookie(
     cookie: string | Cookie,
@@ -509,10 +508,9 @@ export class CookieJar {
     options: GetCookiesOptions | undefined,
     callback: Callback<Cookie[]>,
   ): void
-  getCookies(url: string): Promise<Cookie[]>
   getCookies(
     url: string,
-    options: GetCookiesOptions | undefined,
+    options?: GetCookiesOptions | undefined,
   ): Promise<Cookie[]>
   getCookies(
     url: string,
@@ -618,7 +616,6 @@ export class CookieJar {
       // non-RFC: allow retention of expired cookies by choice
       const expiryTime = c.expiryTime()
       if (expireCheck && expiryTime && expiryTime <= now) {
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
         store.removeCookie(c.domain, c.path, c.key, () => {}) // result ignored
         return false
       }
@@ -673,8 +670,7 @@ export class CookieJar {
     callback: Callback<string | undefined>,
   ): void
   getCookieString(url: string, callback: Callback<string | undefined>): void
-  getCookieString(url: string): Promise<string>
-  getCookieString(url: string, options: GetCookiesOptions): Promise<string>
+  getCookieString(url: string, options?: GetCookiesOptions): Promise<string>
   getCookieString(
     url: string,
     options: GetCookiesOptions | Callback<string | undefined>,
@@ -729,10 +725,9 @@ export class CookieJar {
     options: GetCookiesOptions,
     callback: Callback<string[] | undefined>,
   ): void
-  getSetCookieStrings(url: string): Promise<string[] | undefined>
   getSetCookieStrings(
     url: string,
-    options: GetCookiesOptions,
+    options?: GetCookiesOptions,
   ): Promise<string[] | undefined>
   getSetCookieStrings(
     url: string,
@@ -921,8 +916,7 @@ export class CookieJar {
 
   clone(callback: Callback<CookieJar>): void
   clone(newStore: Store, callback: Callback<CookieJar>): void
-  clone(): Promise<CookieJar>
-  clone(newStore: Store): Promise<CookieJar>
+  clone(newStore?: Store): Promise<CookieJar>
   clone(
     newStore?: Store | Callback<CookieJar>,
     callback?: Callback<CookieJar>,
@@ -1041,10 +1035,9 @@ export class CookieJar {
     store: Store,
     callback: Callback<CookieJar>,
   ): void
-  static deserialize(strOrObj: string | object): Promise<CookieJar>
   static deserialize(
     strOrObj: string | object,
-    store: Store,
+    store?: Store,
   ): Promise<CookieJar>
   static deserialize(
     strOrObj: string | object,
@@ -1074,7 +1067,7 @@ export class CookieJar {
       serialized = strOrObj
     }
 
-    const readSerializedProperty = (property: string): unknown | undefined => {
+    const readSerializedProperty = (property: string): unknown => {
       return serialized &&
         typeof serialized === 'object' &&
         inOperator(property, serialized)
@@ -1119,7 +1112,7 @@ export class CookieJar {
     const serialized: unknown =
       typeof strOrObj === 'string' ? JSON.parse(strOrObj) : strOrObj
 
-    const readSerializedProperty = (property: string): unknown | undefined => {
+    const readSerializedProperty = (property: string): unknown => {
       return serialized &&
         typeof serialized === 'object' &&
         inOperator(property, serialized)

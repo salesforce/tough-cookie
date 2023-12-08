@@ -2,8 +2,8 @@
   "root": true,
   "extends": [
     "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "plugin:@typescript-eslint/recommended-type-checked",
+    "plugin:@typescript-eslint/strict",
     "plugin:prettier/recommended"
   ],
   "parser": "@typescript-eslint/parser",
@@ -13,6 +13,8 @@
   },
   "reportUnusedDisableDirectives": true,
   "rules": {
+    // Causes a lot of errors - will address separately
+    "@typescript-eslint/no-invalid-void-type": "off",
     "max-lines": ["warn", 500]
   }
 }
