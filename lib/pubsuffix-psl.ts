@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 'use strict'
-import * as psl from 'psl'
+import { getDomain } from 'tldts'
 
 // RFC 6761
 const SPECIAL_USE_DOMAINS = ['local', 'example', 'invalid', 'localhost', 'test']
@@ -84,5 +84,5 @@ export function getPublicSuffix(
     )
   }
 
-  return psl.get(domain)
+  return getDomain(domain)
 }
