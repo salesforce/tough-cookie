@@ -390,7 +390,7 @@ Base class for CookieJar stores. Available as `tough.Store`.
 
 ### Store API
 
-The storage model for each `CookieJar` instance can be replaced with a custom implementation. The default is `MemoryCookieStore` which can be found in [`lib/memstore.js`](https://github.com/salesforce/tough-cookie/blob/master/lib/memstore.js). The API uses continuation-passing-style to allow for asynchronous stores.
+The storage model for each `CookieJar` instance can be replaced with a custom implementation. The default is `MemoryCookieStore` which can be found in [`lib/memstore.js`](https://github.com/salesforce/tough-cookie/blob/master/lib/memstore.ts). The API uses continuation-passing-style to allow for asynchronous stores.
 
 Stores should inherit from the base `Store` class, which is available as a top-level export.
 
