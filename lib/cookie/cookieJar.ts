@@ -8,6 +8,7 @@ import { pathMatch } from '../pathMatch'
 import { Cookie } from './cookie'
 import {
   Callback,
+  ErrorCallback,
   createPromiseCallback,
   inOperator,
   safeToString,
@@ -169,7 +170,11 @@ export class CookieJar {
     this.store = store ?? new MemoryCookieStore()
   }
 
-  private callSync<T>(fn: (callback: Callback<T>) => void): T | undefined {
+  private callSync<T>(
+    // Using tuples is needed to check if `T` is `never` because `T extends never ? true : false`
+    // evaluates to `never` instead of `true`.
+    fn: (callback: [T] extends [never] ? ErrorCallback : Callback<T>) => void,
+  ): T | undefined {
     if (!this.store.synchronous) {
       throw new Error(
         'CookieJar store is not synchronous; use async API instead.',
@@ -177,7 +182,7 @@ export class CookieJar {
     }
     let syncErr: Error | null = null
     let syncResult: T | undefined = undefined
-    fn.call(this, (error, result) => {
+    fn.call(this, (error: Error | null, result?: T | undefined) => {
       syncErr = error
       syncResult = result
     })
@@ -413,22 +418,14 @@ export class CookieJar {
     const store = this.store
 
     if (!store.updateCookie) {
-      store.updateCookie = function (
+      store.updateCookie = async function (
         _oldCookie: Cookie,
         newCookie: Cookie,
-        cb?: Callback<void>,
+        cb?: ErrorCallback,
       ): Promise<void> {
         return this.putCookie(newCookie).then(
-          () => {
-            if (cb) {
-              cb(null, undefined)
-            }
-          },
-          (error: Error) => {
-            if (cb) {
-              cb(error, undefined)
-            }
-          },
+          () => cb?.(null),
+          (error: Error) => cb?.(error),
         )
       }
     }
@@ -492,13 +489,10 @@ export class CookieJar {
     url: string,
     options?: SetCookieOptions,
   ): Cookie | undefined {
-    const setCookieFn = this.setCookie.bind(
-      this,
-      cookie,
-      url,
-      options as SetCookieOptions,
-    )
-    return this.callSync<Cookie | undefined>(setCookieFn)
+    const setCookieFn = options
+      ? this.setCookie.bind(this, cookie, url, options)
+      : this.setCookie.bind(this, cookie, url)
+    return this.callSync(setCookieFn)
   }
 
   // RFC6365 S5.4
@@ -659,9 +653,7 @@ export class CookieJar {
     return promiseCallback.promise
   }
   getCookiesSync(url: string, options?: GetCookiesOptions): Cookie[] {
-    return (
-      this.callSync<Cookie[]>(this.getCookies.bind(this, url, options)) ?? []
-    )
+    return this.callSync(this.getCookies.bind(this, url, options)) ?? []
   }
 
   getCookieString(
@@ -686,19 +678,14 @@ export class CookieJar {
       options = undefined
     }
     const promiseCallback = createPromiseCallback(callback)
-    const next: Callback<Cookie[]> = function (
-      err: Error | null,
-      cookies: Cookie[] | undefined,
-    ) {
+    const next: Callback<Cookie[]> = function (err, cookies) {
       if (err) {
         promiseCallback.callback(err)
-      } else if (cookies === undefined) {
-        promiseCallback.callback(null, cookies)
       } else {
         promiseCallback.callback(
           null,
           cookies
-            .sort(cookieCompare)
+            ?.sort(cookieCompare)
             .map((c) => c.cookieString())
             .join('; '),
         )
@@ -710,8 +697,10 @@ export class CookieJar {
   }
   getCookieStringSync(url: string, options?: GetCookiesOptions): string {
     return (
-      this.callSync<string | undefined>(
-        this.getCookieString.bind(this, url, options as GetCookiesOptions),
+      this.callSync(
+        options
+          ? this.getCookieString.bind(this, url, options)
+          : this.getCookieString.bind(this, url),
       ) ?? ''
     )
   }
@@ -773,9 +762,7 @@ export class CookieJar {
     options: GetCookiesOptions = {},
   ): string[] {
     return (
-      this.callSync<string[] | undefined>(
-        this.getSetCookieStrings.bind(this, url, options),
-      ) ?? []
+      this.callSync(this.getSetCookieStrings.bind(this, url, options)) ?? []
     )
   }
 
@@ -851,9 +838,7 @@ export class CookieJar {
     return promiseCallback.promise
   }
   serializeSync(): SerializedCookieJar | undefined {
-    return this.callSync<SerializedCookieJar>((callback) => {
-      this.serialize(callback)
-    })
+    return this.callSync((callback) => this.serialize(callback))
   }
 
   toJSON() {
@@ -959,10 +944,10 @@ export class CookieJar {
     return this._cloneSync(newStore)
   }
 
-  removeAllCookies(callback: Callback<void>): void
+  removeAllCookies(callback: ErrorCallback): void
   removeAllCookies(): Promise<void>
-  removeAllCookies(callback?: Callback<void>): unknown {
-    const promiseCallback = createPromiseCallback<void>(callback)
+  removeAllCookies(callback?: ErrorCallback): unknown {
+    const promiseCallback = createPromiseCallback<undefined>(callback)
     const cb = promiseCallback.callback
 
     const store = this.store
@@ -974,7 +959,9 @@ export class CookieJar {
       typeof store.removeAllCookies === 'function' &&
       store.removeAllCookies !== Store.prototype.removeAllCookies
     ) {
-      void store.removeAllCookies(cb)
+      // `Callback<undefined>` and `ErrorCallback` are *technically* incompatible, but for the
+      // standard implementation `cb = (err, result) => {}`, they're essentially the same.
+      void store.removeAllCookies(cb as ErrorCallback)
       return promiseCallback.promise
     }
 
@@ -989,7 +976,7 @@ export class CookieJar {
       }
 
       if (cookies.length === 0) {
-        cb(null)
+        cb(null, undefined)
         return
       }
 
@@ -1005,7 +992,7 @@ export class CookieJar {
 
         if (completedCount === cookies?.length) {
           if (removeErrors[0]) cb(removeErrors[0])
-          else cb(null)
+          else cb(null, undefined)
           return
         }
       }
@@ -1023,7 +1010,9 @@ export class CookieJar {
     return promiseCallback.promise
   }
   removeAllCookiesSync(): void {
-    return this.callSync<void>((callback) => this.removeAllCookies(callback))
+    return this.callSync<never>((callback) => {
+      return this.removeAllCookies(callback)
+    })
   }
 
   static deserialize(

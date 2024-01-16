@@ -4,6 +4,11 @@ export interface Callback<T> {
   (error: null, result: T): void
 }
 
+/** A callback function that only accepts an error. */
+export interface ErrorCallback {
+  (error: Error | null): void
+}
+
 /** Wrapped `Object.prototype.toString`, so that you don't need to remember to use `.call()`. */
 export const objectToString = (obj: unknown) =>
   Object.prototype.toString.call(obj)
