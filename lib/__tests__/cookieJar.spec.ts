@@ -36,8 +36,6 @@ import { MemoryCookieStore } from '../memstore'
 import { Store } from '../store'
 import { ParameterError } from '../validators'
 
-jest.useFakeTimers()
-
 // ported from:
 // - test/api_test.js (cookie jar tests)
 // - test/cookie_jar_test.js
@@ -1201,6 +1199,46 @@ it('should fix issue #282 - Prototype pollution when setting a cookie with the d
 
   const pollutedObject = {}
   expect('/notauth' in pollutedObject).toBe(false)
+})
+
+it('should fix issue #154 - Expiry should not be affected by creation date', async () => {
+  const now = Date.now()
+  const jar = new CookieJar()
+
+  await jar.setCookie('foo=bar; Max-Age=60;', 'https://example.com')
+
+  const initialCookies = await jar.getCookies('https://example.com')
+  expect(initialCookies).toEqual([
+    expect.objectContaining({
+      key: 'foo',
+      value: 'bar',
+      path: '/',
+      domain: 'example.com',
+      maxAge: 60,
+    }),
+  ])
+  // the expiry time should be 60s from now (0)
+  expect(initialCookies[0]?.expiryTime()).toBe(now + 60 * 1000)
+
+  // advance the time by 1s, so now = 1000
+  jest.advanceTimersByTime(1000)
+
+  await jar.setCookie('foo=bar; Max-Age=60;', 'https://example.com')
+
+  const updatedCookies = await jar.getCookies('https://example.com')
+  expect(updatedCookies).toEqual([
+    expect.objectContaining({
+      key: 'foo',
+      value: 'bar',
+      path: '/',
+      domain: 'example.com',
+      maxAge: 60,
+      // the creation time should be unchanged as per the spec
+      creation: initialCookies[0]?.creation,
+    }),
+  ])
+  // the expiry time should be 60s from now (1000)
+  expect(updatedCookies[0]?.expiryTime()).toBe(now + 60 * 1000 + 1000)
 })
 
 // special use domains under a sub-domain

@@ -36,7 +36,7 @@
 'use strict'
 
 import type { Cookie } from './cookie/cookie'
-import type { Callback } from './utils'
+import type { Callback, ErrorCallback } from './utils'
 
 export class Store {
   synchronous: boolean
@@ -86,8 +86,8 @@ export class Store {
   }
 
   putCookie(cookie: Cookie): Promise<void>
-  putCookie(cookie: Cookie, callback: Callback<void>): void
-  putCookie(_cookie: Cookie, _callback?: Callback<void>): unknown {
+  putCookie(cookie: Cookie, callback: ErrorCallback): void
+  putCookie(_cookie: Cookie, _callback?: ErrorCallback): unknown {
     throw new Error('putCookie is not implemented')
   }
 
@@ -95,12 +95,12 @@ export class Store {
   updateCookie(
     oldCookie: Cookie,
     newCookie: Cookie,
-    callback: Callback<void>,
+    callback: ErrorCallback,
   ): void
   updateCookie(
     _oldCookie: Cookie,
     _newCookie: Cookie,
-    _callback?: Callback<void>,
+    _callback?: ErrorCallback,
   ): unknown {
     // recommended default implementation:
     // return this.putCookie(newCookie, cb);
@@ -116,13 +116,13 @@ export class Store {
     domain: string | null | undefined,
     path: string | null | undefined,
     key: string | null | undefined,
-    callback: Callback<void>,
+    callback: ErrorCallback,
   ): void
   removeCookie(
     _domain: string | null | undefined,
     _path: string | null | undefined,
     _key: string | null | undefined,
-    _callback?: Callback<void>,
+    _callback?: ErrorCallback,
   ): unknown {
     throw new Error('removeCookie is not implemented')
   }
@@ -131,19 +131,19 @@ export class Store {
   removeCookies(
     domain: string,
     path: string | null,
-    callback: Callback<void>,
+    callback: ErrorCallback,
   ): void
   removeCookies(
     _domain: string,
     _path: string | null,
-    _callback?: Callback<void>,
+    _callback?: ErrorCallback,
   ): unknown {
     throw new Error('removeCookies is not implemented')
   }
 
   removeAllCookies(): Promise<void>
-  removeAllCookies(callback: Callback<void>): void
-  removeAllCookies(_callback?: Callback<void>): unknown {
+  removeAllCookies(callback: ErrorCallback): void
+  removeAllCookies(_callback?: ErrorCallback): unknown {
     throw new Error('removeAllCookies is not implemented')
   }
 

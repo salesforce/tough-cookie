@@ -13,8 +13,6 @@
   },
   "reportUnusedDisableDirectives": true,
   "rules": {
-    // Causes a lot of errors - will address separately
-    "@typescript-eslint/no-invalid-void-type": "off",
     "max-lines": ["warn", 500]
   }
 }

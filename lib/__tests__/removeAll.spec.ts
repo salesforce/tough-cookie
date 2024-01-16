@@ -2,7 +2,7 @@ import type { Cookie } from '../cookie/cookie'
 import { CookieJar } from '../cookie/cookieJar'
 import { MemoryCookieStore } from '../memstore'
 import { Store } from '../store'
-import type { Callback } from '../utils'
+import type { Callback, ErrorCallback } from '../utils'
 
 const url = 'http://example.com/index.html'
 
@@ -33,24 +33,20 @@ describe('store removeAllCookies API', () => {
       // replace remove cookie behavior to throw an error on the 4th invocation
       const _removeCookie = store.removeCookie.bind(store)
       const spy = jest.spyOn(store, 'removeCookie')
-      spy.mockImplementationOnce(
-        (domain: string, path: string, key: string, callback: Callback<void>) =>
-          _removeCookie.call(store, domain, path, key, callback),
+      spy.mockImplementationOnce((domain, path, key, callback) =>
+        _removeCookie.call(store, domain, path, key, callback),
       )
-      spy.mockImplementationOnce(
-        (domain: string, path: string, key: string, callback: Callback<void>) =>
-          _removeCookie.call(store, domain, path, key, callback),
+      spy.mockImplementationOnce((domain, path, key, callback) =>
+        _removeCookie.call(store, domain, path, key, callback),
       )
-      spy.mockImplementationOnce(
-        (domain: string, path: string, key: string, callback: Callback<void>) =>
-          _removeCookie.call(store, domain, path, key, callback),
+      spy.mockImplementationOnce((domain, path, key, callback) =>
+        _removeCookie.call(store, domain, path, key, callback),
       )
-      spy.mockImplementationOnce(
-        (_domain, _path, _key, callback: Callback<void>) =>
-          callback(new Error('something happened 4')),
+      spy.mockImplementationOnce((_domain, _path, _key, callback) =>
+        callback(new Error('something happened 4')),
       )
 
-      await expect(jar.removeAllCookies()).rejects.toThrowError(
+      await expect(jar.removeAllCookies()).rejects.toThrow(
         'something happened 4',
       )
 
@@ -73,21 +69,14 @@ describe('store removeAllCookies API', () => {
       // replace remove cookie behavior to throw an error on the 4th invocation
       const _removeCookie = store.removeCookie.bind(store)
       const spy = jest.spyOn(store, 'removeCookie')
-      spy.mockImplementation(
-        (
-          domain: string,
-          path: string,
-          key: string,
-          callback: Callback<void>,
-        ) => {
-          if (spy.mock.calls.length % 2 === 1) {
-            return callback(
-              new Error(`something happened ${spy.mock.calls.length}`),
-            )
-          }
-          return _removeCookie.call(store, domain, path, key, callback)
-        },
-      )
+      spy.mockImplementation((domain, path, key, callback) => {
+        if (spy.mock.calls.length % 2 === 1) {
+          return callback(
+            new Error(`something happened ${spy.mock.calls.length}`),
+          )
+        }
+        return _removeCookie.call(store, domain, path, key, callback)
+      })
 
       await expect(jar.removeAllCookies()).rejects.toThrowError(
         'something happened 1',
@@ -181,8 +170,8 @@ class StoreWithoutRemoveAll extends Store {
   }
 
   override putCookie(cookie: Cookie): Promise<void>
-  override putCookie(cookie: Cookie, callback: Callback<void>): void
-  override putCookie(cookie: Cookie, callback?: Callback<void>): unknown {
+  override putCookie(cookie: Cookie, callback: ErrorCallback): void
+  override putCookie(cookie: Cookie, callback?: ErrorCallback): unknown {
     this.stats.put++
     this.cookies.push(cookie)
     if (!callback) {
@@ -210,13 +199,13 @@ class StoreWithoutRemoveAll extends Store {
     domain: string,
     path: string,
     key: string,
-    callback: Callback<void>,
+    callback: ErrorCallback,
   ): void
   override removeCookie(
     _domain: string,
     _path: string,
     _key: string,
-    callback?: Callback<void>,
+    callback?: ErrorCallback,
   ): unknown {
     this.stats.remove++
     if (!callback) {
@@ -257,13 +246,13 @@ class MemoryStoreExtension extends MemoryCookieStore {
     domain: string,
     path: string,
     key: string,
-    callback: Callback<void>,
+    callback: ErrorCallback,
   ): void
   override removeCookie(
     domain: string,
     path: string,
     key: string,
-    callback?: Callback<void>,
+    callback?: ErrorCallback,
   ): unknown {
     this.stats.remove++
     if (!callback) {
@@ -273,8 +262,8 @@ class MemoryStoreExtension extends MemoryCookieStore {
   }
 
   override removeAllCookies(): Promise<void>
-  override removeAllCookies(callback: Callback<void>): void
-  override removeAllCookies(callback?: Callback<void>): unknown {
+  override removeAllCookies(callback: ErrorCallback): void
+  override removeAllCookies(callback?: ErrorCallback): unknown {
     this.stats.removeAll++
     if (!callback) {
       throw new Error('This should not be undefined')
