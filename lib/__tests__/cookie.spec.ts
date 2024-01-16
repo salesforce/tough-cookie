@@ -31,8 +31,6 @@
 
 import { Cookie } from '../cookie/cookie'
 
-jest.useFakeTimers()
-
 // ported from test/api_test.js (cookie tests)
 describe('Cookie', () => {
   let cookie: Cookie
