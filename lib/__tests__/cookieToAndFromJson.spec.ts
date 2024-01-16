@@ -1,7 +1,5 @@
 import { Cookie } from '../cookie/cookie'
 
-jest.useFakeTimers()
-
 describe('Cookie.toJSON()', () => {
   it('should serialize a cookie to JSON', () => {
     const cookie = Cookie.parse(
