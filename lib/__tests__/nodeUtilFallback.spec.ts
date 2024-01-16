@@ -2,25 +2,9 @@ import util from 'util'
 import { Cookie } from '../cookie/cookie'
 import { CookieJar } from '../cookie/cookieJar'
 import { inspectFallback, MemoryCookieStore } from '../memstore'
-import { getCustomInspectSymbol, getUtilInspect } from '../utilHelper'
+import { getUtilInspect } from '../utilHelper'
 
 describe('Node util module fallback for non-node environments', () => {
-  describe('getCustomInspectSymbol', () => {
-    it('should not be null in a node environment', () => {
-      expect(getCustomInspectSymbol()).toEqual(
-        Symbol.for('nodejs.util.inspect.custom') || util.inspect.custom,
-      )
-    })
-
-    it('should not be null in a non-node environment since we create the symbol if it does not exist', () => {
-      expect(
-        getCustomInspectSymbol({
-          requireUtil: () => undefined,
-        }),
-      ).toEqual(Symbol.for('nodejs.util.inspect.custom') || util.inspect.custom)
-    })
-  })
-
   describe('getUtilInspect', () => {
     it('should use util.inspect in a node environment', () => {
       const inspect = getUtilInspect(() => 'fallback')

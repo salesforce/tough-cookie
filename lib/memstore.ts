@@ -33,12 +33,13 @@ import type { Cookie } from './cookie/cookie'
 import { pathMatch } from './pathMatch'
 import { permuteDomain } from './permuteDomain'
 import { Store } from './store'
-import { getCustomInspectSymbol, getUtilInspect } from './utilHelper'
+import { getUtilInspect } from './utilHelper'
 import {
   Callback,
   createPromiseCallback,
   inOperator,
   ErrorCallback,
+  NODEJS_UTIL_INSPECT_CUSTOM,
 } from './utils'
 
 export type MemoryCookieStoreIndex = {
@@ -57,15 +58,12 @@ export class MemoryCookieStore extends Store {
     super()
     this.synchronous = true
     this.idx = Object.create(null) as MemoryCookieStoreIndex
-    const customInspectSymbol = getCustomInspectSymbol()
-    if (customInspectSymbol) {
-      Object.defineProperty(this, customInspectSymbol, {
-        value: this.inspect.bind(this),
-        enumerable: false,
-        writable: false,
-        configurable: false,
-      })
-    }
+    Object.defineProperty(this, NODEJS_UTIL_INSPECT_CUSTOM, {
+      value: this.inspect.bind(this),
+      enumerable: false,
+      writable: false,
+      configurable: false,
+    })
   }
 
   inspect() {

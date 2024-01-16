@@ -36,7 +36,6 @@ const tough = require("../dist/cookie");
 const util = require("util");
 const inspectFallback = require("../dist/memstore").inspectFallback;
 const {
-  getCustomInspectSymbol,
   getUtilInspect
 } = require("../dist/utilHelper");
 const Cookie = tough.Cookie;
@@ -49,22 +48,6 @@ function resetAgeFields(str) {
 vows
   .describe("Node util module fallback for non-node environments")
   .addBatch({
-    getCustomInspectSymbol: {
-      "should not be null in a node environment": function() {
-        assert.equal(
-          getCustomInspectSymbol(),
-          Symbol.for("nodejs.util.inspect.custom") || util.inspect.custom
-        );
-      },
-      "should not be null in a node environment when custom inspect symbol cannot be retrieved (< node v10.12.0)": function() {
-        assert.equal(
-          getCustomInspectSymbol({
-            lookupCustomInspectSymbol: () => undefined
-          }),
-          Symbol.for("nodejs.util.inspect.custom") || util.inspect.custom
-        );
-      }
-    },
     getUtilInspect: {
       "should use util.inspect in a node environment": function() {
         const inspect = getUtilInspect(() => "fallback");

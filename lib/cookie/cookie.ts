@@ -34,8 +34,7 @@
 
 import * as pubsuffix from '../pubsuffix-psl'
 import * as validators from '../validators'
-import { getCustomInspectSymbol } from '../utilHelper'
-import { inOperator } from '../utils'
+import { inOperator, NODEJS_UTIL_INSPECT_CUSTOM } from '../utils'
 
 import { formatDate } from './formatDate'
 import { parseDate } from './parseDate'
@@ -421,16 +420,12 @@ export class Cookie {
   sameSite: string | undefined
 
   constructor(options: CreateCookieOptions = {}) {
-    // supports inspect if that feature is available in the environment
-    const customInspectSymbol = getCustomInspectSymbol()
-    if (customInspectSymbol) {
-      Object.defineProperty(this, customInspectSymbol, {
-        value: this.inspect.bind(this),
-        enumerable: false,
-        writable: false,
-        configurable: false,
-      })
-    }
+    Object.defineProperty(this, NODEJS_UTIL_INSPECT_CUSTOM, {
+      value: this.inspect.bind(this),
+      enumerable: false,
+      writable: false,
+      configurable: false,
+    })
 
     Object.assign(this, cookieDefaults, options)
     this.creation = options.creation ?? cookieDefaults.creation ?? new Date()

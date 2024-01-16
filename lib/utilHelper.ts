@@ -25,20 +25,6 @@ function requireUtil(): typeof util | undefined {
   }
 }
 
-// for v10.12.0+
-function lookupCustomInspectSymbol(): symbol {
-  return Symbol.for('nodejs.util.inspect.custom')
-}
-
-// for older node environments
-function tryReadingCustomSymbolFromUtilInspect(options: {
-  requireUtil?: RequireUtil
-}): typeof util.inspect.custom | undefined {
-  const _requireUtil = options.requireUtil || requireUtil
-  const nodeUtil = _requireUtil()
-  return nodeUtil ? nodeUtil.inspect.custom : undefined
-}
-
 export function getUtilInspect(
   fallback: (value: unknown) => string,
   options: { requireUtil?: RequireUtil } = {},
@@ -55,16 +41,4 @@ export function getUtilInspect(
       ? nodeUtil.inspect(object, showHidden, depth, color)
       : fallback(object)
   }
-}
-
-export function getCustomInspectSymbol(
-  options: {
-    requireUtil?: RequireUtil
-  } = {},
-): symbol {
-  // get custom inspect symbol for node environments
-  return (
-    tryReadingCustomSymbolFromUtilInspect(options) ||
-    lookupCustomInspectSymbol()
-  )
 }
