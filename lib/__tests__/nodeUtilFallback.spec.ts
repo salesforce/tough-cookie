@@ -1,10 +1,8 @@
 import util from 'util'
 import { Cookie } from '../cookie/cookie'
 import { CookieJar } from '../cookie/cookieJar'
-import { MemoryCookieStore, inspectFallback } from '../memstore'
+import { inspectFallback, MemoryCookieStore } from '../memstore'
 import { getCustomInspectSymbol, getUtilInspect } from '../utilHelper'
-
-jest.useFakeTimers()
 
 describe('Node util module fallback for non-node environments', () => {
   describe('getCustomInspectSymbol', () => {
