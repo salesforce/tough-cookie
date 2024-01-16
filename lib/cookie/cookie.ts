@@ -32,7 +32,7 @@
 // This file was too big before we added max-lines, and it's ongoing work to reduce its size.
 /* eslint max-lines: [1, 750] */
 
-import * as pubsuffix from '../pubsuffix-psl'
+import { getPublicSuffix } from '../getPublicSuffix'
 import * as validators from '../validators'
 import { getCustomInspectSymbol } from '../utilHelper'
 import { inOperator } from '../utils'
@@ -559,7 +559,7 @@ export class Cookie {
       if (cdomain.match(/\.$/)) {
         return false // S4.1.2.3 suggests that this is bad. domainMatch() tests confirm this
       }
-      const suffix = pubsuffix.getPublicSuffix(cdomain)
+      const suffix = getPublicSuffix(cdomain)
       if (suffix == null) {
         // it's a public suffix
         return false

@@ -84,5 +84,8 @@ export function getPublicSuffix(
     )
   }
 
-  return getDomain(domain)
+  return getDomain(domain, {
+    allowIcannDomains: true,
+    allowPrivateDomains: true,
+  })
 }

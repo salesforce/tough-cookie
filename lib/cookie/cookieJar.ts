@@ -1,6 +1,6 @@
 import urlParse from 'url-parse'
 
-import * as pubsuffix from '../pubsuffix-psl'
+import { getPublicSuffix } from '../getPublicSuffix'
 import * as validators from '../validators'
 import { Store } from '../store'
 import { MemoryCookieStore } from '../memstore'
@@ -298,7 +298,7 @@ export class CookieJar {
         const cdomain = cookie.cdomain()
         const suffix =
           typeof cdomain === 'string'
-            ? pubsuffix.getPublicSuffix(cdomain, {
+            ? getPublicSuffix(cdomain, {
                 allowSpecialUseDomain: this.allowSpecialUseDomain,
                 ignoreError: options?.ignoreError,
               })
