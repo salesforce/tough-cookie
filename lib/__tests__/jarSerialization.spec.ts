@@ -35,8 +35,6 @@ import { MemoryCookieStore } from '../memstore'
 import { Store } from '../store'
 import { version } from '../version'
 
-jest.useFakeTimers()
-
 describe('cookieJar serialization', () => {
   it('should use the expected version', () => {
     expect(version).toBe('5.0.0-rc.0')
