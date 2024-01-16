@@ -2,8 +2,6 @@ import { Cookie } from '../cookie/cookie'
 import { cookieCompare } from '../cookie/cookieCompare'
 import { CookieJar } from '../cookie/cookieJar'
 
-jest.useFakeTimers()
-
 describe('Cookie sorting', () => {
   describe('assumptions', () => {
     it('should set the creation index during construction', () => {
