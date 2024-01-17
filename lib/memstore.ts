@@ -33,7 +33,6 @@ import type { Cookie } from './cookie/cookie'
 import { pathMatch } from './pathMatch'
 import { permuteDomain } from './permuteDomain'
 import { Store } from './store'
-import { getUtilInspect } from './utilHelper'
 import {
   Callback,
   createPromiseCallback,
@@ -67,8 +66,7 @@ export class MemoryCookieStore extends Store {
   }
 
   inspect() {
-    const util = { inspect: getUtilInspect(inspectFallback) }
-    return `{ idx: ${util.inspect(this.idx, false, 2)} }`
+    return `{ idx: ${inspect(this.idx)} }`
   }
 
   override findCookie(
@@ -309,7 +307,8 @@ export class MemoryCookieStore extends Store {
   }
 }
 
-export function inspectFallback(val: unknown): string {
+// Approximates node's util.inspect, so that we can still inspect in non-node environments
+function inspect(val: unknown): string {
   if (typeof val === 'string') {
     return `'${val}'`
   }
