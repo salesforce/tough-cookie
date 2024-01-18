@@ -32,7 +32,7 @@
 const vows = require("vows");
 const assert = require("assert");
 const async = require("async");
-const tough = require("../lib/cookie");
+const tough = require("../dist/cookie");
 const Cookie = tough.Cookie;
 const CookieJar = tough.CookieJar;
 
@@ -55,6 +55,7 @@ vows
       assert.equal(tough.version, require("../package.json").version);
     }
   })
+  // see lib/__tests__/cookie.spec.ts
   .addBatch({
     Constructor: {
       topic: function() {
@@ -555,7 +556,7 @@ vows
         topic: function() {
           const some = [
             "=a;domain=example.com", // index 0, falsey
-            "=b;domain=example.com", // index 1, truthy
+            "=b;domain=example.com", // index 1, falsey
             "c=d;domain=example.com" // index 2, truthy
           ];
           return some.map(Cookie.parse);

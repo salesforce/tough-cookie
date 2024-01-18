@@ -28,38 +28,38 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-"use strict";
-const pubsuffix = require("./pubsuffix-psl");
 
-// Gives the permutation of all possible domainMatch()es of a given domain. The
-// array is in shortest-to-longest order.  Handy for indexing.
+import { Cookie } from '../cookie/cookie'
 
-function permuteDomain(domain, allowSpecialUseDomain) {
-  const pubSuf = pubsuffix.getPublicSuffix(domain, {
-    allowSpecialUseDomain: allowSpecialUseDomain
-  });
+// ported from test/api_test.js (cookie tests)
+describe('Cookie', () => {
+  let cookie: Cookie
 
-  if (!pubSuf) {
-    return null;
-  }
-  if (pubSuf == domain) {
-    return [domain];
-  }
+  describe('constructor', () => {
+    beforeEach(() => {
+      cookie = new Cookie({
+        key: 'test',
+        value: 'b',
+        maxAge: 60,
+      })
+    })
 
-  // Nuke trailing dot
-  if (domain.slice(-1) == ".") {
-    domain = domain.slice(0, -1);
-  }
+    it('should check for key property', () => {
+      expect(cookie.key).toBe('test')
+    })
 
-  const prefix = domain.slice(0, -(pubSuf.length + 1)); // ".example.com"
-  const parts = prefix.split(".").reverse();
-  let cur = pubSuf;
-  const permutations = [cur];
-  while (parts.length) {
-    cur = `${parts.shift()}.${cur}`;
-    permutations.push(cur);
-  }
-  return permutations;
-}
+    it('should check for value property', () => {
+      expect(cookie.value).toBe('b')
+    })
 
-exports.permuteDomain = permuteDomain;
+    it('should check for maxAge', () => {
+      expect(cookie.maxAge).toBe(60)
+    })
+
+    it('should check for default values for unspecified properties', () => {
+      expect(cookie.expires).toBe('Infinity')
+      expect(cookie.secure).toBe(false)
+      expect(cookie.httpOnly).toBe(false)
+    })
+  })
+})

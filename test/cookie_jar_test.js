@@ -32,7 +32,7 @@
 const vows = require("vows");
 const assert = require("assert");
 const async = require("async");
-const tough = require("../lib/cookie");
+const tough = require("../dist/cookie");
 const Cookie = tough.Cookie;
 const CookieJar = tough.CookieJar;
 
@@ -42,6 +42,7 @@ function at(offset) {
   return { now: new Date(atNow + offset) };
 }
 
+// see lib/__tests__/cookie_jar_test.js (set cookie tests)
 vows
   .describe("CookieJar")
   .addBatch({

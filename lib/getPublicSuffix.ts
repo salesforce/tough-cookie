@@ -28,46 +28,64 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-"use strict";
-const psl = require("psl");
+'use strict'
+import { getDomain } from 'tldts'
 
 // RFC 6761
-const SPECIAL_USE_DOMAINS = [
-  "local",
-  "example",
-  "invalid",
-  "localhost",
-  "test"
-];
+const SPECIAL_USE_DOMAINS = ['local', 'example', 'invalid', 'localhost', 'test']
 
-const SPECIAL_TREATMENT_DOMAINS = ["localhost", "invalid"];
+const SPECIAL_TREATMENT_DOMAINS = ['localhost', 'invalid']
 
-function getPublicSuffix(domain, options = {}) {
-  const domainParts = domain.split(".");
-  const topLevelDomain = domainParts[domainParts.length - 1];
-  const allowSpecialUseDomain = !!options.allowSpecialUseDomain;
-  const ignoreError = !!options.ignoreError;
+type GetPublicSuffixOptions = {
+  allowSpecialUseDomain?: boolean | undefined
+  ignoreError?: boolean | undefined
+}
 
-  if (allowSpecialUseDomain && SPECIAL_USE_DOMAINS.includes(topLevelDomain)) {
+const defaultGetPublicSuffixOptions: GetPublicSuffixOptions = {
+  allowSpecialUseDomain: false,
+  ignoreError: false,
+}
+
+export function getPublicSuffix(
+  domain: string,
+  options: GetPublicSuffixOptions = {},
+): string | null {
+  options = { ...defaultGetPublicSuffixOptions, ...options }
+  const domainParts = domain.split('.')
+  const topLevelDomain = domainParts[domainParts.length - 1]
+  const allowSpecialUseDomain = !!options.allowSpecialUseDomain
+  const ignoreError = !!options.ignoreError
+
+  if (
+    allowSpecialUseDomain &&
+    topLevelDomain !== undefined &&
+    SPECIAL_USE_DOMAINS.includes(topLevelDomain)
+  ) {
     if (domainParts.length > 1) {
-      const secondLevelDomain = domainParts[domainParts.length - 2];
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const secondLevelDomain = domainParts[domainParts.length - 2]!
       // In aforementioned example, the eTLD/pubSuf will be apple.localhost
-      return `${secondLevelDomain}.${topLevelDomain}`;
+      return `${secondLevelDomain}.${topLevelDomain}`
     } else if (SPECIAL_TREATMENT_DOMAINS.includes(topLevelDomain)) {
       // For a single word special use domain, e.g. 'localhost' or 'invalid', per RFC 6761,
       // "Application software MAY recognize {localhost/invalid} names as special, or
       // MAY pass them to name resolution APIs as they would for other domain names."
-      return `${topLevelDomain}`;
+      return `${topLevelDomain}`
     }
   }
 
-  if (!ignoreError && SPECIAL_USE_DOMAINS.includes(topLevelDomain)) {
+  if (
+    !ignoreError &&
+    topLevelDomain !== undefined &&
+    SPECIAL_USE_DOMAINS.includes(topLevelDomain)
+  ) {
     throw new Error(
-      `Cookie has domain set to the public suffix "${topLevelDomain}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain:true, rejectPublicSuffixes: false}.`
-    );
+      `Cookie has domain set to the public suffix "${topLevelDomain}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain:true, rejectPublicSuffixes: false}.`,
+    )
   }
 
-  return psl.get(domain);
+  return getDomain(domain, {
+    allowIcannDomains: true,
+    allowPrivateDomains: true,
+  })
 }
-
-exports.getPublicSuffix = getPublicSuffix;
