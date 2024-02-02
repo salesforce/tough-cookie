@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 'use strict'
-import { getPublicSuffix } from './pubsuffix-psl'
+import { getPublicSuffix } from './getPublicSuffix'
 
 // Gives the permutation of all possible domainMatch()es of a given domain. The
 // array is in shortest-to-longest order.  Handy for indexing.
