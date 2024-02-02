@@ -33,13 +33,7 @@ import type { Cookie } from './cookie/cookie'
 import { pathMatch } from './pathMatch'
 import { permuteDomain } from './permuteDomain'
 import { Store } from './store'
-import {
-  Callback,
-  createPromiseCallback,
-  inOperator,
-  ErrorCallback,
-  NODEJS_UTIL_INSPECT_CUSTOM,
-} from './utils'
+import { Callback, createPromiseCallback, ErrorCallback } from './utils'
 
 export type MemoryCookieStoreIndex = {
   [domain: string]: {
@@ -57,16 +51,6 @@ export class MemoryCookieStore extends Store {
     super()
     this.synchronous = true
     this.idx = Object.create(null) as MemoryCookieStoreIndex
-    Object.defineProperty(this, NODEJS_UTIL_INSPECT_CUSTOM, {
-      value: this.inspect.bind(this),
-      enumerable: false,
-      writable: false,
-      configurable: false,
-    })
-  }
-
-  inspect() {
-    return `{ idx: ${inspect(this.idx)} }`
   }
 
   override findCookie(
@@ -305,91 +289,4 @@ export class MemoryCookieStore extends Store {
 
     return promiseCallback.resolve(cookies)
   }
-}
-
-// Approximates node's util.inspect, so that we can still inspect in non-node environments
-function inspect(val: unknown): string {
-  if (typeof val === 'string') {
-    return `'${val}'`
-  }
-
-  if (val && typeof val === 'object') {
-    const domains = Object.keys(val)
-    if (domains.length === 0) {
-      return '[Object: null prototype] {}'
-    }
-    let result = '[Object: null prototype] {\n'
-    Object.keys(val).forEach((domain, i) => {
-      if (inOperator(domain, val)) {
-        result += formatDomain(domain, val[domain])
-        if (i < domains.length - 1) {
-          result += ','
-        }
-        result += '\n'
-      }
-    })
-    result += '}'
-    return result
-  }
-
-  return String(val)
-}
-
-function formatDomain(domainName: string, domainValue: unknown) {
-  if (typeof domainValue === 'string') {
-    return `'${domainValue}'`
-  }
-
-  if (domainValue && typeof domainValue === 'object') {
-    const indent = '  '
-    let result = `${indent}'${domainName}': [Object: null prototype] {\n`
-    Object.keys(domainValue).forEach((path, i, paths) => {
-      if (inOperator(path, domainValue)) {
-        result += formatPath(path, domainValue[path])
-        if (i < paths.length - 1) {
-          result += ','
-        }
-        result += '\n'
-      }
-    })
-    result += `${indent}}`
-    return result
-  }
-
-  return String(domainValue)
-}
-
-function formatPath(pathName: string, pathValue: unknown) {
-  if (typeof pathValue === 'string') {
-    return `'${pathValue}'`
-  }
-
-  if (pathValue && typeof pathValue === 'object') {
-    const indent = '    '
-    let result = `${indent}'${pathName}': [Object: null prototype] {\n`
-    Object.keys(pathValue).forEach((cookieName, i, cookieNames) => {
-      if (inOperator(cookieName, pathValue)) {
-        const cookie = pathValue[cookieName]
-        if (
-          cookie != null &&
-          typeof cookie === 'object' &&
-          inOperator('inspect', cookie) &&
-          typeof cookie.inspect === 'function'
-        ) {
-          const inspectedValue: unknown = cookie.inspect()
-          if (typeof inspectedValue === 'string') {
-            result += `      ${cookieName}: ${inspectedValue}`
-            if (i < cookieNames.length - 1) {
-              result += ','
-            }
-            result += '\n'
-          }
-        }
-      }
-    })
-    result += `${indent}}`
-    return result
-  }
-
-  return String(pathValue)
 }
