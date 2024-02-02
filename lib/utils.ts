@@ -88,11 +88,3 @@ export function inOperator<K extends string, T extends object>(
 ): o is T & Record<K, unknown> {
   return k in o
 }
-
-/**
- * Symbol used by node.js for custom inspect output.
- * @see https://nodejs.org/docs/latest-v16.x/api/util.html#utilinspectcustom
- */
-export const NODEJS_UTIL_INSPECT_CUSTOM = Symbol.for(
-  'nodejs.util.inspect.custom',
-)

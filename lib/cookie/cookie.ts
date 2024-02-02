@@ -34,7 +34,7 @@
 
 import * as pubsuffix from '../pubsuffix-psl'
 import * as validators from '../validators'
-import { inOperator, NODEJS_UTIL_INSPECT_CUSTOM } from '../utils'
+import { inOperator } from '../utils'
 
 import { formatDate } from './formatDate'
 import { parseDate } from './parseDate'
@@ -420,13 +420,6 @@ export class Cookie {
   sameSite: string | undefined
 
   constructor(options: CreateCookieOptions = {}) {
-    Object.defineProperty(this, NODEJS_UTIL_INSPECT_CUSTOM, {
-      value: this.inspect.bind(this),
-      enumerable: false,
-      writable: false,
-      configurable: false,
-    })
-
     Object.assign(this, cookieDefaults, options)
     this.creation = options.creation ?? cookieDefaults.creation ?? new Date()
 
@@ -439,7 +432,7 @@ export class Cookie {
     })
   }
 
-  inspect() {
+  [Symbol.for('nodejs.util.inspect.custom')]() {
     const now = Date.now()
     const hostOnly = this.hostOnly != null ? this.hostOnly.toString() : '?'
     const createAge =
