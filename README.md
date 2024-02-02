@@ -220,7 +220,7 @@ Returns the canonicalized `.domain` field. This is lower-cased and punycode ([RF
 
 #### `.toJSON()`
 
-For convenience in using `JSON.serialize(cookie)`. Returns a plain-old `Object` that can be JSON-serialized.
+For convenience in using `JSON.stringify(cookie)`. Returns a plain-old `Object` that can be JSON-serialized.
 
 Any `Date` properties (such as `.expires`, `.creation`, and `.lastAccessed`) are exported in ISO format (`.toISOString()`).
 
