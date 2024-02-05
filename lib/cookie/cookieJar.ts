@@ -2,14 +2,15 @@ import urlParse from 'url-parse'
 
 import { getPublicSuffix } from '../getPublicSuffix'
 import * as validators from '../validators'
+import { ParameterError } from '../validators'
 import { Store } from '../store'
 import { MemoryCookieStore } from '../memstore'
 import { pathMatch } from '../pathMatch'
 import { Cookie } from './cookie'
 import {
   Callback,
-  ErrorCallback,
   createPromiseCallback,
+  ErrorCallback,
   inOperator,
   safeToString,
 } from '../utils'
@@ -68,20 +69,18 @@ type CreateCookieJarOptions = {
 const SAME_SITE_CONTEXT_VAL_ERR =
   'Invalid sameSiteContext option for getCookies(); expected one of "strict", "lax", or "none"'
 
-function getCookieContext(url: string | URL) {
-  if (url instanceof URL && 'query' in url) {
+function getCookieContext(url: unknown) {
+  if (url instanceof URL) {
     return url
-  }
-
-  if (typeof url === 'string') {
+  } else if (typeof url === 'string') {
     try {
       return urlParse(decodeURI(url))
     } catch {
       return urlParse(url)
     }
+  } else {
+    throw new ParameterError('`url` argument is invalid')
   }
-
-  throw new Error('`url` argument is invalid')
 }
 
 function checkSameSiteContext(value: string) {
@@ -197,29 +196,29 @@ export class CookieJar {
   // return `undefined` when `ignoreError` is true. But would that be excessive overloading?
   setCookie(
     cookie: string | Cookie,
-    url: string,
+    url: string | URL,
     callback: Callback<Cookie | undefined>,
   ): void
   setCookie(
     cookie: string | Cookie,
-    url: string,
+    url: string | URL,
     options: SetCookieOptions,
     callback: Callback<Cookie | undefined>,
   ): void
   setCookie(
     cookie: string | Cookie,
-    url: string,
+    url: string | URL,
     options?: SetCookieOptions,
   ): Promise<Cookie | undefined>
   setCookie(
     cookie: string | Cookie,
-    url: string,
+    url: string | URL,
     options: SetCookieOptions | Callback<Cookie | undefined>,
     callback?: Callback<Cookie | undefined>,
   ): unknown
   setCookie(
     cookie: string | Cookie,
-    url: string,
+    url: string | URL,
     options?: SetCookieOptions | Callback<Cookie | undefined>,
     callback?: Callback<Cookie | undefined>,
   ): unknown {
@@ -230,18 +229,22 @@ export class CookieJar {
     const promiseCallback = createPromiseCallback(callback)
     const cb = promiseCallback.callback
 
-    validators.validate(
-      validators.isNonEmptyString(url),
-      callback,
-      safeToString(options),
-    )
+    if (typeof url === 'string') {
+      validators.validate(
+        validators.isNonEmptyString(url),
+        callback,
+        safeToString(options),
+      )
+    }
+
+    const context = getCookieContext(url)
+
     let err
 
     if (typeof url === 'function') {
       return promiseCallback.reject(new Error('No URL was specified'))
     }
 
-    const context = getCookieContext(url)
     if (typeof options === 'function') {
       options = defaultSetCookieOptions
     }
@@ -498,21 +501,21 @@ export class CookieJar {
   // RFC6365 S5.4
   getCookies(url: string, callback: Callback<Cookie[]>): void
   getCookies(
-    url: string,
+    url: string | URL,
     options: GetCookiesOptions | undefined,
     callback: Callback<Cookie[]>,
   ): void
   getCookies(
-    url: string,
+    url: string | URL,
     options?: GetCookiesOptions | undefined,
   ): Promise<Cookie[]>
   getCookies(
-    url: string,
+    url: string | URL,
     options: GetCookiesOptions | undefined | Callback<Cookie[]>,
     callback?: Callback<Cookie[]>,
   ): unknown
   getCookies(
-    url: string,
+    url: string | URL,
     options?: GetCookiesOptions | Callback<Cookie[]>,
     callback?: Callback<Cookie[]>,
   ): unknown {
@@ -525,10 +528,12 @@ export class CookieJar {
     const promiseCallback = createPromiseCallback(callback)
     const cb = promiseCallback.callback
 
-    validators.validate(validators.isNonEmptyString(url), cb, url)
+    if (typeof url === 'string') {
+      validators.validate(validators.isNonEmptyString(url), cb, url)
+    }
+    const context = getCookieContext(url)
     validators.validate(validators.isObject(options), cb, safeToString(options))
     validators.validate(typeof cb === 'function', cb)
-    const context = getCookieContext(url)
 
     const host = canonicalDomain(context.hostname)
     const path = context.pathname || '/'

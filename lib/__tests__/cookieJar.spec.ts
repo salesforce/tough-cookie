@@ -34,7 +34,6 @@ import { CookieJar } from '../cookie/cookieJar'
 import type { SerializedCookieJar } from '../cookie/constants'
 import { MemoryCookieStore } from '../memstore'
 import { Store } from '../store'
-import { ParameterError } from '../validators'
 
 // ported from:
 // - test/api_test.js (cookie jar tests)
@@ -1173,7 +1172,7 @@ it('should fix issue #145 - missing 2nd url parameter', () => {
   expect(
     // @ts-expect-error test case explicitly violates the expected function signature
     () => cookieJar.setCookie('x=y; Domain=example.com; Path=/'),
-  ).toThrow(ParameterError)
+  ).toThrowError('`url` argument is invalid')
 })
 
 it('should fix issue #197 - CookieJar().setCookie throws an error when empty cookie is passed', async () => {
@@ -1239,6 +1238,21 @@ it('should fix issue #154 - Expiry should not be affected by creation date', asy
   ])
   // the expiry time should be 60s from now (1000)
   expect(updatedCookies[0]?.expiryTime()).toBe(now + 60 * 1000 + 1000)
+})
+
+it('should fix issue #261 - URL objects should be accepted in setCookie', async () => {
+  const jar = new CookieJar()
+  const url = new URL('https://example.com')
+  await jar.setCookie('foo=bar; Max-Age=60;', url)
+  const cookies = await jar.getCookies(url)
+  expect(cookies).toEqual([
+    expect.objectContaining({
+      key: 'foo',
+      value: 'bar',
+      path: '/',
+      domain: 'example.com',
+    }),
+  ])
 })
 
 // special use domains under a sub-domain
