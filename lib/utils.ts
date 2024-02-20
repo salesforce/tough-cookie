@@ -14,12 +14,16 @@ export const objectToString = (obj: unknown) =>
   Object.prototype.toString.call(obj)
 
 /** Safely converts any value to string, using the value's own `toString` when available. */
-export const safeToString = (val: unknown) => {
-  // Ideally, we'd just use String() for everything, but it breaks if `toString` is missing (mostly
-  // values with no prototype), so we have to use Object#toString as a fallback.
+export const safeToString = (val: unknown): string => {
+  // Using .toString() fails for null/undefined and implicit conversion (val + "") fails for symbols
+  // and objects with null prototype
   if (val === undefined || val === null || typeof val.toString === 'function') {
     return String(val)
+  } else if (Array.isArray(val)) {
+    // Array#toString implicitly converts its values to strings, which is what we're trying to avoid
+    return val.map(safeToString).join()
   } else {
+    // This case should just be objects with null prototype, so we can just use Object#toString
     return objectToString(val)
   }
 }
