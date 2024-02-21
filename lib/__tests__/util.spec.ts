@@ -1,25 +1,26 @@
 import { safeToString } from '../utils'
 
 describe('safeToString', () => {
-  const basic = [
-    undefined,
-    null,
-    true,
-    'string',
-    123,
-    321n,
-    { object: 'yes' },
-    [1, 'hello', true, null],
-    (a: number, b: number) => a + b,
-    Symbol('safeToString'),
-  ]
+  const recursiveArray: unknown[] = [1]
+  recursiveArray.push([[recursiveArray], 2, [[recursiveArray]]], 3)
   const testCases = [
-    ...basic.map((input) => [input, String(input)]),
+    [undefined, 'undefined'],
+    [null, 'null'],
+    [true, 'true'],
+    ['string', 'string'],
+    [123, '123'],
+    [321n, '321'],
+    [{ object: 'yes' }, '[object Object]'],
+    [(a: number, b: number) => a + b, '(a, b) => a + b'],
+    [Symbol('safeToString'), 'Symbol(safeToString)'],
     [Object.create(null), '[object Object]'],
+    // eslint-disable-next-line no-sparse-arrays
+    [[1, 'hello', , undefined, , true, null], '1,hello,,,,true,'],
     [
       [Object.create(null), Symbol('safeToString')],
       '[object Object],Symbol(safeToString)',
     ],
+    [recursiveArray, '1,,2,,3'],
   ]
 
   it.each(testCases)('works on %s', (input, output) => {

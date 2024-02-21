@@ -13,18 +13,43 @@ export interface ErrorCallback {
 export const objectToString = (obj: unknown) =>
   Object.prototype.toString.call(obj)
 
-/** Safely converts any value to string, using the value's own `toString` when available. */
-export const safeToString = (val: unknown): string => {
+/**
+ * Converts an array to string, safely handling symbols, null prototype objects, and recursive arrays.
+ */
+const safeArrayToString = (
+  arr: unknown[],
+  seenArrays: WeakSet<object>,
+): string => {
+  // See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/toString#description
+  if (typeof arr.join !== 'function') return objectToString(arr)
+  seenArrays.add(arr)
+  const mapped = arr.map((val) =>
+    val === null || val === undefined || seenArrays.has(val)
+      ? ''
+      : safeToStringImpl(val, seenArrays),
+  )
+  return mapped.join()
+}
+
+const safeToStringImpl = (
+  val: unknown,
+  seenArrays?: WeakSet<object>,
+): string => {
   // Using .toString() fails for null/undefined and implicit conversion (val + "") fails for symbols
   // and objects with null prototype
   if (val === undefined || val === null || typeof val.toString === 'function') {
-    // Array#toString implicitly converts its values to strings, which is what we're trying to avoid
-    return Array.isArray(val) ? val.map(safeToString).join() : String(val)
+    return Array.isArray(val)
+      ? // Arrays have a weird custom toString that we need to replicate
+        safeArrayToString(val, seenArrays ?? new WeakSet())
+      : String(val)
   } else {
     // This case should just be objects with null prototype, so we can just use Object#toString
     return objectToString(val)
   }
 }
+
+/** Safely converts any value to string, using the value's own `toString` when available. */
+export const safeToString = (val: unknown) => safeToStringImpl(val)
 
 /** Utility object for promise/callback interop. */
 export interface PromiseCallback<T> {
