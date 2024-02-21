@@ -18,7 +18,7 @@ describe('safeToString', () => {
     [Object.create(null), '[object Object]'],
     [
       [Object.create(null), Symbol('safeToString')],
-      '[object Object],Symbol("safeToString")',
+      '[object Object],Symbol(safeToString)',
     ],
   ]
 

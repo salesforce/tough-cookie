@@ -18,10 +18,8 @@ export const safeToString = (val: unknown): string => {
   // Using .toString() fails for null/undefined and implicit conversion (val + "") fails for symbols
   // and objects with null prototype
   if (val === undefined || val === null || typeof val.toString === 'function') {
-    return String(val)
-  } else if (Array.isArray(val)) {
     // Array#toString implicitly converts its values to strings, which is what we're trying to avoid
-    return val.map(safeToString).join()
+    return Array.isArray(val) ? val.map(safeToString).join() : String(val)
   } else {
     // This case should just be objects with null prototype, so we can just use Object#toString
     return objectToString(val)
