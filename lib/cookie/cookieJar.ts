@@ -79,7 +79,7 @@ function getCookieContext(url: unknown) {
       return urlParse(url)
     }
   } else {
-    throw new ParameterError('`url` argument is invalid')
+    throw new ParameterError('`url` argument is not a string or URL.')
   }
 }
 
