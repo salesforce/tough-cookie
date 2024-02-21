@@ -1172,7 +1172,7 @@ it('should fix issue #145 - missing 2nd url parameter', () => {
   expect(
     // @ts-expect-error test case explicitly violates the expected function signature
     () => cookieJar.setCookie('x=y; Domain=example.com; Path=/'),
-  ).toThrowError('`url` argument is invalid')
+  ).toThrowError('`url` argument is not a string or URL.')
 })
 
 it('should fix issue #197 - CookieJar().setCookie throws an error when empty cookie is passed', async () => {
