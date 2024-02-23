@@ -80,7 +80,9 @@
   "types": "./dist/cookie/index.d.ts",
   "files": [
     "dist/*.js",
-    "dist/*.d.ts"
+    "dist/*.d.ts",
+    "dist/cookie/*.js",
+    "dist/cookie/*.d.ts"
   ],
   "scripts": {
     "build": "npm run clean && tsc",
