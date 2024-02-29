@@ -79,8 +79,9 @@
   "main": "./dist/cookie/index.js",
   "types": "./dist/cookie/index.d.ts",
   "files": [
-    "dist/*.js",
-    "dist/*.d.ts"
+    "dist/**/*.js",
+    "dist/**/*.d.ts",
+    "!__tests__"
   ],
   "scripts": {
     "build": "npm run clean && tsc",
