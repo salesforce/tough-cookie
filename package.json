@@ -67,7 +67,7 @@
     "RFC6265",
     "RFC2965"
   ],
-  "version": "5.0.0-rc.0",
+  "version": "5.0.0-rc.1",
   "homepage": "https://github.com/salesforce/tough-cookie",
   "repository": {
     "type": "git",
@@ -79,8 +79,9 @@
   "main": "./dist/cookie/index.js",
   "types": "./dist/cookie/index.d.ts",
   "files": [
-    "dist/*.js",
-    "dist/*.d.ts"
+    "dist/**/*.js",
+    "dist/**/*.d.ts",
+    "!__tests__"
   ],
   "scripts": {
     "build": "npm run clean && tsc",
@@ -102,12 +103,12 @@
     "@types/jest": "^29.5.10",
     "@types/node": "^14.18.63",
     "@types/psl": "^1.1.3",
-    "@types/punycode": "^2.1.3",
+    "@types/punycode": "^2.1.4",
     "@types/url-parse": "^1.4.11",
-    "@typescript-eslint/eslint-plugin": "^6.13.1",
-    "@typescript-eslint/parser": "^6.13.1",
+    "@typescript-eslint/eslint-plugin": "^7.1.0",
+    "@typescript-eslint/parser": "^7.1.0",
     "async": "3.2.5",
-    "eslint": "^8.54.0",
+    "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.1",
     "genversion": "^3.1.1",
@@ -119,7 +120,7 @@
     "vows": "^0.8.3"
   },
   "dependencies": {
-    "psl": "^1.9.0",
+    "tldts": "^6.1.0",
     "punycode": "^2.3.1",
     "url-parse": "^1.5.10"
   }

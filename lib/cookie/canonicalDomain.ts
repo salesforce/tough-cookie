@@ -1,4 +1,4 @@
-import * as punycode from 'punycode/'
+import * as punycode from 'punycode/punycode.js'
 import { IP_V6_REGEX_OBJECT } from './constants'
 import type { Nullable } from '../utils'
 

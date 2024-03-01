@@ -1,7 +1,7 @@
 export { MemoryCookieStore } from '../memstore'
 export { pathMatch } from '../pathMatch'
 export { permuteDomain } from '../permuteDomain'
-export { getPublicSuffix } from '../pubsuffix-psl'
+export { getPublicSuffix } from '../getPublicSuffix'
 export { Store } from '../store'
 export { ParameterError } from '../validators'
 export { version } from '../version'
@@ -18,4 +18,6 @@ export { parseDate } from './parseDate'
 export { permutePath } from './permutePath'
 
 import { Cookie } from './cookie'
+
+export const parse = Cookie.parse
 export const fromJSON = Cookie.fromJSON

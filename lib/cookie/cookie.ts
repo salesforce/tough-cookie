@@ -32,9 +32,8 @@
 // This file was too big before we added max-lines, and it's ongoing work to reduce its size.
 /* eslint max-lines: [1, 750] */
 
-import * as pubsuffix from '../pubsuffix-psl'
+import { getPublicSuffix } from '../getPublicSuffix'
 import * as validators from '../validators'
-import { getCustomInspectSymbol } from '../utilHelper'
 import { Nullable, inOperator } from '../utils'
 
 import { formatDate } from './formatDate'
@@ -421,17 +420,6 @@ export class Cookie {
   sameSite: string | undefined
 
   constructor(options: CreateCookieOptions = {}) {
-    // supports inspect if that feature is available in the environment
-    const customInspectSymbol = getCustomInspectSymbol()
-    if (customInspectSymbol) {
-      Object.defineProperty(this, customInspectSymbol, {
-        value: this.inspect.bind(this),
-        enumerable: false,
-        writable: false,
-        configurable: false,
-      })
-    }
-
     Object.assign(this, cookieDefaults, options)
     this.creation = options.creation ?? cookieDefaults.creation ?? new Date()
 
@@ -444,7 +432,7 @@ export class Cookie {
     })
   }
 
-  inspect() {
+  [Symbol.for('nodejs.util.inspect.custom')]() {
     const now = Date.now()
     const hostOnly = this.hostOnly != null ? this.hostOnly.toString() : '?'
     const createAge =
@@ -559,7 +547,7 @@ export class Cookie {
       if (cdomain.match(/\.$/)) {
         return false // S4.1.2.3 suggests that this is bad. domainMatch() tests confirm this
       }
-      const suffix = pubsuffix.getPublicSuffix(cdomain)
+      const suffix = getPublicSuffix(cdomain)
       if (suffix == null) {
         // it's a public suffix
         return false
@@ -671,7 +659,7 @@ export class Cookie {
   // elsewhere)
   expiryTime(now?: Date): number | undefined {
     if (this.maxAge != null) {
-      const relativeTo = now || this.creation || new Date()
+      const relativeTo = now || this.lastAccessed || new Date()
       const maxAge = typeof this.maxAge === 'number' ? this.maxAge : -Infinity
       const age = maxAge <= 0 ? -Infinity : maxAge * 1000
       if (relativeTo === 'Infinity') {

@@ -34,9 +34,6 @@ import { CookieJar } from '../cookie/cookieJar'
 import type { SerializedCookieJar } from '../cookie/constants'
 import { MemoryCookieStore } from '../memstore'
 import { Store } from '../store'
-import { ParameterError } from '../validators'
-
-jest.useFakeTimers()
 
 // ported from:
 // - test/api_test.js (cookie jar tests)
@@ -978,7 +975,7 @@ describe('CookieJar', () => {
           prefixSecurity: 'silent',
           rejectPublicSuffixes: true,
           storeType: 'MemoryCookieStore',
-          version: 'tough-cookie@5.0.0-rc.0',
+          version: 'tough-cookie@5.0.0-rc.1',
         }
         expect(data).toEqual(expected)
       },
@@ -1175,7 +1172,7 @@ it('should fix issue #145 - missing 2nd url parameter', () => {
   expect(
     // @ts-expect-error test case explicitly violates the expected function signature
     () => cookieJar.setCookie('x=y; Domain=example.com; Path=/'),
-  ).toThrow(ParameterError)
+  ).toThrowError('`url` argument is not a string or URL.')
 })
 
 it('should fix issue #197 - CookieJar().setCookie throws an error when empty cookie is passed', async () => {
@@ -1201,6 +1198,61 @@ it('should fix issue #282 - Prototype pollution when setting a cookie with the d
 
   const pollutedObject = {}
   expect('/notauth' in pollutedObject).toBe(false)
+})
+
+it('should fix issue #154 - Expiry should not be affected by creation date', async () => {
+  const now = Date.now()
+  const jar = new CookieJar()
+
+  await jar.setCookie('foo=bar; Max-Age=60;', 'https://example.com')
+
+  const initialCookies = await jar.getCookies('https://example.com')
+  expect(initialCookies).toEqual([
+    expect.objectContaining({
+      key: 'foo',
+      value: 'bar',
+      path: '/',
+      domain: 'example.com',
+      maxAge: 60,
+    }),
+  ])
+  // the expiry time should be 60s from now (0)
+  expect(initialCookies[0]?.expiryTime()).toBe(now + 60 * 1000)
+
+  // advance the time by 1s, so now = 1000
+  jest.advanceTimersByTime(1000)
+
+  await jar.setCookie('foo=bar; Max-Age=60;', 'https://example.com')
+
+  const updatedCookies = await jar.getCookies('https://example.com')
+  expect(updatedCookies).toEqual([
+    expect.objectContaining({
+      key: 'foo',
+      value: 'bar',
+      path: '/',
+      domain: 'example.com',
+      maxAge: 60,
+      // the creation time should be unchanged as per the spec
+      creation: initialCookies[0]?.creation,
+    }),
+  ])
+  // the expiry time should be 60s from now (1000)
+  expect(updatedCookies[0]?.expiryTime()).toBe(now + 60 * 1000 + 1000)
+})
+
+it('should fix issue #261 - URL objects should be accepted in setCookie', async () => {
+  const jar = new CookieJar()
+  const url = new URL('https://example.com')
+  await jar.setCookie('foo=bar; Max-Age=60;', url)
+  const cookies = await jar.getCookies(url)
+  expect(cookies).toEqual([
+    expect.objectContaining({
+      key: 'foo',
+      value: 'bar',
+      path: '/',
+      domain: 'example.com',
+    }),
+  ])
 })
 
 // special use domains under a sub-domain

@@ -1,7 +1,5 @@
 import { Cookie } from '../cookie/cookie'
 
-jest.useFakeTimers()
-
 describe('Lifetime', () => {
   it('should be able to set a TTL using max-age', () => {
     const cookie = new Cookie()

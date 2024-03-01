@@ -1,5 +1,0 @@
-docker-compose.yml
-Dockerfile
-.nyc_output
-coverage
-package-lock.json

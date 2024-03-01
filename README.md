@@ -220,7 +220,7 @@ Returns the canonicalized `.domain` field. This is lower-cased and punycode ([RF
 
 #### `.toJSON()`
 
-For convenience in using `JSON.serialize(cookie)`. Returns a plain-old `Object` that can be JSON-serialized.
+For convenience in using `JSON.stringify(cookie)`. Returns a plain-old `Object` that can be JSON-serialized.
 
 Any `Date` properties (such as `.expires`, `.creation`, and `.lastAccessed`) are exported in ISO format (`.toISOString()`).
 
@@ -469,16 +469,6 @@ Pass an error if retrieval fails.
 Inherits from `Store`.
 
 A just-in-memory CookieJar synchronous store implementation, used by default. Despite being a synchronous implementation, it's usable with both the synchronous and asynchronous forms of the `CookieJar` API. Supports serialization, `getAllCookies`, and `removeAllCookies`.
-
-### Community Cookie Stores
-
-These are some Store implementations authored and maintained by the community. They aren't official and we don't vouch for them but you may be interested to have a look:
-
-- [`db-cookie-store`](https://github.com/JSBizon/db-cookie-store): SQL including SQLite-based databases
-- [`file-cookie-store`](https://github.com/JSBizon/file-cookie-store): Netscape cookie file format on disk
-- [`redis-cookie-store`](https://github.com/benkroeger/redis-cookie-store): Redis
-- [`tough-cookie-filestore`](https://github.com/mitsuru/tough-cookie-filestore): JSON on disk
-- [`tough-cookie-web-storage-store`](https://github.com/exponentjs/tough-cookie-web-storage-store): DOM localStorage and sessionStorage
 
 ## Serialization Format
 
