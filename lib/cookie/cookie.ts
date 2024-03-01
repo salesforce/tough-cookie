@@ -365,6 +365,17 @@ function fromJSON(str: unknown) {
   return c
 }
 
+type CreateCookieOptions = Omit<
+  {
+    // Assume that all non-method attributes on the class can be configured, except creationIndex.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [K in keyof Cookie as Cookie[K] extends (...args: any[]) => any
+      ? never
+      : K]?: Cookie[K]
+  },
+  'creationIndex'
+>
+
 const cookieDefaults = {
   // the order in which the RFC has them:
   key: '',
@@ -382,25 +393,7 @@ const cookieDefaults = {
   creation: null,
   lastAccessed: null,
   sameSite: undefined,
-}
-
-type CreateCookieOptions = {
-  key?: string
-  value?: string
-  expires?: Date | 'Infinity' | null
-  maxAge?: number | 'Infinity' | '-Infinity'
-  domain?: string | null
-  path?: string | null
-  secure?: boolean
-  httpOnly?: boolean
-  extensions?: string[] | null
-  creation?: Date | 'Infinity' | null
-  creationIndex?: number
-  hostOnly?: boolean | null
-  pathIsDefault?: boolean | null
-  lastAccessed?: Date | 'Infinity' | null
-  sameSite?: string | undefined
-}
+} as const satisfies Required<CreateCookieOptions>
 
 export class Cookie {
   key: string
