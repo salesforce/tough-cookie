@@ -403,25 +403,39 @@ type CreateCookieOptions = {
 }
 
 export class Cookie {
-  key: string | undefined
-  value: string | undefined
-  expires: Date | 'Infinity' | null | undefined
-  maxAge: number | 'Infinity' | '-Infinity' | undefined
-  domain: string | null | undefined
-  path: string | null | undefined
-  secure: boolean | undefined
-  httpOnly: boolean | undefined
-  extensions: string[] | null | undefined
+  key: string
+  value: string
+  expires: Date | 'Infinity' | null
+  maxAge: number | 'Infinity' | '-Infinity' | null
+  domain: string | null
+  path: string | null
+  secure: boolean
+  httpOnly: boolean
+  extensions: string[] | null
   creation: Date | 'Infinity' | null
-  creationIndex: number | undefined
-  hostOnly: boolean | null | undefined
-  pathIsDefault: boolean | null | undefined
-  lastAccessed: Date | 'Infinity' | null | undefined
+  creationIndex: number
+  hostOnly: boolean | null
+  pathIsDefault: boolean | null
+  lastAccessed: Date | 'Infinity' | null
   sameSite: string | undefined
 
   constructor(options: CreateCookieOptions = {}) {
-    Object.assign(this, cookieDefaults, options)
-    this.creation = options.creation ?? cookieDefaults.creation ?? new Date()
+    this.key = options.key ?? cookieDefaults.key
+    this.value = options.value ?? cookieDefaults.value
+    this.expires = options.expires ?? cookieDefaults.expires
+    this.maxAge = options.maxAge ?? cookieDefaults.maxAge
+    this.domain = options.domain ?? cookieDefaults.domain
+    this.path = options.path ?? cookieDefaults.path
+    this.secure = options.secure ?? cookieDefaults.secure
+    this.httpOnly = options.httpOnly ?? cookieDefaults.httpOnly
+    this.extensions = options.extensions ?? cookieDefaults.extensions
+    this.creation = options.creation ?? cookieDefaults.creation
+    this.hostOnly = options.hostOnly ?? cookieDefaults.hostOnly
+    this.pathIsDefault = options.pathIsDefault ?? cookieDefaults.pathIsDefault
+    this.lastAccessed = options.lastAccessed ?? cookieDefaults.lastAccessed
+    this.sameSite = options.sameSite ?? cookieDefaults.sameSite
+
+    this.creation = options.creation ?? new Date()
 
     // used to break creation ties in cookieCompare():
     Object.defineProperty(this, 'creationIndex', {
@@ -430,6 +444,8 @@ export class Cookie {
       writable: true,
       value: ++Cookie.cookiesCreated,
     })
+    // Duplicate operation, but it makes TypeScript happy...
+    this.creationIndex = Cookie.cookiesCreated
   }
 
   [Symbol.for('nodejs.util.inspect.custom')]() {
