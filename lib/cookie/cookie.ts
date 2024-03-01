@@ -112,9 +112,19 @@ type ParseCookieOptions = {
   loose?: boolean | undefined
 }
 
+/**
+ * Parses a string into a Cookie object.
+ * @param str Cookie string to parse
+ * @returns `Cookie` object for valid string inputs, `undefined` for invalid string inputs,
+ * or `null` for non-string inputs or empty string
+ */
 function parse(
   str: string,
   options?: ParseCookieOptions,
+  // TBD: Should we change the API to have a single "invalid input" return type? I think `undefined`
+  // would be more consistent with the rest of the code, and it would be of minimal impact. Only
+  // users who are passing an invalid input and doing an explicit null check would be broken, and
+  // that doesn't seem like it would be a significant number of users.
 ): Cookie | undefined | null {
   if (validators.isEmptyString(str) || !validators.isString(str)) {
     return null
