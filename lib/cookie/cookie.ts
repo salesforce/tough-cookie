@@ -34,7 +34,7 @@
 
 import { getPublicSuffix } from '../getPublicSuffix'
 import * as validators from '../validators'
-import { Nullable, inOperator } from '../utils'
+import { inOperator } from '../utils'
 
 import { formatDate } from './formatDate'
 import { parseDate } from './parseDate'
@@ -375,6 +375,17 @@ function fromJSON(str: unknown) {
   return c
 }
 
+type CreateCookieOptions = Omit<
+  {
+    // Assume that all non-method attributes on the class can be configured, except creationIndex.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [K in keyof Cookie as Cookie[K] extends (...args: any[]) => any
+      ? never
+      : K]?: Cookie[K]
+  },
+  'creationIndex'
+>
+
 const cookieDefaults = {
   // the order in which the RFC has them:
   key: '',
@@ -392,25 +403,7 @@ const cookieDefaults = {
   creation: null,
   lastAccessed: null,
   sameSite: undefined,
-}
-
-type CreateCookieOptions = {
-  key?: string
-  value?: string
-  expires?: Nullable<Date | 'Infinity'>
-  maxAge?: number | 'Infinity' | '-Infinity'
-  domain?: Nullable<string>
-  path?: Nullable<string>
-  secure?: boolean
-  httpOnly?: boolean
-  extensions?: Nullable<string[]>
-  creation?: Nullable<Date | 'Infinity'>
-  creationIndex?: number
-  hostOnly?: Nullable<boolean>
-  pathIsDefault?: Nullable<boolean>
-  lastAccessed?: Nullable<Date | 'Infinity'>
-  sameSite?: string | undefined
-}
+} as const satisfies Required<CreateCookieOptions>
 
 export class Cookie {
   key: string
