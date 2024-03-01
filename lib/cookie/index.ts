@@ -19,4 +19,5 @@ export { permutePath } from './permutePath'
 
 import { Cookie } from './cookie'
 
+export const parse = Cookie.parse
 export const fromJSON = Cookie.fromJSON
