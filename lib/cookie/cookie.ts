@@ -436,6 +436,8 @@ export class Cookie {
     this.hostOnly = options.hostOnly ?? cookieDefaults.hostOnly
     this.pathIsDefault = options.pathIsDefault ?? cookieDefaults.pathIsDefault
     this.lastAccessed = options.lastAccessed ?? cookieDefaults.lastAccessed
+    this.sameSite = options.sameSite ?? cookieDefaults.sameSite
+
     this.creation = options.creation ?? new Date()
 
     // used to break creation ties in cookieCompare():
