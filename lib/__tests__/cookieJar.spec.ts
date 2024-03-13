@@ -420,7 +420,7 @@ describe('CookieJar', () => {
         expect(allHaveRootPath).toBe(true)
 
         const noCookiesWithAnOtherKeyRetrieved = cookies.every(
-          (cookie) => !/^other/.test(cookie.key as string),
+          (cookie) => !/^other/.test(cookie.key),
         )
         expect(noCookiesWithAnOtherKeyRetrieved).toBe(true)
       })
@@ -430,7 +430,7 @@ describe('CookieJar', () => {
         expect(cookies).toHaveLength(4)
 
         const noCookiesWithAnOtherKeyRetrieved = cookies.every(
-          (cookie) => !/^other/.test(cookie.key as string),
+          (cookie) => !/^other/.test(cookie.key),
         )
         expect(noCookiesWithAnOtherKeyRetrieved).toBe(true)
       })
@@ -442,7 +442,7 @@ describe('CookieJar', () => {
         expect(cookies).toHaveLength(4)
 
         const noCookiesWithAnOtherKeyRetrieved = cookies.every(
-          (cookie) => !/^other/.test(cookie.key as string),
+          (cookie) => !/^other/.test(cookie.key),
         )
         expect(noCookiesWithAnOtherKeyRetrieved).toBe(true)
       })
