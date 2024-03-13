@@ -2,8 +2,7 @@
   "root": true,
   "extends": [
     "eslint:recommended",
-    "plugin:@typescript-eslint/recommended-type-checked",
-    "plugin:@typescript-eslint/strict",
+    "plugin:@typescript-eslint/strict-type-checked",
     "plugin:prettier/recommended"
   ],
   "parser": "@typescript-eslint/parser",
