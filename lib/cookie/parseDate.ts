@@ -133,9 +133,6 @@ export function parseDate(str: string | undefined | null): Date | undefined {
    * appear in the cookie-date
    */
   const tokens = str.split(DATE_DELIM)
-  if (!tokens) {
-    return undefined
-  }
 
   let hour = null
   let minute = null

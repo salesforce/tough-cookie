@@ -69,7 +69,7 @@ type CreateCookieJarOptions = {
 const SAME_SITE_CONTEXT_VAL_ERR =
   'Invalid sameSiteContext option for getCookies(); expected one of "strict", "lax", or "none"'
 
-function getCookieContext(url: unknown) {
+function getCookieContext(url: unknown): URL | urlParse<string> {
   if (url instanceof URL) {
     return url
   } else if (typeof url === 'string') {
@@ -132,18 +132,16 @@ function isHostPrefixConditionMet(cookie: Cookie) {
 }
 
 function getNormalizedPrefixSecurity(prefixSecurity: string) {
-  if (prefixSecurity != null) {
-    const normalizedPrefixSecurity = prefixSecurity.toLowerCase()
+  const normalizedPrefixSecurity = prefixSecurity.toLowerCase()
+  switch (normalizedPrefixSecurity) {
     /* The three supported options */
-    switch (normalizedPrefixSecurity) {
-      case PrefixSecurityEnum.STRICT:
-      case PrefixSecurityEnum.SILENT:
-      case PrefixSecurityEnum.DISABLED:
-        return normalizedPrefixSecurity
-    }
+    case PrefixSecurityEnum.STRICT:
+    case PrefixSecurityEnum.SILENT:
+    case PrefixSecurityEnum.DISABLED:
+      return normalizedPrefixSecurity
+    default:
+      return PrefixSecurityEnum.SILENT
   }
-  /* Default is SILENT */
-  return PrefixSecurityEnum.SILENT
 }
 
 export class CookieJar {
@@ -185,9 +183,9 @@ export class CookieJar {
       syncErr = error
       syncResult = result
     })
-    if (syncErr) {
-      throw syncErr
-    }
+    // This seems to be a false positive; it can't detect that the value may be changed in the callback
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, @typescript-eslint/no-throw-literal
+    if (syncErr) throw syncErr
 
     return syncResult
   }
@@ -359,7 +357,7 @@ export class CookieJar {
     //attribute-value is not %x2F ("/"):
     //Let cookie-path be the default-path.
     if (!cookie.path || cookie.path[0] !== '/') {
-      cookie.path = defaultPath(context.pathname ?? undefined)
+      cookie.path = defaultPath(context.pathname)
       cookie.pathIsDefault = true
     }
 
@@ -420,6 +418,9 @@ export class CookieJar {
 
     const store = this.store
 
+    // TODO: It feels weird to be manipulating the store as a side effect of a method.
+    // We should either do it in the constructor or not at all.
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!store.updateCookie) {
       store.updateCookie = async function (
         _oldCookie: Cookie,
@@ -803,12 +804,7 @@ export class CookieJar {
       cookies: [],
     }
 
-    if (
-      !(
-        this.store.getAllCookies &&
-        typeof this.store.getAllCookies === 'function'
-      )
-    ) {
+    if (typeof this.store.getAllCookies !== 'function') {
       return promiseCallback.reject(
         new Error(
           'store does not support getAllCookies and cannot be serialized',
