@@ -306,7 +306,9 @@ function expectDataToMatchSerializationSchema(
   expect(serializedJar.storeType).toBe('MemoryCookieStore')
   expect(serializedJar.rejectPublicSuffixes).toBe(true)
   expect(serializedJar.cookies).toBeInstanceOf(Array)
-  serializedJar.cookies.forEach((cookie) => validateSerializedCookie(cookie))
+  serializedJar.cookies.forEach((cookie) => {
+    validateSerializedCookie(cookie)
+  })
 }
 
 const serializedCookiePropTypes: { [key: string]: string } = {

@@ -74,7 +74,7 @@ export class MemoryCookieStore extends Store {
     if (domain == null || path == null || key == null) {
       return promiseCallback.resolve(undefined)
     }
-    const result = this.idx?.[domain]?.[path]?.[key]
+    const result = this.idx[domain]?.[path]?.[key]
     return promiseCallback.resolve(result)
   }
 
@@ -240,9 +240,9 @@ export class MemoryCookieStore extends Store {
     const domainEntry = this.idx[domain]
     if (domainEntry) {
       if (path) {
-        delete domainEntry?.[path]
+        delete domainEntry[path]
       } else {
-        delete this.idx?.[domain]
+        delete this.idx[domain]
       }
     }
 

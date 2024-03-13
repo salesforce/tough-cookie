@@ -369,7 +369,7 @@ export class CookieJar {
     // S5.3 step 10
     if (options?.http === false && cookie.httpOnly) {
       err = new Error("Cookie is HttpOnly and this isn't an HTTP API")
-      return options?.ignoreError
+      return options.ignoreError
         ? promiseCallback.resolve(undefined)
         : promiseCallback.reject(err)
     }
@@ -543,7 +543,7 @@ export class CookieJar {
       (context.protocol == 'https:' || context.protocol == 'wss:')
 
     let sameSiteLevel = 0
-    if (options?.sameSiteContext) {
+    if (options.sameSiteContext) {
       const sameSiteContext = checkSameSiteContext(options.sameSiteContext)
       if (sameSiteContext == null) {
         return promiseCallback.reject(new Error(SAME_SITE_CONTEXT_VAL_ERR))
@@ -554,11 +554,11 @@ export class CookieJar {
       }
     }
 
-    const http = options?.http ?? true
+    const http = options.http ?? true
 
     const now = Date.now()
-    const expireCheck = options?.expire ?? true
-    const allPaths = options?.allPaths ?? false
+    const expireCheck = options.expire ?? true
+    const allPaths = options.allPaths ?? false
     const store = this.store
 
     function matchingCookie(c: Cookie) {
@@ -843,7 +843,9 @@ export class CookieJar {
     return promiseCallback.promise
   }
   serializeSync(): SerializedCookieJar | undefined {
-    return this.callSync((callback) => this.serialize(callback))
+    return this.callSync((callback) => {
+      this.serialize(callback)
+    })
   }
 
   toJSON() {
@@ -864,33 +866,35 @@ export class CookieJar {
     }
 
     if (!cookies) {
-      return callback(
-        new Error('serialized jar has no cookies array'),
-        undefined,
-      )
+      callback(new Error('serialized jar has no cookies array'), undefined)
+      return
     }
 
     cookies = cookies.slice() // do not modify the original
 
     const putNext = (err: Error | null): void => {
       if (err) {
-        return callback(err, undefined)
+        callback(err, undefined)
+        return
       }
 
       if (Array.isArray(cookies)) {
         if (!cookies.length) {
-          return callback(err, this)
+          callback(err, this)
+          return
         }
 
         let cookie
         try {
           cookie = Cookie.fromJSON(cookies.shift())
         } catch (e) {
-          return callback(e instanceof Error ? e : new Error(), undefined)
+          callback(e instanceof Error ? e : new Error(), undefined)
+          return
         }
 
         if (cookie === null) {
-          return putNext(null) // skip this cookie
+          putNext(null)
+          return // skip this cookie
         }
 
         this.store.putCookie(cookie, putNext)
@@ -934,7 +938,9 @@ export class CookieJar {
       newStore && typeof newStore !== 'function'
         ? this.clone.bind(this, newStore)
         : this.clone.bind(this)
-    return this.callSync((callback) => cloneFn(callback))
+    return this.callSync((callback) => {
+      cloneFn(callback)
+    })
   }
 
   cloneSync(newStore?: Store): CookieJar | undefined {
@@ -966,7 +972,7 @@ export class CookieJar {
     ) {
       // `Callback<undefined>` and `ErrorCallback` are *technically* incompatible, but for the
       // standard implementation `cb = (err, result) => {}`, they're essentially the same.
-      void store.removeAllCookies(cb as ErrorCallback)
+      store.removeAllCookies(cb as ErrorCallback)
       return promiseCallback.promise
     }
 
@@ -1015,8 +1021,8 @@ export class CookieJar {
     return promiseCallback.promise
   }
   removeAllCookiesSync(): void {
-    return this.callSync<never>((callback) => {
-      return this.removeAllCookies(callback)
+    this.callSync<never>((callback) => {
+      this.removeAllCookies(callback)
     })
   }
 

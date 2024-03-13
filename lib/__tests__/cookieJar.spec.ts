@@ -909,7 +909,9 @@ describe('CookieJar', () => {
       'should remove all the stored cookies',
       {
         callbackStyle(done) {
-          cookieJar.removeAllCookies(() => done())
+          cookieJar.removeAllCookies(() => {
+            done()
+          })
         },
         async asyncStyle() {
           await cookieJar.removeAllCookies()
@@ -1348,7 +1350,7 @@ describe.each(['local', 'example', 'invalid', 'localhost', 'test'])(
           expect.objectContaining({
             key: 'settingThisShouldPass',
             value: 'true',
-            domain: `${specialUseDomain}`,
+            domain: specialUseDomain,
           }),
         )
         const cookies = await cookieJar.getCookies(
@@ -1393,7 +1395,7 @@ describe.each(['local', 'example', 'invalid', 'localhost', 'test'])(
           expect.objectContaining({
             key: 'settingThisShouldPass',
             value: 'true',
-            domain: `${specialUseDomain}`,
+            domain: specialUseDomain,
           }),
         )
         const cookies = await cookieJar.getCookies(
@@ -1480,9 +1482,9 @@ describe('Synchronous API on async CookieJar', () => {
 
   it('should throw an error when calling `removeAllCookiesSync` if store is not synchronous', () => {
     const cookieJar = new CookieJar(store)
-    expect(() => cookieJar.removeAllCookiesSync()).toThrow(
-      'CookieJar store is not synchronous; use async API instead.',
-    )
+    expect(() => {
+      cookieJar.removeAllCookiesSync()
+    }).toThrow('CookieJar store is not synchronous; use async API instead.')
   })
 })
 
@@ -1496,7 +1498,7 @@ function createCookie(
   if (!cookie) {
     throw new Error('This should not be undefined')
   }
-  if (options?.hostOnly) {
+  if (options.hostOnly) {
     cookie.hostOnly = options.hostOnly
   }
   return cookie
@@ -1508,9 +1510,11 @@ function apiVariants(
   assertions: () => void,
 ) {
   it(`${testName} (callback)`, async () => {
-    await new Promise((resolve) =>
-      apiVariants.callbackStyle(() => resolve(undefined)),
-    )
+    await new Promise((resolve) => {
+      apiVariants.callbackStyle(() => {
+        resolve(undefined)
+      })
+    })
     assertions()
   })
 
