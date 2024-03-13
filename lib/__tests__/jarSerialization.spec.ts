@@ -347,7 +347,7 @@ function validateSerializedCookie(cookie: SerializedCookie) {
 
       case 'intOrInf':
         if (cookie[prop] !== 'Infinity' && cookie[prop] !== '-Infinity') {
-          expect(isInteger(cookie[prop])).toBe(true)
+          expect(Number.isInteger(cookie[prop])).toBe(true)
         }
         break
 
@@ -362,15 +362,4 @@ function validateSerializedCookie(cookie: SerializedCookie) {
         throw new Error(`unexpected serialized property: ${prop}`)
     }
   })
-}
-
-function isInteger(value: unknown) {
-  if (Number.isInteger) {
-    return Number.isInteger(value)
-  }
-  // Node 0.10 (still supported) doesn't have Number.isInteger
-  // from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger
-  return (
-    typeof value === 'number' && isFinite(value) && Math.floor(value) === value
-  )
 }
