@@ -114,7 +114,8 @@ type ParseCookieOptions = {
 
 /**
  * Parses a string into a Cookie object.
- * @param str Cookie string to parse
+ * @param str the Set-Cookie header or a Cookie string to parse. Note: when parsing a Cookie header it must be split by ';' before each Cookie string can be parsed.
+ * @param options configures strict or loose mode for cookie parsing
  * @returns `Cookie` object for valid string inputs, `undefined` for invalid string inputs,
  * or `null` for non-string inputs or empty string
  */
