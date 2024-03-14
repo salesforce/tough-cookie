@@ -120,8 +120,8 @@
     "vows": "^0.8.3"
   },
   "dependencies": {
-    "tldts": "^6.1.0",
     "punycode": "^2.3.1",
+    "tldts": "^6.1.0",
     "url-parse": "^1.5.10"
   }
 }
