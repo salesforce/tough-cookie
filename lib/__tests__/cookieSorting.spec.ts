@@ -9,9 +9,7 @@ describe('Cookie sorting', () => {
       const cookie2 = new Cookie()
       expect(typeof cookie1.creationIndex).toBe('number')
       expect(typeof cookie2.creationIndex).toBe('number')
-      expect(cookie1.creationIndex).toBeLessThan(
-        cookie2.creationIndex as number,
-      )
+      expect(cookie1.creationIndex).toBeLessThan(cookie2.creationIndex)
     })
 
     it('should set the creation index during construction when creation time is provided', () => {
@@ -21,9 +19,7 @@ describe('Cookie sorting', () => {
       expect(cookie1.creation).toEqual(cookie2.creation)
       expect(typeof cookie1.creationIndex).toBe('number')
       expect(typeof cookie2.creationIndex).toBe('number')
-      expect(cookie1.creationIndex).toBeLessThan(
-        cookie2.creationIndex as number,
-      )
+      expect(cookie1.creationIndex).toBeLessThan(cookie2.creationIndex)
     })
 
     it('should leave the creation index alone during setCookie', async () => {
