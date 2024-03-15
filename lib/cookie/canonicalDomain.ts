@@ -2,7 +2,7 @@ import * as punycode from 'punycode/punycode.js'
 import { IP_V6_REGEX_OBJECT } from './constants'
 
 // S5.1.2 Canonicalized Host Names
-export function canonicalDomain(str: string | null) {
+export function canonicalDomain(str: string | null): string | null {
   if (str == null) {
     return null
   }
