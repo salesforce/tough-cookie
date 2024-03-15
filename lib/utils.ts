@@ -10,7 +10,7 @@ export interface ErrorCallback {
 }
 
 /** Wrapped `Object.prototype.toString`, so that you don't need to remember to use `.call()`. */
-export const objectToString = (obj: unknown) =>
+export const objectToString = (obj: unknown): string =>
   Object.prototype.toString.call(obj)
 
 /**
@@ -49,7 +49,7 @@ const safeToStringImpl = (
 }
 
 /** Safely converts any value to string, using the value's own `toString` when available. */
-export const safeToString = (val: unknown) => safeToStringImpl(val)
+export const safeToString = (val: unknown): string => safeToStringImpl(val)
 
 /** Utility object for promise/callback interop. */
 export interface PromiseCallback<T> {
@@ -71,7 +71,7 @@ export function createPromiseCallback<T>(cb?: Callback<T>): PromiseCallback<T> {
   })
 
   if (typeof cb === 'function') {
-    callback = (err, result) => {
+    callback = (err, result): void => {
       try {
         if (err) cb(err)
         // If `err` is null, we know `result` must be `T`
@@ -83,7 +83,7 @@ export function createPromiseCallback<T>(cb?: Callback<T>): PromiseCallback<T> {
       }
     }
   } else {
-    callback = (err, result) => {
+    callback = (err, result): void => {
       try {
         // If `err` is null, we know `result` must be `T`
         // The assertion isn't *strictly* correct, as `T` could be nullish, but, ehh, good enough...
@@ -98,11 +98,11 @@ export function createPromiseCallback<T>(cb?: Callback<T>): PromiseCallback<T> {
   return {
     promise,
     callback,
-    resolve: (value: T) => {
+    resolve: (value: T): Promise<T> => {
       callback(null, value)
       return promise
     },
-    reject: (error: Error) => {
+    reject: (error: Error): Promise<T> => {
       callback(error)
       return promise
     },

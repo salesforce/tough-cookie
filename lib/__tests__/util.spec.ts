@@ -11,7 +11,7 @@ describe('safeToString', () => {
     [123, '123'],
     [321n, '321'],
     [{ object: 'yes' }, '[object Object]'],
-    [(a: number, b: number) => a + b, '(a, b) => a + b'],
+    [(a: number, b: number): number => a + b, '(a, b) => a + b'],
     [Symbol('safeToString'), 'Symbol(safeToString)'],
     [Object.create(null), '[object Object]'],
     // eslint-disable-next-line no-sparse-arrays

@@ -69,7 +69,7 @@ type CreateCookieJarOptions = {
 const SAME_SITE_CONTEXT_VAL_ERR =
   'Invalid sameSiteContext option for getCookies(); expected one of "strict", "lax", or "none"'
 
-function getCookieContext(url: unknown) {
+function getCookieContext(url: unknown): URL | urlParse<string> {
   if (url instanceof URL) {
     return url
   } else if (typeof url === 'string') {
@@ -83,7 +83,8 @@ function getCookieContext(url: unknown) {
   }
 }
 
-function checkSameSiteContext(value: string) {
+type SameSiteLevel = keyof (typeof Cookie)['sameSiteLevel']
+function checkSameSiteContext(value: string): SameSiteLevel | null {
   validators.validate(validators.isNonEmptyString(value), value)
   const context = String(value).toLowerCase()
   if (context === 'none' || context === 'lax' || context === 'strict') {
@@ -100,7 +101,7 @@ function checkSameSiteContext(value: string) {
  * @param cookie
  * @returns boolean
  */
-function isSecurePrefixConditionMet(cookie: Cookie) {
+function isSecurePrefixConditionMet(cookie: Cookie): boolean {
   validators.validate(validators.isObject(cookie), safeToString(cookie))
   const startsWithSecurePrefix =
     typeof cookie.key === 'string' && cookie.key.startsWith('__Secure-')
@@ -118,20 +119,26 @@ function isSecurePrefixConditionMet(cookie: Cookie) {
  * @param cookie
  * @returns boolean
  */
-function isHostPrefixConditionMet(cookie: Cookie) {
+function isHostPrefixConditionMet(cookie: Cookie): boolean {
   validators.validate(validators.isObject(cookie))
   const startsWithHostPrefix =
     typeof cookie.key === 'string' && cookie.key.startsWith('__Host-')
   return (
     !startsWithHostPrefix ||
-    (cookie.secure &&
-      cookie.hostOnly &&
-      cookie.path != null &&
-      cookie.path === '/')
+    Boolean(
+      cookie.secure &&
+        cookie.hostOnly &&
+        cookie.path != null &&
+        cookie.path === '/',
+    )
   )
 }
 
-function getNormalizedPrefixSecurity(prefixSecurity: string) {
+type PrefixSecurityValue =
+  (typeof PrefixSecurityEnum)[keyof typeof PrefixSecurityEnum]
+function getNormalizedPrefixSecurity(
+  prefixSecurity: string,
+): PrefixSecurityValue {
   if (prefixSecurity != null) {
     const normalizedPrefixSecurity = prefixSecurity.toLowerCase()
     /* The three supported options */
@@ -561,7 +568,7 @@ export class CookieJar {
     const allPaths = options?.allPaths ?? false
     const store = this.store
 
-    function matchingCookie(c: Cookie) {
+    function matchingCookie(c: Cookie): boolean {
       // "Either:
       //   The cookie's host-only-flag is true and the canonicalized
       //   request-host is identical to the cookie's domain.
@@ -846,12 +853,12 @@ export class CookieJar {
     return this.callSync((callback) => this.serialize(callback))
   }
 
-  toJSON() {
+  toJSON(): SerializedCookieJar | undefined {
     return this.serializeSync()
   }
 
   // use the class method CookieJar.deserialize instead of calling this directly
-  _importCookies(serialized: unknown, callback: Callback<CookieJar>) {
+  _importCookies(serialized: unknown, callback: Callback<CookieJar>): void {
     let cookies: unknown[] | undefined = undefined
 
     if (
@@ -988,7 +995,7 @@ export class CookieJar {
       let completedCount = 0
       const removeErrors: Error[] = []
 
-      function removeCookieCb(removeErr: Error | null) {
+      function removeCookieCb(removeErr: Error | null): void {
         if (removeErr) {
           removeErrors.push(removeErr)
         }

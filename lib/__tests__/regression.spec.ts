@@ -36,7 +36,7 @@ describe('Regression Tests', () => {
     expect.assertions(2)
     const cookieJar = new CookieJar()
 
-    const callback = function (err: null, cookie: Cookie) {
+    const callback = function (err: null, cookie: Cookie): void {
       expect(err).toBeNull()
       expect(cookie).toEqual(
         expect.objectContaining({
@@ -58,7 +58,7 @@ describe('Regression Tests', () => {
     expect.assertions(2)
     const cookieJar = new CookieJar()
 
-    const callback = function (err: null, cookie: Cookie) {
+    const callback = function (err: null, cookie: Cookie): void {
       expect(err).toBeNull()
       expect(cookie).toEqual([
         expect.objectContaining({

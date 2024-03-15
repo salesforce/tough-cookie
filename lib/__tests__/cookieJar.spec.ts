@@ -741,7 +741,7 @@ describe('CookieJar', () => {
       beforeEach(async () => {
         const url = 'http://example.com/index.html'
 
-        const at = (timeFromNow: number) => ({
+        const at = (timeFromNow: number): { now: Date } => ({
           now: new Date(Date.now() + timeFromNow),
         })
 
@@ -838,7 +838,7 @@ describe('CookieJar', () => {
       beforeEach(async () => {
         const url = 'http://example.com/index.html'
 
-        const at = (timeFromNow: number) => ({
+        const at = (timeFromNow: number): { now: Date } => ({
           now: new Date(Date.now() + timeFromNow),
         })
 
@@ -1506,7 +1506,7 @@ function apiVariants(
   testName: string,
   apiVariants: ApiVariants,
   assertions: () => void,
-) {
+): void {
   it(`${testName} (callback)`, async () => {
     await new Promise((resolve) =>
       apiVariants.callbackStyle(() => resolve(undefined)),
