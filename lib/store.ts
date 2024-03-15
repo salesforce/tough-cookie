@@ -49,18 +49,18 @@ export class Store {
     domain: Nullable<string>,
     path: Nullable<string>,
     key: Nullable<string>,
-  ): Promise<Nullable<Cookie>>
+  ): Promise<Cookie | undefined>
   findCookie(
     domain: Nullable<string>,
     path: Nullable<string>,
     key: Nullable<string>,
-    callback: Callback<Nullable<Cookie>>,
+    callback: Callback<Cookie | undefined>,
   ): void
   findCookie(
     _domain: Nullable<string>,
     _path: Nullable<string>,
     _key: Nullable<string>,
-    _callback?: Callback<Nullable<Cookie>>,
+    _callback?: Callback<Cookie | undefined>,
   ): unknown {
     throw new Error('findCookie is not implemented')
   }

@@ -62,7 +62,7 @@ export class MemoryCookieStore extends Store {
     domain: Nullable<string>,
     path: Nullable<string>,
     key: Nullable<string>,
-  ): Promise<Nullable<Cookie>>
+  ): Promise<Cookie | undefined>
   override findCookie(
     domain: Nullable<string>,
     path: Nullable<string>,

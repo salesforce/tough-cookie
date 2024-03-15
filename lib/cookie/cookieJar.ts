@@ -434,7 +434,7 @@ export class CookieJar {
       }
     }
 
-    const withCookie: Callback<Nullable<Cookie>> = function withCookie(
+    const withCookie: Callback<Cookie | undefined> = function withCookie(
       err,
       oldCookie,
     ): void {
