@@ -30,7 +30,7 @@
  */
 
 // This file was too big before we added max-lines, and it's ongoing work to reduce its size.
-/* eslint max-lines: [1, 750] */
+/* eslint max-lines: [1, 800] */
 
 import { getPublicSuffix } from '../getPublicSuffix'
 import * as validators from '../validators'
