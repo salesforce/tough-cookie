@@ -57,7 +57,7 @@ const CONTROL_CHARS = /[\x00-\x1F]/
 // https://github.com/ChromiumWebApps/chromium/blob/b3d3b4da8bb94c1b2e061600df106d590fda3620/net/cookies/parsed_cookie.cc#L60
 const TERMINATORS = ['\n', '\r', '\0']
 
-function trimTerminator(str: string) {
+function trimTerminator(str: string): string {
   if (validators.isEmptyString(str)) return str
   for (let t = 0; t < TERMINATORS.length; t++) {
     const terminator = TERMINATORS[t]
@@ -70,7 +70,10 @@ function trimTerminator(str: string) {
   return str
 }
 
-function parseCookiePair(cookiePair: string, looseMode: boolean) {
+function parseCookiePair(
+  cookiePair: string,
+  looseMode: boolean,
+): Cookie | undefined {
   cookiePair = trimTerminator(cookiePair)
   validators.validate(validators.isString(cookiePair), cookiePair)
 
@@ -284,7 +287,7 @@ function parse(
   return c
 }
 
-function fromJSON(str: unknown) {
+function fromJSON(str: unknown): Cookie | null {
   if (!str || validators.isEmptyString(str)) {
     return null
   }
@@ -452,7 +455,7 @@ export class Cookie {
     this.creationIndex = Cookie.cookiesCreated
   }
 
-  [Symbol.for('nodejs.util.inspect.custom')]() {
+  [Symbol.for('nodejs.util.inspect.custom')](): string {
     const now = Date.now()
     const hostOnly = this.hostOnly != null ? this.hostOnly.toString() : '?'
     const createAge =
@@ -536,11 +539,11 @@ export class Cookie {
     return obj
   }
 
-  clone() {
+  clone(): Cookie | null {
     return fromJSON(this.toJSON())
   }
 
-  validate() {
+  validate(): boolean {
     if (this.value == null || !COOKIE_OCTETS.test(this.value)) {
       return false
     }
@@ -576,7 +579,7 @@ export class Cookie {
     return true
   }
 
-  setExpires(exp: string | Date) {
+  setExpires(exp: string | Date): void {
     if (exp instanceof Date) {
       this.expires = exp
     } else {
@@ -584,7 +587,7 @@ export class Cookie {
     }
   }
 
-  setMaxAge(age: number) {
+  setMaxAge(age: number): void {
     if (age === Infinity) {
       this.maxAge = 'Infinity'
     } else if (age === -Infinity) {
@@ -594,7 +597,7 @@ export class Cookie {
     }
   }
 
-  cookieString() {
+  cookieString(): string {
     const val = this.value ?? ''
     if (this.key) {
       return `${this.key}=${val}`
@@ -603,7 +606,7 @@ export class Cookie {
   }
 
   // gives Set-Cookie header format
-  toString() {
+  toString(): string {
     let str = this.cookieString()
 
     if (this.expires != 'Infinity') {
@@ -701,14 +704,14 @@ export class Cookie {
   }
 
   // Mostly S5.1.2 and S5.2.3:
-  canonicalizedDomain() {
+  canonicalizedDomain(): string | null {
     if (this.domain == null) {
       return null
     }
     return canonicalDomain(this.domain)
   }
 
-  cdomain() {
+  cdomain(): string | null {
     return this.canonicalizedDomain()
   }
 
