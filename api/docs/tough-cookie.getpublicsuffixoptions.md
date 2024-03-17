@@ -14,8 +14,63 @@ export interface GetPublicSuffixOptions
 
 ## Properties
 
-|  Property | Modifiers | Type | Description |
-|  --- | --- | --- | --- |
-|  [allowSpecialUseDomain?](./tough-cookie.getpublicsuffixoptions.allowspecialusedomain.md) |  | boolean \| undefined | _(Optional)_ If set to <code>true</code> then the following [Special Use Domains](https://www.rfc-editor.org/rfc/rfc6761.html) will be treated as if they were valid public suffixes ('local', 'example', 'invalid', 'localhost', 'test'). |
-|  [ignoreError?](./tough-cookie.getpublicsuffixoptions.ignoreerror.md) |  | boolean \| undefined | _(Optional)_ If set to <code>true</code> then any errors that occur while executing [getPublicSuffix()](./tough-cookie.getpublicsuffix.md) will be silently ignored. |
+<table><thead><tr><th>
 
+Property
+
+
+</th><th>
+
+Modifiers
+
+
+</th><th>
+
+Type
+
+
+</th><th>
+
+Description
+
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[allowSpecialUseDomain?](./tough-cookie.getpublicsuffixoptions.allowspecialusedomain.md)
+
+
+</td><td>
+
+
+</td><td>
+
+boolean \| undefined
+
+
+</td><td>
+
+_(Optional)_ If set to `true` then the following [Special Use Domains](https://www.rfc-editor.org/rfc/rfc6761.html) will be treated as if they were valid public suffixes ('local', 'example', 'invalid', 'localhost', 'test').
+
+
+</td></tr>
+<tr><td>
+
+[ignoreError?](./tough-cookie.getpublicsuffixoptions.ignoreerror.md)
+
+
+</td><td>
+
+
+</td><td>
+
+boolean \| undefined
+
+
+</td><td>
+
+_(Optional)_ If set to `true` then any errors that occur while executing [getPublicSuffix()](./tough-cookie.getpublicsuffix.md) will be silently ignored.
+
+
+</td></tr>
+</tbody></table>
