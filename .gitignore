@@ -9,3 +9,4 @@ coverage
 .config
 .bash_history
 dist/
+tmp/
