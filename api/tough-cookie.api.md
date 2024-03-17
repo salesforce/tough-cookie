@@ -272,7 +272,7 @@ export function parseDate(str: string | undefined | null): Date | undefined;
 // @public (undocumented)
 export function pathMatch(reqPath: string, cookiePath: string): boolean;
 
-// @public (undocumented)
+// @public
 export function permuteDomain(domain: string, allowSpecialUseDomain?: boolean): string[] | null;
 
 // @public
