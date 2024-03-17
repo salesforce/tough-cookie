@@ -269,7 +269,7 @@ export const parse: (str: string, options?: {
 // @public (undocumented)
 export function parseDate(str: string | undefined | null): Date | undefined;
 
-// @public (undocumented)
+// @public
 export function pathMatch(reqPath: string, cookiePath: string): boolean;
 
 // @public (undocumented)
