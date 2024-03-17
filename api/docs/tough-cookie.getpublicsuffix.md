@@ -9,19 +9,63 @@ Returns the public suffix of this hostname. The public suffix is the shortest do
 **Signature:**
 
 ```typescript
-export declare function getPublicSuffix(domain: string, options?: GetPublicSuffixOptions): string | null;
+export declare function getPublicSuffix(domain: string, options?: GetPublicSuffixOptions): string | undefined;
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  domain | string | the domain attribute of a cookie |
-|  options | [GetPublicSuffixOptions](./tough-cookie.getpublicsuffixoptions.md) | _(Optional)_ optional configuration for controlling how the public suffix is determined |
+<table><thead><tr><th>
 
+Parameter
+
+
+</th><th>
+
+Type
+
+
+</th><th>
+
+Description
+
+
+</th></tr></thead>
+<tbody><tr><td>
+
+domain
+
+
+</td><td>
+
+string
+
+
+</td><td>
+
+the domain attribute of a cookie
+
+
+</td></tr>
+<tr><td>
+
+options
+
+
+</td><td>
+
+[GetPublicSuffixOptions](./tough-cookie.getpublicsuffixoptions.md)
+
+
+</td><td>
+
+_(Optional)_ optional configuration for controlling how the public suffix is determined
+
+
+</td></tr>
+</tbody></table>
 **Returns:**
 
-string \| null
+string \| undefined
 
 ## Remarks
 
