@@ -1,7 +1,7 @@
 export { MemoryCookieStore } from '../memstore'
 export { pathMatch } from '../pathMatch'
 export { permuteDomain } from '../permuteDomain'
-export { getPublicSuffix } from '../getPublicSuffix'
+export { getPublicSuffix, GetPublicSuffixOptions } from '../getPublicSuffix'
 export { Store } from '../store'
 export { ParameterError } from '../validators'
 export { version } from '../version'
