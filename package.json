@@ -89,7 +89,7 @@
     "version": "genversion --es6 lib/version.ts && git add lib/version.ts",
     "test": "npm run test:ts && npm run test:legacy",
     "test:ts": "jest",
-    "test:legacy": "npm run build -- --declaration false && vows test/*_test.js",
+    "test:legacy": "npm run build -- --declaration false && ./test/scripts/vows.js test/*_test.js",
     "typecheck": "tsc --noEmit",
     "cover": "jest --coverage",
     "eslint": "eslint --env node --ext .ts .",
