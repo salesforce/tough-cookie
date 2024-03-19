@@ -533,7 +533,7 @@ export class Cookie {
   }
 
   validate(): boolean {
-    if (this.value == null || !COOKIE_OCTETS.test(this.value)) {
+    if (!this.value || !COOKIE_OCTETS.test(this.value)) {
       return false
     }
     if (
@@ -587,7 +587,7 @@ export class Cookie {
   }
 
   cookieString(): string {
-    const val = this.value ?? ''
+    const val = this.value || ''
     if (this.key) {
       return `${this.key}=${val}`
     }

@@ -162,6 +162,7 @@ export class MemoryCookieStore extends Store {
     const promiseCallback = createPromiseCallback<undefined>(callback)
 
     const { domain, path, key } = cookie
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (domain == null || path == null || key == null) {
       return promiseCallback.resolve(undefined)
     }
