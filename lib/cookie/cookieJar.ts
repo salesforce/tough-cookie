@@ -9,8 +9,9 @@ import { pathMatch } from '../pathMatch'
 import { Cookie } from './cookie'
 import {
   Callback,
-  createPromiseCallback,
   ErrorCallback,
+  Nullable,
+  createPromiseCallback,
   inOperator,
   safeToString,
 } from '../utils'
@@ -84,13 +85,13 @@ function getCookieContext(url: unknown): URL | urlParse<string> {
 }
 
 type SameSiteLevel = keyof (typeof Cookie)['sameSiteLevel']
-function checkSameSiteContext(value: string): SameSiteLevel | null {
+function checkSameSiteContext(value: string): SameSiteLevel | undefined {
   validators.validate(validators.isNonEmptyString(value), value)
   const context = String(value).toLowerCase()
   if (context === 'none' || context === 'lax' || context === 'strict') {
     return context
   } else {
-    return null
+    return undefined
   }
 }
 
@@ -159,7 +160,7 @@ export class CookieJar {
   readonly prefixSecurity: string
 
   constructor(
-    store?: Store | null | undefined,
+    store?: Nullable<Store>,
     options?: CreateCookieJarOptions | boolean,
   ) {
     if (typeof options === 'boolean') {
@@ -265,7 +266,7 @@ export class CookieJar {
       return promiseCallback.resolve(undefined)
     }
 
-    const host = canonicalDomain(context.hostname)
+    const host = canonicalDomain(context.hostname) ?? null
     const loose = options?.loose || this.enableLooseMode
 
     let sameSiteContext = null
@@ -441,16 +442,16 @@ export class CookieJar {
       }
     }
 
-    function withCookie(
-      err: Error | null,
-      oldCookie: Cookie | undefined | null,
+    const withCookie: Callback<Cookie | undefined> = function withCookie(
+      err,
+      oldCookie,
     ): void {
       if (err) {
         cb(err)
         return
       }
 
-      const next = function (err: Error | null): void {
+      const next: ErrorCallback = function (err) {
         if (err) {
           cb(err)
         } else if (typeof cookie === 'string') {
@@ -492,6 +493,7 @@ export class CookieJar {
       }
     }
 
+    // TODO: Refactor to avoid using a callback
     store.findCookie(cookie.domain, cookie.path, cookie.key, withCookie)
     return promiseCallback.promise
   }
@@ -749,18 +751,13 @@ export class CookieJar {
       callback,
     )
 
-    const next: Callback<Cookie[]> = function (
-      err: Error | null,
-      cookies: Cookie[] | undefined,
-    ) {
+    const next: Callback<Cookie[] | undefined> = function (err, cookies) {
       if (err) {
         promiseCallback.callback(err)
-      } else if (cookies === undefined) {
-        promiseCallback.callback(null, undefined)
       } else {
         promiseCallback.callback(
           null,
-          cookies.map((c) => {
+          cookies?.map((c) => {
             return c.toString()
           }),
         )
@@ -875,7 +872,7 @@ export class CookieJar {
 
     cookies = cookies.slice() // do not modify the original
 
-    const putNext = (err: Error | null): void => {
+    const putNext: ErrorCallback = (err) => {
       if (err) {
         callback(err, undefined)
         return
@@ -997,7 +994,8 @@ export class CookieJar {
       let completedCount = 0
       const removeErrors: Error[] = []
 
-      function removeCookieCb(removeErr: Error | null): void {
+      // TODO: Refactor to avoid using callback
+      const removeCookieCb: ErrorCallback = function removeCookieCb(removeErr) {
         if (removeErr) {
           removeErrors.push(removeErr)
         }

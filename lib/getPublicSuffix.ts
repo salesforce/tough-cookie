@@ -49,7 +49,7 @@ const defaultGetPublicSuffixOptions: GetPublicSuffixOptions = {
 export function getPublicSuffix(
   domain: string,
   options: GetPublicSuffixOptions = {},
-): string | null {
+): string | undefined {
   options = { ...defaultGetPublicSuffixOptions, ...options }
   const domainParts = domain.split('.')
   const topLevelDomain = domainParts[domainParts.length - 1]
@@ -84,8 +84,9 @@ export function getPublicSuffix(
     )
   }
 
-  return getDomain(domain, {
+  const publicSuffix = getDomain(domain, {
     allowIcannDomains: true,
     allowPrivateDomains: true,
   })
+  if (publicSuffix) return publicSuffix
 }

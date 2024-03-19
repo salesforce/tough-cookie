@@ -32,18 +32,22 @@
 "use strict";
 const vows = require("vows");
 const assert = require("assert");
-const tough = require("../dist/cookie");
-const Cookie = tough.Cookie;
+const {Cookie} = require("../dist/cookie");
 
 const LOTS_OF_SEMICOLONS = ";".repeat(65535);
 const LOTS_OF_SPACES = " ".repeat(65535);
+
+/**
+ * Hacky workaround for the fact that vows complains "callback not fired" if a topic returns `undefined`.
+ */
+const SHOULD_BE_UNDEFINED = Symbol("vows breaks if you try to return `undefined` from a topic.")
 
 vows
   .describe("Parsing")
   .addBatch({
     simple: {
       topic: function() {
-        return Cookie.parse("a=bcd") || null;
+        return Cookie.parse("a=bcd");
       },
       parsed: function(c) {
         assert.ok(c);
@@ -66,9 +70,7 @@ vows
     },
     "with expiry": {
       topic: function() {
-        return (
-          Cookie.parse("a=bcd; Expires=Tue, 18 Oct 2011 07:05:03 GMT") || null
-        );
+        return Cookie.parse("a=bcd; Expires=Tue, 18 Oct 2011 07:05:03 GMT");
       },
       parsed: function(c) {
         assert.ok(c);
@@ -89,11 +91,7 @@ vows
     },
     "with expiry and path": {
       topic: function() {
-        return (
-          Cookie.parse(
-            'abc="xyzzy!"; Expires=Tue, 18 Oct 2011 07:05:03 GMT; Path=/aBc'
-          ) || null
-        );
+        return Cookie.parse('abc="xyzzy!"; Expires=Tue, 18 Oct 2011 07:05:03 GMT; Path=/aBc');
       },
       parsed: function(c) {
         assert.ok(c);
@@ -121,10 +119,8 @@ vows
     },
     "with most things": {
       topic: function() {
-        return (
-          Cookie.parse(
-            'abc="xyzzy!"; Expires=Tue, 18 Oct 2011 07:05:03 GMT; Path=/aBc; Domain=example.com; Secure; HTTPOnly; Max-Age=1234; Foo=Bar; Baz'
-          ) || null
+        return Cookie.parse(
+          'abc="xyzzy!"; Expires=Tue, 18 Oct 2011 07:05:03 GMT; Path=/aBc; Domain=example.com; Secure; HTTPOnly; Max-Age=1234; Foo=Bar; Baz'
         );
       },
       parsed: function(c) {
@@ -199,7 +195,7 @@ vows
     },
     "trailing dot in domain": {
       topic: function() {
-        return Cookie.parse("a=b; Domain=example.com.", true) || null;
+        return Cookie.parse("a=b; Domain=example.com.", true);
       },
       "has the domain": function(c) {
         assert.equal(c.domain, "example.com.");
@@ -245,12 +241,12 @@ vows
         return Cookie.parse("\x08", true) || null;
       },
       "doesn't parse": function(c) {
-        assert.equal(c, null);
+        assert.equal(c, undefined);
       }
     },
     "public suffix domain": {
       topic: function() {
-        return Cookie.parse("a=b; domain=kyoto.jp", true) || null;
+        return Cookie.parse("a=b; domain=kyoto.jp", true);
       },
       "parses fine": function(c) {
         assert.ok(c);
@@ -264,7 +260,7 @@ vows
     "public suffix foonet.net": {
       "top level": {
         topic: function() {
-          return Cookie.parse("a=b; domain=foonet.net") || null;
+          return Cookie.parse("a=b; domain=foonet.net");
         },
         "parses and is valid": function(c) {
           assert.ok(c);
@@ -274,7 +270,7 @@ vows
       },
       www: {
         topic: function() {
-          return Cookie.parse("a=b; domain=www.foonet.net") || null;
+          return Cookie.parse("a=b; domain=www.foonet.net");
         },
         "parses and is valid": function(c) {
           assert.ok(c);
@@ -284,7 +280,7 @@ vows
       },
       "with a dot": {
         topic: function() {
-          return Cookie.parse("a=b; domain=.foonet.net") || null;
+          return Cookie.parse("a=b; domain=.foonet.net");
         },
         "parses and is valid": function(c) {
           assert.ok(c);
@@ -354,7 +350,7 @@ vows
     },
     "spaces in value": {
       topic: function() {
-        return Cookie.parse("a=one two three", false) || null;
+        return Cookie.parse("a=one two three", false);
       },
       parsed: function(c) {
         assert.ok(c);
@@ -377,7 +373,7 @@ vows
     },
     "quoted spaces in value": {
       topic: function() {
-        return Cookie.parse('a="one two three"', false) || null;
+        return Cookie.parse('a="one two three"', false);
       },
       parsed: function(c) {
         assert.ok(c);
@@ -400,7 +396,7 @@ vows
     },
     "non-ASCII in value": {
       topic: function() {
-        return Cookie.parse("farbe=weiß", false) || null;
+        return Cookie.parse("farbe=weiß", false);
       },
       parsed: function(c) {
         assert.ok(c);
@@ -423,7 +419,7 @@ vows
     },
     "empty key": {
       topic: function() {
-        return Cookie.parse("=abc", { loose: true }) || null;
+        return Cookie.parse("=abc", { loose: true });
       },
       parsed: function(c) {
         assert.ok(c);
@@ -446,7 +442,7 @@ vows
     },
     "non-existent key": {
       topic: function() {
-        return Cookie.parse("abc", { loose: true }) || null;
+        return Cookie.parse("abc", { loose: true });
       },
       parsed: function(c) {
         assert.ok(c);
@@ -469,7 +465,7 @@ vows
     },
     "weird format": {
       topic: function() {
-        return Cookie.parse("=foo=bar", { loose: true }) || null;
+        return Cookie.parse("=foo=bar", { loose: true });
       },
       parsed: function(c) {
         assert.ok(c);
@@ -494,7 +490,7 @@ vows
       topic: function() {
         // takes abnormally long due to semi-catastrophic regexp backtracking
         const str = `foo=bar${LOTS_OF_SEMICOLONS} domain=example.com`;
-        return Cookie.parse(str) || null;
+        return Cookie.parse(str);
       },
       parsed: function(c) {
         assert.ok(c);
@@ -521,9 +517,9 @@ vows
         const str1 = `x${LOTS_OF_SPACES}x`;
         const str2 = "x x";
         const t0 = Date.now();
-        const cookie1 = Cookie.parse(str1) || null;
+        const cookie1 = Cookie.parse(str1);
         const t1 = Date.now();
-        const cookie2 = Cookie.parse(str2) || null;
+        const cookie2 = Cookie.parse(str2);
         const t2 = Date.now();
         return {
           cookie1: cookie1,
@@ -533,10 +529,10 @@ vows
         };
       },
       "large one doesn't parse": function(c) {
-        assert.equal(c.cookie1, null);
+        assert.equal(c.cookie1, undefined);
       },
       "small one doesn't parse": function(c) {
-        assert.equal(c.cookie2, null);
+        assert.equal(c.cookie2, undefined);
       },
       "takes about the same time for each": function(c) {
         const long1 = c.dt1 + 1; // avoid 0ms
@@ -551,9 +547,9 @@ vows
         const str1 = `x${LOTS_OF_SPACES}=x`;
         const str2 = "x =x";
         const t0 = Date.now();
-        const cookie1 = Cookie.parse(str1) || null;
+        const cookie1 = Cookie.parse(str1);
         const t1 = Date.now();
-        const cookie2 = Cookie.parse(str2) || null;
+        const cookie2 = Cookie.parse(str2);
         const t2 = Date.now();
         return {
           cookie1: cookie1,
@@ -585,9 +581,9 @@ vows
         const str1 = `x${LOTS_OF_SPACES}x`;
         const str2 = "x x";
         const t0 = Date.now();
-        const cookie1 = Cookie.parse(str1, { loose: true }) || null;
+        const cookie1 = Cookie.parse(str1, { loose: true });
         const t1 = Date.now();
-        const cookie2 = Cookie.parse(str2, { loose: true }) || null;
+        const cookie2 = Cookie.parse(str2, { loose: true });
         const t2 = Date.now();
         return {
           cookie1: cookie1,
@@ -619,9 +615,9 @@ vows
         const str1 = `x${LOTS_OF_SPACES}=x`;
         const str2 = "x =x";
         const t0 = Date.now();
-        const cookie1 = Cookie.parse(str1, { loose: true }) || null;
+        const cookie1 = Cookie.parse(str1, { loose: true });
         const t1 = Date.now();
-        const cookie2 = Cookie.parse(str2, { loose: true }) || null;
+        const cookie2 = Cookie.parse(str2, { loose: true });
         const t2 = Date.now();
         return {
           cookie1: cookie1,
@@ -651,7 +647,7 @@ vows
     "same-site": {
       lax: {
         topic: function() {
-          return Cookie.parse("abc=xyzzy; SameSite=Lax") || null;
+          return Cookie.parse("abc=xyzzy; SameSite=Lax");
         },
         parsed: function(c) {
           assert.ok(c);
@@ -665,7 +661,7 @@ vows
       },
       strict: {
         topic: function() {
-          return Cookie.parse("abc=xyzzy; SameSite=StRiCt") || null;
+          return Cookie.parse("abc=xyzzy; SameSite=StRiCt");
         },
         parsed: function(c) {
           assert.ok(c);
@@ -679,7 +675,7 @@ vows
       },
       none: {
         topic: function() {
-          return Cookie.parse("abc=xyz; SameSite=NoNe") || null;
+          return Cookie.parse("abc=xyz; SameSite=NoNe");
         },
         parsed: function(c) {
           assert.ok(c);
@@ -693,7 +689,7 @@ vows
       },
       bad: {
         topic: function() {
-          return Cookie.parse("abc=xyzzy; SameSite=example.com") || null;
+          return Cookie.parse("abc=xyzzy; SameSite=example.com");
         },
         parsed: function(c) {
           assert.ok(c);
@@ -707,7 +703,7 @@ vows
       },
       absent: {
         topic: function() {
-          return Cookie.parse("abc=xyzzy;") || null;
+          return Cookie.parse("abc=xyzzy;");
         },
         parsed: function(c) {
           assert.ok(c);
@@ -722,34 +718,34 @@ vows
     },
     "empty string": {
       topic: function() {
-        return Cookie.parse("");
+        return Cookie.parse("") ?? SHOULD_BE_UNDEFINED;
       },
       "is empty": function(c) {
-        assert.isNull(c);
+        assert.equal(c, SHOULD_BE_UNDEFINED)
       }
     },
     "missing string": {
       topic: function() {
-        return Cookie.parse();
+        return Cookie.parse() ?? SHOULD_BE_UNDEFINED;
       },
       "is empty": function(c) {
-        assert.isNull(c);
+        assert.equal(c, SHOULD_BE_UNDEFINED);
       }
     },
     "some string object": {
       topic: function() {
-        return Cookie.parse(new String(""));
+        return Cookie.parse(new String("")) ?? SHOULD_BE_UNDEFINED;
       },
       "is empty": function(c) {
-        assert.isNull(c, null);
+        assert.equal(c, SHOULD_BE_UNDEFINED);
       }
     },
     "some empty string object": {
       topic: function() {
-        return Cookie.parse(new String());
+        return Cookie.parse(new String()) ?? SHOULD_BE_UNDEFINED;
       },
       "is empty": function(c) {
-        assert.isNull(c, null);
+        assert.equal(c, SHOULD_BE_UNDEFINED);
       }
     }
   })

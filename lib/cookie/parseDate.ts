@@ -1,4 +1,7 @@
 // date-time parsing constants (RFC6265 S5.1.1)
+
+import type { Nullable } from '../utils'
+
 // eslint-disable-next-line no-control-regex
 const DATE_DELIM = /[\x09\x20-\x2F\x3B-\x40\x5B-\x60\x7B-\x7E]/
 
@@ -123,7 +126,7 @@ function parseMonth(token: string): number | null {
 /*
  * RFC6265 S5.1.1 date parser (see RFC for full grammar)
  */
-export function parseDate(str: string | undefined | null): Date | undefined {
+export function parseDate(str: Nullable<string>): Date | undefined {
   if (!str) {
     return undefined
   }

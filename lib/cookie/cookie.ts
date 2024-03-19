@@ -30,7 +30,7 @@
  */
 
 // This file was too big before we added max-lines, and it's ongoing work to reduce its size.
-/* eslint max-lines: [1, 750] */
+/* eslint max-lines: [1, 800] */
 
 import { getPublicSuffix } from '../getPublicSuffix'
 import * as validators from '../validators'
@@ -115,12 +115,15 @@ type ParseCookieOptions = {
   loose?: boolean | undefined
 }
 
-function parse(
-  str: string,
-  options?: ParseCookieOptions,
-): Cookie | undefined | null {
+/**
+ * Parses a string into a Cookie object.
+ * @param str the Set-Cookie header or a Cookie string to parse. Note: when parsing a Cookie header it must be split by ';' before each Cookie string can be parsed.
+ * @param options configures strict or loose mode for cookie parsing
+ * @returns `Cookie` object when parsing succeeds, `undefined` when parsing fails.
+ */
+function parse(str: string, options?: ParseCookieOptions): Cookie | undefined {
   if (validators.isEmptyString(str) || !validators.isString(str)) {
-    return null
+    return undefined
   }
 
   str = str.trim()
@@ -276,6 +279,10 @@ function parse(
   return c
 }
 
+// TBD: `null` is valid JSON, but `undefined` is not. Options:
+// 1. Change this to return `undefined` - weird because it's not JSON
+// 2. Keep this as `null` - weird because it's a violation of our new convention
+// 3. Change *everything* to return `null` - a lot of work, maybe other edge cases that we can't change?
 function fromJSON(str: unknown): Cookie | null {
   if (!str || validators.isEmptyString(str)) {
     return null
@@ -528,6 +535,7 @@ export class Cookie {
     return obj
   }
 
+  // TBD: This is a wrapper for `fromJSON`, return type depends on decision there
   clone(): Cookie | null {
     return fromJSON(this.toJSON())
   }
@@ -693,15 +701,12 @@ export class Cookie {
   }
 
   // Mostly S5.1.2 and S5.2.3:
-  canonicalizedDomain(): string | null {
-    if (this.domain == null) {
-      return null
-    }
+  canonicalizedDomain(): string | undefined {
     return canonicalDomain(this.domain)
   }
 
-  cdomain(): string | null {
-    return this.canonicalizedDomain()
+  cdomain(): string | undefined {
+    return canonicalDomain(this.domain)
   }
 
   static parse = parse
