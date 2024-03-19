@@ -17,7 +17,7 @@ import type { Cookie } from './cookie'
 const MAX_TIME = 2147483647000
 
 /** Compares two cookies for sorting. */
-export function cookieCompare(a: Cookie, b: Cookie) {
+export function cookieCompare(a: Cookie, b: Cookie): number {
   validators.validate(validators.isObject(a), safeToString(a))
   validators.validate(validators.isObject(b), safeToString(b))
   let cmp: number

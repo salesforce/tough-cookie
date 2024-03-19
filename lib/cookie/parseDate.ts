@@ -32,7 +32,7 @@ function parseDigits(
   minDigits: number,
   maxDigits: number,
   trailingOK: boolean,
-) {
+): number | null {
   let count = 0
   while (count < token.length) {
     const c = token.charCodeAt(count)
@@ -55,7 +55,7 @@ function parseDigits(
   return parseInt(token.slice(0, count), 10)
 }
 
-function parseTime(token: string) {
+function parseTime(token: string): number[] | null {
   const parts = token.split(':')
   const result = [0, 0, 0]
 
@@ -88,7 +88,7 @@ function parseTime(token: string) {
   return result
 }
 
-function parseMonth(token: string) {
+function parseMonth(token: string): number | null {
   token = String(token).slice(0, 3).toLowerCase()
   switch (token) {
     case 'jan':

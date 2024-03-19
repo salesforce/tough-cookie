@@ -299,7 +299,7 @@ describe('cookieJar serialization', () => {
 
 function expectDataToMatchSerializationSchema(
   serializedJar: SerializedCookieJar,
-) {
+): void {
   expect(serializedJar).not.toBeNull()
   expect(serializedJar).toBeInstanceOf(Object)
   expect(serializedJar.version).toBe(`tough-cookie@${version}`)
@@ -328,7 +328,7 @@ const serializedCookiePropTypes: { [key: string]: string } = {
   sameSite: 'string',
 }
 
-function validateSerializedCookie(cookie: SerializedCookie) {
+function validateSerializedCookie(cookie: SerializedCookie): void {
   expect(typeof cookie).toBe('object')
   expect(cookie).not.toBeInstanceOf(Cookie)
 
