@@ -85,13 +85,13 @@ function getCookieContext(url: unknown): URL | urlParse<string> {
 }
 
 type SameSiteLevel = keyof (typeof Cookie)['sameSiteLevel']
-function checkSameSiteContext(value: string): SameSiteLevel | null {
+function checkSameSiteContext(value: string): SameSiteLevel | undefined {
   validators.validate(validators.isNonEmptyString(value), value)
   const context = String(value).toLowerCase()
   if (context === 'none' || context === 'lax' || context === 'strict') {
     return context
   } else {
-    return null
+    return undefined
   }
 }
 
@@ -268,7 +268,7 @@ export class CookieJar {
       return promiseCallback.resolve(undefined)
     }
 
-    const host = canonicalDomain(context.hostname)
+    const host = canonicalDomain(context.hostname) ?? null
     const loose = options?.loose || this.enableLooseMode
 
     let sameSiteContext = null

@@ -13,9 +13,9 @@ export function domainMatch(
   str?: Nullable<string>,
   domStr?: Nullable<string>,
   canonicalize?: boolean,
-): boolean | null {
+): boolean | undefined {
   if (str == null || domStr == null) {
-    return null
+    return undefined
   }
 
   let _str: Nullable<string>
@@ -30,7 +30,7 @@ export function domainMatch(
   }
 
   if (_str == null || _domStr == null) {
-    return null
+    return undefined
   }
 
   /*

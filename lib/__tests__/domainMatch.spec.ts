@@ -13,10 +13,10 @@ describe('domainMatch', () => {
     ['example.com', 'example.com.', false], // RFC6265 S4.1.2.3
 
     // nulls and undefineds
-    [null, 'example.com', null],
-    ['example.com', null, null],
-    [null, null, null],
-    [undefined, undefined, null],
+    [null, 'example.com', undefined],
+    ['example.com', null, undefined],
+    [null, null, undefined],
+    [undefined, undefined, undefined],
 
     // suffix matching:
     ['www.example.com', 'example.com', true], // substr AND suffix

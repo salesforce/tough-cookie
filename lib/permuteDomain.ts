@@ -37,13 +37,13 @@ import { getPublicSuffix } from './getPublicSuffix'
 export function permuteDomain(
   domain: string,
   allowSpecialUseDomain?: boolean,
-): string[] | null {
+): string[] | undefined {
   const pubSuf = getPublicSuffix(domain, {
     allowSpecialUseDomain: allowSpecialUseDomain,
   })
 
   if (!pubSuf) {
-    return null
+    return undefined
   }
   if (pubSuf == domain) {
     return [domain]

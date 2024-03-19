@@ -3,9 +3,9 @@ import { IP_V6_REGEX_OBJECT } from './constants'
 import type { Nullable } from '../utils'
 
 // S5.1.2 Canonicalized Host Names
-export function canonicalDomain(str: Nullable<string>): string | null {
+export function canonicalDomain(str: Nullable<string>): string | undefined {
   if (str == null) {
-    return null
+    return undefined
   }
   let _str = str.trim().replace(/^\./, '') // S4.1.2.3 & S5.2.3: ignore leading .
 
