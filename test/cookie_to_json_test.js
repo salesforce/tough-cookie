@@ -79,7 +79,8 @@ vows
       },
       "null deserialization": {
         topic: function() {
-          return Cookie.fromJSON(null);
+          // vows breaks if you try to return `undefined` :(
+          return Cookie.fromJSON(null) ?? null;
         },
         "is null": function(cookie) {
           assert.equal(cookie, null);
