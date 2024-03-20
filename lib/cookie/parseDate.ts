@@ -35,7 +35,7 @@ function parseDigits(
   minDigits: number,
   maxDigits: number,
   trailingOK: boolean,
-): number | null {
+): number | undefined {
   let count = 0
   while (count < token.length) {
     const c = token.charCodeAt(count)
@@ -48,17 +48,17 @@ function parseDigits(
 
   // constrain to a minimum and maximum number of digits.
   if (count < minDigits || count > maxDigits) {
-    return null
+    return
   }
 
   if (!trailingOK && count != token.length) {
-    return null
+    return
   }
 
   return parseInt(token.slice(0, count), 10)
 }
 
-function parseTime(token: string): number[] | null {
+function parseTime(token: string): number[] | undefined {
   const parts = token.split(':')
   const result = [0, 0, 0]
 
@@ -69,7 +69,7 @@ function parseTime(token: string): number[] | null {
    */
 
   if (parts.length !== 3) {
-    return null
+    return
   }
 
   for (let i = 0; i < 3; i++) {
@@ -78,12 +78,12 @@ function parseTime(token: string): number[] | null {
     // have a trailer
     const trailingOK = i == 2
     const numPart = parts[i]
-    if (numPart == null) {
-      return null
+    if (numPart === undefined) {
+      return
     }
     const num = parseDigits(numPart, 1, 2, trailingOK)
-    if (num === null) {
-      return null
+    if (num === undefined) {
+      return
     }
     result[i] = num
   }
@@ -91,7 +91,7 @@ function parseTime(token: string): number[] | null {
   return result
 }
 
-function parseMonth(token: string): number | null {
+function parseMonth(token: string): number | undefined {
   token = String(token).slice(0, 3).toLowerCase()
   switch (token) {
     case 'jan':
@@ -119,7 +119,7 @@ function parseMonth(token: string): number | null {
     case 'dec':
       return MONTH_TO_NUM.dec
     default:
-      return null
+      return
   }
 }
 
@@ -128,7 +128,7 @@ function parseMonth(token: string): number | null {
  */
 export function parseDate(str: Nullable<string>): Date | undefined {
   if (!str) {
-    return undefined
+    return
   }
 
   /* RFC6265 S5.1.1:
@@ -137,15 +137,15 @@ export function parseDate(str: Nullable<string>): Date | undefined {
    */
   const tokens = str.split(DATE_DELIM)
   if (!tokens) {
-    return undefined
+    return
   }
 
-  let hour = null
-  let minute = null
-  let second = null
-  let dayOfMonth = null
-  let month = null
-  let year = null
+  let hour: number | undefined
+  let minute: number | undefined
+  let second: number | undefined
+  let dayOfMonth: number | undefined
+  let month: number | undefined
+  let year: number | undefined
 
   for (let i = 0; i < tokens.length; i++) {
     const token = (tokens[i] ?? '').trim()
@@ -153,16 +153,14 @@ export function parseDate(str: Nullable<string>): Date | undefined {
       continue
     }
 
-    let result
-
     /* 2.1. If the found-time flag is not set and the token matches the time
      * production, set the found-time flag and set the hour- value,
      * minute-value, and second-value to the numbers denoted by the digits in
      * the date-token, respectively.  Skip the remaining sub-steps and continue
      * to the next date-token.
      */
-    if (second === null) {
-      result = parseTime(token)
+    if (second === undefined) {
+      const result = parseTime(token)
       if (result) {
         hour = result[0]
         minute = result[1]
@@ -176,10 +174,10 @@ export function parseDate(str: Nullable<string>): Date | undefined {
      * the day-of-month-value to the number denoted by the date-token.  Skip
      * the remaining sub-steps and continue to the next date-token.
      */
-    if (dayOfMonth === null) {
+    if (dayOfMonth === undefined) {
       // "day-of-month = 1*2DIGIT ( non-digit *OCTET )"
-      result = parseDigits(token, 1, 2, true)
-      if (result !== null) {
+      const result = parseDigits(token, 1, 2, true)
+      if (result !== undefined) {
         dayOfMonth = result
         continue
       }
@@ -190,9 +188,9 @@ export function parseDate(str: Nullable<string>): Date | undefined {
      * the month denoted by the date-token.  Skip the remaining sub-steps and
      * continue to the next date-token.
      */
-    if (month === null) {
-      result = parseMonth(token)
-      if (result !== null) {
+    if (month === undefined) {
+      const result = parseMonth(token)
+      if (result !== undefined) {
         month = result
         continue
       }
@@ -203,10 +201,10 @@ export function parseDate(str: Nullable<string>): Date | undefined {
      * number denoted by the date-token.  Skip the remaining sub-steps and
      * continue to the next date-token.
      */
-    if (year === null) {
+    if (year === undefined) {
       // "year = 2*4DIGIT ( non-digit *OCTET )"
-      result = parseDigits(token, 2, 4, true)
-      if (result !== null) {
+      const result = parseDigits(token, 2, 4, true)
+      if (result !== undefined) {
         year = result
         /* From S5.1.1:
          * 3.  If the year-value is greater than or equal to 70 and less
@@ -237,12 +235,12 @@ export function parseDate(str: Nullable<string>): Date | undefined {
    * So, in order as above:
    */
   if (
-    dayOfMonth === null ||
-    month == null ||
-    year == null ||
-    hour == null ||
-    minute == null ||
-    second == null ||
+    dayOfMonth === undefined ||
+    month === undefined ||
+    year === undefined ||
+    hour === undefined ||
+    minute === undefined ||
+    second === undefined ||
     dayOfMonth < 1 ||
     dayOfMonth > 31 ||
     year < 1601 ||
@@ -250,7 +248,7 @@ export function parseDate(str: Nullable<string>): Date | undefined {
     minute > 59 ||
     second > 59
   ) {
-    return undefined
+    return
   }
 
   return new Date(Date.UTC(year, month, dayOfMonth, hour, minute, second))
