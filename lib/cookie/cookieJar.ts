@@ -893,7 +893,7 @@ export class CookieJar {
           return callback(e instanceof Error ? e : new Error(), undefined)
         }
 
-        if (cookie === null) {
+        if (cookie === undefined) {
           return putNext(null) // skip this cookie
         }
 
