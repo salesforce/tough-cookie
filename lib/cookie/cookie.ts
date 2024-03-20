@@ -167,7 +167,7 @@ function parse(str: string, options?: ParseCookieOptions): Cookie | undefined {
       continue
     }
     const av_sep = av.indexOf('=')
-    let av_key, av_value
+    let av_key: string, av_value: string | null
 
     if (av_sep === -1) {
       av_key = av
