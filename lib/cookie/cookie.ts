@@ -279,13 +279,9 @@ function parse(str: string, options?: ParseCookieOptions): Cookie | undefined {
   return c
 }
 
-// TBD: `null` is valid JSON, but `undefined` is not. Options:
-// 1. Change this to return `undefined` - weird because it's not JSON
-// 2. Keep this as `null` - weird because it's a violation of our new convention
-// 3. Change *everything* to return `null` - a lot of work, maybe other edge cases that we can't change?
-function fromJSON(str: unknown): Cookie | null {
+function fromJSON(str: unknown): Cookie | undefined {
   if (!str || validators.isEmptyString(str)) {
-    return null
+    return undefined
   }
 
   let obj: unknown
@@ -293,7 +289,7 @@ function fromJSON(str: unknown): Cookie | null {
     try {
       obj = JSON.parse(str)
     } catch (e) {
-      return null
+      return undefined
     }
   } else {
     // assume it's an Object
@@ -535,8 +531,7 @@ export class Cookie {
     return obj
   }
 
-  // TBD: This is a wrapper for `fromJSON`, return type depends on decision there
-  clone(): Cookie | null {
+  clone(): Cookie | undefined {
     return fromJSON(this.toJSON())
   }
 

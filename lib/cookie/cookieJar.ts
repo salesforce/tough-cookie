@@ -892,9 +892,9 @@ export class CookieJar {
           return
         }
 
-        if (cookie === null) {
-          putNext(null)
-          return // skip this cookie
+        if (cookie === undefined) {
+          putNext(null) // skip this cookie
+          return
         }
 
         this.store.putCookie(cookie, putNext)
