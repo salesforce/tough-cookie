@@ -452,11 +452,11 @@ export class Cookie {
     const hostOnly = this.hostOnly != null ? this.hostOnly.toString() : '?'
     const createAge =
       this.creation && this.creation !== 'Infinity'
-        ? `${now - this.creation.getTime()}ms`
+        ? `${String(now - this.creation.getTime())}ms`
         : '?'
     const accessAge =
       this.lastAccessed && this.lastAccessed !== 'Infinity'
-        ? `${now - this.lastAccessed.getTime()}ms`
+        ? `${String(now - this.lastAccessed.getTime())}ms`
         : '?'
     return `Cookie="${this.toString()}; hostOnly=${hostOnly}; aAge=${accessAge}; cAge=${createAge}"`
   }
@@ -608,7 +608,7 @@ export class Cookie {
     }
 
     if (this.maxAge != null && this.maxAge != Infinity) {
-      str += `; Max-Age=${this.maxAge}`
+      str += `; Max-Age=${String(this.maxAge)}`
     }
 
     if (this.domain && !this.hostOnly) {

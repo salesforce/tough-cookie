@@ -71,7 +71,9 @@ describe('store removeAllCookies API', () => {
       const spy = jest.spyOn(store, 'removeCookie')
       spy.mockImplementation((domain, path, key, callback) => {
         if (spy.mock.calls.length % 2 === 1) {
-          callback(new Error(`something happened ${spy.mock.calls.length}`))
+          callback(
+            new Error(`something happened ${String(spy.mock.calls.length)}`),
+          )
           return
         }
         _removeCookie.call(store, domain, path, key, callback)
