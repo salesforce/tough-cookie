@@ -199,7 +199,7 @@ export class CookieJar {
     toJSON(): SerializedCookieJar | undefined;
 }
 
-// @public (undocumented)
+// @public
 export function defaultPath(path?: Nullable<string>): string;
 
 // @public (undocumented)
