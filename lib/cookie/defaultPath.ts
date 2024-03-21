@@ -1,12 +1,14 @@
 // RFC6265 S5.1.4 Paths and Path-Match
 
+import type { Nullable } from '../utils'
+
 /*
  * "The user agent MUST use an algorithm equivalent to the following algorithm
  * to compute the default-path of a cookie:"
  *
  * Assumption: the path (and not query part or absolute uri) is passed in.
  */
-export function defaultPath(path?: string | null): string {
+export function defaultPath(path?: Nullable<string>): string {
   // "2. If the uri-path is empty or if the first character of the uri-path is not
   // a %x2F ("/") character, output %x2F ("/") and skip the remaining steps.
   if (!path || path.slice(0, 1) !== '/') {

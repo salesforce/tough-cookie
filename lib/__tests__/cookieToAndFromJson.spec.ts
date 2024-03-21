@@ -47,7 +47,7 @@ describe('Cookie.fromJSON()', () => {
   })
 
   it('should be able to handle a null value deserialization', () => {
-    expect(Cookie.fromJSON(null)).toBeNull()
+    expect(Cookie.fromJSON(null)).toBeUndefined()
   })
 
   it('should be able to handle expiry, creation, or lastAccessed with Infinity during deserialization', () => {

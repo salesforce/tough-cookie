@@ -1,3 +1,4 @@
+import type { Nullable } from '../utils'
 import { canonicalDomain } from './canonicalDomain'
 
 // Dumped from ip-regex@4.0.0, with the following changes:
@@ -9,16 +10,16 @@ const IP_REGEX_LOWERCASE =
 
 // S5.1.3 Domain Matching
 export function domainMatch(
-  str?: string | null,
-  domStr?: string | null,
+  str?: Nullable<string>,
+  domStr?: Nullable<string>,
   canonicalize?: boolean,
-): boolean | null {
+): boolean | undefined {
   if (str == null || domStr == null) {
-    return null
+    return undefined
   }
 
-  let _str: string | null
-  let _domStr: string | null
+  let _str: Nullable<string>
+  let _domStr: Nullable<string>
 
   if (canonicalize !== false) {
     _str = canonicalDomain(str)
@@ -29,7 +30,7 @@ export function domainMatch(
   }
 
   if (_str == null || _domStr == null) {
-    return null
+    return undefined
   }
 
   /*

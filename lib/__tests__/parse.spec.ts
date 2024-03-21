@@ -379,22 +379,22 @@ describe('Cookie.parse', () => {
     // empty string
     {
       input: ``,
-      output: null,
+      output: undefined,
     },
     // missing string
     {
       input: undefined,
-      output: null,
+      output: undefined,
     },
     // some string object
     {
       input: new String(''),
-      output: null,
+      output: undefined,
     },
     // some empty string object
     {
       input: new String(),
-      output: null,
+      output: undefined,
     },
   ])('Cookie.parse("$input")', (testCase) => {
     // Repeating the character in the input makes the jest output obnoxiously long, so instead we
@@ -406,11 +406,7 @@ describe('Cookie.parse', () => {
 
     const value = input === undefined ? undefined : input.valueOf()
     const cookie = Cookie.parse(value as string, parseOptions)
-    if (output !== undefined) {
-      expect(cookie).toEqual(output && expect.objectContaining(output))
-    } else {
-      expect(cookie).toBe(output)
-    }
+    expect(cookie).toEqual(output && expect.objectContaining(output))
 
     if (cookie && typeof assertValidateReturns === 'boolean') {
       expect(cookie.validate()).toBe(assertValidateReturns)
