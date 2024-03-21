@@ -166,8 +166,7 @@ vows
           topic: function(options) {
             this.callSetCookie("strict", options, this.callback);
           },
-          "is not allowed": function(err, ignored) {
-            ignored = null;
+          "is not allowed": function(err) {
             assert.ok(err instanceof Error);
             assert.equal(
               err.message,
@@ -179,8 +178,7 @@ vows
           topic: function(options) {
             this.callSetCookie("lax", options, this.callback);
           },
-          "is not allowed": function(err, ignored) {
-            ignored = null;
+          "is not allowed": function(err) {
             assert.ok(err instanceof Error);
             assert.equal(
               err.message,
@@ -192,8 +190,7 @@ vows
           topic: function(options) {
             this.callSetCookie("normal", options, this.callback);
           },
-          "is fine": function(err, ignored) {
-            ignored = null;
+          "is fine": function(err) {
             assert.isNull(err);
           }
         }
@@ -207,8 +204,7 @@ vows
           topic: function(options) {
             this.callSetCookie("strict", options, this.callback);
           },
-          "is fine": function(err, ignored) {
-            ignored = null;
+          "is fine": function(err) {
             assert.isNull(err);
           }
         },
@@ -216,8 +212,7 @@ vows
           topic: function(options) {
             this.callSetCookie("lax", options, this.callback);
           },
-          "is fine": function(err, ignored) {
-            ignored = null;
+          "is fine": function(err) {
             assert.isNull(err);
           }
         },
@@ -225,8 +220,7 @@ vows
           topic: function(options) {
             this.callSetCookie("normal", options, this.callback);
           },
-          "is fine": function(err, ignored) {
-            ignored = null;
+          "is fine": function(err) {
             assert.isNull(err);
           }
         }
@@ -236,7 +230,6 @@ vows
   .addBatch({
     "Canonicalized strings": {
       topic: function() {
-        const url = "http://example.com/index.html";
         const garbage = Cookie.parse("garbage=1");
         garbage.sameSite = "GaRbAGe";
         const cookies = {

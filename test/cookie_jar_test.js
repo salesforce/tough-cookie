@@ -559,8 +559,7 @@ vows
       "old cookie is HttpOnly": {
         topic: function() {
           const cb = this.callback;
-          const next = function(err, c) {
-            c = null;
+          const next = function(err) {
             return cb(err, cj);
           };
           const cj = new CookieJar();
@@ -578,8 +577,7 @@ vows
         "but when trying to overwrite": {
           topic: function(cj) {
             const cb = this.callback;
-            const next = function(err, c) {
-              c = null;
+            const next = function(err) {
               cb(null, err);
             };
             cj.setCookie(
@@ -663,7 +661,7 @@ vows
           cb(err, jar);
         });
       },
-      "no errors": function(err, jar) {
+      "no errors": function(err, ) {
         assert(err == null);
       },
       "load cookies from the jar": {
@@ -693,7 +691,7 @@ vows
           cb(err, jar);
         });
       },
-      "no errors": function(err, jar) {
+      "no errors": function(err) {
         assert(err == null);
       },
       "load cookies from the jar": {
@@ -786,7 +784,7 @@ vows
         },
         "results in a error being returned because of missing parameters": function(
           err,
-          cookies
+
         ) {
           assert(err != null);
           assert(err instanceof tough.ParameterError);

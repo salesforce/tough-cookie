@@ -166,12 +166,13 @@ function validateSerializedCookie(cookie) {
         }
         break;
 
-      case "isoDate":
+      case "isoDate": {
         // rather than a regexp, assert it's parsable and equal
         const parsed = Date.parse(cookie[prop]);
         assert(parsed, "could not parse serialized date property");
         // assert.equals(cookie[prop], parsed.toISOString());
         break;
+      }
 
       default:
         assert.fail(`unexpected serialized property: ${prop}`);
@@ -225,7 +226,7 @@ vows
   .addBatch({
     "With a small store": {
       topic: function() {
-        const now = (this.now = new Date());
+        this.now = new Date();
         this.jar = new CookieJar();
         // domain cookie with custom extension
         let cookie = Cookie.parse("sid=one; domain=example.com; path=/; fubar");
@@ -337,7 +338,7 @@ vows
       },
 
       "when attempting to synchornously clone to an async store": {
-        topic: function(jar) {
+        topic: function() {
           const newStore = new MemoryCookieStore();
           newStore.synchronous = false;
           return newStore;
