@@ -238,10 +238,10 @@ vows
     },
     garbage: {
       topic: function() {
-        return Cookie.parse("\x08", true) || null;
+        return Cookie.parse("\x08", true) ?? SHOULD_BE_UNDEFINED;
       },
       "doesn't parse": function(c) {
-        assert.equal(c, undefined);
+        assert.equal(c, SHOULD_BE_UNDEFINED);
       }
     },
     "public suffix domain": {
@@ -529,10 +529,10 @@ vows
         };
       },
       "large one doesn't parse": function(c) {
-        assert.equal(c.cookie1, undefined);
+        assert.strictEqual(c.cookie1, undefined);
       },
       "small one doesn't parse": function(c) {
-        assert.equal(c.cookie2, undefined);
+        assert.strictEqual(c.cookie2, undefined);
       },
       "takes about the same time for each": function(c) {
         const long1 = c.dt1 + 1; // avoid 0ms
