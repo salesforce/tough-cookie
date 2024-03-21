@@ -3,6 +3,7 @@ docs/*.md
 
 # subsequent PRs will un-ignore areas that are under review until
 # all docs are complete and we can drop this ignore file entirely
+!docs/tough-cookie.defaultpath.md
 !docs/tough-cookie.cookiecompare.md
 !docs/tough-cookie.permutedomain.md
 !docs/tough-cookie.pathmatch.md
