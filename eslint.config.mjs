@@ -6,7 +6,9 @@ import tseslint from 'typescript-eslint'
 import globals from 'globals'
 
 export default tseslint.config(
-  { ignores: ['dist', 'jest.config.ts'] },
+  {
+    ignores: ['dist', 'jest.config.ts'],
+  },
   eslint.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
   prettierRecommended,
@@ -28,7 +30,7 @@ export default tseslint.config(
   },
   {
     // Once we remove the legacy vows tests in ./test, we can remove these JS-specific rules
-    files: ['test/**/*.js'],
+    files: ['test/**/*.js', 'eslint.config.mjs'],
     ...tseslint.configs.disableTypeChecked,
     rules: {
       ...tseslint.configs.disableTypeChecked.rules,
