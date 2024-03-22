@@ -209,10 +209,14 @@ export function formatDate(date: Date): string;
 // @public (undocumented)
 export const fromJSON: (str: unknown) => Cookie | null;
 
-// Warning: (ae-forgotten-export) The symbol "GetPublicSuffixOptions" needs to be exported by the entry point index.d.ts
-//
-// @public (undocumented)
+// @public
 export function getPublicSuffix(domain: string, options?: GetPublicSuffixOptions): string | null;
+
+// @public
+export interface GetPublicSuffixOptions {
+    allowSpecialUseDomain?: boolean | undefined;
+    ignoreError?: boolean | undefined;
+}
 
 // @public (undocumented)
 export class MemoryCookieStore extends Store {
