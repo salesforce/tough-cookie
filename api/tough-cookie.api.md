@@ -202,8 +202,8 @@ export class CookieJar {
 // @public
 export function defaultPath(path?: Nullable<string>): string;
 
-// @public (undocumented)
-export function domainMatch(str?: Nullable<string>, domStr?: Nullable<string>, canonicalize?: boolean): boolean | undefined;
+// @public
+export function domainMatch(domain?: Nullable<string>, cookieDomain?: Nullable<string>, canonicalize?: boolean): boolean | undefined;
 
 // @public
 export function formatDate(date: Date): string;
