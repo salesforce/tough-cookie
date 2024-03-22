@@ -1,0 +1,5 @@
+# ignoring all the generated docs initially
+docs/*.md
+
+# subsequent PRs will un-ignore areas that are under review until
+# all docs are complete and we can drop this ignore file entirely
