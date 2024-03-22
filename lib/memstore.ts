@@ -79,7 +79,7 @@ export class MemoryCookieStore extends Store {
     if (domain == null || path == null || key == null) {
       return promiseCallback.resolve(undefined)
     }
-    const result = this.idx?.[domain]?.[path]?.[key]
+    const result = this.idx[domain]?.[path]?.[key]
     return promiseCallback.resolve(result)
   }
 
@@ -167,6 +167,7 @@ export class MemoryCookieStore extends Store {
     const promiseCallback = createPromiseCallback<undefined>(callback)
 
     const { domain, path, key } = cookie
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (domain == null || path == null || key == null) {
       return promiseCallback.resolve(undefined)
     }
@@ -202,9 +203,9 @@ export class MemoryCookieStore extends Store {
     // updateCookie() may avoid updating cookies that are identical.  For example,
     // lastAccessed may not be important to some stores and an equality
     // comparison could exclude that field.
-    return callback
-      ? this.putCookie(newCookie, callback)
-      : this.putCookie(newCookie)
+    // Don't return a value when using a callback, so that the return type is truly "void"
+    if (callback) this.putCookie(newCookie, callback)
+    else return this.putCookie(newCookie)
   }
 
   override removeCookie(
@@ -245,9 +246,11 @@ export class MemoryCookieStore extends Store {
     const domainEntry = this.idx[domain]
     if (domainEntry) {
       if (path) {
-        delete domainEntry?.[path]
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+        delete domainEntry[path]
       } else {
-        delete this.idx?.[domain]
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+        delete this.idx[domain]
       }
     }
 

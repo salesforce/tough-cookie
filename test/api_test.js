@@ -547,7 +547,7 @@ vows
           const url = "http://example.com/index.html";
           return jar.setCookieSync("=b", url);
         },
-        fails: function(err, c) {
+        fails: function(err, ) {
           assert.instanceOf(err, Error);
           assert.equal(err.message, "Cookie failed to parse");
         }

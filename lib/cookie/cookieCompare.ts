@@ -41,7 +41,7 @@ export function cookieCompare(a: Cookie, b: Cookie): number {
   }
 
   // break ties for the same millisecond (precision of JavaScript's clock)
-  cmp = (a.creationIndex ?? 0) - (b.creationIndex ?? 0)
+  cmp = (a.creationIndex || 0) - (b.creationIndex || 0)
 
   return cmp
 }

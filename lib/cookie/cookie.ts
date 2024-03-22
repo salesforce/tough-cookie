@@ -167,7 +167,7 @@ function parse(str: string, options?: ParseCookieOptions): Cookie | undefined {
       continue
     }
     const av_sep = av.indexOf('=')
-    let av_key, av_value
+    let av_key: string, av_value: string | null
 
     if (av_sep === -1) {
       av_key = av
@@ -452,11 +452,11 @@ export class Cookie {
     const hostOnly = this.hostOnly != null ? this.hostOnly.toString() : '?'
     const createAge =
       this.creation && this.creation !== 'Infinity'
-        ? `${now - this.creation.getTime()}ms`
+        ? `${String(now - this.creation.getTime())}ms`
         : '?'
     const accessAge =
       this.lastAccessed && this.lastAccessed !== 'Infinity'
-        ? `${now - this.lastAccessed.getTime()}ms`
+        ? `${String(now - this.lastAccessed.getTime())}ms`
         : '?'
     return `Cookie="${this.toString()}; hostOnly=${hostOnly}; aAge=${accessAge}; cAge=${createAge}"`
   }
@@ -536,7 +536,7 @@ export class Cookie {
   }
 
   validate(): boolean {
-    if (this.value == null || !COOKIE_OCTETS.test(this.value)) {
+    if (!this.value || !COOKIE_OCTETS.test(this.value)) {
       return false
     }
     if (
@@ -590,7 +590,7 @@ export class Cookie {
   }
 
   cookieString(): string {
-    const val = this.value ?? ''
+    const val = this.value || ''
     if (this.key) {
       return `${this.key}=${val}`
     }
@@ -608,7 +608,7 @@ export class Cookie {
     }
 
     if (this.maxAge != null && this.maxAge != Infinity) {
-      str += `; Max-Age=${this.maxAge}`
+      str += `; Max-Age=${String(this.maxAge)}`
     }
 
     if (this.domain && !this.hostOnly) {
