@@ -330,7 +330,7 @@ export class Store {
     updateCookie(oldCookie: Cookie, newCookie: Cookie, callback: ErrorCallback): void;
 }
 
-// @public (undocumented)
+// @public
 export const version = "5.0.0-rc.1";
 
 // (No @packageDocumentation comment for this package)
