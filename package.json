@@ -89,7 +89,7 @@
     "api:extract": "api-extractor run --verbose",
     "build": "npm run clean && tsc",
     "clean": "rm -rf dist",
-    "version": "genversion --es6 lib/version.ts && git add lib/version.ts",
+    "version": "genversion --template version-template.ejs --force lib/version.ts && git add lib/version.ts",
     "test": "npm run test:ts && npm run test:legacy",
     "test:ts": "jest",
     "test:legacy": "npm run build -- --declaration false && ./test/scripts/vows.js test/*_test.js",
