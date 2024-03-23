@@ -272,8 +272,8 @@ export const parse: (str: string, options?: {
     loose?: boolean | undefined;
 } | undefined) => Cookie | undefined;
 
-// @public (undocumented)
-export function parseDate(str: Nullable<string>): Date | undefined;
+// @public
+export function parseDate(cookieDate: Nullable<string>): Date | undefined;
 
 // @public
 export function pathMatch(reqPath: string, cookiePath: string): boolean;
