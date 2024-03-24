@@ -1,8 +1,24 @@
-export const PrefixSecurityEnum = Object.freeze({
-  SILENT: 'silent',
-  STRICT: 'strict',
-  DISABLED: 'unsafe-disabled',
-})
+/**
+ * Cookie prefixes are a way to indicate that a given cookie was set with a set of attributes simply by inspecting the
+ * first few characters of the cookie's name. These are defined in {@link https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-13#section-4.1.3 | RFC6265bis - Section 4.1.3}.
+ *
+ * The following values can be used to configure how a {@link CookieJar} enforces attribute restrictions for Cookie prefixes.
+ * @public
+ */
+export enum PrefixSecurity {
+  /**
+   * Enable cookie prefix checking but silently ignores the cookie if conditions are not met. This is the default configuration for a {@link CookieJar}.
+   */
+  SILENT = 'silent',
+  /**
+   * Enables cookie prefix checking and will raise an error if conditions are not met.
+   */
+  STRICT = 'strict',
+  /**
+   * Disables cookie prefix checking.
+   */
+  DISABLED = 'unsafe-disabled',
+}
 
 const IP_V6_REGEX = `
 \\[?(?:
