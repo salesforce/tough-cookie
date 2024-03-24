@@ -7,7 +7,7 @@ export { ParameterError } from '../validators'
 export { version } from '../version'
 
 export { canonicalDomain } from './canonicalDomain'
-export { PrefixSecurityEnum } from './constants'
+export { PrefixSecurity } from './constants'
 export { Cookie } from './cookie'
 export { cookieCompare } from './cookieCompare'
 export { CookieJar } from './cookieJar'
