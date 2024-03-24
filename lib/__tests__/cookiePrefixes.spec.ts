@@ -1,4 +1,4 @@
-import { PrefixSecurityEnum } from '../cookie/constants'
+import { PrefixSecurity } from '../cookie/constants'
 import { CookieJar } from '../cookie/cookieJar'
 
 let cookieJar: CookieJar
@@ -11,7 +11,7 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
       cookieJar = new CookieJar(null, {
         prefixSecurity: 'silent',
       })
-      expect(cookieJar.prefixSecurity).toBe(PrefixSecurityEnum.SILENT)
+      expect(cookieJar.prefixSecurity).toBe(PrefixSecurity.SILENT)
     })
 
     describe('__Secure prefix', () => {
@@ -106,7 +106,7 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
       cookieJar = new CookieJar(null, {
         prefixSecurity: 'strict',
       })
-      expect(cookieJar.prefixSecurity).toBe(PrefixSecurityEnum.STRICT)
+      expect(cookieJar.prefixSecurity).toBe(PrefixSecurity.STRICT)
     })
 
     describe('__Secure prefix', () => {
@@ -173,7 +173,7 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
       cookieJar = new CookieJar(null, {
         prefixSecurity: 'unsafe-disabled',
       })
-      expect(cookieJar.prefixSecurity).toBe(PrefixSecurityEnum.DISABLED)
+      expect(cookieJar.prefixSecurity).toBe(PrefixSecurity.DISABLED)
     })
 
     describe('__Secure prefix', () => {
