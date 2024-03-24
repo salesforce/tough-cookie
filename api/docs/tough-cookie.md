@@ -76,6 +76,34 @@ The storage model for each [CookieJar](./tough-cookie.cookiejar.md) instance can
 </td></tr>
 </tbody></table>
 
+## Enumerations
+
+<table><thead><tr><th>
+
+Enumeration
+
+
+</th><th>
+
+Description
+
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[PrefixSecurity](./tough-cookie.prefixsecurity.md)
+
+
+</td><td>
+
+Cookie prefixes are a way to indicate that a given cookie was set with a set of attributes simply by inspecting the first few characters of the cookie's name. These are defined in [RFC6265bis - Section 4.1.3](https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-13#section-4.1.3)<!-- -->.
+
+The following values can be used to configure how a [CookieJar](./tough-cookie.cookiejar.md) enforces attribute restrictions for Cookie prefixes.
+
+
+</td></tr>
+</tbody></table>
+
 ## Functions
 
 <table><thead><tr><th>
@@ -333,15 +361,6 @@ Description
 
 </th></tr></thead>
 <tbody><tr><td>
-
-[PrefixSecurityEnum](./tough-cookie.prefixsecurityenum.md)
-
-
-</td><td>
-
-
-</td></tr>
-<tr><td>
 
 [version](./tough-cookie.version.md)
 
