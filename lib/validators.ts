@@ -83,4 +83,8 @@ export function validate(
   else throw err
 }
 
+/**
+ * Represents a validation error.
+ * @public
+ */
 export class ParameterError extends Error {}
