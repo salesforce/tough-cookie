@@ -263,7 +263,7 @@ export class MemoryCookieStore extends Store {
     updateCookie(oldCookie: Cookie, newCookie: Cookie, callback: ErrorCallback): void;
 }
 
-// @public (undocumented)
+// @public
 export class ParameterError extends Error {
 }
 
