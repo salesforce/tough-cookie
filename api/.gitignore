@@ -3,6 +3,12 @@ docs/*.md
 
 # subsequent PRs will un-ignore areas that are under review until
 # all docs are complete and we can drop this ignore file entirely
+!docs/tough-cookie.cookie.md
+!docs/tough-cookie.cookie.*.md
+!docs/tough-cookie.createcookieoptions.md
+!docs/tough-cookie.parsecookieoptions.md
+!docs/tough-cookie.parsecookieoptions.loose.md
+!docs/tough-cookie.serializedcookie.md
 !docs/tough-cookie.prefixsecurity.md
 !docs/tough-cookie.md
 !docs/tough-cookie.store.md

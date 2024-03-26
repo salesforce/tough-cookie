@@ -19,88 +19,53 @@ export interface Callback<T> {
 // @public
 export function canonicalDomain(domainName: Nullable<string>): string | undefined;
 
-// @public (undocumented)
+// @public
 export class Cookie {
     // Warning: (ae-forgotten-export) The symbol "CreateCookieOptions" needs to be exported by the entry point index.d.ts
     constructor(options?: CreateCookieOptions);
-    // (undocumented)
     canonicalizedDomain(): string | undefined;
-    // (undocumented)
     cdomain(): string | undefined;
-    // (undocumented)
     clone(): Cookie | undefined;
-    // (undocumented)
-    static cookiesCreated: number;
-    // (undocumented)
     cookieString(): string;
-    // (undocumented)
     creation: Date | 'Infinity' | null;
-    // (undocumented)
     creationIndex: number;
-    // (undocumented)
     domain: string | null;
-    // (undocumented)
     expires: Date | 'Infinity' | null;
-    // (undocumented)
     expiryTime(now?: Date): number | undefined;
-    // (undocumented)
     extensions: string[] | null;
-    // Warning: (ae-forgotten-export) The symbol "fromJSON_2" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    static fromJSON: typeof fromJSON_2;
-    // (undocumented)
+    static fromJSON(str: unknown): Cookie | undefined;
     hostOnly: boolean | null;
-    // (undocumented)
     httpOnly: boolean;
-    // (undocumented)
     isPersistent(): boolean;
-    // (undocumented)
     key: string;
-    // (undocumented)
     lastAccessed: Date | 'Infinity' | null;
-    // (undocumented)
     maxAge: number | 'Infinity' | '-Infinity' | null;
-    // Warning: (ae-forgotten-export) The symbol "parse_2" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    static parse: typeof parse_2;
-    // (undocumented)
+    // Warning: (ae-forgotten-export) The symbol "ParseCookieOptions" needs to be exported by the entry point index.d.ts
+    static parse(str: string, options?: ParseCookieOptions): Cookie | undefined;
     path: string | null;
-    // (undocumented)
     pathIsDefault: boolean | null;
-    // (undocumented)
     sameSite: string | undefined;
-    // (undocumented)
+    // @internal (undocumented)
     static sameSiteCanonical: {
         readonly strict: "Strict";
         readonly lax: "Lax";
     };
-    // (undocumented)
+    // @internal (undocumented)
     static sameSiteLevel: {
         readonly strict: 3;
         readonly lax: 2;
         readonly none: 1;
     };
-    // (undocumented)
     secure: boolean;
-    // (undocumented)
     static serializableProperties: readonly ["key", "value", "expires", "maxAge", "domain", "path", "secure", "httpOnly", "extensions", "hostOnly", "pathIsDefault", "creation", "lastAccessed", "sameSite"];
-    // (undocumented)
     setExpires(exp: string | Date): void;
-    // (undocumented)
     setMaxAge(age: number): void;
     // Warning: (ae-forgotten-export) The symbol "SerializedCookie" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
     toJSON(): SerializedCookie;
-    // (undocumented)
     toString(): string;
-    // (undocumented)
     TTL(now?: number): number;
-    // (undocumented)
+    // @beta
     validate(): boolean;
-    // (undocumented)
     value: string;
 }
 
@@ -186,7 +151,7 @@ export interface ErrorCallback {
 export function formatDate(date: Date): string;
 
 // @public (undocumented)
-export const fromJSON: (str: unknown) => Cookie | undefined;
+export const fromJSON: typeof Cookie.fromJSON;
 
 // @public
 export interface GetCookiesOptions {
@@ -237,9 +202,7 @@ export class ParameterError extends Error {
 }
 
 // @public (undocumented)
-export const parse: (str: string, options?: {
-    loose?: boolean | undefined;
-} | undefined) => Cookie | undefined;
+export const parse: typeof Cookie.parse;
 
 // @public
 export function parseDate(cookieDate: Nullable<string>): Date | undefined;

@@ -24,6 +24,8 @@ Description
 
 </td><td>
 
+An HTTP cookie (web cookie, browser cookie) is a small piece of data that a server sends to a user's web browser. It is defined in [RFC6265](https://www.rfc-editor.org/rfc/rfc6265.html)<!-- -->.
+
 
 </td></tr>
 <tr><td>
@@ -154,30 +156,12 @@ Format a [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Referenc
 </td></tr>
 <tr><td>
 
-[fromJSON(str)](./tough-cookie.fromjson.md)
-
-
-</td><td>
-
-
-</td></tr>
-<tr><td>
-
 [getPublicSuffix(domain, options)](./tough-cookie.getpublicsuffix.md)
 
 
 </td><td>
 
 Returns the public suffix of this hostname. The public suffix is the shortest domain name upon which a cookie can be set.
-
-
-</td></tr>
-<tr><td>
-
-[parse(str, options)](./tough-cookie.parse.md)
-
-
-</td><td>
 
 
 </td></tr>
@@ -333,6 +317,24 @@ Description
 
 </th></tr></thead>
 <tbody><tr><td>
+
+[fromJSON](./tough-cookie.fromjson.md)
+
+
+</td><td>
+
+
+</td></tr>
+<tr><td>
+
+[parse](./tough-cookie.parse.md)
+
+
+</td><td>
+
+
+</td></tr>
+<tr><td>
 
 [PrefixSecurityEnum](./tough-cookie.prefixsecurityenum.md)
 
