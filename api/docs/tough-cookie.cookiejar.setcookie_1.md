@@ -42,7 +42,7 @@ string \| [Cookie](./tough-cookie.cookie.md)
 
 </td><td>
 
-The cookie object or cookie string to store. A string value will be parsed into a cookie using [Cookie.parse](./tough-cookie.cookie.parse.md)<!-- -->.
+The cookie object or cookie string to store. A string value will be parsed into a cookie using [Cookie.parse()](./tough-cookie.cookie.parse.md)<!-- -->.
 
 
 </td></tr>

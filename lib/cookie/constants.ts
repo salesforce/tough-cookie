@@ -61,7 +61,11 @@ export interface SerializedCookieJar {
   cookies: SerializedCookie[]
 }
 
-export interface SerializedCookie {
+/**
+ * A JSON object that is created when {@link Cookie.toJSON} is called. This object will contain the properties defined in {@link Cookie.serializableProperties}.
+ * @public
+ */
+export type SerializedCookie = {
   key?: string
   value?: string
   [key: string]: unknown
