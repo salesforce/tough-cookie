@@ -8,14 +8,18 @@ import {
 } from '../../rfc5234-abnf/3.0-operators'
 import { ALPHA, DIGIT, OCTET } from '../../rfc5234-abnf/B.1-core-rules'
 
-// @spec({ id: 'section-5.1.1-1' })
+export type CookieDate = {
+  readonly type: unique symbol,
+  value: Date
+}
+
+// @spec #section-5.1.1-1
 type Flags = {
   foundTime: undefined | { hours: number; minutes: number; seconds: number }
   foundDayOfMonth: undefined | number
   foundMonth: undefined | number
   foundYear: undefined | number
 }
-// @endspec
 
 const months = [
   'jan',
@@ -40,7 +44,6 @@ const MAX_SET_COOKIE_HEADER_LENGTH = 4096
 const cookie_date = rule(() =>
   seq([repeat('*', delimiter), date_token_list, repeat('*', delimiter)]),
 )
-// @endspec
 
 // date-token-list = date-token *( 1*delimiter date-token )
 const date_token_list = rule(() =>
@@ -125,7 +128,6 @@ export function parseCookieDate(input: string): Date {
     foundMonth: undefined,
     foundYear: undefined,
   }
-  // @endspec
 
   // 1. Using the grammar below, divide the cookie-date into date-tokens.
   // @spec #section-5.1.1-2.1.1
@@ -139,7 +141,6 @@ export function parseCookieDate(input: string): Date {
   for (const [, date_token] of remaining_date_tokens) {
     dateTokens.push(date_token)
   }
-  // @endspec
 
   // 2. Process each date-token sequentially in the order the date-tokens appear in the cookie-date:
   for (const dateToken of dateTokens) {
@@ -164,7 +165,6 @@ export function parseCookieDate(input: string): Date {
         continue
       }
     }
-    // @endspec
 
     // 2.2. If the found-day-of-month flag is not set and the date-token matches the day-of-month production,
     // set the found-day-of-month flag and set the day-of-month-value to the number denoted by the date-token.
@@ -179,7 +179,6 @@ export function parseCookieDate(input: string): Date {
         continue
       }
     }
-    // @endspec
 
     // 2.3. If the found-month flag is not set and the date-token matches the month production, set the found-month
     // flag and set the month-value to the month denoted by the date-token. Skip the remaining sub-steps and
@@ -194,7 +193,6 @@ export function parseCookieDate(input: string): Date {
         continue
       }
     }
-    // @endspec
 
     // 2.4. If the found-year flag is not set and the date-token matches the year production, set the found-year
     // flag and set the year-value to the number denoted by the date-token. Skip the remaining sub-steps and
@@ -209,7 +207,6 @@ export function parseCookieDate(input: string): Date {
         // continue
       }
     }
-    // @endspec
   }
 
   // 3. If the year-value is greater than or equal to 70 and less than or equal to 99, increment the year-value by 1900.
@@ -221,7 +218,6 @@ export function parseCookieDate(input: string): Date {
   ) {
     flags.foundYear += 1900
   }
-  // @endspec
 
   // 4. If the year-value is greater than or equal to 0 and less than or equal to 69, increment the year-value by 2000.
   // @spec #section-5.1.1-2.4
@@ -232,7 +228,6 @@ export function parseCookieDate(input: string): Date {
   ) {
     flags.foundYear += 2000
   }
-  // @endspec
 
   // NOTE: Some existing user agents interpret two-digit years differently.
 
@@ -247,38 +242,36 @@ export function parseCookieDate(input: string): Date {
   ) {
     throw new Error('TODO')
   }
-  // @endspec
 
   // - the day-of-month-value is less than 1 or greater than 31,
   // @spec #section-5.1.1-2.5.2.2
   if (flags.foundDayOfMonth < 1 || flags.foundDayOfMonth > 31) {
     throw new Error('TODO')
   }
-  // @endspec
+
   // the year-value is less than 1601,
   // @spec #section-5.1.1-2.5.2.3
   if (flags.foundYear < 1601) {
     throw new Error('TODO')
   }
-  // @endspec
+
   // the hour-value is greater than 23,
   // @spec #section-5.1.1-2.5.2.4
   if (flags.foundTime.hours > 23) {
     throw new Error('TODO')
   }
-  // @endspec
+
   // the minute-value is greater than 59, or
   // @spec #section-5.1.1-2.5.2.5
   if (flags.foundTime.minutes > 59) {
     throw new Error('TODO')
   }
-  // @endspec
+
   // the second-value is greater than 59.
   // @spec #section-5.1.1-2.5.2.6
   if (flags.foundTime.seconds > 59) {
     throw new Error('TODO')
   }
-  // @endspec
 
   // (Note that leap seconds cannot be represented in this syntax.)
 
@@ -297,10 +290,8 @@ export function parseCookieDate(input: string): Date {
   if (isNaN(cookieDate)) {
     throw new Error('TODO')
   }
-  // @endspec
 
   // 7. Return the parsed-cookie-date as the result of this algorithm.
   // @spec #section-5.1.1-2.7
   return new Date(cookieDate)
-  // @endspec
 }
