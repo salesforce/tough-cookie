@@ -6,91 +6,55 @@
 
 /// <reference types="node" />
 
+// Warning: (ae-forgotten-export) The symbol "Nullable" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
-export function canonicalDomain(str: string | null): string | null;
+export function canonicalDomain(str: Nullable<string>): string | undefined;
 
-// @public (undocumented)
+// @public
 export class Cookie {
-    // Warning: (ae-forgotten-export) The symbol "CreateCookieOptions" needs to be exported by the entry point index.d.ts
     constructor(options?: CreateCookieOptions);
-    // (undocumented)
-    canonicalizedDomain(): string | null;
-    // (undocumented)
-    cdomain(): string | null;
-    // (undocumented)
-    clone(): Cookie | null;
-    // (undocumented)
-    static cookiesCreated: number;
-    // (undocumented)
+    canonicalizedDomain(): string | undefined;
+    cdomain(): string | undefined;
+    clone(): Cookie | undefined;
     cookieString(): string;
-    // (undocumented)
     creation: Date | 'Infinity' | null;
-    // (undocumented)
     creationIndex: number;
-    // (undocumented)
     domain: string | null;
-    // (undocumented)
     expires: Date | 'Infinity' | null;
-    // (undocumented)
     expiryTime(now?: Date): number | undefined;
-    // (undocumented)
     extensions: string[] | null;
-    // Warning: (ae-forgotten-export) The symbol "fromJSON_2" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    static fromJSON: typeof fromJSON_2;
-    // (undocumented)
+    static fromJSON(str: unknown): Cookie | undefined;
     hostOnly: boolean | null;
-    // (undocumented)
     httpOnly: boolean;
-    // (undocumented)
     isPersistent(): boolean;
-    // (undocumented)
     key: string;
-    // (undocumented)
     lastAccessed: Date | 'Infinity' | null;
-    // (undocumented)
     maxAge: number | 'Infinity' | '-Infinity' | null;
-    // Warning: (ae-forgotten-export) The symbol "parse_2" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    static parse: typeof parse_2;
-    // (undocumented)
+    static parse(str: string, options?: ParseCookieOptions): Cookie | undefined;
     path: string | null;
-    // (undocumented)
     pathIsDefault: boolean | null;
-    // (undocumented)
     sameSite: string | undefined;
-    // (undocumented)
+    // @internal (undocumented)
     static sameSiteCanonical: {
         readonly strict: "Strict";
         readonly lax: "Lax";
     };
-    // (undocumented)
+    // @internal (undocumented)
     static sameSiteLevel: {
         readonly strict: 3;
         readonly lax: 2;
         readonly none: 1;
     };
-    // (undocumented)
     secure: boolean;
-    // (undocumented)
     static serializableProperties: readonly ["key", "value", "expires", "maxAge", "domain", "path", "secure", "httpOnly", "extensions", "hostOnly", "pathIsDefault", "creation", "lastAccessed", "sameSite"];
-    // (undocumented)
     setExpires(exp: string | Date): void;
-    // (undocumented)
     setMaxAge(age: number): void;
-    // Warning: (ae-forgotten-export) The symbol "SerializedCookie" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
     toJSON(): SerializedCookie;
-    // (undocumented)
     toString(): string;
-    // (undocumented)
     TTL(now?: number): number;
-    // (undocumented)
+    // @beta
     validate(): boolean;
-    // (undocumented)
     value: string;
 }
 
@@ -100,7 +64,7 @@ export function cookieCompare(a: Cookie, b: Cookie): number;
 // @public (undocumented)
 export class CookieJar {
     // Warning: (ae-forgotten-export) The symbol "CreateCookieJarOptions" needs to be exported by the entry point index.d.ts
-    constructor(store?: Store | null | undefined, options?: CreateCookieJarOptions | boolean);
+    constructor(store?: Nullable<Store>, options?: CreateCookieJarOptions | boolean);
     // (undocumented)
     clone(callback: Callback<CookieJar>): void;
     // (undocumented)
@@ -197,30 +161,35 @@ export class CookieJar {
     toJSON(): SerializedCookieJar | undefined;
 }
 
-// @public (undocumented)
-export function defaultPath(path?: string | null): string;
+// @public
+export type CreateCookieOptions = Omit<{
+    [K in keyof Cookie as Cookie[K] extends (...args: any[]) => any ? never : K]?: Cookie[K];
+}, 'creationIndex'>;
 
 // @public (undocumented)
-export function domainMatch(str?: string | null, domStr?: string | null, canonicalize?: boolean): boolean | null;
+export function defaultPath(path?: Nullable<string>): string;
+
+// @public (undocumented)
+export function domainMatch(str?: Nullable<string>, domStr?: Nullable<string>, canonicalize?: boolean): boolean | undefined;
 
 // @public
 export function formatDate(date: Date): string;
 
 // @public (undocumented)
-export const fromJSON: (str: unknown) => Cookie | null;
+export const fromJSON: typeof Cookie.fromJSON;
 
 // Warning: (ae-forgotten-export) The symbol "GetPublicSuffixOptions" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export function getPublicSuffix(domain: string, options?: GetPublicSuffixOptions): string | null;
+export function getPublicSuffix(domain: string, options?: GetPublicSuffixOptions): string | undefined;
 
 // @public (undocumented)
 export class MemoryCookieStore extends Store {
     constructor();
     // (undocumented)
-    findCookie(domain: string | null, path: string | null, key: string | undefined): Promise<Cookie | undefined>;
+    findCookie(domain: Nullable<string>, path: Nullable<string>, key: Nullable<string>): Promise<Cookie | undefined>;
     // (undocumented)
-    findCookie(domain: string | null, path: string | null, key: string | undefined, callback: Callback<Cookie | undefined>): void;
+    findCookie(domain: Nullable<string>, path: Nullable<string>, key: Nullable<string>, callback: Callback<Cookie | undefined>): void;
     // (undocumented)
     findCookies(domain: string, path: string, allowSpecialUseDomain?: boolean): Promise<Cookie[]>;
     // (undocumented)
@@ -262,18 +231,21 @@ export class ParameterError extends Error {
 }
 
 // @public (undocumented)
-export const parse: (str: string, options?: {
+export const parse: typeof Cookie.parse;
+
+// @public
+export interface ParseCookieOptions {
     loose?: boolean | undefined;
-} | undefined) => Cookie | null | undefined;
+}
 
 // @public (undocumented)
-export function parseDate(str: string | undefined | null): Date | undefined;
+export function parseDate(str: Nullable<string>): Date | undefined;
 
 // @public (undocumented)
 export function pathMatch(reqPath: string, cookiePath: string): boolean;
 
 // @public (undocumented)
-export function permuteDomain(domain: string, allowSpecialUseDomain?: boolean): string[] | null;
+export function permuteDomain(domain: string, allowSpecialUseDomain?: boolean): string[] | undefined;
 
 // @public
 export function permutePath(path: string): string[];
@@ -285,17 +257,24 @@ export const PrefixSecurityEnum: Readonly<{
     DISABLED: "unsafe-disabled";
 }>;
 
+// @public
+export type SerializedCookie = {
+    key?: string;
+    value?: string;
+    [key: string]: unknown;
+};
+
 // @public (undocumented)
 export class Store {
     constructor();
     // (undocumented)
-    findCookie(domain: string | null, path: string | null, key: string | undefined): Promise<Cookie | null | undefined>;
+    findCookie(domain: Nullable<string>, path: Nullable<string>, key: Nullable<string>): Promise<Cookie | undefined>;
     // (undocumented)
-    findCookie(domain: string | null, path: string | null, key: string | undefined, callback: Callback<Cookie | null | undefined>): void;
+    findCookie(domain: Nullable<string>, path: Nullable<string>, key: Nullable<string>, callback: Callback<Cookie | undefined>): void;
     // (undocumented)
-    findCookies(domain: string | null, path: string | null, allowSpecialUseDomain?: boolean): Promise<Cookie[]>;
+    findCookies(domain: Nullable<string>, path: Nullable<string>, allowSpecialUseDomain?: boolean): Promise<Cookie[]>;
     // (undocumented)
-    findCookies(domain: string | null, path: string | null, allowSpecialUseDomain?: boolean, callback?: Callback<Cookie[]>): void;
+    findCookies(domain: Nullable<string>, path: Nullable<string>, allowSpecialUseDomain?: boolean, callback?: Callback<Cookie[]>): void;
     // (undocumented)
     getAllCookies(): Promise<Cookie[]>;
     // (undocumented)
@@ -309,13 +288,13 @@ export class Store {
     // (undocumented)
     removeAllCookies(callback: ErrorCallback): void;
     // (undocumented)
-    removeCookie(domain: string | null | undefined, path: string | null | undefined, key: string | null | undefined): Promise<void>;
+    removeCookie(domain: Nullable<string>, path: Nullable<string>, key: Nullable<string>): Promise<void>;
     // (undocumented)
-    removeCookie(domain: string | null | undefined, path: string | null | undefined, key: string | null | undefined, callback: ErrorCallback): void;
+    removeCookie(domain: Nullable<string>, path: Nullable<string>, key: Nullable<string>, callback: ErrorCallback): void;
     // (undocumented)
-    removeCookies(domain: string, path: string | null): Promise<void>;
+    removeCookies(domain: string, path: Nullable<string>): Promise<void>;
     // (undocumented)
-    removeCookies(domain: string, path: string | null, callback: ErrorCallback): void;
+    removeCookies(domain: string, path: Nullable<string>, callback: ErrorCallback): void;
     // (undocumented)
     synchronous: boolean;
     // (undocumented)
