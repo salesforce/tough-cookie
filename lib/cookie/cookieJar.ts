@@ -60,10 +60,36 @@ type GetCookiesOptions = {
   sort?: boolean | undefined
 }
 
-type CreateCookieJarOptions = {
+/**
+ * Configuration settings to be used with a {@link CookieJar}.
+ * @public
+ */
+export interface CreateCookieJarOptions {
+  /**
+   * Reject cookies that match those defined in the {@link https://publicsuffix.org/ | Public Suffix List} (e.g.; domains like "com" and "co.uk"). 
+   * 
+   * Defaults to `true` if not specified.
+   */
   rejectPublicSuffixes?: boolean | undefined
+  /**
+   * Accept malformed cookies like `bar` and `=bar`, which have an implied empty name but are not RFC-compliant.
+   * 
+   * Defaults to `false` if not specified.
+   */
   looseMode?: boolean | undefined
+  /**
+   * Controls how cookie prefixes are handled. See {@link PrefixSecurityEnum}.
+   * 
+   * Defaults to `silent` if not specified.
+   */
   prefixSecurity?: 'strict' | 'silent' | 'unsafe-disabled' | undefined
+  /**
+   * Accepts {@link https://datatracker.ietf.org/doc/html/rfc6761 | special-use domains } such as `local`. 
+   * This is not in the standard, but is used sometimes on the web and is accepted by most browsers. It is 
+   * also useful for testing purposes.
+   * 
+   * Defaults to `true` if not specified.
+   */
   allowSpecialUseDomain?: boolean | undefined
 }
 
@@ -154,13 +180,38 @@ function getNormalizedPrefixSecurity(
   return PrefixSecurityEnum.SILENT
 }
 
+/**
+ * A CookieJar is for storage and retrieval of {@link Cookie} objects as defined in 
+ * {@link https://www.rfc-editor.org/rfc/rfc6265.html#section-5.3 | RFC6265 - Section 5.3}.
+ * 
+ * It also supports a pluggable persistence layer via {@link Store}.
+ * @public
+ */
 export class CookieJar {
-  readonly store: Store
   private readonly rejectPublicSuffixes: boolean
   private readonly enableLooseMode: boolean
   private readonly allowSpecialUseDomain: boolean
+
+  /**
+   * The configured {@link Store} for the {@link CookieJar}.
+   */
+  readonly store: Store
+
+  /**
+   * The configured {@link PrefixSecurityEnum} value for the {@link CookieJar}.
+   */
   readonly prefixSecurity: string
 
+  /**
+   * Creates a new `CookieJar` instance. 
+   * 
+   * @remarks
+   * - If a custom store is not passed to the constructor, an in-memory store ({@link MemoryCookieStore} will be created and used.
+   * - If a boolean value is passed as the `options` parameter, this is equivalent to passing `{ rejectPublicSuffixes: <value> }`
+   * 
+   * @param store - a custom {@link Store} implementation (defaults to {@link MemoryCookieStore})
+   * @param options - configures how cookies are processed by the cookie jar
+   */
   constructor(
     store?: Nullable<Store>,
     options?: CreateCookieJarOptions | boolean,
@@ -200,30 +251,74 @@ export class CookieJar {
     return syncResult
   }
 
-  // TODO: We *could* add overloads based on the value of `options.ignoreError`, such that we only
-  // return `undefined` when `ignoreError` is true. But would that be excessive overloading?
+  /**
+   * Attempt to set the {@link Cookie} in the {@link CookieJar}. 
+   * 
+   * @remarks
+   * - If successfully persisted, the {@link Cookie} will have updated
+   *     {@link Cookie.creation}, {@link Cookie.lastAccessed} and {@link Cookie.hostOnly} 
+   *     properties. 
+   * 
+   * @param cookie - The cookie object or cookie string to store. A string value will be parsed into a cookie using {@link Cookie.parse}.
+   * @param url - The domain to store the cookie with.
+   * @param callback - A function to call after a cookie has been successfully stored.
+   * @public
+   */
   setCookie(
     cookie: string | Cookie,
     url: string | URL,
     callback: Callback<Cookie | undefined>,
   ): void
+  /**
+   * Attempt to set the {@link Cookie} in the {@link CookieJar}. 
+   * 
+   * @remarks
+   * - If successfully persisted, the {@link Cookie} will have updated
+   *     {@link Cookie.creation}, {@link Cookie.lastAccessed} and {@link Cookie.hostOnly} 
+   *     properties. 
+   * 
+   * @param cookie - The cookie object or cookie string to store. A string value will be parsed into a cookie using {@link Cookie.parse}.
+   * @param url - The domain to store the cookie with.
+   * @param options - Configuration settings to use when storing the cookie.
+   * @param callback - A function to call after a cookie has been successfully stored.
+   * @public
+   */
   setCookie(
     cookie: string | Cookie,
     url: string | URL,
     options: SetCookieOptions,
     callback: Callback<Cookie | undefined>,
   ): void
+  /**
+   * Attempt to set the {@link Cookie} in the {@link CookieJar}. 
+   * 
+   * @remarks
+   * - If successfully persisted, the {@link Cookie} will have updated
+   *     {@link Cookie.creation}, {@link Cookie.lastAccessed} and {@link Cookie.hostOnly} 
+   *     properties. 
+   * 
+   * @param cookie - The cookie object or cookie string to store. A string value will be parsed into a cookie using {@link Cookie.parse}.
+   * @param url - The domain to store the cookie with.
+   * @param options - Configuration settings to use when storing the cookie.
+   * @public
+   */
   setCookie(
     cookie: string | Cookie,
     url: string | URL,
     options?: SetCookieOptions,
   ): Promise<Cookie | undefined>
+  /**
+   * @internal
+   */
   setCookie(
     cookie: string | Cookie,
     url: string | URL,
     options: SetCookieOptions | Callback<Cookie | undefined>,
     callback?: Callback<Cookie | undefined>,
   ): unknown
+  /**
+   * @internal
+   */
   setCookie(
     cookie: string | Cookie,
     url: string | URL,
@@ -854,7 +949,10 @@ export class CookieJar {
     return this.serializeSync()
   }
 
-  // use the class method CookieJar.deserialize instead of calling this directly
+  /**
+   * use the class method CookieJar.deserialize instead of calling this directly
+   * @internal
+   */
   _importCookies(serialized: unknown, callback: Callback<CookieJar>): void {
     let cookies: unknown[] | undefined = undefined
 
@@ -904,6 +1002,9 @@ export class CookieJar {
     putNext(null)
   }
 
+  /**
+   * @internal
+   */
   _importCookiesSync(serialized: unknown): void {
     this.callSync(this._importCookies.bind(this, serialized))
   }
@@ -933,6 +1034,9 @@ export class CookieJar {
     return promiseCallback.promise
   }
 
+  /**
+   * @internal
+   */
   _cloneSync(newStore?: Store): CookieJar | undefined {
     const cloneFn =
       newStore && typeof newStore !== 'function'
