@@ -21,11 +21,30 @@ const IP_V6_REGEX = `
   .trim()
 export const IP_V6_REGEX_OBJECT = new RegExp(`^${IP_V6_REGEX}$`)
 
+/**
+ * A JSON representation of a {@link CookieJar}.
+ * @public
+ */
 export interface SerializedCookieJar {
+  /**
+   * The version of `tough-cookie` used during serialization.
+   */
   version: string
+  /**
+   * The name of the store used during serialization.
+   */
   storeType: string | null
+  /**
+   * The value of {@link CreateCookieJarOptions.rejectPublicSuffixes} configured on the {@link CookieJar}.
+   */
   rejectPublicSuffixes: boolean
+  /**
+   * Other configuration settings on the {@link CookieJar}.
+   */
   [key: string]: unknown
+  /**
+   * The list of {@link Cookie} values serialized as JSON objects.
+   */
   cookies: SerializedCookie[]
 }
 

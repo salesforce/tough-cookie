@@ -6,6 +6,14 @@
 
 /// <reference types="node" />
 
+// @public
+export interface Callback<T> {
+    // (undocumented)
+    (error: Error, result?: never): void;
+    // (undocumented)
+    (error: null, result: T): void;
+}
+
 // Warning: (ae-forgotten-export) The symbol "Nullable" needs to be exported by the entry point index.d.ts
 //
 // @public
@@ -99,104 +107,67 @@ export class Cookie {
 // @public
 export function cookieCompare(a: Cookie, b: Cookie): number;
 
-// @public (undocumented)
+// @public
 export class CookieJar {
-    // Warning: (ae-forgotten-export) The symbol "CreateCookieJarOptions" needs to be exported by the entry point index.d.ts
     constructor(store?: Nullable<Store>, options?: CreateCookieJarOptions | boolean);
-    // (undocumented)
     clone(callback: Callback<CookieJar>): void;
-    // (undocumented)
     clone(newStore: Store, callback: Callback<CookieJar>): void;
-    // (undocumented)
     clone(newStore?: Store): Promise<CookieJar>;
-    // (undocumented)
     cloneSync(newStore?: Store): CookieJar | undefined;
-    // (undocumented)
+    // @internal (undocumented)
     _cloneSync(newStore?: Store): CookieJar | undefined;
-    // (undocumented)
     static deserialize(strOrObj: string | object, callback: Callback<CookieJar>): void;
-    // (undocumented)
     static deserialize(strOrObj: string | object, store: Store, callback: Callback<CookieJar>): void;
-    // (undocumented)
     static deserialize(strOrObj: string | object, store?: Store): Promise<CookieJar>;
-    // (undocumented)
+    // @internal
     static deserialize(strOrObj: string | object, store?: Store | Callback<CookieJar>, callback?: Callback<CookieJar>): unknown;
-    // (undocumented)
     static deserializeSync(strOrObj: string | SerializedCookieJar, store?: Store): CookieJar;
-    // (undocumented)
-    static fromJSON(jsonString: SerializedCookieJar, store?: Store): CookieJar;
-    // (undocumented)
+    static fromJSON(jsonString: string | SerializedCookieJar, store?: Store): CookieJar;
     getCookies(url: string, callback: Callback<Cookie[]>): void;
-    // Warning: (ae-forgotten-export) The symbol "GetCookiesOptions" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
     getCookies(url: string | URL, options: GetCookiesOptions | undefined, callback: Callback<Cookie[]>): void;
-    // (undocumented)
     getCookies(url: string | URL, options?: GetCookiesOptions | undefined): Promise<Cookie[]>;
-    // (undocumented)
+    // @internal
     getCookies(url: string | URL, options: GetCookiesOptions | undefined | Callback<Cookie[]>, callback?: Callback<Cookie[]>): unknown;
-    // (undocumented)
     getCookiesSync(url: string, options?: GetCookiesOptions): Cookie[];
-    // (undocumented)
     getCookieString(url: string, options: GetCookiesOptions, callback: Callback<string | undefined>): void;
-    // (undocumented)
     getCookieString(url: string, callback: Callback<string | undefined>): void;
-    // (undocumented)
     getCookieString(url: string, options?: GetCookiesOptions): Promise<string>;
-    // (undocumented)
+    // @internal
     getCookieString(url: string, options: GetCookiesOptions | Callback<string | undefined>, callback?: Callback<string | undefined>): unknown;
-    // (undocumented)
     getCookieStringSync(url: string, options?: GetCookiesOptions): string;
-    // (undocumented)
     getSetCookieStrings(url: string, callback: Callback<string[] | undefined>): void;
-    // (undocumented)
     getSetCookieStrings(url: string, options: GetCookiesOptions, callback: Callback<string[] | undefined>): void;
-    // (undocumented)
     getSetCookieStrings(url: string, options?: GetCookiesOptions): Promise<string[] | undefined>;
-    // (undocumented)
+    // @internal
     getSetCookieStrings(url: string, options: GetCookiesOptions, callback?: Callback<string[] | undefined>): unknown;
-    // (undocumented)
     getSetCookieStringsSync(url: string, options?: GetCookiesOptions): string[];
-    // (undocumented)
+    // @internal
     _importCookies(serialized: unknown, callback: Callback<CookieJar>): void;
-    // (undocumented)
+    // @internal (undocumented)
     _importCookiesSync(serialized: unknown): void;
-    // (undocumented)
     readonly prefixSecurity: string;
-    // Warning: (ae-forgotten-export) The symbol "ErrorCallback" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
     removeAllCookies(callback: ErrorCallback): void;
-    // (undocumented)
     removeAllCookies(): Promise<void>;
-    // (undocumented)
     removeAllCookiesSync(): void;
-    // Warning: (ae-forgotten-export) The symbol "SerializedCookieJar" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
     serialize(callback: Callback<SerializedCookieJar>): void;
-    // (undocumented)
     serialize(): Promise<SerializedCookieJar>;
-    // (undocumented)
     serializeSync(): SerializedCookieJar | undefined;
-    // Warning: (ae-forgotten-export) The symbol "Callback" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
     setCookie(cookie: string | Cookie, url: string | URL, callback: Callback<Cookie | undefined>): void;
-    // Warning: (ae-forgotten-export) The symbol "SetCookieOptions" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
     setCookie(cookie: string | Cookie, url: string | URL, options: SetCookieOptions, callback: Callback<Cookie | undefined>): void;
-    // (undocumented)
     setCookie(cookie: string | Cookie, url: string | URL, options?: SetCookieOptions): Promise<Cookie | undefined>;
-    // (undocumented)
+    // @internal
     setCookie(cookie: string | Cookie, url: string | URL, options: SetCookieOptions | Callback<Cookie | undefined>, callback?: Callback<Cookie | undefined>): unknown;
-    // (undocumented)
     setCookieSync(cookie: string | Cookie, url: string, options?: SetCookieOptions): Cookie | undefined;
-    // (undocumented)
     readonly store: Store;
-    // (undocumented)
     toJSON(): SerializedCookieJar | undefined;
+}
+
+// @public
+export interface CreateCookieJarOptions {
+    allowSpecialUseDomain?: boolean | undefined;
+    looseMode?: boolean | undefined;
+    prefixSecurity?: 'strict' | 'silent' | 'unsafe-disabled' | undefined;
+    rejectPublicSuffixes?: boolean | undefined;
 }
 
 // @public
@@ -206,10 +177,25 @@ export function defaultPath(path?: Nullable<string>): string;
 export function domainMatch(domain?: Nullable<string>, cookieDomain?: Nullable<string>, canonicalize?: boolean): boolean | undefined;
 
 // @public
+export interface ErrorCallback {
+    // (undocumented)
+    (error: Error | null): void;
+}
+
+// @public
 export function formatDate(date: Date): string;
 
 // @public (undocumented)
 export const fromJSON: (str: unknown) => Cookie | undefined;
+
+// @public
+export interface GetCookiesOptions {
+    allPaths?: boolean | undefined;
+    expire?: boolean | undefined;
+    http?: boolean | undefined;
+    sameSiteContext?: 'none' | 'lax' | 'strict' | undefined;
+    sort?: boolean | undefined;
+}
 
 // @public
 export function getPublicSuffix(domain: string, options?: GetPublicSuffixOptions): string | undefined;
@@ -290,6 +276,24 @@ export const PrefixSecurityEnum: Readonly<{
     STRICT: "strict";
     DISABLED: "unsafe-disabled";
 }>;
+
+// @public
+export interface SerializedCookieJar {
+    [key: string]: unknown;
+    cookies: SerializedCookie[];
+    rejectPublicSuffixes: boolean;
+    storeType: string | null;
+    version: string;
+}
+
+// @public
+export interface SetCookieOptions {
+    http?: boolean | undefined;
+    ignoreError?: boolean | undefined;
+    loose?: boolean | undefined;
+    now?: Date | undefined;
+    sameSiteContext?: 'strict' | 'lax' | 'none' | undefined;
+}
 
 // @public (undocumented)
 export class Store {
