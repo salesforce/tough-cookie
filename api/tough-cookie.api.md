@@ -206,46 +206,29 @@ export interface GetPublicSuffixOptions {
     ignoreError?: boolean | undefined;
 }
 
-// @public (undocumented)
+// @public
 export class MemoryCookieStore extends Store {
     constructor();
-    // (undocumented)
     findCookie(domain: Nullable<string>, path: Nullable<string>, key: Nullable<string>): Promise<Cookie | undefined>;
-    // (undocumented)
     findCookie(domain: Nullable<string>, path: Nullable<string>, key: Nullable<string>, callback: Callback<Cookie | undefined>): void;
-    // (undocumented)
     findCookies(domain: string, path: string, allowSpecialUseDomain?: boolean): Promise<Cookie[]>;
-    // (undocumented)
     findCookies(domain: string, path: string, allowSpecialUseDomain?: boolean, callback?: Callback<Cookie[]>): void;
-    // (undocumented)
     getAllCookies(): Promise<Cookie[]>;
-    // (undocumented)
     getAllCookies(callback: Callback<Cookie[]>): void;
     // Warning: (ae-forgotten-export) The symbol "MemoryCookieStoreIndex" needs to be exported by the entry point index.d.ts
     //
-    // (undocumented)
+    // @internal (undocumented)
     idx: MemoryCookieStoreIndex;
-    // (undocumented)
     putCookie(cookie: Cookie): Promise<void>;
-    // (undocumented)
     putCookie(cookie: Cookie, callback: ErrorCallback): void;
-    // (undocumented)
     removeAllCookies(): Promise<void>;
-    // (undocumented)
     removeAllCookies(callback: ErrorCallback): void;
-    // (undocumented)
     removeCookie(domain: string, path: string, key: string): Promise<void>;
-    // (undocumented)
     removeCookie(domain: string, path: string, key: string, callback: ErrorCallback): void;
-    // (undocumented)
     removeCookies(domain: string, path: string): Promise<void>;
-    // (undocumented)
     removeCookies(domain: string, path: string, callback: ErrorCallback): void;
-    // (undocumented)
     synchronous: boolean;
-    // (undocumented)
     updateCookie(oldCookie: Cookie, newCookie: Cookie): Promise<void>;
-    // (undocumented)
     updateCookie(oldCookie: Cookie, newCookie: Cookie, callback: ErrorCallback): void;
 }
 
@@ -295,42 +278,25 @@ export interface SetCookieOptions {
     sameSiteContext?: 'strict' | 'lax' | 'none' | undefined;
 }
 
-// @public (undocumented)
+// @public
 export class Store {
     constructor();
-    // (undocumented)
     findCookie(domain: Nullable<string>, path: Nullable<string>, key: Nullable<string>): Promise<Cookie | undefined>;
-    // (undocumented)
     findCookie(domain: Nullable<string>, path: Nullable<string>, key: Nullable<string>, callback: Callback<Cookie | undefined>): void;
-    // (undocumented)
     findCookies(domain: Nullable<string>, path: Nullable<string>, allowSpecialUseDomain?: boolean): Promise<Cookie[]>;
-    // (undocumented)
     findCookies(domain: Nullable<string>, path: Nullable<string>, allowSpecialUseDomain?: boolean, callback?: Callback<Cookie[]>): void;
-    // (undocumented)
     getAllCookies(): Promise<Cookie[]>;
-    // (undocumented)
     getAllCookies(callback: Callback<Cookie[]>): void;
-    // (undocumented)
     putCookie(cookie: Cookie): Promise<void>;
-    // (undocumented)
     putCookie(cookie: Cookie, callback: ErrorCallback): void;
-    // (undocumented)
     removeAllCookies(): Promise<void>;
-    // (undocumented)
     removeAllCookies(callback: ErrorCallback): void;
-    // (undocumented)
     removeCookie(domain: Nullable<string>, path: Nullable<string>, key: Nullable<string>): Promise<void>;
-    // (undocumented)
     removeCookie(domain: Nullable<string>, path: Nullable<string>, key: Nullable<string>, callback: ErrorCallback): void;
-    // (undocumented)
     removeCookies(domain: string, path: Nullable<string>): Promise<void>;
-    // (undocumented)
     removeCookies(domain: string, path: Nullable<string>, callback: ErrorCallback): void;
-    // (undocumented)
     synchronous: boolean;
-    // (undocumented)
     updateCookie(oldCookie: Cookie, newCookie: Cookie): Promise<void>;
-    // (undocumented)
     updateCookie(oldCookie: Cookie, newCookie: Cookie, callback: ErrorCallback): void;
 }
 
