@@ -14,6 +14,6 @@
   "reportUnusedDisableDirectives": true,
   "rules": {
     "@typescript-eslint/explicit-function-return-type": "error",
-    "max-lines": ["warn", 500]
+    "max-lines": ["warn", 2000]
   }
 }

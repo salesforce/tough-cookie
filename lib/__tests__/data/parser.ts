@@ -1,5 +1,4 @@
 // This file just contains test data, so we don't care about the number of lines.
-/* eslint-disable max-lines */
 export default [
   {
     test: '0001',
