@@ -1,28 +1,81 @@
-name: Actions-CI
+name: CI
 
 on:
   push:
-    branches: [master, v5]
+    branches: [master]
   pull_request:
-    branches: [master, v5]
+
+permissions:
+  contents: read
 
 jobs:
-  build:
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Run Linter
+        run: npm run eslint
+      - name: Run Formatter
+        run: npm run prettier
 
+  test:
+    name: Test - ${{ matrix.node-version }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [latest, lts/*, lts/-1]
-
     steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js (${{ matrix.node-version }})
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm
-      - name: Install dependencies and test
-        run: npm install
-      - run: npm test
-      - run: npm run eslint
-      - run: npm run prettier
+      - name: Install dependencies
+        run: npm ci
+      - name: Run tests
+        run: npm test
+
+  api:
+    name: API & Doc Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Extract API
+        run: npm run api:extract
+      - name: Generate docs
+        run: npm run api:docs
+      - name: Ensure API and doc changes have been committed
+        run: |
+          git add --renormalize .
+          if (( "$(git diff --ignore-space-at-eol --ignore-cr-at-eol | wc -l)" != 0 )); then
+            cat << EOF >> $GITHUB_STEP_SUMMARY
+          ### Detected uncommitted changes
+
+          \`\`\`shell
+          $(git diff)
+          \`\`\`
+          EOF
+            git diff
+            exit 1
+          fi
