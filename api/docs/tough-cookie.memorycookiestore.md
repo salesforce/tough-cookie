@@ -121,8 +121,6 @@ Description
 
 Retrieve a [Cookie](./tough-cookie.cookie.md) with the given `domain`<!-- -->, `path`<!-- -->, and `key` (`name`<!-- -->). The RFC maintains that exactly one of these cookies should exist in a store. If the store is using versioning, this means that the latest or newest such cookie should be returned.
 
-Callback takes an error and the resulting Cookie object. If no cookie is found then null MUST be passed instead (that is, not an error).
-
 
 </td></tr>
 <tr><td>
