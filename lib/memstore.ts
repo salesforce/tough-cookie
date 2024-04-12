@@ -47,7 +47,6 @@ export class MemoryCookieStore extends Store {
    * one of these cookies should exist in a store. If the store is using versioning, this means that the latest or
    * newest such cookie should be returned.
    *
-   * Callback takes an error and the resulting Cookie object. If no cookie is found then null MUST be passed instead (that is, not an error).
    * @param domain - The cookie domain to match against.
    * @param path - The cookie path to match against.
    * @param key - The cookie name to match against.
