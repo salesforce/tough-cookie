@@ -739,7 +739,7 @@ function allowSpecialUseOptionVows() {
         assert.ok(!cookie);
         assert.equal(
           err.message,
-          `Cookie has domain set to the public suffix "${specialUseDomain}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain:true, rejectPublicSuffixes: false}.`
+          `Cookie has domain set to the public suffix "${specialUseDomain}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain: true, rejectPublicSuffixes: false}.`
         );
       }
     };

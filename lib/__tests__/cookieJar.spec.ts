@@ -1322,7 +1322,7 @@ describe.each(['local', 'example', 'invalid', 'localhost', 'test'])(
           throw new Error('This should be an error instance')
         }
         expect(e.message).toBe(
-          `Cookie has domain set to the public suffix "${specialUseDomain}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain:true, rejectPublicSuffixes: false}.`,
+          `Cookie has domain set to the public suffix "${specialUseDomain}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain: true, rejectPublicSuffixes: false}.`,
         )
       }
     })
@@ -1373,7 +1373,7 @@ describe.each(['local', 'example', 'invalid', 'localhost', 'test'])(
             throw new Error('This should be an error instance')
           }
           expect(e.message).toBe(
-            `Cookie has domain set to the public suffix "${specialUseDomain}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain:true, rejectPublicSuffixes: false}.`,
+            `Cookie has domain set to the public suffix "${specialUseDomain}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain: true, rejectPublicSuffixes: false}.`,
           )
         }
       })
@@ -1421,7 +1421,7 @@ describe.each(['local', 'example', 'invalid', 'localhost', 'test'])(
             throw new Error('This should be an error instance')
           }
           expect(e.message).toBe(
-            `Cookie has domain set to the public suffix "${specialUseDomain}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain:true, rejectPublicSuffixes: false}.`,
+            `Cookie has domain set to the public suffix "${specialUseDomain}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain: true, rejectPublicSuffixes: false}.`,
           )
         }
       })
@@ -1443,7 +1443,7 @@ describe.each(['local', 'example', 'invalid', 'localhost', 'test'])(
           throw new Error('This should be an error instance')
         }
         expect(e.message).toBe(
-          `Cookie has domain set to the public suffix "${specialUseDomain}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain:true, rejectPublicSuffixes: false}.`,
+          `Cookie has domain set to the public suffix "${specialUseDomain}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain: true, rejectPublicSuffixes: false}.`,
         )
       }
     })
