@@ -254,11 +254,11 @@ export function permuteDomain(domain: string, allowSpecialUseDomain?: boolean): 
 export function permutePath(path: string): string[];
 
 // @public
-export enum PrefixSecurity {
-    DISABLED = "unsafe-disabled",
-    SILENT = "silent",
-    STRICT = "strict"
-}
+export const PrefixSecurityEnum: Readonly<{
+    SILENT: "silent";
+    STRICT: "strict";
+    DISABLED: "unsafe-disabled";
+}>;
 
 // @public
 export interface SerializedCookieJar {

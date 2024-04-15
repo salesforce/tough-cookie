@@ -18,7 +18,7 @@ import {
 import { canonicalDomain } from './canonicalDomain'
 import {
   IP_V6_REGEX_OBJECT,
-  PrefixSecurity,
+  PrefixSecurityEnum,
   SerializedCookieJar,
 } from './constants'
 import { defaultPath } from './defaultPath'
@@ -256,7 +256,8 @@ function isHostPrefixConditionMet(cookie: Cookie): boolean {
   )
 }
 
-type PrefixSecurityValue = (typeof PrefixSecurity)[keyof typeof PrefixSecurity]
+type PrefixSecurityValue =
+  (typeof PrefixSecurityEnum)[keyof typeof PrefixSecurityEnum]
 function getNormalizedPrefixSecurity(
   prefixSecurity: string,
 ): PrefixSecurityValue {
@@ -264,14 +265,14 @@ function getNormalizedPrefixSecurity(
     const normalizedPrefixSecurity = prefixSecurity.toLowerCase()
     /* The three supported options */
     switch (normalizedPrefixSecurity) {
-      case PrefixSecurity.STRICT:
-      case PrefixSecurity.SILENT:
-      case PrefixSecurity.DISABLED:
+      case PrefixSecurityEnum.STRICT:
+      case PrefixSecurityEnum.SILENT:
+      case PrefixSecurityEnum.DISABLED:
         return normalizedPrefixSecurity
     }
   }
   /* Default is SILENT */
-  return PrefixSecurity.SILENT
+  return PrefixSecurityEnum.SILENT
 }
 
 /**
@@ -606,9 +607,9 @@ export class CookieJar {
 
     /* 6265bis-02 S5.4 Steps 15 & 16 */
     const ignoreErrorForPrefixSecurity =
-      this.prefixSecurity === PrefixSecurity.SILENT
+      this.prefixSecurity === PrefixSecurityEnum.SILENT
     const prefixSecurityDisabled =
-      this.prefixSecurity === PrefixSecurity.DISABLED
+      this.prefixSecurity === PrefixSecurityEnum.DISABLED
     /* If prefix checking is not disabled ...*/
     if (!prefixSecurityDisabled) {
       let errorFound = false

@@ -4,7 +4,7 @@
 
 ## CreateCookieJarOptions.prefixSecurity property
 
-Controls how cookie prefixes are handled. See .
+Controls how cookie prefixes are handled. See [PrefixSecurityEnum](./tough-cookie.prefixsecurityenum.md)<!-- -->.
 
 Defaults to `silent` if not specified.
 

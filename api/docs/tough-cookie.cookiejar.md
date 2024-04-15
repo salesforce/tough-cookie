@@ -88,7 +88,7 @@ string
 
 </td><td>
 
-The configured  value for the [CookieJar](./tough-cookie.cookiejar.md)<!-- -->.
+The configured [PrefixSecurityEnum](./tough-cookie.prefixsecurityenum.md) value for the [CookieJar](./tough-cookie.cookiejar.md)<!-- -->.
 
 
 </td></tr>

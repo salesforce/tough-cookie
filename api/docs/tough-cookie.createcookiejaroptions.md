@@ -92,7 +92,7 @@ Defaults to `false` if not specified.
 
 </td><td>
 
-_(Optional)_ Controls how cookie prefixes are handled. See .
+_(Optional)_ Controls how cookie prefixes are handled. See [PrefixSecurityEnum](./tough-cookie.prefixsecurityenum.md)<!-- -->.
 
 Defaults to `silent` if not specified.
 
