@@ -373,19 +373,39 @@ function fromJSON(str: unknown): Cookie | undefined {
 }
 
 /**
- * Type alias for all the cookie properties defined by {@link Cookie} (except for {@link Cookie.creationIndex}).
+ * Configurable values that can be set when creating a {@link Cookie}.
  * @public
  */
-export type CreateCookieOptions = Omit<
-  {
-    // Assume that all non-method attributes on the class can be configured, except creationIndex.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [K in keyof Cookie as Cookie[K] extends (...args: any[]) => any
-      ? never
-      : K]?: Cookie[K]
-  },
-  'creationIndex'
->
+export interface CreateCookieOptions {
+  /** {@inheritDoc Cookie.key} */
+  key?: string
+  /** {@inheritDoc Cookie.value} */
+  value?: string
+  /** {@inheritDoc Cookie.expires} */
+  expires?: Date | 'Infinity' | null
+  /** {@inheritDoc Cookie.maxAge} */
+  maxAge?: number | 'Infinity' | '-Infinity' | null
+  /** {@inheritDoc Cookie.domain} */
+  domain?: string | null
+  /** {@inheritDoc Cookie.path} */
+  path?: string | null
+  /** {@inheritDoc Cookie.secure} */
+  secure?: boolean
+  /** {@inheritDoc Cookie.httpOnly} */
+  httpOnly?: boolean
+  /** {@inheritDoc Cookie.extensions} */
+  extensions?: string[] | null
+  /** {@inheritDoc Cookie.creation} */
+  creation?: Date | 'Infinity' | null
+  /** {@inheritDoc Cookie.hostOnly} */
+  hostOnly?: boolean | null
+  /** {@inheritDoc Cookie.pathIsDefault} */
+  pathIsDefault?: boolean | null
+  /** {@inheritDoc Cookie.lastAccessed} */
+  lastAccessed?: Date | 'Infinity' | null
+  /** {@inheritDoc Cookie.sameSite} */
+  sameSite?: string | undefined
+}
 
 const cookieDefaults = {
   // the order in which the RFC has them:

@@ -21,7 +21,6 @@ export function canonicalDomain(domainName: Nullable<string>): string | undefine
 
 // @public
 export class Cookie {
-    // Warning: (ae-forgotten-export) The symbol "CreateCookieOptions" needs to be exported by the entry point index.d.ts
     constructor(options?: CreateCookieOptions);
     canonicalizedDomain(): string | undefined;
     cdomain(): string | undefined;
@@ -40,7 +39,6 @@ export class Cookie {
     key: string;
     lastAccessed: Date | 'Infinity' | null;
     maxAge: number | 'Infinity' | '-Infinity' | null;
-    // Warning: (ae-forgotten-export) The symbol "ParseCookieOptions" needs to be exported by the entry point index.d.ts
     static parse(str: string, options?: ParseCookieOptions): Cookie | undefined;
     path: string | null;
     pathIsDefault: boolean | null;
@@ -60,7 +58,6 @@ export class Cookie {
     static serializableProperties: readonly ["key", "value", "expires", "maxAge", "domain", "path", "secure", "httpOnly", "extensions", "hostOnly", "pathIsDefault", "creation", "lastAccessed", "sameSite"];
     setExpires(exp: string | Date): void;
     setMaxAge(age: number): void;
-    // Warning: (ae-forgotten-export) The symbol "SerializedCookie" needs to be exported by the entry point index.d.ts
     toJSON(): SerializedCookie;
     toString(): string;
     TTL(now?: number): number;
@@ -136,6 +133,24 @@ export interface CreateCookieJarOptions {
 }
 
 // @public
+export interface CreateCookieOptions {
+    creation?: Date | 'Infinity' | null;
+    domain?: string | null;
+    expires?: Date | 'Infinity' | null;
+    extensions?: string[] | null;
+    hostOnly?: boolean | null;
+    httpOnly?: boolean;
+    key?: string;
+    lastAccessed?: Date | 'Infinity' | null;
+    maxAge?: number | 'Infinity' | '-Infinity' | null;
+    path?: string | null;
+    pathIsDefault?: boolean | null;
+    sameSite?: string | undefined;
+    secure?: boolean;
+    value?: string;
+}
+
+// @public
 export function defaultPath(path?: Nullable<string>): string;
 
 // @public
@@ -205,6 +220,11 @@ export class ParameterError extends Error {
 export const parse: typeof Cookie.parse;
 
 // @public
+export interface ParseCookieOptions {
+    loose?: boolean | undefined;
+}
+
+// @public
 export function parseDate(cookieDate: Nullable<string>): Date | undefined;
 
 // @public
@@ -222,6 +242,13 @@ export const PrefixSecurityEnum: Readonly<{
     STRICT: "strict";
     DISABLED: "unsafe-disabled";
 }>;
+
+// @public
+export type SerializedCookie = {
+    key?: string;
+    value?: string;
+    [key: string]: unknown;
+};
 
 // @public
 export interface SerializedCookieJar {

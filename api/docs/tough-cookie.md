@@ -248,6 +248,17 @@ Configuration settings to be used with a [CookieJar](./tough-cookie.cookiejar.md
 </td></tr>
 <tr><td>
 
+[CreateCookieOptions](./tough-cookie.createcookieoptions.md)
+
+
+</td><td>
+
+Configurable values that can be set when creating a [Cookie](./tough-cookie.cookie.md)<!-- -->.
+
+
+</td></tr>
+<tr><td>
+
 [ErrorCallback](./tough-cookie.errorcallback.md)
 
 
@@ -276,6 +287,17 @@ Configuration options used when calling `CookieJar.getCookies(...)`<!-- -->.
 </td><td>
 
 Options for configuring how [getPublicSuffix()](./tough-cookie.getpublicsuffix.md) behaves.
+
+
+</td></tr>
+<tr><td>
+
+[ParseCookieOptions](./tough-cookie.parsecookieoptions.md)
+
+
+</td><td>
+
+Optional configuration to be used when parsing cookies.
 
 
 </td></tr>
@@ -361,6 +383,32 @@ The following values can be used to configure how a [CookieJar](./tough-cookie.c
 </td><td>
 
 The version of `tough-cookie`
+
+
+</td></tr>
+</tbody></table>
+
+## Type Aliases
+
+<table><thead><tr><th>
+
+Type Alias
+
+
+</th><th>
+
+Description
+
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[SerializedCookie](./tough-cookie.serializedcookie.md)
+
+
+</td><td>
+
+A JSON object that is created when [Cookie.toJSON()](./tough-cookie.cookie.tojson.md) is called. This object will contain the properties defined in [Cookie.serializableProperties](./tough-cookie.cookie.serializableproperties.md)<!-- -->.
 
 
 </td></tr>

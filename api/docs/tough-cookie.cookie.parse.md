@@ -53,7 +53,7 @@ options
 
 </td><td>
 
-ParseCookieOptions
+[ParseCookieOptions](./tough-cookie.parsecookieoptions.md)
 
 
 </td><td>

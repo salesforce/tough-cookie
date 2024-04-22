@@ -37,7 +37,7 @@ options
 
 </td><td>
 
-CreateCookieOptions
+[CreateCookieOptions](./tough-cookie.createcookieoptions.md)
 
 
 </td><td>
