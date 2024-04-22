@@ -156,12 +156,34 @@ Format a [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Referenc
 </td></tr>
 <tr><td>
 
+[fromJSON(str)](./tough-cookie.fromjson.md)
+
+
+</td><td>
+
+Does the reverse of [Cookie.toJSON()](./tough-cookie.cookie.tojson.md)<!-- -->.
+
+
+</td></tr>
+<tr><td>
+
 [getPublicSuffix(domain, options)](./tough-cookie.getpublicsuffix.md)
 
 
 </td><td>
 
 Returns the public suffix of this hostname. The public suffix is the shortest domain name upon which a cookie can be set.
+
+
+</td></tr>
+<tr><td>
+
+[parse(str, options)](./tough-cookie.parse.md)
+
+
+</td><td>
+
+Parses a string into a Cookie object.
 
 
 </td></tr>
@@ -340,24 +362,6 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-[fromJSON](./tough-cookie.fromjson.md)
-
-
-</td><td>
-
-
-</td></tr>
-<tr><td>
-
-[parse](./tough-cookie.parse.md)
-
-
-</td><td>
-
-
-</td></tr>
-<tr><td>
-
 [PrefixSecurityEnum](./tough-cookie.prefixsecurityenum.md)
 
 
@@ -402,6 +406,17 @@ Description
 
 </th></tr></thead>
 <tbody><tr><td>
+
+[Nullable](./tough-cookie.nullable.md)
+
+
+</td><td>
+
+The inverse of NonNullable<T>.
+
+
+</td></tr>
+<tr><td>
 
 [SerializedCookie](./tough-cookie.serializedcookie.md)
 

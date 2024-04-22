@@ -37,7 +37,7 @@ store
 
 </td><td>
 
-Nullable&lt;[Store](./tough-cookie.store.md)<!-- -->&gt;
+[Nullable](./tough-cookie.nullable.md)<!-- -->&lt;[Store](./tough-cookie.store.md)<!-- -->&gt;
 
 
 </td><td>

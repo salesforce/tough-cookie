@@ -16,6 +16,8 @@ import type { Callback, ErrorCallback, Nullable } from './utils'
  *
  * - Stores are asynchronous by default, but if {@link Store.synchronous} is set to true, then the `*Sync` methods
  *     of the containing {@link CookieJar} can be used.
+ *
+ * @public
  */
 export class Store {
   /**

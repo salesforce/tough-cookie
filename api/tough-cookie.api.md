@@ -14,8 +14,6 @@ export interface Callback<T> {
     (error: null, result: T): void;
 }
 
-// Warning: (ae-forgotten-export) The symbol "Nullable" needs to be exported by the entry point index.d.ts
-//
 // @public
 export function canonicalDomain(domainName: Nullable<string>): string | undefined;
 
@@ -165,8 +163,8 @@ export interface ErrorCallback {
 // @public
 export function formatDate(date: Date): string;
 
-// @public (undocumented)
-export const fromJSON: typeof Cookie.fromJSON;
+// @public
+export function fromJSON(str: unknown): Cookie | undefined;
 
 // @public
 export interface GetCookiesOptions {
@@ -195,8 +193,6 @@ export class MemoryCookieStore extends Store {
     findCookies(domain: string, path: string, allowSpecialUseDomain?: boolean, callback?: Callback<Cookie[]>): void;
     getAllCookies(): Promise<Cookie[]>;
     getAllCookies(callback: Callback<Cookie[]>): void;
-    // Warning: (ae-forgotten-export) The symbol "MemoryCookieStoreIndex" needs to be exported by the entry point index.d.ts
-    //
     // @internal (undocumented)
     idx: MemoryCookieStoreIndex;
     putCookie(cookie: Cookie): Promise<void>;
@@ -212,12 +208,24 @@ export class MemoryCookieStore extends Store {
     updateCookie(oldCookie: Cookie, newCookie: Cookie, callback: ErrorCallback): void;
 }
 
+// @internal
+export type MemoryCookieStoreIndex = {
+    [domain: string]: {
+        [path: string]: {
+            [key: string]: Cookie;
+        };
+    };
+};
+
+// @public
+export type Nullable<T> = T | null | undefined;
+
 // @public
 export class ParameterError extends Error {
 }
 
-// @public (undocumented)
-export const parse: typeof Cookie.parse;
+// @public
+export function parse(str: string, options?: ParseCookieOptions): Cookie | undefined;
 
 // @public
 export interface ParseCookieOptions {
