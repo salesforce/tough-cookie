@@ -13,7 +13,7 @@ toJSON(): SerializedCookie;
 ```
 **Returns:**
 
-SerializedCookie
+[SerializedCookie](./tough-cookie.serializedcookie.md)
 
 ## Remarks
 

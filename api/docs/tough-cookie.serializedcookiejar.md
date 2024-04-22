@@ -45,7 +45,7 @@ Description
 
 </td><td>
 
-SerializedCookie\[\]
+[SerializedCookie](./tough-cookie.serializedcookie.md)<!-- -->\[\]
 
 
 </td><td>
