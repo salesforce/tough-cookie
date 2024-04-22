@@ -39,7 +39,7 @@ const MAX_TIME = 2147483647000
  * ### Custom Store Implementors
  *
  * Since the JavaScript Date is limited to a 1-ms precision, cookies within the same millisecond are entirely possible.
- * This is especially true when using the `now` option to {@link Cookie.setCookie()}. The {@link Cookie.creationIndex}
+ * This is especially true when using the `now` option to `CookieJar.setCookie(...)`. The {@link Cookie.creationIndex}
  * property is a per-process global counter, assigned during construction with `new Cookie()`, which preserves the spirit
  * of the RFC sorting: older cookies go first. This works great for {@link MemoryCookieStore} since `Set-Cookie` headers
  * are parsed in order, but is not so great for distributed systems.

@@ -37,7 +37,7 @@ domainName
 
 </td><td>
 
-Nullable&lt;string&gt;
+[Nullable](./tough-cookie.nullable.md)<!-- -->&lt;string&gt;
 
 
 </td><td>

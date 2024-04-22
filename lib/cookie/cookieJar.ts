@@ -38,6 +38,7 @@ const defaultSetCookieOptions: SetCookieOptions = {
 
 /**
  * Configuration options used when calling `CookieJar.setCookie(...)`
+ * @public
  */
 export interface SetCookieOptions {
   /**
@@ -98,6 +99,7 @@ const defaultGetCookieOptions: GetCookiesOptions = {
 
 /**
  * Configuration options used when calling `CookieJar.getCookies(...)`.
+ * @public
  */
 export interface GetCookiesOptions {
   /**

@@ -1,11 +1,11 @@
-export { MemoryCookieStore } from '../memstore'
+export { MemoryCookieStore, MemoryCookieStoreIndex } from '../memstore'
 export { pathMatch } from '../pathMatch'
 export { permuteDomain } from '../permuteDomain'
 export { getPublicSuffix, GetPublicSuffixOptions } from '../getPublicSuffix'
 export { Store } from '../store'
 export { ParameterError } from '../validators'
 export { version } from '../version'
-export { Callback, ErrorCallback } from '../utils'
+export { Callback, ErrorCallback, Nullable } from '../utils'
 export { canonicalDomain } from './canonicalDomain'
 export {
   PrefixSecurityEnum,
@@ -26,7 +26,23 @@ export { formatDate } from './formatDate'
 export { parseDate } from './parseDate'
 export { permutePath } from './permutePath'
 
-import { Cookie } from './cookie'
+import { Cookie, ParseCookieOptions } from './cookie'
 
-export const parse = Cookie.parse
-export const fromJSON = Cookie.fromJSON
+/**
+ * {@inheritDoc Cookie.parse}
+ * @public
+ */
+export function parse(
+  str: string,
+  options?: ParseCookieOptions,
+): Cookie | undefined {
+  return Cookie.parse(str, options)
+}
+
+/**
+ * {@inheritDoc Cookie.fromJSON}
+ * @public
+ */
+export function fromJSON(str: unknown): Cookie | undefined {
+  return Cookie.fromJSON(str)
+}

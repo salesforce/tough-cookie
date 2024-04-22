@@ -9,6 +9,10 @@ import {
   Nullable,
 } from './utils'
 
+/**
+ * The internal structure used in {@link MemoryCookieStore}.
+ * @internal
+ */
 export type MemoryCookieStoreIndex = {
   [domain: string]: {
     [path: string]: {

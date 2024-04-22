@@ -89,7 +89,7 @@ NOTE: Not all user agents sort the cookie-list in this order, but this order ref
 
 \#\#\# Custom Store Implementors
 
-Since the JavaScript Date is limited to a 1-ms precision, cookies within the same millisecond are entirely possible. This is especially true when using the `now` option to . The [Cookie.creationIndex](./tough-cookie.cookie.creationindex.md) property is a per-process global counter, assigned during construction with `new Cookie()`<!-- -->, which preserves the spirit of the RFC sorting: older cookies go first. This works great for [MemoryCookieStore](./tough-cookie.memorycookiestore.md) since `Set-Cookie` headers are parsed in order, but is not so great for distributed systems.
+Since the JavaScript Date is limited to a 1-ms precision, cookies within the same millisecond are entirely possible. This is especially true when using the `now` option to `CookieJar.setCookie(...)`<!-- -->. The [Cookie.creationIndex](./tough-cookie.cookie.creationindex.md) property is a per-process global counter, assigned during construction with `new Cookie()`<!-- -->, which preserves the spirit of the RFC sorting: older cookies go first. This works great for [MemoryCookieStore](./tough-cookie.memorycookiestore.md) since `Set-Cookie` headers are parsed in order, but is not so great for distributed systems.
 
 Sophisticated Stores may wish to set this to some other logical clock so that if cookies `A` and `B` are created in the same millisecond, but cookie `A` is created before cookie `B`<!-- -->, then `A.creationIndex < B.creationIndex`<!-- -->.
 
