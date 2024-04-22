@@ -29,9 +29,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 "use strict";
+const util = require("util");
 const vows = require("vows");
 const assert = require("assert");
+const async = require("async");
 const tough = require("../dist/cookie");
+const Cookie = tough.Cookie;
 const CookieJar = tough.CookieJar;
 const Store = tough.Store;
 const MemoryCookieStore = tough.MemoryCookieStore;
@@ -173,7 +176,7 @@ vows
         "all cookies are attemped": function(err, stats) {
           assert.equal(stats.remove, 2); // two are prevented by test harness
         },
-        "only the first error is returned": function(err, ) {
+        "only the first error is returned": function(err, stats) {
           assert.equal(err.message, "something happened 1");
         }
       }

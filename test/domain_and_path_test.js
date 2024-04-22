@@ -33,6 +33,7 @@
 const vows = require("vows");
 const assert = require("assert");
 const tough = require("../dist/cookie");
+const Cookie = tough.Cookie;
 
 function matchVows(func, table) {
   const theVows = {};
