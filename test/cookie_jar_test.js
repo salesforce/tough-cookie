@@ -67,6 +67,32 @@ vows
         assert.ok(!c.isPersistent());
       }
     },
+    "Setting a basic cookie (URL)": {
+      topic: function() {
+        const cj = new CookieJar();
+        const c = Cookie.parse("a=b; Domain=example.com; Path=/");
+        assert.strictEqual(c.hostOnly, null);
+        assert.instanceOf(c.creation, Date);
+        assert.strictEqual(c.lastAccessed, null);
+        c.creation = new Date(Date.now() - 10000);
+        cj.setCookie(
+          c,
+          new URL("http://example.com/index.html"),
+          this.callback
+        );
+      },
+      works: function(c) {
+        assert.instanceOf(c, Cookie);
+      }, // C is for Cookie, good enough for me
+      "gets timestamped": function(c) {
+        assert.ok(c.creation);
+        assert.ok(Date.now() - c.creation.getTime() < 5000); // recently stamped
+        assert.ok(c.lastAccessed);
+        assert.equal(c.creation, c.lastAccessed);
+        assert.equal(c.TTL(), Infinity);
+        assert.ok(!c.isPersistent());
+      }
+    },
     "Setting a no-path cookie": {
       topic: function() {
         const cj = new CookieJar();
@@ -359,6 +385,17 @@ vows
         topic: function(cj, oldResults) {
           assert.ok(oldResults);
           cj.getCookies("http://nodejs.org", this.callback);
+        },
+        "get a nodejs cookie": function(cookies) {
+          assert.lengthOf(cookies, 1);
+          const cookie = cookies[0];
+          assert.equal(cookie.domain, "nodejs.org");
+        }
+      },
+      "then retrieving for http://nodejs.org (URL)": {
+        topic: function(cj, oldResults) {
+          assert.ok(oldResults);
+          cj.getCookies(new URL("http://nodejs.org"), this.callback);
         },
         "get a nodejs cookie": function(cookies) {
           assert.lengthOf(cookies, 1);
