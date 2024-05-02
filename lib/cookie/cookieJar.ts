@@ -173,9 +173,7 @@ export class CookieJar {
   }
 
   private callSync<T>(
-    // Using tuples is needed to check if `T` is `never` because `T extends never ? true : false`
-    // evaluates to `never` instead of `true`.
-    fn: (callback: [T] extends [never] ? ErrorCallback : Callback<T>) => void,
+    fn: (this: CookieJar, callback: Callback<T>) => void,
   ): T | undefined {
     if (!this.store.synchronous) {
       throw new Error(
@@ -188,8 +186,8 @@ export class CookieJar {
       syncErr = error
       syncResult = result
     })
-    // This seems to be a false positive; it can't detect that the value may be changed in the callback
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, @typescript-eslint/no-throw-literal
+    // These seem to be false positives; it can't detect that the value may be changed in the callback
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, @typescript-eslint/only-throw-error
     if (syncErr) throw syncErr
 
     return syncResult
@@ -1019,8 +1017,10 @@ export class CookieJar {
     return promiseCallback.promise
   }
   removeAllCookiesSync(): void {
-    this.callSync<never>((callback) => {
-      this.removeAllCookies(callback)
+    this.callSync<undefined>((callback) => {
+      // `Callback<undefined>` and `ErrorCallback` are *technically* incompatible, but for the
+      // standard implementation `cb = (err, result) => {}`, they're essentially the same.
+      this.removeAllCookies(callback as ErrorCallback)
     })
   }
 
