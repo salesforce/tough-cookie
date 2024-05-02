@@ -24,7 +24,6 @@ export default tseslint.config(
       reportUnusedDisableDirectives: 'warn',
     },
     rules: {
-      'max-lines': ['warn', 500],
       '@typescript-eslint/explicit-function-return-type': 'error',
     },
   },
