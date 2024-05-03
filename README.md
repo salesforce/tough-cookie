@@ -71,8 +71,7 @@ const laxCookies = await cookieJar.getCookies('http://example.com/index.html', {
 ```
 
 > [!NOTE]
-> It is highly recommended that you read [RFC6265bis][rfc6265bis-tracker] for fine details on SameSite cookies.
-> In particular **Section 8.8** discusses security considerations and defense in depth.
+> It is highly recommended that you read [RFC6265bis - Section 8.8][samesite-implementation] for more details on SameSite cookies, security considerations, and defense in depth.
 
 ### Cookie Prefixes
 
@@ -123,8 +122,7 @@ await cookieJar.setCookie(
 ```
 
 > [!NOTE]
-> It is highly recommended that you read [RFC6265bis][rfc6265bis-tracker] for fine details on Cookie Prefixes.
-> They are defined in **Section 4.1**.
+> It is highly recommended that you read [RFC6265bis - Section 4.1.3][cookie-prefixes-implementation] for more details on Cookie Prefixes.
 
 ## Node.js Version Support
 
@@ -140,5 +138,7 @@ for older versions of node, and we will do so in consultation with our community
 [rfc6265-tracker]: https://datatracker.ietf.org/doc/rfc6265/
 [rfc6265bis-badge]: https://img.shields.io/badge/RFC-6265bis-flat?labelColor=000000&color=666666
 [rfc6265bis-tracker]: https://datatracker.ietf.org/doc/draft-ietf-httpbis-rfc6265bis/
+[samesite-implementation]: https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-02#section-8.8
+[cookie-prefixes-implementation]: https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-02#section-4.1.3
 [prs-welcome-badge]: https://img.shields.io/badge/PRs-welcome-brightgreen.svg
 [yarn-repo]: https://yarnpkg.com/package?name=tough-cookie
