@@ -1,15 +1,24 @@
-/** A callback function that accepts an error or a result. */
+/**
+ * A callback function that accepts an error or a result.
+ * @public
+ */
 export interface Callback<T> {
   (error: Error, result?: never): void
   (error: null, result: T): void
 }
 
-/** A callback function that only accepts an error. */
+/**
+ * A callback function that only accepts an error.
+ * @public
+ */
 export interface ErrorCallback {
   (error: Error | null): void
 }
 
-/** The inverse of NonNullable<T>. */
+/**
+ * The inverse of NonNullable<T>.
+ * @public
+ */
 export type Nullable<T> = T | null | undefined
 
 /** Wrapped `Object.prototype.toString`, so that you don't need to remember to use `.call()`. */

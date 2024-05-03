@@ -84,9 +84,12 @@
     "!__tests__"
   ],
   "scripts": {
+    "api:dev": "npm run build && npm run api:extract -- --local && npm run api:docs",
+    "api:docs": "api-documenter markdown --input-folder ./tmp --output-folder ./api/docs",
+    "api:extract": "api-extractor run --verbose",
     "build": "npm run clean && tsc",
     "clean": "rm -rf dist",
-    "version": "genversion --es6 lib/version.ts && git add lib/version.ts",
+    "version": "genversion --template version-template.ejs --force lib/version.ts && git add lib/version.ts",
     "test": "npm run test:ts && npm run test:legacy",
     "test:ts": "jest",
     "test:legacy": "npm run build -- --declaration false && ./test/scripts/vows.js test/*_test.js",
@@ -100,6 +103,8 @@
     "node": ">=16"
   },
   "devDependencies": {
+    "@microsoft/api-documenter": "^7.23.37",
+    "@microsoft/api-extractor": "^7.42.3",
     "@types/jest": "^29.5.10",
     "@types/node": "^14.18.63",
     "@types/punycode": "^2.1.4",

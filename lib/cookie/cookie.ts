@@ -28,10 +28,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
-// This file was too big before we added max-lines, and it's ongoing work to reduce its size.
-/* eslint max-lines: [1, 800] */
-
 import { getPublicSuffix } from '../getPublicSuffix'
 import * as validators from '../validators'
 import { inOperator } from '../utils'
@@ -111,16 +107,17 @@ function parseCookiePair(
   return c
 }
 
-type ParseCookieOptions = {
+/**
+ * Optional configuration to be used when parsing cookies.
+ * @public
+ */
+export interface ParseCookieOptions {
+  /**
+   * If `true` then keyless cookies like `=abc` and `=` which are not RFC-compliant will be parsed.
+   */
   loose?: boolean | undefined
 }
 
-/**
- * Parses a string into a Cookie object.
- * @param str the Set-Cookie header or a Cookie string to parse. Note: when parsing a Cookie header it must be split by ';' before each Cookie string can be parsed.
- * @param options configures strict or loose mode for cookie parsing
- * @returns `Cookie` object when parsing succeeds, `undefined` when parsing fails.
- */
 function parse(str: string, options?: ParseCookieOptions): Cookie | undefined {
   if (validators.isEmptyString(str) || !validators.isString(str)) {
     return undefined
@@ -371,16 +368,40 @@ function fromJSON(str: unknown): Cookie | undefined {
   return c
 }
 
-type CreateCookieOptions = Omit<
-  {
-    // Assume that all non-method attributes on the class can be configured, except creationIndex.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [K in keyof Cookie as Cookie[K] extends (...args: any[]) => any
-      ? never
-      : K]?: Cookie[K]
-  },
-  'creationIndex'
->
+/**
+ * Configurable values that can be set when creating a {@link Cookie}.
+ * @public
+ */
+export interface CreateCookieOptions {
+  /** {@inheritDoc Cookie.key} */
+  key?: string
+  /** {@inheritDoc Cookie.value} */
+  value?: string
+  /** {@inheritDoc Cookie.expires} */
+  expires?: Date | 'Infinity' | null
+  /** {@inheritDoc Cookie.maxAge} */
+  maxAge?: number | 'Infinity' | '-Infinity' | null
+  /** {@inheritDoc Cookie.domain} */
+  domain?: string | null
+  /** {@inheritDoc Cookie.path} */
+  path?: string | null
+  /** {@inheritDoc Cookie.secure} */
+  secure?: boolean
+  /** {@inheritDoc Cookie.httpOnly} */
+  httpOnly?: boolean
+  /** {@inheritDoc Cookie.extensions} */
+  extensions?: string[] | null
+  /** {@inheritDoc Cookie.creation} */
+  creation?: Date | 'Infinity' | null
+  /** {@inheritDoc Cookie.hostOnly} */
+  hostOnly?: boolean | null
+  /** {@inheritDoc Cookie.pathIsDefault} */
+  pathIsDefault?: boolean | null
+  /** {@inheritDoc Cookie.lastAccessed} */
+  lastAccessed?: Date | 'Infinity' | null
+  /** {@inheritDoc Cookie.sameSite} */
+  sameSite?: string | undefined
+}
 
 const cookieDefaults = {
   // the order in which the RFC has them:
@@ -401,23 +422,101 @@ const cookieDefaults = {
   sameSite: undefined,
 } as const satisfies Required<CreateCookieOptions>
 
+/**
+ * An HTTP cookie (web cookie, browser cookie) is a small piece of data that a server sends to a user's web browser.
+ * It is defined in {@link https://www.rfc-editor.org/rfc/rfc6265.html | RFC6265}.
+ * @public
+ */
 export class Cookie {
+  /**
+   * The name or key of the cookie
+   */
   key: string
+  /**
+   * The value of the cookie
+   */
   value: string
+  /**
+   * The 'Expires' attribute of the cookie
+   * (See {@link https://www.rfc-editor.org/rfc/rfc6265.html#section-5.2.1 | RFC6265 Section 5.2.1}).
+   */
   expires: Date | 'Infinity' | null
+  /**
+   * The 'Max-Age' attribute of the cookie
+   * (See {@link https://www.rfc-editor.org/rfc/rfc6265.html#section-5.2.2 | RFC6265 Section 5.2.2}).
+   */
   maxAge: number | 'Infinity' | '-Infinity' | null
+  /**
+   * The 'Domain' attribute of the cookie represents the domain the cookie belongs to
+   * (See {@link https://www.rfc-editor.org/rfc/rfc6265.html#section-5.2.3 | RFC6265 Section 5.2.3}).
+   */
   domain: string | null
+  /**
+   * The 'Path' attribute of the cookie represents the path of the cookie
+   * (See {@link https://www.rfc-editor.org/rfc/rfc6265.html#section-5.2.4 | RFC6265 Section 5.2.4}).
+   */
   path: string | null
+  /**
+   * The 'Secure' flag of the cookie indicates if the scope of the cookie is
+   * limited to secure channels (e.g.; HTTPS) or not
+   * (See {@link https://www.rfc-editor.org/rfc/rfc6265.html#section-5.2.5 | RFC6265 Section 5.2.5}).
+   */
   secure: boolean
+  /**
+   * The 'HttpOnly' flag of the cookie indicates if the cookie is inaccessible to
+   * client scripts or not
+   * (See {@link https://www.rfc-editor.org/rfc/rfc6265.html#section-5.2.6 | RFC6265 Section 5.2.6}).
+   */
   httpOnly: boolean
+  /**
+   * Contains attributes which are not part of the defined spec but match the `extension-av` syntax
+   * defined in Section 4.1.1 of RFC6265
+   * (See {@link https://www.rfc-editor.org/rfc/rfc6265.html#section-4.1.1 | RFC6265 Section 4.1.1}).
+   */
   extensions: string[] | null
+  /**
+   * Set to the date and time when a Cookie is initially stored or a matching cookie is
+   * received that replaces an existing cookie
+   * (See {@link https://www.rfc-editor.org/rfc/rfc6265.html#section-5.3 | RFC6265 Section 5.3}).
+   *
+   * Also used to maintain ordering among cookies. Among cookies that have equal-length path fields,
+   * cookies with earlier creation-times are listed before cookies with later creation-times
+   * (See {@link https://www.rfc-editor.org/rfc/rfc6265.html#section-5.4 | RFC6265 Section 5.4}).
+   */
   creation: Date | 'Infinity' | null
+  /**
+   * A global counter used to break ordering ties between two cookies that have equal-length path fields
+   * and the same creation-time.
+   */
   creationIndex: number
+  /**
+   * A boolean flag indicating if a cookie is a host-only cookie (i.e.; when the request's host exactly
+   * matches the domain of the cookie) or not
+   * (See {@link https://www.rfc-editor.org/rfc/rfc6265.html#section-5.3 | RFC6265 Section 5.3}).
+   */
   hostOnly: boolean | null
+  /**
+   * A boolean flag indicating if a cookie had no 'Path' attribute and the default path
+   * was used
+   * (See {@link https://www.rfc-editor.org/rfc/rfc6265.html#section-5.2.4 | RFC6265 Section 5.2.4}).
+   */
   pathIsDefault: boolean | null
+  /**
+   * Set to the date and time when a cookie was initially stored ({@link https://www.rfc-editor.org/rfc/rfc6265.html#section-5.3 | RFC6265 Section 5.3}) and updated whenever
+   * the cookie is retrieved from the {@link CookieJar} ({@link https://www.rfc-editor.org/rfc/rfc6265.html#section-5.4 | RFC6265 Section 5.4}).
+   */
   lastAccessed: Date | 'Infinity' | null
+  /**
+   * The 'SameSite' attribute of a cookie as defined in RFC6265bis
+   * (See {@link https://www.ietf.org/archive/id/draft-ietf-httpbis-rfc6265bis-13.html#section-5.2 | RFC6265bis (v13) Section 5.2 }).
+   */
   sameSite: string | undefined
 
+  /**
+   * Create a new Cookie instance.
+   * @public
+   * @param options - The attributes to set on the cookie
+   */
   constructor(options: CreateCookieOptions = {}) {
     this.key = options.key ?? cookieDefaults.key
     this.value = options.value ?? cookieDefaults.value
@@ -461,6 +560,15 @@ export class Cookie {
     return `Cookie="${this.toString()}; hostOnly=${hostOnly}; aAge=${accessAge}; cAge=${createAge}"`
   }
 
+  /**
+   * For convenience in using `JSON.stringify(cookie)`. Returns a plain-old Object that can be JSON-serialized.
+   *
+   * @remarks
+   * - Any `Date` properties (such as {@link Cookie.expires}, {@link Cookie.creation}, and {@link Cookie.lastAccessed}) are exported in ISO format (`Date.toISOString()`).
+   *
+   *  - Custom Cookie properties are discarded. In tough-cookie 1.x, since there was no {@link Cookie.toJSON} method explicitly defined, all enumerable properties were captured.
+   *      If you want a property to be serialized, add the property name to {@link Cookie.serializableProperties}.
+   */
   toJSON(): SerializedCookie {
     const obj: SerializedCookie = {}
 
@@ -531,10 +639,23 @@ export class Cookie {
     return obj
   }
 
+  /**
+   * Does a deep clone of this cookie, implemented exactly as `Cookie.fromJSON(cookie.toJSON())`.
+   * @public
+   */
   clone(): Cookie | undefined {
     return fromJSON(this.toJSON())
   }
 
+  /**
+   * Validates cookie attributes for semantic correctness. Useful for "lint" checking any `Set-Cookie` headers you generate.
+   * For now, it returns a boolean, but eventually could return a reason string.
+   *
+   * @remarks
+   * Works for a few things, but is by no means comprehensive.
+   *
+   * @beta
+   */
   validate(): boolean {
     if (this.value == null || !COOKIE_OCTETS.test(this.value)) {
       return false
@@ -571,6 +692,15 @@ export class Cookie {
     return true
   }
 
+  /**
+   * Sets the 'Expires' attribute on a cookie.
+   *
+   * @remarks
+   * When given a `string` value it will be parsed with {@link parseDate}. If the value can't be parsed as a cookie date
+   * then the 'Expires' attribute will be set to `"Infinity"`.
+   *
+   * @param exp - the new value for the 'Expires' attribute of the cookie.
+   */
   setExpires(exp: string | Date): void {
     if (exp instanceof Date) {
       this.expires = exp
@@ -579,6 +709,14 @@ export class Cookie {
     }
   }
 
+  /**
+   * Sets the 'Max-Age' attribute (in seconds) on a cookie.
+   *
+   * @remarks
+   * Coerces `-Infinity` to `"-Infinity"` and `Infinity` to `"Infinity"` so it can be serialized to JSON.
+   *
+   * @param age - the new value for the 'Max-Age' attribute (in seconds).
+   */
   setMaxAge(age: number): void {
     if (age === Infinity) {
       this.maxAge = 'Infinity'
@@ -589,6 +727,10 @@ export class Cookie {
     }
   }
 
+  /**
+   * Encodes to a `Cookie` header value (specifically, the {@link Cookie.key} and {@link Cookie.value} properties joined with "=").
+   * @public
+   */
   cookieString(): string {
     const val = this.value ?? ''
     if (this.key) {
@@ -597,7 +739,10 @@ export class Cookie {
     return val
   }
 
-  // gives Set-Cookie header format
+  /**
+   * Encodes to a `Set-Cookie header` value.
+   * @public
+   */
   toString(): string {
     let str = this.cookieString()
 
@@ -648,16 +793,29 @@ export class Cookie {
     return str
   }
 
-  // TTL() partially replaces the "expiry-time" parts of S5.3 step 3 (setCookie()
-  // elsewhere)
-  // S5.3 says to give the "latest representable date" for which we use Infinity
-  // For "expired" we use 0
+  /**
+   * Computes the TTL relative to now (milliseconds).
+   *
+   * @remarks
+   * - `Infinity` is returned for cookies without an explicit expiry
+   *
+   * - `0` is returned if the cookie is expired.
+   *
+   * - Otherwise a time-to-live in milliseconds is returned.
+   *
+   * @param now - passing an explicit value is mostly used for testing purposes since this defaults to the `Date.now()`
+   * @public
+   */
   TTL(now: number = Date.now()): number {
-    /* RFC6265 S4.1.2.2 If a cookie has both the Max-Age and the Expires
-     * attribute, the Max-Age attribute has precedence and controls the
-     * expiration date of the cookie.
-     * (Concurs with S5.3 step 3)
-     */
+    // TTL() partially replaces the "expiry-time" parts of S5.3 step 3 (setCookie()
+    // elsewhere)
+    // S5.3 says to give the "latest representable date" for which we use Infinity
+    // For "expired" we use 0
+    // -----
+    // RFC6265 S4.1.2.2 If a cookie has both the Max-Age and the Expires
+    // attribute, the Max-Age attribute has precedence and controls the
+    // expiration date of the cookie.
+    // (Concurs with S5.3 step 3)
     if (this.maxAge != null && typeof this.maxAge === 'number') {
       return this.maxAge <= 0 ? 0 : this.maxAge * 1000
     }
@@ -670,9 +828,18 @@ export class Cookie {
     return (expires?.getTime() ?? now) - (now || Date.now())
   }
 
-  // expiryTime() replaces the "expiry-time" parts of S5.3 step 3 (setCookie()
-  // elsewhere)
+  /**
+   * Computes the absolute unix-epoch milliseconds that this cookie expires.
+   *
+   * The "Max-Age" attribute takes precedence over "Expires" (as per the RFC). The {@link Cookie.lastAccessed} attribute
+   * (or the `now` parameter if given) is used to offset the {@link Cookie.maxAge} attribute.
+   *
+   * If Expires ({@link Cookie.expires}) is set, that's returned.
+   *
+   * @param now - can be used to provide a time offset (instead of {@link Cookie.lastAccessed}) to use when calculating the "Max-Age" value
+   */
   expiryTime(now?: Date): number | undefined {
+    // expiryTime() replaces the "expiry-time" parts of S5.3 step 3 (setCookie() elsewhere)
     if (this.maxAge != null) {
       const relativeTo = now || this.lastAccessed || new Date()
       const maxAge = typeof this.maxAge === 'number' ? this.maxAge : -Infinity
@@ -690,37 +857,120 @@ export class Cookie {
     return this.expires ? this.expires.getTime() : undefined
   }
 
-  // This replaces the "persistent-flag" parts of S5.3 step 3
+  /**
+   * Indicates if the cookie has been persisted to a store or not.
+   * @public
+   */
   isPersistent(): boolean {
+    // This replaces the "persistent-flag" parts of S5.3 step 3
     return this.maxAge != null || this.expires != 'Infinity'
   }
 
-  // Mostly S5.1.2 and S5.2.3:
+  /**
+   * Calls {@link canonicalDomain} with the {@link Cookie.domain} property.
+   * @public
+   */
   canonicalizedDomain(): string | undefined {
+    // Mostly S5.1.2 and S5.2.3:
     return canonicalDomain(this.domain)
   }
 
+  /**
+   * Alias for {@link Cookie.canonicalizedDomain}
+   * @public
+   */
   cdomain(): string | undefined {
     return canonicalDomain(this.domain)
   }
 
-  static parse = parse
+  /**
+   * Parses a string into a Cookie object.
+   *
+   * @remarks
+   * Note: when parsing a `Cookie` header it must be split by ';' before each Cookie string can be parsed.
+   *
+   * @example
+   * ```
+   * // parse a `Set-Cookie` header
+   * const setCookieHeader = 'a=bcd; Expires=Tue, 18 Oct 2011 07:05:03 GMT'
+   * const cookie = Cookie.parse(setCookieHeader)
+   * cookie.key === 'a'
+   * cookie.value === 'bcd'
+   * cookie.expires === new Date(Date.parse('Tue, 18 Oct 2011 07:05:03 GMT'))
+   * ```
+   *
+   * @example
+   * ```
+   * // parse a `Cookie` header
+   * const cookieHeader = 'name=value; name2=value2; name3=value3'
+   * const cookies = cookieHeader.split(';').map(Cookie.parse)
+   * cookies[0].name === 'name'
+   * cookies[0].value === 'value'
+   * cookies[1].name === 'name2'
+   * cookies[1].value === 'value2'
+   * cookies[2].name === 'name3'
+   * cookies[2].value === 'value3'
+   * ```
+   *
+   * @param str - The `Set-Cookie` header or a Cookie string to parse.
+   * @param options - Configures `strict` or `loose` mode for cookie parsing
+   */
+  static parse(str: string, options?: ParseCookieOptions): Cookie | undefined {
+    return parse(str, options)
+  }
 
-  static fromJSON = fromJSON
+  /**
+   * Does the reverse of {@link Cookie.toJSON}.
+   *
+   * @remarks
+   * Any Date properties (such as .expires, .creation, and .lastAccessed) are parsed via Date.parse, not tough-cookie's parseDate, since ISO timestamps are being handled at this layer.
+   *
+   * @example
+   * ```
+   * const json = JSON.stringify({
+   *   key: 'alpha',
+   *   value: 'beta',
+   *   domain: 'example.com',
+   *   path: '/foo',
+   *   expires: '2038-01-19T03:14:07.000Z',
+   * })
+   * const cookie = Cookie.fromJSON(json)
+   * cookie.key === 'alpha'
+   * cookie.value === 'beta'
+   * cookie.domain === 'example.com'
+   * cookie.path === '/foo'
+   * cookie.expires === new Date(Date.parse('2038-01-19T03:14:07.000Z'))
+   * ```
+   *
+   * @param str - An unparsed JSON string or a value that has already been parsed as JSON
+   */
+  static fromJSON(str: unknown): Cookie | undefined {
+    return fromJSON(str)
+  }
 
-  static cookiesCreated = 0
+  private static cookiesCreated = 0
 
+  /**
+   * @internal
+   */
   static sameSiteLevel = {
     strict: 3,
     lax: 2,
     none: 1,
   } as const
 
+  /**
+   * @internal
+   */
   static sameSiteCanonical = {
     strict: 'Strict',
     lax: 'Lax',
   } as const
 
+  /**
+   * Cookie properties that will be serialized when using {@link Cookie.fromJSON} and {@link Cookie.toJSON}.
+   * @public
+   */
   static serializableProperties = [
     'key',
     'value',
