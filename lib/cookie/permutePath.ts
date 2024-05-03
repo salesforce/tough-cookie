@@ -1,8 +1,17 @@
 import * as validators from '../validators'
 
 /**
- * Gives the permutation of all possible `pathMatch`es of a given path. The
- * array is in longest-to-shortest order. Handy for indexing.
+ * Generates the permutation of all possible values that {@link pathMatch} the `path` parameter.
+ * The array is in longest-to-shortest order.  Useful when building custom {@link Store} implementations.
+ *
+ * @example
+ * ```
+ * permutePath('/foo/bar/')
+ * // ['/foo/bar/', '/foo/bar', '/foo', '/']
+ * ```
+ *
+ * @param path - the path to generate permutations for
+ * @public
  */
 export function permutePath(path: string): string[] {
   validators.validate(validators.isString(path))

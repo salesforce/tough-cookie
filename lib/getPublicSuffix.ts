@@ -1,34 +1,3 @@
-/*!
- * Copyright (c) 2018, Salesforce.com, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * 3. Neither the name of Salesforce.com nor the names of its contributors may
- * be used to endorse or promote products derived from this software without
- * specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
-'use strict'
 import { getDomain } from 'tldts'
 
 // RFC 6761
@@ -36,8 +5,32 @@ const SPECIAL_USE_DOMAINS = ['local', 'example', 'invalid', 'localhost', 'test']
 
 const SPECIAL_TREATMENT_DOMAINS = ['localhost', 'invalid']
 
-type GetPublicSuffixOptions = {
+/**
+ * Options for configuring how {@link getPublicSuffix} behaves.
+ * @public
+ */
+export interface GetPublicSuffixOptions {
+  /**
+   * If set to `true` then the following {@link https://www.rfc-editor.org/rfc/rfc6761.html | Special Use Domains} will
+   * be treated as if they were valid public suffixes ('local', 'example', 'invalid', 'localhost', 'test').
+   *
+   * @remarks
+   * In testing scenarios it's common to configure the cookie store with so that `http://localhost` can be used as a domain:
+   * ```json
+   * {
+   *   allowSpecialUseDomain: true,
+   *   rejectPublicSuffixes: false
+   * }
+   * ```
+   *
+   * @defaultValue false
+   */
   allowSpecialUseDomain?: boolean | undefined
+  /**
+   * If set to `true` then any errors that occur while executing {@link getPublicSuffix} will be silently ignored.
+   *
+   * @defaultValue false
+   */
   ignoreError?: boolean | undefined
 }
 
@@ -46,6 +39,32 @@ const defaultGetPublicSuffixOptions: GetPublicSuffixOptions = {
   ignoreError: false,
 }
 
+/**
+ * Returns the public suffix of this hostname. The public suffix is the shortest domain
+ * name upon which a cookie can be set.
+ *
+ * @remarks
+ * A "public suffix" is a domain that is controlled by a
+ * public registry, such as "com", "co.uk", and "pvt.k12.wy.us".
+ * This step is essential for preventing attacker.com from
+ * disrupting the integrity of example.com by setting a cookie
+ * with a Domain attribute of "com".  Unfortunately, the set of
+ * public suffixes (also known as "registry controlled domains")
+ * changes over time.  If feasible, user agents SHOULD use an
+ * up-to-date public suffix list, such as the one maintained by
+ * the Mozilla project at http://publicsuffix.org/.
+ * (See {@link https://www.rfc-editor.org/rfc/rfc6265.html#section-5.3 | RFC6265 - Section 5.3})
+ *
+ * @example
+ * ```
+ * getPublicSuffix('www.example.com') === 'example.com'
+ * getPublicSuffix('www.subdomain.example.com') === 'example.com'
+ * ```
+ *
+ * @param domain - the domain attribute of a cookie
+ * @param options - optional configuration for controlling how the public suffix is determined
+ * @public
+ */
 export function getPublicSuffix(
   domain: string,
   options: GetPublicSuffixOptions = {},
@@ -80,7 +99,7 @@ export function getPublicSuffix(
     SPECIAL_USE_DOMAINS.includes(topLevelDomain)
   ) {
     throw new Error(
-      `Cookie has domain set to the public suffix "${topLevelDomain}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain:true, rejectPublicSuffixes: false}.`,
+      `Cookie has domain set to the public suffix "${topLevelDomain}" which is a special use domain. To allow this, configure your CookieJar with {allowSpecialUseDomain: true, rejectPublicSuffixes: false}.`,
     )
   }
 
