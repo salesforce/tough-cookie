@@ -168,8 +168,7 @@ function validateSerializedCookie(cookie) {
 
       case "isoDate":
         // rather than a regexp, assert it's parsable and equal
-        const parsed = Date.parse(cookie[prop]);
-        assert(parsed, "could not parse serialized date property");
+        assert(Date.parse(cookie[prop]), "could not parse serialized date property");
         // assert.equals(cookie[prop], parsed.toISOString());
         break;
 

@@ -89,7 +89,7 @@ export function getPublicSuffix(
       // For a single word special use domain, e.g. 'localhost' or 'invalid', per RFC 6761,
       // "Application software MAY recognize {localhost/invalid} names as special, or
       // MAY pass them to name resolution APIs as they would for other domain names."
-      return `${topLevelDomain}`
+      return topLevelDomain
     }
   }
 

@@ -260,18 +260,16 @@ type PrefixSecurityValue =
 function getNormalizedPrefixSecurity(
   prefixSecurity: string,
 ): PrefixSecurityValue {
-  if (prefixSecurity != null) {
-    const normalizedPrefixSecurity = prefixSecurity.toLowerCase()
-    /* The three supported options */
-    switch (normalizedPrefixSecurity) {
-      case PrefixSecurityEnum.STRICT:
-      case PrefixSecurityEnum.SILENT:
-      case PrefixSecurityEnum.DISABLED:
-        return normalizedPrefixSecurity
-    }
+  const normalizedPrefixSecurity = prefixSecurity.toLowerCase()
+  /* The three supported options */
+  switch (normalizedPrefixSecurity) {
+    case PrefixSecurityEnum.STRICT:
+    case PrefixSecurityEnum.SILENT:
+    case PrefixSecurityEnum.DISABLED:
+      return normalizedPrefixSecurity
+    default:
+      return PrefixSecurityEnum.SILENT
   }
-  /* Default is SILENT */
-  return PrefixSecurityEnum.SILENT
 }
 
 /**
@@ -323,9 +321,7 @@ export class CookieJar {
   }
 
   private callSync<T>(
-    // Using tuples is needed to check if `T` is `never` because `T extends never ? true : false`
-    // evaluates to `never` instead of `true`.
-    fn: (callback: [T] extends [never] ? ErrorCallback : Callback<T>) => void,
+    fn: (this: CookieJar, callback: Callback<T>) => void,
   ): T | undefined {
     if (!this.store.synchronous) {
       throw new Error(
@@ -338,9 +334,9 @@ export class CookieJar {
       syncErr = error
       syncResult = result
     })
-    if (syncErr) {
-      throw syncErr
-    }
+    // These seem to be false positives; it can't detect that the value may be changed in the callback
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, @typescript-eslint/only-throw-error
+    if (syncErr) throw syncErr
 
     return syncResult
   }
@@ -571,7 +567,7 @@ export class CookieJar {
     //attribute-value is not %x2F ("/"):
     //Let cookie-path be the default-path.
     if (!cookie.path || cookie.path[0] !== '/') {
-      cookie.path = defaultPath(context.pathname ?? undefined)
+      cookie.path = defaultPath(context.pathname)
       cookie.pathIsDefault = true
     }
 
@@ -581,7 +577,7 @@ export class CookieJar {
     // S5.3 step 10
     if (options?.http === false && cookie.httpOnly) {
       err = new Error("Cookie is HttpOnly and this isn't an HTTP API")
-      return options?.ignoreError
+      return options.ignoreError
         ? promiseCallback.resolve(undefined)
         : promiseCallback.reject(err)
     }
@@ -632,6 +628,9 @@ export class CookieJar {
 
     const store = this.store
 
+    // TODO: It feels weird to be manipulating the store as a side effect of a method.
+    // We should either do it in the constructor or not at all.
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!store.updateCookie) {
       store.updateCookie = async function (
         _oldCookie: Cookie,
@@ -820,7 +819,7 @@ export class CookieJar {
       (context.protocol == 'https:' || context.protocol == 'wss:')
 
     let sameSiteLevel = 0
-    if (options?.sameSiteContext) {
+    if (options.sameSiteContext) {
       const sameSiteContext = checkSameSiteContext(options.sameSiteContext)
       if (sameSiteContext == null) {
         return promiseCallback.reject(new Error(SAME_SITE_CONTEXT_VAL_ERR))
@@ -831,11 +830,11 @@ export class CookieJar {
       }
     }
 
-    const http = options?.http ?? true
+    const http = options.http ?? true
 
     const now = Date.now()
-    const expireCheck = options?.expire ?? true
-    const allPaths = options?.allPaths ?? false
+    const expireCheck = options.expire ?? true
+    const allPaths = options.allPaths ?? false
     const store = this.store
 
     function matchingCookie(c: Cookie): boolean {
@@ -1176,12 +1175,7 @@ export class CookieJar {
       cookies: [],
     }
 
-    if (
-      !(
-        this.store.getAllCookies &&
-        typeof this.store.getAllCookies === 'function'
-      )
-    ) {
+    if (typeof this.store.getAllCookies !== 'function') {
       return promiseCallback.reject(
         new Error(
           'store does not support getAllCookies and cannot be serialized',
@@ -1222,7 +1216,9 @@ export class CookieJar {
    * <strong>Note</strong>: Only works if the configured Store is also synchronous.
    */
   serializeSync(): SerializedCookieJar | undefined {
-    return this.callSync((callback) => this.serialize(callback))
+    return this.callSync((callback) => {
+      this.serialize(callback)
+    })
   }
 
   /**
@@ -1250,33 +1246,35 @@ export class CookieJar {
     }
 
     if (!cookies) {
-      return callback(
-        new Error('serialized jar has no cookies array'),
-        undefined,
-      )
+      callback(new Error('serialized jar has no cookies array'), undefined)
+      return
     }
 
     cookies = cookies.slice() // do not modify the original
 
     const putNext: ErrorCallback = (err) => {
       if (err) {
-        return callback(err, undefined)
+        callback(err, undefined)
+        return
       }
 
       if (Array.isArray(cookies)) {
         if (!cookies.length) {
-          return callback(err, this)
+          callback(err, this)
+          return
         }
 
         let cookie
         try {
           cookie = Cookie.fromJSON(cookies.shift())
         } catch (e) {
-          return callback(e instanceof Error ? e : new Error(), undefined)
+          callback(e instanceof Error ? e : new Error(), undefined)
+          return
         }
 
         if (cookie === undefined) {
-          return putNext(null) // skip this cookie
+          putNext(null) // skip this cookie
+          return
         }
 
         this.store.putCookie(cookie, putNext)
@@ -1366,7 +1364,9 @@ export class CookieJar {
       newStore && typeof newStore !== 'function'
         ? this.clone.bind(this, newStore)
         : this.clone.bind(this)
-    return this.callSync((callback) => cloneFn(callback))
+    return this.callSync((callback) => {
+      cloneFn(callback)
+    })
   }
 
   /**
@@ -1444,7 +1444,7 @@ export class CookieJar {
     ) {
       // `Callback<undefined>` and `ErrorCallback` are *technically* incompatible, but for the
       // standard implementation `cb = (err, result) => {}`, they're essentially the same.
-      void store.removeAllCookies(cb as ErrorCallback)
+      store.removeAllCookies(cb as ErrorCallback)
       return promiseCallback.promise
     }
 
@@ -1510,8 +1510,10 @@ export class CookieJar {
    * - If one or more of the `removeCookie` calls fail, only the first error is returned.
    */
   removeAllCookiesSync(): void {
-    return this.callSync<never>((callback) => {
-      return this.removeAllCookies(callback)
+    this.callSync<undefined>((callback) => {
+      // `Callback<undefined>` and `ErrorCallback` are *technically* incompatible, but for the
+      // standard implementation `cb = (err, result) => {}`, they're essentially the same.
+      this.removeAllCookies(callback as ErrorCallback)
     })
   }
 
