@@ -299,7 +299,7 @@ export class Store {
 }
 
 // @public
-export const version = "5.0.0-rc.1";
+export const version = "5.0.0-rc.2";
 
 // (No @packageDocumentation comment for this package)
 
