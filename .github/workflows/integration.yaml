@@ -69,14 +69,14 @@ jobs:
       - name: Ensure API and doc changes have been committed
         run: |
           git add --renormalize .
-          if (( "$(git diff --ignore-space-at-eol --ignore-cr-at-eol | wc -l)" != 0 )); then
+          if (( "$(git diff HEAD --ignore-space-at-eol --ignore-cr-at-eol | wc -l)" != 0 )); then
             cat << EOF >> $GITHUB_STEP_SUMMARY
           ### Detected uncommitted changes
 
           \`\`\`shell
-          $(git diff)
+          $(git diff HEAD)
           \`\`\`
           EOF
-            git diff
+            git diff HEAD
             exit 1
           fi
