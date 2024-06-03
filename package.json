@@ -104,7 +104,7 @@
     "node": ">=16"
   },
   "devDependencies": {
-    "@eslint/js": "^8.57.0",
+    "@eslint/js": "^9.4.0",
     "@microsoft/api-documenter": "^7.23.37",
     "@microsoft/api-extractor": "^7.42.3",
     "@types/jest": "^29.5.12",
