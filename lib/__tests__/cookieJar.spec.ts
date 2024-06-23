@@ -1169,12 +1169,12 @@ it('should fix issue #144', async () => {
   ])
 })
 
-it('should fix issue #145 - missing 2nd url parameter', () => {
+it('should fix issue #145 - missing 2nd url parameter', async () => {
   const cookieJar = new CookieJar()
-  expect(
+  await expect(
     // @ts-expect-error test case explicitly violates the expected function signature
-    () => cookieJar.setCookie('x=y; Domain=example.com; Path=/'),
-  ).toThrowError('`url` argument is not a string or URL.')
+    cookieJar.setCookie('x=y; Domain=example.com; Path=/', undefined),
+  ).rejects.toThrow('`url` argument is not a string or URL.')
 })
 
 it('should fix issue #197 - CookieJar().setCookie throws an error when empty cookie is passed', async () => {
@@ -1485,6 +1485,30 @@ describe('Synchronous API on async CookieJar', () => {
     expect(() => {
       cookieJar.removeAllCookiesSync()
     }).toThrow('CookieJar store is not synchronous; use async API instead.')
+  })
+})
+
+describe('validation errors invoke callbacks', () => {
+  it('getCookies', async () => {
+    const invalidUrl = {}
+    const cookieJar = new CookieJar()
+    // @ts-expect-error deliberately trigger validation error
+    void cookieJar.getCookies(invalidUrl, (err) => {
+      expect(err).toMatchObject({
+        message: '`url` argument is not a string or URL.',
+      })
+    })
+  })
+
+  it('setCookie', () => {
+    const invalidUrl = {}
+    const cookieJar = new CookieJar()
+    // @ts-expect-error deliberately trigger validation error
+    void cookieJar.setCookie('a=b', invalidUrl, (err) => {
+      expect(err).toMatchObject({
+        message: '`url` argument is not a string or URL.',
+      })
+    })
   })
 })
 

@@ -1,6 +1,3 @@
-import * as validators from '../validators'
-import { safeToString } from '../utils'
-
 /**
  * Format a {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date | Date} into
  * the {@link https://www.rfc-editor.org/rfc/rfc2616#section-3.3.1 | preferred Internet standard format}
@@ -16,6 +13,5 @@ import { safeToString } from '../utils'
  * @public
  */
 export function formatDate(date: Date): string {
-  validators.validate(validators.isDate(date), safeToString(date))
   return date.toUTCString()
 }

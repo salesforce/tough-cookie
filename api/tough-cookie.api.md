@@ -83,6 +83,7 @@ export class CookieJar {
     static deserialize(strOrObj: string | object, store?: Store | Callback<CookieJar>, callback?: Callback<CookieJar>): unknown;
     static deserializeSync(strOrObj: string | SerializedCookieJar, store?: Store): CookieJar;
     static fromJSON(jsonString: string | SerializedCookieJar, store?: Store): CookieJar;
+    getCookies(url: string): Promise<Cookie[]>;
     getCookies(url: string, callback: Callback<Cookie[]>): void;
     getCookies(url: string | URL, options: GetCookiesOptions | undefined, callback: Callback<Cookie[]>): void;
     getCookies(url: string | URL, options?: GetCookiesOptions | undefined): Promise<Cookie[]>;
