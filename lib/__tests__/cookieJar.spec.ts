@@ -1489,7 +1489,7 @@ describe('Synchronous API on async CookieJar', () => {
 })
 
 describe('validation errors invoke callbacks', () => {
-  it('getCookies', async () => {
+  it('getCookies', () => {
     const invalidUrl = {}
     const cookieJar = new CookieJar()
     // @ts-expect-error deliberately trigger validation error
