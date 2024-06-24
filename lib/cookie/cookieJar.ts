@@ -916,7 +916,7 @@ export class CookieJar {
         cookies = cookies.filter(matchingCookie)
 
         // sorting of S5.4 part 2
-        if (options && 'sort' in options && options.sort !== false) {
+        if ('sort' in options && options.sort !== false) {
           cookies = cookies.sort(cookieCompare)
         }
 
@@ -1474,7 +1474,7 @@ export class CookieJar {
 
         completedCount++
 
-        if (completedCount === cookies?.length) {
+        if (completedCount === cookies.length) {
           if (removeErrors[0]) cb(removeErrors[0])
           else cb(null, undefined)
           return
