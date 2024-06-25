@@ -206,7 +206,6 @@ function getCookieContext(url: unknown): URL | urlParse<string> {
 
 type SameSiteLevel = keyof (typeof Cookie)['sameSiteLevel']
 function checkSameSiteContext(value: string): SameSiteLevel | undefined {
-  validators.validate(validators.isNonEmptyString(value), value)
   const context = String(value).toLowerCase()
   if (context === 'none' || context === 'lax' || context === 'strict') {
     return context
@@ -223,7 +222,6 @@ function checkSameSiteContext(value: string): SameSiteLevel | undefined {
  * @returns boolean
  */
 function isSecurePrefixConditionMet(cookie: Cookie): boolean {
-  validators.validate(validators.isObject(cookie), safeToString(cookie))
   const startsWithSecurePrefix =
     typeof cookie.key === 'string' && cookie.key.startsWith('__Secure-')
   return !startsWithSecurePrefix || cookie.secure
@@ -241,7 +239,6 @@ function isSecurePrefixConditionMet(cookie: Cookie): boolean {
  * @returns boolean
  */
 function isHostPrefixConditionMet(cookie: Cookie): boolean {
-  validators.validate(validators.isObject(cookie))
   const startsWithHostPrefix =
     typeof cookie.key === 'string' && cookie.key.startsWith('__Host-')
   return (
@@ -330,12 +327,22 @@ export class CookieJar {
     }
     let syncErr: Error | null = null
     let syncResult: T | undefined = undefined
-    fn.call(this, (error: Error | null, result?: T | undefined) => {
-      syncErr = error
-      syncResult = result
-    })
+
+    try {
+      fn.call(this, (error: Error | null, result?: T | undefined) => {
+        syncErr = error
+        syncResult = result
+      })
+    } catch (err) {
+      if (err instanceof Error) {
+        syncErr = err
+      } else {
+        throw err
+      }
+    }
+
     // These seem to be false positives; it can't detect that the value may be changed in the callback
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, @typescript-eslint/only-throw-error
+
     if (syncErr) throw syncErr
 
     return syncResult
@@ -436,41 +443,45 @@ export class CookieJar {
     }
     const promiseCallback = createPromiseCallback(callback)
     const cb = promiseCallback.callback
+    let context
 
-    if (typeof url === 'string') {
-      validators.validate(
-        validators.isNonEmptyString(url),
-        callback,
-        safeToString(options),
-      )
-    }
+    try {
+      if (typeof url === 'string') {
+        validators.validate(
+          validators.isNonEmptyString(url),
+          callback,
+          safeToString(options),
+        )
+      }
 
-    const context = getCookieContext(url)
+      context = getCookieContext(url)
 
-    let err
+      if (typeof url === 'function') {
+        return promiseCallback.reject(new Error('No URL was specified'))
+      }
 
-    if (typeof url === 'function') {
-      return promiseCallback.reject(new Error('No URL was specified'))
-    }
+      if (typeof options === 'function') {
+        options = defaultSetCookieOptions
+      }
 
-    if (typeof options === 'function') {
-      options = defaultSetCookieOptions
-    }
+      validators.validate(typeof cb === 'function', cb)
 
-    validators.validate(typeof cb === 'function', cb)
-
-    if (
-      !validators.isNonEmptyString(cookie) &&
-      !validators.isObject(cookie) &&
-      cookie instanceof String &&
-      cookie.length == 0
-    ) {
-      return promiseCallback.resolve(undefined)
+      if (
+        !validators.isNonEmptyString(cookie) &&
+        !validators.isObject(cookie) &&
+        cookie instanceof String &&
+        cookie.length == 0
+      ) {
+        return promiseCallback.resolve(undefined)
+      }
+    } catch (err) {
+      return promiseCallback.reject(err as Error)
     }
 
     const host = canonicalDomain(context.hostname) ?? null
     const loose = options?.loose || this.enableLooseMode
 
+    let err
     let sameSiteContext = null
     if (options?.sameSiteContext) {
       sameSiteContext = checkSameSiteContext(options.sameSiteContext)
@@ -741,6 +752,18 @@ export class CookieJar {
    * - The {@link Cookie.lastAccessed} property will be updated on all returned cookies.
    *
    * @param url - The domain to store the cookie with.
+   */
+  getCookies(url: string): Promise<Cookie[]>
+  /**
+   * Retrieve the list of cookies that can be sent in a Cookie header for the
+   * current URL.
+   *
+   * @remarks
+   * - The array of cookies returned will be sorted according to {@link cookieCompare}.
+   *
+   * - The {@link Cookie.lastAccessed} property will be updated on all returned cookies.
+   *
+   * @param url - The domain to store the cookie with.
    * @param callback - A function to call after a cookie has been successfully retrieved.
    */
   getCookies(url: string, callback: Callback<Cookie[]>): void
@@ -803,13 +826,25 @@ export class CookieJar {
     }
     const promiseCallback = createPromiseCallback(callback)
     const cb = promiseCallback.callback
+    let context
 
-    if (typeof url === 'string') {
-      validators.validate(validators.isNonEmptyString(url), cb, url)
+    try {
+      if (typeof url === 'string') {
+        validators.validate(validators.isNonEmptyString(url), cb, url)
+      }
+
+      context = getCookieContext(url)
+
+      validators.validate(
+        validators.isObject(options),
+        cb,
+        safeToString(options),
+      )
+
+      validators.validate(typeof cb === 'function', cb)
+    } catch (parameterError) {
+      return promiseCallback.reject(parameterError as Error)
     }
-    const context = getCookieContext(url)
-    validators.validate(validators.isObject(options), cb, safeToString(options))
-    validators.validate(typeof cb === 'function', cb)
 
     const host = canonicalDomain(context.hostname)
     const path = context.pathname || '/'
@@ -1147,9 +1182,7 @@ export class CookieJar {
    */
   serialize(callback?: Callback<SerializedCookieJar>): unknown {
     const promiseCallback = createPromiseCallback<SerializedCookieJar>(callback)
-    const cb = promiseCallback.callback
 
-    validators.validate(typeof cb === 'function', cb)
     let type: string | null = this.store.constructor.name
     if (validators.isObject(type)) {
       type = null

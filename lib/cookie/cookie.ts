@@ -71,7 +71,6 @@ function parseCookiePair(
   looseMode: boolean,
 ): Cookie | undefined {
   cookiePair = trimTerminator(cookiePair)
-  validators.validate(validators.isString(cookiePair), cookiePair)
 
   let firstEq = cookiePair.indexOf('=')
   if (looseMode) {

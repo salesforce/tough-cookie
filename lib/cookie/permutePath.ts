@@ -1,5 +1,3 @@
-import * as validators from '../validators'
-
 /**
  * Generates the permutation of all possible values that {@link pathMatch} the `path` parameter.
  * The array is in longest-to-shortest order.  Useful when building custom {@link Store} implementations.
@@ -14,7 +12,6 @@ import * as validators from '../validators'
  * @public
  */
 export function permutePath(path: string): string[] {
-  validators.validate(validators.isString(path))
   if (path === '/') {
     return ['/']
   }

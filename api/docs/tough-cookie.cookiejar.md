@@ -275,7 +275,7 @@ Alias of [CookieJar.deserializeSync()](./tough-cookie.cookiejar.deserializesync.
 </td></tr>
 <tr><td>
 
-[getCookies(url, callback)](./tough-cookie.cookiejar.getcookies.md)
+[getCookies(url)](./tough-cookie.cookiejar.getcookies.md)
 
 
 </td><td>
@@ -289,7 +289,7 @@ Retrieve the list of cookies that can be sent in a Cookie header for the current
 </td></tr>
 <tr><td>
 
-[getCookies(url, options, callback)](./tough-cookie.cookiejar.getcookies_1.md)
+[getCookies(url, callback)](./tough-cookie.cookiejar.getcookies_1.md)
 
 
 </td><td>
@@ -303,7 +303,21 @@ Retrieve the list of cookies that can be sent in a Cookie header for the current
 </td></tr>
 <tr><td>
 
-[getCookies(url, options)](./tough-cookie.cookiejar.getcookies_2.md)
+[getCookies(url, options, callback)](./tough-cookie.cookiejar.getcookies_2.md)
+
+
+</td><td>
+
+
+</td><td>
+
+Retrieve the list of cookies that can be sent in a Cookie header for the current URL.
+
+
+</td></tr>
+<tr><td>
+
+[getCookies(url, options)](./tough-cookie.cookiejar.getcookies_3.md)
 
 
 </td><td>

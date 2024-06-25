@@ -1,5 +1,3 @@
-import { safeToString } from '../utils'
-import * as validators from '../validators'
 import type { Cookie } from './cookie'
 
 /**
@@ -65,8 +63,6 @@ const MAX_TIME = 2147483647000
  * @public
  */
 export function cookieCompare(a: Cookie, b: Cookie): number {
-  validators.validate(validators.isObject(a), safeToString(a))
-  validators.validate(validators.isObject(b), safeToString(b))
   let cmp: number
 
   // descending for length: b CMP a
