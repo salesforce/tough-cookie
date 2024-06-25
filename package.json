@@ -52,6 +52,14 @@
     {
       "name": "Sam Thompson",
       "website": "https://github.com/sambthompson"
+    },
+    {
+      "name": "Colin Casey",
+      "website": "https://github.com/colincasey"
+    },
+    {
+      "name": "Will Harney",
+      "website": "https://github.com/wjhsf"
     }
   ],
   "license": "BSD-3-Clause",
