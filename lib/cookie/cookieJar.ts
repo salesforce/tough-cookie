@@ -334,14 +334,8 @@ export class CookieJar {
         syncResult = result
       })
     } catch (err) {
-      if (err instanceof Error) {
-        syncErr = err
-      } else {
-        throw err
-      }
+      syncErr = err as Error
     }
-
-    // These seem to be false positives; it can't detect that the value may be changed in the callback
 
     if (syncErr) throw syncErr
 
