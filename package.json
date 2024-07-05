@@ -108,6 +108,7 @@
     "prettier": "prettier '**/*.{json,ts,yaml,md}'",
     "format": "npm run eslint -- --fix"
   },
+  "//": "We only support node 18+, but v16 still works. We won't block v16 until it becomes a burden.",
   "engines": {
     "node": ">=16"
   },
