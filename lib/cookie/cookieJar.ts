@@ -1,5 +1,3 @@
-import urlParse from 'url-parse'
-
 import { getPublicSuffix } from '../getPublicSuffix'
 import * as validators from '../validators'
 import { ParameterError } from '../validators'
@@ -190,14 +188,14 @@ export interface CreateCookieJarOptions {
 const SAME_SITE_CONTEXT_VAL_ERR =
   'Invalid sameSiteContext option for getCookies(); expected one of "strict", "lax", or "none"'
 
-function getCookieContext(url: unknown): URL | urlParse<string> {
+function getCookieContext(url: unknown): URL {
   if (url instanceof URL) {
     return url
   } else if (typeof url === 'string') {
     try {
-      return urlParse(decodeURI(url))
+      return new URL(decodeURI(url))
     } catch {
-      return urlParse(url)
+      return new URL(url)
     }
   } else {
     throw new ParameterError('`url` argument is not a string or URL.')
