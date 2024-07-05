@@ -1,4 +1,3 @@
-import { toASCII } from 'punycode/punycode.js'
 import { IP_V6_REGEX_OBJECT } from './constants'
 import type { Nullable } from '../utils'
 
@@ -54,8 +53,9 @@ export function canonicalDomain(
   // convert to IDN if any non-ASCII characters
   // eslint-disable-next-line no-control-regex
   if (/[^\u0001-\u007f]/.test(str)) {
-    str = toASCII(str)
+    return new URL(`http://${str}`).hostname
   }
 
+  // ASCII-only domain - not canonicalized with new URL() because it may be a malformed URL
   return str.toLowerCase()
 }

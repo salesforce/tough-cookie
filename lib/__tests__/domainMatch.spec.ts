@@ -69,6 +69,11 @@ describe('domainMatch', () => {
     ['com', 'net', false], // same len, non-match
     ['com', 'com', true], // "are identical" rule
     ['NOTATLD', 'notaTLD', true], // "are identical" rule (after canonicalization)
+
+    // non-ASCII hostnames
+    ['🫠.com', 'xn--129h.com', true], // Emoji!
+    ['ρһіѕһ.info', 'xn--2xa01ac71bc.info', true], // Greek + Cyrillic characters
+    ['猫.cat', 'xn--z7x.cat', true], // Japanese characters
   ])('domainMatch(%s, %s) => %s', (string, domain, expectedValue) => {
     expect(domainMatch(string, domain)).toBe(expectedValue)
   })
