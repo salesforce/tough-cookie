@@ -1068,7 +1068,7 @@ describe('setCookie errors', () => {
   it('should throw an error if domain is set to a public suffix', async () => {
     const cookieJar = new CookieJar()
     await expect(
-      cookieJar.setCookie('i=9; Domain=kyoto.jp; Path=/', 'kyoto.jp'),
+      cookieJar.setCookie('i=9; Domain=kyoto.jp; Path=/', 'http://kyoto.jp'),
     ).rejects.toThrowError('Cookie has domain set to a public suffix')
   })
 
@@ -1103,6 +1103,13 @@ describe('setCookie errors', () => {
       http: true,
     })
     expect(cookies).toEqual([httpCookie])
+  })
+
+  it('should throw when URL is missing protocol', async () => {
+    const cookieJar = new CookieJar()
+    await expect(
+      cookieJar.setCookie('L=12; Domain=example.ch; Path=/', 'example.ch'),
+    ).rejects.toThrow(new TypeError('Invalid URL'))
   })
 })
 
