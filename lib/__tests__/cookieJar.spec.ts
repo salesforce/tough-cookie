@@ -1489,7 +1489,7 @@ describe('Synchronous API on async CookieJar', () => {
 })
 
 describe('validation errors invoke callbacks', () => {
-  it('getCookies', () => {
+  it('getCookies', (done) => {
     const invalidUrl = {}
     const cookieJar = new CookieJar()
     // @ts-expect-error deliberately trigger validation error
@@ -1497,10 +1497,11 @@ describe('validation errors invoke callbacks', () => {
       expect(err).toMatchObject({
         message: '`url` argument is not a string or URL.',
       })
+      done()
     })
   })
 
-  it('setCookie', () => {
+  it('setCookie', (done) => {
     const invalidUrl = {}
     const cookieJar = new CookieJar()
     // @ts-expect-error deliberately trigger validation error
@@ -1508,6 +1509,7 @@ describe('validation errors invoke callbacks', () => {
       expect(err).toMatchObject({
         message: '`url` argument is not a string or URL.',
       })
+      done()
     })
   })
 })
