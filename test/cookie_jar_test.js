@@ -780,7 +780,8 @@ vows
         topic: function() {
           const jar = new tough.CookieJar();
           jar.setCookie(
-            new String("x=y; Domain=example.com; Path=/"),
+            undefined,
+            undefined,
             this.callback
           );
         },
