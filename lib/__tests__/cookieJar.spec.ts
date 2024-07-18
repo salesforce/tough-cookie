@@ -1068,7 +1068,7 @@ describe('setCookie errors', () => {
   it('should throw an error if domain is set to a public suffix', async () => {
     const cookieJar = new CookieJar()
     await expect(
-      cookieJar.setCookie('i=9; Domain=kyoto.jp; Path=/', 'kyoto.jp'),
+      cookieJar.setCookie('i=9; Domain=kyoto.jp; Path=/', 'http://kyoto.jp'),
     ).rejects.toThrowError('Cookie has domain set to a public suffix')
   })
 
@@ -1103,6 +1103,13 @@ describe('setCookie errors', () => {
       http: true,
     })
     expect(cookies).toEqual([httpCookie])
+  })
+
+  it('should throw when URL is missing protocol', async () => {
+    const cookieJar = new CookieJar()
+    await expect(
+      cookieJar.setCookie('L=12; Domain=example.ch; Path=/', 'example.ch'),
+    ).rejects.toThrow(new TypeError('Invalid URL'))
   })
 })
 
@@ -1489,7 +1496,7 @@ describe('Synchronous API on async CookieJar', () => {
 })
 
 describe('validation errors invoke callbacks', () => {
-  it('getCookies', () => {
+  it('getCookies', (done) => {
     const invalidUrl = {}
     const cookieJar = new CookieJar()
     // @ts-expect-error deliberately trigger validation error
@@ -1497,10 +1504,11 @@ describe('validation errors invoke callbacks', () => {
       expect(err).toMatchObject({
         message: '`url` argument is not a string or URL.',
       })
+      done()
     })
   })
 
-  it('setCookie', () => {
+  it('setCookie', (done) => {
     const invalidUrl = {}
     const cookieJar = new CookieJar()
     // @ts-expect-error deliberately trigger validation error
@@ -1508,6 +1516,7 @@ describe('validation errors invoke callbacks', () => {
       expect(err).toMatchObject({
         message: '`url` argument is not a string or URL.',
       })
+      done()
     })
   })
 })
