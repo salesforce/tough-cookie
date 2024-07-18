@@ -1,5 +1,3 @@
-import urlParse from 'url-parse'
-
 import { getPublicSuffix } from '../getPublicSuffix'
 import * as validators from '../validators'
 import { ParameterError } from '../validators'
@@ -190,14 +188,14 @@ export interface CreateCookieJarOptions {
 const SAME_SITE_CONTEXT_VAL_ERR =
   'Invalid sameSiteContext option for getCookies(); expected one of "strict", "lax", or "none"'
 
-function getCookieContext(url: unknown): URL | urlParse<string> {
+function getCookieContext(url: unknown): URL {
   if (url instanceof URL) {
     return url
   } else if (typeof url === 'string') {
     try {
-      return urlParse(decodeURI(url))
+      return new URL(decodeURI(url))
     } catch {
-      return urlParse(url)
+      return new URL(url)
     }
   } else {
     throw new ParameterError('`url` argument is not a string or URL.')
@@ -437,7 +435,7 @@ export class CookieJar {
     }
     const promiseCallback = createPromiseCallback(callback)
     const cb = promiseCallback.callback
-    let context
+    let context: URL
 
     try {
       if (typeof url === 'string') {
@@ -475,7 +473,6 @@ export class CookieJar {
     const host = canonicalDomain(context.hostname) ?? null
     const loose = options?.loose || this.enableLooseMode
 
-    let err
     let sameSiteContext = null
     if (options?.sameSiteContext) {
       sameSiteContext = checkSameSiteContext(options.sameSiteContext)
@@ -488,7 +485,7 @@ export class CookieJar {
     if (typeof cookie === 'string' || cookie instanceof String) {
       const parsedCookie = Cookie.parse(cookie.toString(), { loose: loose })
       if (!parsedCookie) {
-        err = new Error('Cookie failed to parse')
+        const err = new Error('Cookie failed to parse')
         return options?.ignoreError
           ? promiseCallback.resolve(undefined)
           : promiseCallback.reject(err)
@@ -497,7 +494,7 @@ export class CookieJar {
     } else if (!(cookie instanceof Cookie)) {
       // If you're seeing this error, and are passing in a Cookie object,
       // it *might* be a Cookie object from another loaded version of tough-cookie.
-      err = new Error(
+      const err = new Error(
         'First argument to setCookie must be a Cookie object or string',
       )
 
@@ -526,7 +523,7 @@ export class CookieJar {
             : null
         if (suffix == null && !IP_V6_REGEX_OBJECT.test(cookie.domain)) {
           // e.g. "com"
-          err = new Error('Cookie has domain set to a public suffix')
+          const err = new Error('Cookie has domain set to a public suffix')
 
           return options?.ignoreError
             ? promiseCallback.resolve(undefined)
@@ -549,7 +546,7 @@ export class CookieJar {
       if (
         !domainMatch(host ?? undefined, cookie.cdomain() ?? undefined, false)
       ) {
-        err = new Error(
+        const err = new Error(
           `Cookie not in this host's domain. Cookie:${
             cookie.cdomain() ?? 'null'
           } Request:${host ?? 'null'}`,
@@ -581,7 +578,7 @@ export class CookieJar {
 
     // S5.3 step 10
     if (options?.http === false && cookie.httpOnly) {
-      err = new Error("Cookie is HttpOnly and this isn't an HTTP API")
+      const err = new Error("Cookie is HttpOnly and this isn't an HTTP API")
       return options.ignoreError
         ? promiseCallback.resolve(undefined)
         : promiseCallback.reject(err)
@@ -598,7 +595,9 @@ export class CookieJar {
       //  exact match for request-uri's host's registered domain, then
       //  abort these steps and ignore the newly created cookie entirely."
       if (sameSiteContext === 'none') {
-        err = new Error('Cookie is SameSite but this is a cross-origin request')
+        const err = new Error(
+          'Cookie is SameSite but this is a cross-origin request',
+        )
         return options?.ignoreError
           ? promiseCallback.resolve(undefined)
           : promiseCallback.reject(err)
@@ -820,7 +819,7 @@ export class CookieJar {
     }
     const promiseCallback = createPromiseCallback(callback)
     const cb = promiseCallback.callback
-    let context
+    let context: URL
 
     try {
       if (typeof url === 'string') {

@@ -1,4 +1,3 @@
-import { toASCII } from 'punycode/punycode.js'
 import { IP_V6_REGEX_OBJECT } from './constants'
 import type { Nullable } from '../utils'
 
@@ -39,17 +38,24 @@ export function canonicalDomain(
   if (domainName == null) {
     return undefined
   }
-  let _str = domainName.trim().replace(/^\./, '') // S4.1.2.3 & S5.2.3: ignore leading .
+  let str = domainName.trim().replace(/^\./, '') // S4.1.2.3 & S5.2.3: ignore leading .
 
-  if (IP_V6_REGEX_OBJECT.test(_str)) {
-    _str = _str.replace('[', '').replace(']', '')
+  if (IP_V6_REGEX_OBJECT.test(str)) {
+    if (!str.startsWith('[')) {
+      str = '[' + str
+    }
+    if (!str.endsWith(']')) {
+      str = str + ']'
+    }
+    return new URL(`http://${str}`).hostname.slice(1, -1) // remove [ and ]
   }
 
   // convert to IDN if any non-ASCII characters
   // eslint-disable-next-line no-control-regex
-  if (/[^\u0001-\u007f]/.test(_str)) {
-    _str = toASCII(_str)
+  if (/[^\u0001-\u007f]/.test(str)) {
+    return new URL(`http://${str}`).hostname
   }
 
-  return _str.toLowerCase()
+  // ASCII-only domain - not canonicalized with new URL() because it may be a malformed URL
+  return str.toLowerCase()
 }
