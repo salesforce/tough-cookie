@@ -188,9 +188,28 @@ export interface CreateCookieJarOptions {
 const SAME_SITE_CONTEXT_VAL_ERR =
   'Invalid sameSiteContext option for getCookies(); expected one of "strict", "lax", or "none"'
 
-function getCookieContext(url: unknown): URL {
-  if (url instanceof URL) {
-    return url
+type UrlContext = {
+  hostname: string
+  pathname: string
+  protocol: string
+}
+
+function getCookieContext(url: unknown): UrlContext {
+  if (
+    url &&
+    typeof url === 'object' &&
+    'hostname' in url &&
+    typeof url.hostname === 'string' &&
+    'pathname' in url &&
+    typeof url.pathname === 'string' &&
+    'protocol' in url &&
+    typeof url.protocol === 'string'
+  ) {
+    return {
+      hostname: url.hostname,
+      pathname: url.pathname,
+      protocol: url.protocol,
+    }
   } else if (typeof url === 'string') {
     try {
       return new URL(decodeURI(url))
@@ -435,7 +454,7 @@ export class CookieJar {
     }
     const promiseCallback = createPromiseCallback(callback)
     const cb = promiseCallback.callback
-    let context: URL
+    let context: UrlContext
 
     try {
       if (typeof url === 'string') {
@@ -819,7 +838,7 @@ export class CookieJar {
     }
     const promiseCallback = createPromiseCallback(callback)
     const cb = promiseCallback.callback
-    let context: URL
+    let context: UrlContext
 
     try {
       if (typeof url === 'string') {
