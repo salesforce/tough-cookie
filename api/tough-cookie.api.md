@@ -298,7 +298,7 @@ export class Store {
 }
 
 // @public
-export const version = "5.0.0-rc.3";
+export const version = "5.0.0-rc.4";
 
 // (No @packageDocumentation comment for this package)
 
