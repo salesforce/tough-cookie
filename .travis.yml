@@ -1,8 +1,0 @@
-language: node_js
-node_js:
-- stable
-- "v10.*"
-- "v8.*"
-- "v6.*"
-matrix:
-  fast_finish: true

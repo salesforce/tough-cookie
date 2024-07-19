@@ -43,16 +43,15 @@ const safeArrayToString = (
   return mapped.join()
 }
 
-const safeToStringImpl = (
-  val: unknown,
-  seenArrays?: WeakSet<object>,
-): string => {
+const safeToStringImpl = (val: unknown, seenArrays = new WeakSet()): string => {
   // Using .toString() fails for null/undefined and implicit conversion (val + "") fails for symbols
   // and objects with null prototype
-  if (val === undefined || val === null || typeof val.toString === 'function') {
+  if (typeof val !== 'object' || val === null) {
+    return String(val)
+  } else if (typeof val.toString === 'function') {
     return Array.isArray(val)
       ? // Arrays have a weird custom toString that we need to replicate
-        safeArrayToString(val, seenArrays ?? new WeakSet())
+        safeArrayToString(val, seenArrays)
       : String(val)
   } else {
     // This case should just be objects with null prototype, so we can just use Object#toString

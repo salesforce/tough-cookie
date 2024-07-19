@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
     /* Language and Environment */
+    // We only support node 18+, but v16 still works. We'll target v16 until it becomes a burden.
+    // For recommended settings for each node version, see https://github.com/microsoft/TypeScript/wiki/Node-Target-Mapping
     "target": "ES2021",
     "lib": ["ES2021"],
     /* Modules */
@@ -26,10 +28,6 @@
     /* Compatibility */
     "ignoreDeprecations": "5.0"
   },
-  "include": [
-    "lib"
-  ],
-  "exclude": [
-    "jest.config.ts"
-  ]
+  "include": ["lib"],
+  "exclude": ["jest.config.ts"]
 }
