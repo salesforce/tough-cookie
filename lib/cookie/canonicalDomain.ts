@@ -1,5 +1,6 @@
 import { IP_V6_REGEX_OBJECT } from './constants'
 import type { Nullable } from '../utils'
+import { domainToASCII } from 'node:url'
 
 /**
  * Transforms a domain name into a canonical domain name. The canonical domain name is a domain name
@@ -47,13 +48,13 @@ export function canonicalDomain(
     if (!str.endsWith(']')) {
       str = str + ']'
     }
-    return new URL(`http://${str}`).hostname.slice(1, -1) // remove [ and ]
+    return domainToASCII(str).slice(1, -1) // remove [ and ]
   }
 
   // convert to IDN if any non-ASCII characters
   // eslint-disable-next-line no-control-regex
   if (/[^\u0001-\u007f]/.test(str)) {
-    return new URL(`http://${str}`).hostname
+    return domainToASCII(str)
   }
 
   // ASCII-only domain - not canonicalized with new URL() because it may be a malformed URL

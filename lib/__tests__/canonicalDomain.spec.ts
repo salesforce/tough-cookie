@@ -38,6 +38,14 @@ describe('canonicalDomain', () => {
       input: 'δοκιμή.δοκιμή',
       output: 'xn--jxalpdlp.xn--jxalpdlp',
     },
+
+    { description: 'simple IPv6', input: '::1', output: '::1' },
+    {
+      description: 'full IPv6',
+      input: '[::ffff:127.0.0.1]',
+      output: '::ffff:7f00:1',
+    },
+    { description: 'invalid domain', input: 'NOTATLD', output: 'notatld' },
   ])('$description: $input → $output', ({ input, output }) => {
     expect(canonicalDomain(input)).toBe(output)
   })
