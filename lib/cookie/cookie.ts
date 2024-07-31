@@ -545,20 +545,6 @@ export class Cookie {
     this.creationIndex = Cookie.cookiesCreated
   }
 
-  [Symbol.for('nodejs.util.inspect.custom')](): string {
-    const now = Date.now()
-    const hostOnly = this.hostOnly != null ? this.hostOnly.toString() : '?'
-    const createAge =
-      this.creation && this.creation !== 'Infinity'
-        ? `${String(now - this.creation.getTime())}ms`
-        : '?'
-    const accessAge =
-      this.lastAccessed && this.lastAccessed !== 'Infinity'
-        ? `${String(now - this.lastAccessed.getTime())}ms`
-        : '?'
-    return `Cookie="${this.toString()}; hostOnly=${hostOnly}; aAge=${accessAge}; cAge=${createAge}"`
-  }
-
   /**
    * For convenience in using `JSON.stringify(cookie)`. Returns a plain-old Object that can be JSON-serialized.
    *
@@ -986,4 +972,24 @@ export class Cookie {
     'lastAccessed',
     'sameSite',
   ] as const
+}
+
+// Using TypeScript's isolated declarations mode means we can't use computed properties.
+// Creating this method outside the class means that it's not visible to TypeScript code,
+// even though it is present at runtime. That's probably fine, because this is a low-level
+// detail that we don't expect users to be calling directly.
+;(Cookie.prototype as unknown as Record<symbol, unknown>)[
+  Symbol.for('nodejs.util.inspect.custom')
+] = function inspect(this: Cookie): string {
+  const now = Date.now()
+  const hostOnly = this.hostOnly != null ? this.hostOnly.toString() : '?'
+  const createAge =
+    this.creation && this.creation !== 'Infinity'
+      ? `${String(now - this.creation.getTime())}ms`
+      : '?'
+  const accessAge =
+    this.lastAccessed && this.lastAccessed !== 'Infinity'
+      ? `${String(now - this.lastAccessed.getTime())}ms`
+      : '?'
+  return `Cookie="${this.toString()}; hostOnly=${hostOnly}; aAge=${accessAge}; cAge=${createAge}"`
 }
