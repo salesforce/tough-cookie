@@ -12,7 +12,7 @@
     "declaration": true,
     "isolatedDeclarations": true,
     "outDir": "./dist/",
-    "importsNotUsedAsValues": "error",
+    "verbatimModuleSyntax": false,
     /* Interop Constraints */
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -25,9 +25,7 @@
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
     "allowUnusedLabels": false,
-    "allowUnreachableCode": false,
-    /* Compatibility */
-    "ignoreDeprecations": "5.0"
+    "allowUnreachableCode": false
   },
   "include": ["lib"],
   "exclude": ["jest.config.ts"]
