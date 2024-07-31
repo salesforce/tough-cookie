@@ -1,13 +1,13 @@
-import type { Cookie } from './cookie/cookie'
-import { pathMatch } from './pathMatch'
-import { permuteDomain } from './permuteDomain'
-import { Store } from './store'
+import type { Cookie } from './cookie/cookie.js'
+import { pathMatch } from './pathMatch.js'
+import { permuteDomain } from './permuteDomain.js'
+import { Store } from './store.js'
 import {
   Callback,
   createPromiseCallback,
   ErrorCallback,
   Nullable,
-} from './utils'
+} from './utils.js'
 
 /**
  * The internal structure used in {@link MemoryCookieStore}.

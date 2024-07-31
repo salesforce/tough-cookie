@@ -2,8 +2,8 @@
 // but we have implementations in the wild that may not implement all features
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import type { Cookie } from './cookie'
-import type { Callback, ErrorCallback, Nullable } from './utils'
+import type { Cookie } from './cookie/cookie.js'
+import type { Callback, ErrorCallback, Nullable } from './utils.js'
 
 /**
  * Base class for {@link CookieJar} stores.

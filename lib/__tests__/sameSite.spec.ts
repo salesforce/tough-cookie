@@ -1,5 +1,5 @@
-import { Cookie } from '../cookie/cookie'
-import { CookieJar } from '../cookie/cookieJar'
+import { Cookie } from '../cookie/cookie.js'
+import { CookieJar } from '../cookie/cookieJar.js'
 
 const url = 'http://example.com/index.html'
 

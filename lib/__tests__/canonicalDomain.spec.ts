@@ -1,4 +1,4 @@
-import { canonicalDomain } from '../cookie/canonicalDomain'
+import { canonicalDomain } from '../cookie/canonicalDomain.js'
 
 // port of tests/domain_and_path_test.js (canonicalDomain tests for domain normalization)
 describe('canonicalDomain', () => {

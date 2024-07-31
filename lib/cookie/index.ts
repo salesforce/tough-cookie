@@ -1,32 +1,32 @@
-export { MemoryCookieStore, MemoryCookieStoreIndex } from '../memstore'
-export { pathMatch } from '../pathMatch'
-export { permuteDomain } from '../permuteDomain'
-export { getPublicSuffix, GetPublicSuffixOptions } from '../getPublicSuffix'
-export { Store } from '../store'
-export { ParameterError } from '../validators'
-export { version } from '../version'
-export { Callback, ErrorCallback, Nullable } from '../utils'
-export { canonicalDomain } from './canonicalDomain'
+export { MemoryCookieStore, MemoryCookieStoreIndex } from '../memstore.js'
+export { pathMatch } from '../pathMatch.js'
+export { permuteDomain } from '../permuteDomain.js'
+export { getPublicSuffix, GetPublicSuffixOptions } from '../getPublicSuffix.js'
+export { Store } from '../store.js'
+export { ParameterError } from '../validators.js'
+export { version } from '../version.js'
+export { Callback, ErrorCallback, Nullable } from '../utils.js'
+export { canonicalDomain } from './canonicalDomain.js'
 export {
   PrefixSecurityEnum,
   SerializedCookie,
   SerializedCookieJar,
-} from './constants'
-export { Cookie, CreateCookieOptions, ParseCookieOptions } from './cookie'
-export { cookieCompare } from './cookieCompare'
+} from './constants.js'
+export { Cookie, CreateCookieOptions, ParseCookieOptions } from './cookie.js'
+export { cookieCompare } from './cookieCompare.js'
 export {
   CookieJar,
   CreateCookieJarOptions,
   GetCookiesOptions,
   SetCookieOptions,
-} from './cookieJar'
-export { defaultPath } from './defaultPath'
-export { domainMatch } from './domainMatch'
-export { formatDate } from './formatDate'
-export { parseDate } from './parseDate'
-export { permutePath } from './permutePath'
+} from './cookieJar.js'
+export { defaultPath } from './defaultPath.js'
+export { domainMatch } from './domainMatch.js'
+export { formatDate } from './formatDate.js'
+export { parseDate } from './parseDate.js'
+export { permutePath } from './permutePath.js'
 
-import { Cookie, ParseCookieOptions } from './cookie'
+import { Cookie, ParseCookieOptions } from './cookie.js'
 
 /**
  * {@inheritDoc Cookie.parse}

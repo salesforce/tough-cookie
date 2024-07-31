@@ -26,7 +26,7 @@ SOFTWARE.
 
 ************************************************************************************ */
 
-import { Callback, objectToString, safeToString } from './utils'
+import { Callback, objectToString, safeToString } from './utils.js'
 
 /* Validation functions copied from check-types package - https://www.npmjs.com/package/check-types */
 

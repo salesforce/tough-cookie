@@ -84,6 +84,8 @@
   "bugs": {
     "url": "https://github.com/salesforce/tough-cookie/issues"
   },
+  "type": "module",
+  "module": "./dist/cookie/index.js",
   "main": "./dist/cookie/index.js",
   "types": "./dist/cookie/index.d.ts",
   "files": [

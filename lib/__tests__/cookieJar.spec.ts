@@ -29,11 +29,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Cookie } from '../cookie/cookie'
-import { CookieJar } from '../cookie/cookieJar'
-import type { SerializedCookieJar } from '../cookie/constants'
-import { MemoryCookieStore } from '../memstore'
-import { Store } from '../store'
+import { Cookie } from '../cookie/cookie.js'
+import { CookieJar } from '../cookie/cookieJar.js'
+import type { SerializedCookieJar } from '../cookie/constants.js'
+import { MemoryCookieStore } from '../memstore.js'
+import { Store } from '../store.js'
 
 // ported from:
 // - test/api_test.js (cookie jar tests)
