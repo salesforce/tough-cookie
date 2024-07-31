@@ -10,6 +10,7 @@
     "rootDir": "./lib/",
     /* Emit */
     "declaration": true,
+    "isolatedDeclarations": true,
     "outDir": "./dist/",
     "importsNotUsedAsValues": "error",
     /* Interop Constraints */
