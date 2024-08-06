@@ -284,6 +284,7 @@ function fromJSON(str: unknown): Cookie | undefined {
   if (typeof str === 'string') {
     try {
       obj = JSON.parse(str)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       return undefined
     }
