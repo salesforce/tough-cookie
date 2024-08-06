@@ -102,7 +102,7 @@
     "version": "genversion --template version-template.ejs --force lib/version.ts && git add lib/version.ts",
     "test": "npm run test:ts && npm run test:legacy",
     "test:ts": "jest",
-    "test:legacy": "npm run build -- --declaration false && ./test/scripts/vows.js test/*_test.js",
+    "test:legacy": "npm run build -- --declaration false && ./test/scripts/vows.cjs test/*_test.cjs",
     "typecheck": "tsc --noEmit",
     "cover": "jest --coverage",
     "lint": "eslint .",
