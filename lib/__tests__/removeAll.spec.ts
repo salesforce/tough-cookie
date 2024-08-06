@@ -1,8 +1,8 @@
-import type { Cookie } from '../cookie/cookie'
-import { CookieJar } from '../cookie/cookieJar'
-import { MemoryCookieStore } from '../memstore'
-import { Store } from '../store'
-import type { Callback, ErrorCallback } from '../utils'
+import type { Cookie } from '../cookie/cookie.js'
+import { CookieJar } from '../cookie/cookieJar.js'
+import { MemoryCookieStore } from '../memstore.js'
+import { Store } from '../store.js'
+import type { Callback, ErrorCallback } from '../utils.js'
 
 const url = 'http://example.com/index.html'
 

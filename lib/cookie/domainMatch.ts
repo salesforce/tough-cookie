@@ -1,5 +1,5 @@
-import type { Nullable } from '../utils'
-import { canonicalDomain } from './canonicalDomain'
+import type { Nullable } from '../utils.js'
+import { canonicalDomain } from './canonicalDomain.js'
 
 // Dumped from ip-regex@4.0.0, with the following changes:
 // * all capturing groups converted to non-capturing -- "(?:)"

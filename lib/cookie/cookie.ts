@@ -28,14 +28,14 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-import { getPublicSuffix } from '../getPublicSuffix'
-import * as validators from '../validators'
-import { inOperator } from '../utils'
+import { getPublicSuffix } from '../getPublicSuffix.js'
+import * as validators from '../validators.js'
+import { inOperator } from '../utils.js'
 
-import { formatDate } from './formatDate'
-import { parseDate } from './parseDate'
-import { canonicalDomain } from './canonicalDomain'
-import type { SerializedCookie } from './constants'
+import { formatDate } from './formatDate.js'
+import { parseDate } from './parseDate.js'
+import { canonicalDomain } from './canonicalDomain.js'
+import type { SerializedCookie } from './constants.js'
 
 // From RFC6265 S4.1.1
 // note that it excludes \x3B ";"

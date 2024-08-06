@@ -1,4 +1,4 @@
-import { safeToString } from '../utils'
+import { safeToString } from '../utils.js'
 
 describe('safeToString', () => {
   const recursiveArray: unknown[] = [1]

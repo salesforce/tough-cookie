@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Cookie } from '../cookie/cookie'
+import { Cookie } from '../cookie/cookie.js'
 
 // ported from test/api_test.js (cookie tests)
 describe('Cookie', () => {
