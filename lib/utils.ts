@@ -98,8 +98,9 @@ export function createPromiseCallback<T>(cb?: Callback<T>): PromiseCallback<T> {
       try {
         // If `err` is null, we know `result` must be `T`
         // The assertion isn't *strictly* correct, as `T` could be nullish, but, ehh, good enough...
+        if (err) reject(err)
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        err ? reject(err) : resolve(result!)
+        else resolve(result!)
       } catch (e) {
         reject(e instanceof Error ? e : new Error())
       }
