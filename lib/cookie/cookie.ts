@@ -76,7 +76,7 @@ function parseCookiePair(
   if (looseMode) {
     if (firstEq === 0) {
       // '=' is immediately at start
-      cookiePair = cookiePair.substr(1)
+      cookiePair = cookiePair.substring(1)
       firstEq = cookiePair.indexOf('=') // might still need to split on '='
     }
   } else {
@@ -284,8 +284,7 @@ function fromJSON(str: unknown): Cookie | undefined {
   if (typeof str === 'string') {
     try {
       obj = JSON.parse(str)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (e) {
+    } catch {
       return undefined
     }
   } else {
