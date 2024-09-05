@@ -134,7 +134,7 @@ describe('CookieJar', () => {
           cookieJar.setCookie('=b', 'http://example.com/index.html', {
             loose: false,
           }),
-        ).rejects.toThrowError('Cookie failed to parse')
+        ).rejects.toThrow('Cookie failed to parse')
       })
 
       it('should not default to loose: true when using map', () => {
@@ -254,7 +254,7 @@ describe('CookieJar', () => {
           'a=b; Domain=fooxample.com; Path=/',
           'http://example.com/index.html',
         ),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         "Cookie not in this host's domain. Cookie:fooxample.com Request:example.com",
       )
     })
@@ -266,7 +266,7 @@ describe('CookieJar', () => {
           'a=b; Domain=www.example.com; Path=/',
           'http://example.com/index.html',
         ),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         "Cookie not in this host's domain. Cookie:www.example.com Request:example.com",
       )
     })
@@ -301,7 +301,7 @@ describe('CookieJar', () => {
           'http://example.com/index.html',
           { http: false },
         ),
-      ).rejects.toThrowError("Cookie is HttpOnly and this isn't an HTTP API")
+      ).rejects.toThrow("Cookie is HttpOnly and this isn't an HTTP API")
     })
 
     it('should not fail when using an httpOnly cookie when using a non-HTTP API', async () => {
@@ -1069,7 +1069,7 @@ describe('setCookie errors', () => {
     const cookieJar = new CookieJar()
     await expect(
       cookieJar.setCookie('i=9; Domain=kyoto.jp; Path=/', 'http://kyoto.jp'),
-    ).rejects.toThrowError('Cookie has domain set to a public suffix')
+    ).rejects.toThrow('Cookie has domain set to a public suffix')
   })
 
   it('should throw an error if domains do not match', async () => {
@@ -1079,7 +1079,7 @@ describe('setCookie errors', () => {
         'j=10; Domain=google.com; Path=/',
         'http://google.ca',
       ),
-    ).rejects.toThrowError(
+    ).rejects.toThrow(
       `Cookie not in this host's domain. Cookie:google.com Request:google.ca`,
     )
   })
@@ -1097,7 +1097,7 @@ describe('setCookie errors', () => {
         'http://example.ca',
         { http: false },
       ),
-    ).rejects.toThrowError("old Cookie is HttpOnly and this isn't an HTTP API")
+    ).rejects.toThrow("old Cookie is HttpOnly and this isn't an HTTP API")
 
     const cookies = await cookieJar.getCookies('http://example.ca', {
       http: true,
@@ -1149,7 +1149,7 @@ it('should fix issue #132', async () => {
   await expect(
     // @ts-expect-error test case is explicitly testing invalid input
     cookieJar.setCookie({ key: 'x', value: 'y' }, 'http://example.com/'),
-  ).rejects.toThrowError(
+  ).rejects.toThrow(
     'First argument to setCookie must be a Cookie object or string',
   )
 })
@@ -1186,9 +1186,9 @@ it('should fix issue #145 - missing 2nd url parameter', async () => {
 
 it('should fix issue #197 - CookieJar().setCookie throws an error when empty cookie is passed', async () => {
   const cookieJar = new CookieJar()
-  await expect(
-    cookieJar.setCookie('', 'https://google.com'),
-  ).rejects.toThrowError('Cookie failed to parse')
+  await expect(cookieJar.setCookie('', 'https://google.com')).rejects.toThrow(
+    'Cookie failed to parse',
+  )
 })
 
 it('should fix issue #282 - Prototype pollution when setting a cookie with the domain __proto__', () => {

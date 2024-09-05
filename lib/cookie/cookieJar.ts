@@ -662,7 +662,7 @@ export class CookieJar {
       ): Promise<void> {
         return this.putCookie(newCookie).then(
           () => cb?.(null),
-          (error: Error) => cb?.(error),
+          (error: unknown) => cb?.(error as Error),
         )
       }
     }

@@ -132,7 +132,7 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
             insecureUrl,
             {},
           ),
-        ).rejects.toThrowError(
+        ).rejects.toThrow(
           'Cookie has __Secure prefix but Secure attribute is not set',
         )
       })
@@ -161,7 +161,7 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
             secureUrl,
             {},
           ),
-        ).rejects.toThrowError(
+        ).rejects.toThrow(
           `Cookie has __Host prefix but either Secure or HostOnly attribute is not set or Path is not '/'`,
         )
       })
