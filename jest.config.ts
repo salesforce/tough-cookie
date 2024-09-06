@@ -1,4 +1,4 @@
-import type { JestConfigWithTsJest } from "ts-jest";
+import type { JestConfigWithTsJest } from 'ts-jest'
 
 const config: JestConfigWithTsJest = {
   preset: 'ts-jest',
@@ -6,8 +6,11 @@ const config: JestConfigWithTsJest = {
   rootDir: './lib/',
   testPathIgnorePatterns: ['./lib/__tests__/data/'],
   fakeTimers: {
-    enableGlobally: true
-  }
+    enableGlobally: true,
+  },
+  moduleNameMapper: {
+    '^(\\.{1,2}/.*)\\.js$': '$1',
+  },
 }
 
 export default config
