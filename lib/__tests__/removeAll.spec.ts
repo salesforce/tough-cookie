@@ -79,7 +79,7 @@ describe('store removeAllCookies API', () => {
         _removeCookie.call(store, domain, path, key, callback)
       })
 
-      await expect(jar.removeAllCookies()).rejects.toThrowError(
+      await expect(jar.removeAllCookies()).rejects.toThrow(
         'something happened 1',
       )
 

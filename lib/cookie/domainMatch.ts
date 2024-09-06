@@ -98,7 +98,7 @@ export function domainMatch(
 
   /* "  * The last character of the string that is not included in the
    * domain string is a %x2E (".") character." */
-  if (_str.substr(idx - 1, 1) !== '.') {
+  if (_str.substring(idx - 1, idx) !== '.') {
     return false // doesn't align on "."
   }
 

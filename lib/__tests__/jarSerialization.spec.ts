@@ -68,7 +68,7 @@ describe('cookieJar serialization', () => {
       store.synchronous = true
 
       const jar = new CookieJar(store)
-      expect(() => jar.toJSON()).toThrowError(
+      expect(() => jar.toJSON()).toThrow(
         'getAllCookies is not implemented (therefore jar cannot be serialized)',
       )
     })
@@ -79,7 +79,7 @@ describe('cookieJar serialization', () => {
       const store = new MemoryCookieStore()
       store.synchronous = false
       const jar = new CookieJar(store)
-      expect(() => jar.toJSON()).toThrowError(
+      expect(() => jar.toJSON()).toThrow(
         'CookieJar store is not synchronous; use async API instead.',
       )
     })
@@ -168,7 +168,7 @@ describe('cookieJar serialization', () => {
     it('should raise an error when attempting to synchronously clone to an async store', () => {
       const newStore = new MemoryCookieStore()
       newStore.synchronous = false
-      expect(() => jar.cloneSync(newStore)).toThrowError(
+      expect(() => jar.cloneSync(newStore)).toThrow(
         'CookieJar clone destination store is not synchronous; use async API instead.',
       )
     })

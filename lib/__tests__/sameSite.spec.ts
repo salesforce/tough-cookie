@@ -139,7 +139,7 @@ describe('Same-Site Cookies', function () {
       it('should not allow strict cookie to be set', async () => {
         await expect(
           cookieJar.setCookie(strict, url, { sameSiteContext: 'none' }),
-        ).rejects.toThrowError(
+        ).rejects.toThrow(
           'Cookie is SameSite but this is a cross-origin request',
         )
       })
@@ -147,7 +147,7 @@ describe('Same-Site Cookies', function () {
       it('should not allow lax cookie to be set', async () => {
         await expect(
           cookieJar.setCookie(lax, url, { sameSiteContext: 'none' }),
-        ).rejects.toThrowError(
+        ).rejects.toThrow(
           'Cookie is SameSite but this is a cross-origin request',
         )
       })
