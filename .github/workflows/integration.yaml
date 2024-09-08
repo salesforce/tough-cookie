@@ -1,82 +1,89 @@
 name: CI
 
 on:
-  push:
-    branches: [master]
-  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '00 01 * * 1' # at 1:00 on mondays
 
 permissions:
   contents: read
 
+defaults:
+  run:
+    # Setting an explicit bash shell ensures GitHub Actions enables pipefail mode too,
+    # rather than only error on exit (improving failure UX when pipes are used). See:
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsshell
+    shell: bash
+
 jobs:
-  lint:
-    name: Lint
+  integration-with-canvas:
+    name: Integration (jsdom + node-canvas)
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+        with:
+          path: ./tough-cookie
+      - uses: actions/checkout@v4
+        with:
+          repository: git@github.com:jsdom/jsdom.git
+          path: ./jsdom
+          submodules: recursive
+      - uses: actions/setup-node@v4
         with:
           node-version: lts/*
           cache: npm
-      - name: Install dependencies
-        run: npm ci
-      - name: Run Linter
-        run: npm run eslint
-      - name: Run Formatter
-        run: npm run prettier
-
-  test:
-    name: Test - ${{ matrix.node-version }}
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version: [latest, lts/*, lts/-1]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Node.js (${{ matrix.node-version }})
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: npm
-      - name: Install dependencies
-        run: npm ci
-      - name: Run tests
-        run: npm test
-
-  api:
-    name: API & Doc Validation
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-          cache: npm
-      - name: Install dependencies
-        run: npm ci
-      - name: Build
-        run: npm run build
-      - name: Extract API
-        run: npm run api:extract
-      - name: Generate docs
-        run: npm run api:docs
-      - name: Ensure API and doc changes have been committed
+      - name: Install required image manipulation packages with APT
+        run: sudo apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+      - name: Build tough-cookie
+        id: package
         run: |
-          git add --renormalize .
-          if (( "$(git diff HEAD --ignore-space-at-eol --ignore-cr-at-eol | wc -l)" != 0 )); then
-            cat << EOF >> $GITHUB_STEP_SUMMARY
-          ### Detected uncommitted changes
-
-          \`\`\`shell
-          $(git diff HEAD)
-          \`\`\`
-          EOF
-            git diff HEAD
-            exit 1
-          fi
+          npm ci
+          npm run build
+          echo "tough_cookie_tarball=$(npm pack)" >> "$GITHUB_OUTPUT"
+      - name: Setup HOSTS file for Web Platform Test server
+        run: ./test/web-platform-tests/tests/wpt make-hosts-file | sudo tee -a /etc/hosts
+        working-directory: ./jsdom
+      - name: Install jsdom dependencies
+        run: |
+          npm ci
+          npm uninstall tough-cookie
+          npm install ../tough-cookie/${{ steps.package.outputs.tough_cookie_tarball }}
+          npm install canvas
+        working-directory: ./jsdom
+      - name: Run tests
+        run: npm test -- --retries 1
+        working-directory: ./jsdom
+  integration:
+    name: Integration (jsdom)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: ./tough-cookie
+      - uses: actions/checkout@v4
+        with:
+          repository: git@github.com:jsdom/jsdom.git
+          path: ./jsdom
+          submodules: recursive
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+      - name: Build tough-cookie
+        id: package
+        run: |
+          npm ci
+          npm run build
+          echo "tough_cookie_tarball=$(npm pack)" >> "$GITHUB_OUTPUT"
+      - name: Setup HOSTS file for Web Platform Test server
+        run: ./test/web-platform-tests/tests/wpt make-hosts-file | sudo tee -a /etc/hosts
+        working-directory: ./jsdom
+      - name: Install jsdom dependencies
+        run: |
+          npm ci
+          npm uninstall tough-cookie
+          npm install ../tough-cookie/${{ steps.package.outputs.tough_cookie_tarball }}
+        working-directory: ./jsdom
+      - name: Run tests
+        run: npm run test -- --retries 1
+        working-directory: ./jsdom
