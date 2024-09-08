@@ -26,7 +26,7 @@ jobs:
           path: ./tough-cookie
       - uses: actions/checkout@v4
         with:
-          repository: https://github.com/jsdom/jsdom.git
+          repository: jsdom/jsdom
           ref: main
           path: ./jsdom
           submodules: recursive
