@@ -1,4 +1,4 @@
-name: CI
+name: Integration
 
 on:
   workflow_dispatch:
