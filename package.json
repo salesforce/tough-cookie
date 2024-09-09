@@ -107,7 +107,7 @@
     "cover": "jest --coverage",
     "lint": "eslint .",
     "eslint": "eslint .",
-    "prettier": "prettier '**/*.{json,ts,yaml,md}'",
+    "prettier": "prettier .",
     "format": "npm run eslint -- --fix"
   },
   "//": "We only support node 18+, but v16 still works. We won't block v16 until it becomes a burden.",
