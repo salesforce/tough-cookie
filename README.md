@@ -22,16 +22,12 @@ yarn add tough-cookie
 import { Cookie, CookieJar } from 'tough-cookie'
 
 // parse a `Cookie` request header
-const reqCookies = 'ID=298zf09hf012fh2; csrf=u32t4o3tb3gg43; _gat=1'
-  .split(';')
-  .map(Cookie.parse)
+const reqCookies = 'ID=298zf09hf012fh2; csrf=u32t4o3tb3gg43; _gat=1'.split(';').map(Cookie.parse)
 // generate a `Cookie` request header
-const cookieHeader = reqCookies.map((cookie) => cookie.cookieString()).join(';')
+const cookieHeader = reqCookies.map(cookie => cookie.cookieString()).join(';')
 
 // parse a Set-Cookie response header
-const resCookie = Cookie.parse(
-  'foo=bar; Domain=example.com; Path=/; Expires=Tue, 21 Oct 2025 00:00:00 GMT',
-)
+const resCookie = Cookie.parse('foo=bar; Domain=example.com; Path=/; Expires=Tue, 21 Oct 2025 00:00:00 GMT')
 // generate a Set-Cookie response header
 const setCookieHeader = cookie.toString()
 
@@ -42,7 +38,7 @@ const matchingCookies = await cookieJar.getCookies('https://example.com/')
 ```
 
 > [!IMPORTANT]
-> For more detailed usage information, refer to the [API docs](https://salesforce.github.io/tough-cookie/tough-cookie.md).
+> For more detailed usage information, refer to the [API docs](./api/docs/tough-cookie.md).
 
 ## RFC6265bis
 
@@ -62,14 +58,8 @@ import { CookieJar } from 'tough-cookie'
 const cookieJar = new CookieJar() // uses the in-memory store by default
 
 // storing cookies with various SameSite attributes
-await cookieJar.setCookie(
-  'strict=authorized; SameSite=strict',
-  'http://example.com/index.html',
-)
-await cookieJar.setCookie(
-  'lax=okay; SameSite=lax',
-  'http://example.com/index.html',
-)
+await cookieJar.setCookie('strict=authorized; SameSite=strict', 'http://example.com/index.html')
+await cookieJar.setCookie('lax=okay; SameSite=lax', 'http://example.com/index.html')
 await cookieJar.setCookie('normal=whatever', 'http://example.com/index.html')
 
 // retrieving cookies using a SameSite context
@@ -115,7 +105,7 @@ You can define this functionality by passing in the `prefixSecurity` option to `
 import { CookieJar, MemoryCookieStore } from 'tough-cookie'
 
 const cookieJar = new CookieJar(new MemoryCookieStore(), {
-  prefixSecurity: 'silent',
+  prefixSecurity: 'silent'
 })
 
 // this cookie will be silently ignored since the url is insecure (http)
