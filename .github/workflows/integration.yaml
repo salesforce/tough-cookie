@@ -33,7 +33,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
-          cache: npm
       - name: Install required image manipulation packages with APT
         run: sudo apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
       - name: Build tough-cookie
@@ -64,13 +63,13 @@ jobs:
           path: ./tough-cookie
       - uses: actions/checkout@v4
         with:
-          repository: git@github.com:jsdom/jsdom.git
+          repository: jsdom/jsdom
+          ref: main
           path: ./jsdom
           submodules: recursive
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
-          cache: npm
       - name: Build tough-cookie
         id: package
         run: |
