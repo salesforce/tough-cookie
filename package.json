@@ -92,9 +92,10 @@
     "!__tests__"
   ],
   "scripts": {
-    "api:dev": "npm run build && npm run api:extract -- --local && npm run api:docs",
-    "api:docs": "api-documenter markdown --input-folder ./tmp --output-folder ./api/docs",
-    "api:extract": "api-extractor run --verbose",
+    "docs": "npm run build && npm run docs:ci",
+    "docs:ci": "npm run docs:extract -- --local && npm run docs:generate",
+    "docs:generate": "api-documenter markdown --input-folder ./tmp --output-folder ./api/docs",
+    "docs:extract": "api-extractor run --verbose",
     "build": "npm run clean && tsc",
     "clean": "rm -rf dist",
     "version": "genversion --template version-template.ejs --force lib/version.ts && git add lib/version.ts",

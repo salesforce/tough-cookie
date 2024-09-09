@@ -62,10 +62,8 @@ jobs:
         run: npm ci
       - name: Build
         run: npm run build
-      - name: Extract API
-        run: npm run api:extract
       - name: Generate docs
-        run: npm run api:docs
+        run: npm run docs:ci
       - name: Ensure API and doc changes have been committed
         run: |
           git add --renormalize .
