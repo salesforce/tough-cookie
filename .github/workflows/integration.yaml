@@ -25,7 +25,7 @@ jobs:
       - name: Run Linter
         run: npm run eslint
       - name: Run Formatter
-        run: npm run prettier
+        run: npm run prettier -- --check
 
   test:
     name: Test - ${{ matrix.node-version }}
