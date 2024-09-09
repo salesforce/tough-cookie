@@ -977,7 +977,7 @@ describe('CookieJar', () => {
           prefixSecurity: 'silent',
           rejectPublicSuffixes: true,
           storeType: 'MemoryCookieStore',
-          version: 'tough-cookie@5.0.0-rc.4',
+          version: 'tough-cookie@5.0.0',
         }
         expect(data).toEqual(expected)
       },
