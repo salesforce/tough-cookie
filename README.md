@@ -132,8 +132,8 @@ for older versions of node, and we will do so in consultation with our community
 
 [npm-badge]: https://img.shields.io/npm/v/tough-cookie.svg?style=flat
 [npm-repo]: https://www.npmjs.com/package/tough-cookie
-[ci-badge]: https://github.com/salesforce/tough-cookie/actions/workflows/integration.yaml/badge.svg
-[ci-url]: https://github.com/salesforce/tough-cookie/actions/workflows/integration.yaml
+[ci-badge]: https://github.com/salesforce/tough-cookie/actions/workflows/ci.yaml/badge.svg
+[ci-url]: https://github.com/salesforce/tough-cookie/actions/workflows/ci.yaml
 [rfc6265-badge]: https://img.shields.io/badge/RFC-6265-flat?labelColor=000000&color=666666
 [rfc6265-tracker]: https://datatracker.ietf.org/doc/rfc6265/
 [rfc6265bis-badge]: https://img.shields.io/badge/RFC-6265bis-flat?labelColor=000000&color=666666
