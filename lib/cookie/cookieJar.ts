@@ -937,7 +937,7 @@ export class CookieJar {
       // deferred from S5.3
       // non-RFC: allow retention of expired cookies by choice
       const expiryTime = c.expiryTime()
-      if (expireCheck && expiryTime && expiryTime <= now) {
+      if (expireCheck && expiryTime != undefined && expiryTime <= now) {
         store.removeCookie(c.domain, c.path, c.key, () => {}) // result ignored
         return false
       }
