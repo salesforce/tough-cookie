@@ -1521,6 +1521,16 @@ describe('validation errors invoke callbacks', () => {
   })
 })
 
+it('issue #455 - should expire a cookie with epoch zero', async () => {
+  const cookieJar = new CookieJar()
+  await cookieJar.setCookie(
+    'OptionsTest=FooBar; Expires=Thu, 01 Jan 1970 00:00:00 GMT;',
+    'http://example.com',
+  )
+  const cookies = await cookieJar.getCookies('http://example.com')
+  expect(cookies.length).toBe(0)
+})
+
 function createCookie(
   cookieString: string,
   options: {
