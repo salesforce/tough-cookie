@@ -857,6 +857,35 @@ export class Cookie {
   }
 
   /**
+   * Similar to {@link Cookie.expiryTime}, computes the absolute unix-epoch milliseconds that this cookie expires and returns it as a Date.
+   *
+   * The "Max-Age" attribute takes precedence over "Expires" (as per the RFC). The {@link Cookie.lastAccessed} attribute
+   * (or the `now` parameter if given) is used to offset the {@link Cookie.maxAge} attribute.
+   *
+   * If Expires ({@link Cookie.expires}) is set, that's returned.
+   *
+   * @param now - can be used to provide a time offset (instead of {@link Cookie.lastAccessed}) to use when calculating the "Max-Age" value
+   */
+  expiryDate(now?: Date): Date | undefined {
+    const millisec = this.expiryTime(now)
+    if (millisec == Infinity) {
+      // The 31-bit value of 2147483647000 was chosen to be the MAX_TIME representable
+      // in tough-cookie though MDN states that the actual maximum value for a Date is 8.64e15.
+      // I'm guessing this is due to the Y2038 problem that would affect systems that store
+      // unix time as 32-bit integers.
+      // See:
+      // - https://github.com/salesforce/tough-cookie/commit/0616f70bf725e00c63d442544ad230c4f8b23357
+      // - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#the_epoch_timestamps_and_invalid_date
+      // - https://en.wikipedia.org/wiki/Year_2038_problem
+      return new Date(2147483647000)
+    } else if (millisec == -Infinity) {
+      return new Date(0)
+    } else {
+      return millisec == undefined ? undefined : new Date(millisec)
+    }
+  }
+
+  /**
    * Indicates if the cookie has been persisted to a store or not.
    * @public
    */
