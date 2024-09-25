@@ -26,6 +26,7 @@ export class Cookie {
     creationIndex: number;
     domain: string | null;
     expires: Date | 'Infinity' | null;
+    expiryDate(now?: Date): Date | undefined;
     expiryTime(now?: Date): number | undefined;
     extensions: string[] | null;
     static fromJSON(str: unknown): Cookie | undefined;
