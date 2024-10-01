@@ -9,7 +9,7 @@ Retrieve the list of cookies that can be sent in a Cookie header for the current
 **Signature:**
 
 ```typescript
-getCookies(url: string | URL, options?: GetCookiesOptions | undefined): Promise<Cookie[]>;
+getCookies(url: string | URL, options?: GetCookiesOptions): Promise<Cookie[]>;
 ```
 
 ## Parameters
@@ -53,7 +53,7 @@ options
 
 </td><td>
 
-[GetCookiesOptions](./tough-cookie.getcookiesoptions.md) \| undefined
+[GetCookiesOptions](./tough-cookie.getcookiesoptions.md)
 
 
 </td><td>
