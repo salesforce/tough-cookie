@@ -1,4 +1,4 @@
-import { pathMatch } from '../pathMatch'
+import { pathMatch } from '../pathMatch.js'
 
 // port of tests/domain_and_path_test.js (path match tests)
 describe('pathMatch', () => {

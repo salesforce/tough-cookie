@@ -1,4 +1,4 @@
-import { Cookie } from '../cookie/cookie'
+import { Cookie } from '../cookie/cookie.js'
 import { performance } from 'node:perf_hooks'
 
 describe('Cookie.parse', () => {

@@ -29,7 +29,7 @@ export default tseslint.config(
   },
   {
     // Once we remove the legacy vows tests in ./test, we can remove these JS-specific rules
-    files: ['test/**/*.js', 'eslint.config.mjs'],
+    files: ['test/**/*.cjs', 'eslint.config.mjs'],
     ...tseslint.configs.disableTypeChecked,
     rules: {
       ...tseslint.configs.disableTypeChecked.rules,
