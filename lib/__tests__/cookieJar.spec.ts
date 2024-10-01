@@ -400,8 +400,8 @@ describe('CookieJar', () => {
           'http://other.example.com': ['other=qq; Path=/'],
           'http://other.example.com/foo': ['other2=qq; Path=/foo'],
         }
-        for await (const [url, cookies] of Object.entries(cookiesByUrl)) {
-          for await (const cookie of cookies) {
+        for (const [url, cookies] of Object.entries(cookiesByUrl)) {
+          for (const cookie of cookies) {
             await cookieJar.setCookie(cookie, url)
           }
         }
@@ -995,8 +995,8 @@ describe('CookieJar', () => {
           Cookie.parse('foo=bar; Domain=foo.com; Path=/'),
         ],
       }
-      for await (const [path, cookies] of Object.entries(cookiesByDomain)) {
-        for await (const cookie of cookies) {
+      for (const [path, cookies] of Object.entries(cookiesByDomain)) {
+        for (const cookie of cookies) {
           await cookieJar.setCookie(cookie as Cookie, path)
         }
       }
