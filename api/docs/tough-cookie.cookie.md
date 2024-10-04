@@ -455,6 +455,24 @@ Encodes to a `Cookie` header value (specifically, the [Cookie.key](./tough-cooki
 </td></tr>
 <tr><td>
 
+[expiryDate(now)](./tough-cookie.cookie.expirydate.md)
+
+
+</td><td>
+
+
+</td><td>
+
+Similar to [Cookie.expiryTime()](./tough-cookie.cookie.expirytime.md)<!-- -->, computes the absolute unix-epoch milliseconds that this cookie expires and returns it as a Date.
+
+The "Max-Age" attribute takes precedence over "Expires" (as per the RFC). The [Cookie.lastAccessed](./tough-cookie.cookie.lastaccessed.md) attribute (or the `now` parameter if given) is used to offset the [Cookie.maxAge](./tough-cookie.cookie.maxage.md) attribute.
+
+If Expires ([Cookie.expires](./tough-cookie.cookie.expires.md)<!-- -->) is set, that's returned.
+
+
+</td></tr>
+<tr><td>
+
 [expiryTime(now)](./tough-cookie.cookie.expirytime.md)
 
 

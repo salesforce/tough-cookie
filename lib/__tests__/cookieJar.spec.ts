@@ -401,8 +401,8 @@ describe('CookieJar', () => {
           'http://other.example.com': ['other=qq; Path=/'],
           'http://other.example.com/foo': ['other2=qq; Path=/foo'],
         }
-        for await (const [url, cookies] of Object.entries(cookiesByUrl)) {
-          for await (const cookie of cookies) {
+        for (const [url, cookies] of Object.entries(cookiesByUrl)) {
+          for (const cookie of cookies) {
             await cookieJar.setCookie(cookie, url)
           }
         }
@@ -996,8 +996,8 @@ describe('CookieJar', () => {
           Cookie.parse('foo=bar; Domain=foo.com; Path=/'),
         ],
       }
-      for await (const [path, cookies] of Object.entries(cookiesByDomain)) {
-        for await (const cookie of cookies) {
+      for (const [path, cookies] of Object.entries(cookiesByDomain)) {
+        for (const cookie of cookies) {
           await cookieJar.setCookie(cookie as Cookie, path)
         }
       }
@@ -1228,6 +1228,7 @@ it('should fix issue #154 - Expiry should not be affected by creation date', asy
   ])
   // the expiry time should be 60s from now (0)
   expect(initialCookies[0]?.expiryTime()).toBe(now + 60 * 1000)
+  expect(initialCookies[0]?.expiryDate()).toEqual(new Date(now + 60 * 1000))
 
   // advance the time by 1s, so now = 1000
   jest.advanceTimersByTime(1000)
@@ -1248,6 +1249,9 @@ it('should fix issue #154 - Expiry should not be affected by creation date', asy
   ])
   // the expiry time should be 60s from now (1000)
   expect(updatedCookies[0]?.expiryTime()).toBe(now + 60 * 1000 + 1000)
+  expect(updatedCookies[0]?.expiryDate()).toEqual(
+    new Date(now + 60 * 1000 + 1000),
+  )
 })
 
 it('should fix issue #261 - URL objects should be accepted in setCookie', async () => {
@@ -1520,6 +1524,16 @@ describe('validation errors invoke callbacks', () => {
       done()
     })
   })
+})
+
+it('issue #455 - should expire a cookie with epoch zero', async () => {
+  const cookieJar = new CookieJar()
+  await cookieJar.setCookie(
+    'OptionsTest=FooBar; Expires=Thu, 01 Jan 1970 00:00:00 GMT;',
+    'http://example.com',
+  )
+  const cookies = await cookieJar.getCookies('http://example.com')
+  expect(cookies.length).toBe(0)
 })
 
 function createCookie(

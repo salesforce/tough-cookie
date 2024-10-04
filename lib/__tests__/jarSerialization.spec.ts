@@ -181,8 +181,8 @@ describe('cookieJar serialization', () => {
       // getAllCookies to be exercised.
       const paths = ['/', '/foo', '/foo/bar']
       const domains = ['example.com', 'www.example.com', 'example.net']
-      for await (const path of paths) {
-        for await (const domain of domains) {
+      for (const path of paths) {
+        for (const domain of domains) {
           const key = 'key'
           const value = JSON.stringify({ path, domain })
           const cookie = new Cookie({ expires, domain, path, key, value })

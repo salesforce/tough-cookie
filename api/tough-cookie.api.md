@@ -26,6 +26,7 @@ export class Cookie {
     creationIndex: number;
     domain: string | null;
     expires: Date | 'Infinity' | null;
+    expiryDate(now?: Date): Date | undefined;
     expiryTime(now?: Date): number | undefined;
     extensions: string[] | null;
     static fromJSON(str: unknown): Cookie | undefined;
@@ -84,7 +85,7 @@ export class CookieJar {
     getCookies(url: string): Promise<Cookie[]>;
     getCookies(url: string, callback: Callback<Cookie[]>): void;
     getCookies(url: string | URL, options: GetCookiesOptions | undefined, callback: Callback<Cookie[]>): void;
-    getCookies(url: string | URL, options?: GetCookiesOptions | undefined): Promise<Cookie[]>;
+    getCookies(url: string | URL, options?: GetCookiesOptions): Promise<Cookie[]>;
     // @internal
     getCookies(url: string | URL, options: GetCookiesOptions | undefined | Callback<Cookie[]>, callback?: Callback<Cookie[]>): unknown;
     getCookiesSync(url: string, options?: GetCookiesOptions): Cookie[];

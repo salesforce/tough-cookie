@@ -346,7 +346,7 @@ export class CookieJar {
     let syncResult: T | undefined = undefined
 
     try {
-      fn.call(this, (error: Error | null, result?: T | undefined) => {
+      fn.call(this, (error: Error | null, result?: T) => {
         syncErr = error
         syncResult = result
       })
@@ -809,10 +809,7 @@ export class CookieJar {
    * @param url - The domain to store the cookie with.
    * @param options - Configuration settings to use when retrieving the cookies.
    */
-  getCookies(
-    url: string | URL,
-    options?: GetCookiesOptions | undefined,
-  ): Promise<Cookie[]>
+  getCookies(url: string | URL, options?: GetCookiesOptions): Promise<Cookie[]>
   /**
    * @internal No doc because this is an overload that supports the implementation
    */
@@ -937,7 +934,7 @@ export class CookieJar {
       // deferred from S5.3
       // non-RFC: allow retention of expired cookies by choice
       const expiryTime = c.expiryTime()
-      if (expireCheck && expiryTime && expiryTime <= now) {
+      if (expireCheck && expiryTime != undefined && expiryTime <= now) {
         store.removeCookie(c.domain, c.path, c.key, () => {}) // result ignored
         return false
       }
