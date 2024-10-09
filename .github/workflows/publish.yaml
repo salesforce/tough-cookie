@@ -22,7 +22,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Rebuild generated files
-        run: npm run precommit
+        run: npm run prepare-pr
       - name: Validated generated API and doc changes have been committed
         run: ./validate-generated-files.sh
       - name: Publish
