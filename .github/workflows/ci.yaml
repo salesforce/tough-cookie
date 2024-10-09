@@ -23,9 +23,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Run Linter
-        run: npm run eslint
+        run: npm run _lint:check
       - name: Run Formatter
-        run: npm run prettier -- --check
+        run: npm run _format:check
 
   test:
     name: Test - ${{ matrix.node-version }}
@@ -62,19 +62,11 @@ jobs:
         run: npm ci
       - name: Build
         run: npm run build
+      - name: Check API
+        run: npm run _api:check
       - name: Generate docs
-        run: npm run docs:ci
-      - name: Ensure API and doc changes have been committed
-        run: |
-          git add --renormalize .
-          if (( "$(git diff HEAD --ignore-space-at-eol --ignore-cr-at-eol | wc -l)" != 0 )); then
-            cat << EOF >> $GITHUB_STEP_SUMMARY
-          ### Detected uncommitted changes
-
-          \`\`\`shell
-          $(git diff HEAD)
-          \`\`\`
-          EOF
-            git diff HEAD
-            exit 1
-          fi
+        # there is a bug in api-documenter that causes it not to respect 'lf' endings
+        # so we need to run prettier via `_docs:fix` as a workaround
+        run: npm run _docs:generate && npm run _docs:fix
+      - name: Validated generated API and doc changes have been committed
+        run: ./validate-generated-files.sh
