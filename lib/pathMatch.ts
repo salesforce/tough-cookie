@@ -31,10 +31,7 @@ export function pathMatch(reqPath: string, cookiePath: string): boolean {
     // " o  The cookie-path is a prefix of the request-path, and the first
     // character of the request-path that is not included in the cookie- path
     // is a %x2F ("/") character."
-    if (
-      new RegExp(`^${cookiePath}`).test(reqPath) &&
-      reqPath[cookiePath.length] === '/'
-    ) {
+    if (reqPath.startsWith(cookiePath) && reqPath[cookiePath.length] === '/') {
       return true
     }
   }
