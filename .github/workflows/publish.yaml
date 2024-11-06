@@ -1,0 +1,45 @@
+name: Publish
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: Publish to NPM
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+      - run: npm ci
+      - run: npm run prettier -- --check
+      - run: npm run lint
+      - run: npm run build
+      - run: npm run docs:ci
+      - name: Validate up-to-date documentation
+        run: |
+          git add --renormalize .
+          if (( "$(git diff HEAD --ignore-space-at-eol --ignore-cr-at-eol | wc -l)" != 0 )); then
+            cat << EOF >> $GITHUB_STEP_SUMMARY
+          ### Detected uncommitted changes
+
+          \`\`\`shell
+          $(git diff HEAD)
+          \`\`\`
+          EOF
+            git diff HEAD
+            exit 1
+          fi
+
+      - run: npm test
+      - run: npm publish --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

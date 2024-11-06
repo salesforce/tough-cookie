@@ -92,12 +92,14 @@
     "!__tests__"
   ],
   "scripts": {
-    "api:dev": "npm run build && npm run api:extract -- --local && npm run api:docs",
-    "api:docs": "api-documenter markdown --input-folder ./tmp --output-folder ./api/docs",
-    "api:extract": "api-extractor run --verbose",
+    "docs": "npm run build && npm run docs:ci",
+    "docs:ci": "npm run docs:extract -- --local && npm run docs:generate",
+    "docs:generate": "api-documenter markdown --input-folder ./tmp --output-folder ./api/docs",
+    "docs:extract": "api-extractor run --verbose",
     "build": "npm run clean && tsc",
     "clean": "rm -rf dist",
-    "version": "genversion --template version-template.ejs --force lib/version.ts && git add lib/version.ts",
+    "version:version-file": "genversion --template version-template.ejs --force lib/version.ts",
+    "version": "npm run version:version-file && npm run docs && git add ./lib/version.ts ./api/docs",
     "test": "npm run test:ts && npm run test:legacy",
     "test:ts": "jest",
     "test:legacy": "npm run build -- --declaration false && ./test/scripts/vows.js test/*_test.js",
@@ -105,7 +107,7 @@
     "cover": "jest --coverage",
     "lint": "eslint .",
     "eslint": "eslint .",
-    "prettier": "prettier '**/*.{json,ts,yaml,md}'",
+    "prettier": "prettier .",
     "format": "npm run eslint -- --fix"
   },
   "//": "We only support node 18+, but v16 still works. We won't block v16 until it becomes a burden.",
