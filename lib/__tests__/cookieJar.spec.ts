@@ -34,6 +34,7 @@ import { CookieJar } from '../cookie/cookieJar'
 import type { SerializedCookieJar } from '../cookie/constants'
 import { MemoryCookieStore } from '../memstore'
 import { Store } from '../store'
+import { version } from '../version'
 
 // ported from:
 // - test/api_test.js (cookie jar tests)
@@ -977,7 +978,7 @@ describe('CookieJar', () => {
           prefixSecurity: 'silent',
           rejectPublicSuffixes: true,
           storeType: 'MemoryCookieStore',
-          version: 'tough-cookie@5.0.0',
+          version: `tough-cookie@${version}`,
         }
         expect(data).toEqual(expected)
       },

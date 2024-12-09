@@ -40,7 +40,7 @@ jobs:
         run: |
           npm ci
           npm run build
-          echo "tough_cookie_tarball=$(npm pack)" >> "$GITHUB_OUTPUT"
+          echo "tough_cookie_tarball=$(npm pack | tail -1)" >> "$GITHUB_OUTPUT"
         working-directory: ./tough-cookie
       - name: Setup HOSTS file for Web Platform Test server
         run: ./test/web-platform-tests/tests/wpt make-hosts-file | sudo tee -a /etc/hosts
@@ -76,7 +76,7 @@ jobs:
         run: |
           npm ci
           npm run build
-          echo "tough_cookie_tarball=$(npm pack)" >> "$GITHUB_OUTPUT"
+          echo "tough_cookie_tarball=$(npm pack | tail -1)" >> "$GITHUB_OUTPUT"
         working-directory: ./tough-cookie
       - name: Setup HOSTS file for Web Platform Test server
         run: ./test/web-platform-tests/tests/wpt make-hosts-file | sudo tee -a /etc/hosts

@@ -1,30 +1,30 @@
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "monthly"
+      interval: 'monthly'
     labels:
-      - "dependencies"
-      - "npm"
-      - "skip changelog"
+      - 'dependencies'
+      - 'npm'
+      - 'skip changelog'
     groups:
       production-dependencies:
-        dependency-type: "production"
+        dependency-type: 'production'
         update-types:
-          - "minor"
-          - "patch"
+          - 'minor'
+          - 'patch'
       dev-dependencies:
-        dependency-type: "development"
+        dependency-type: 'development'
         update-types:
-          - "minor"
-          - "patch"
+          - 'minor'
+          - 'patch'
     ignore:
       # We want @types/node to match the *lowest* version of node.js that we support
-      - dependency-name: "@types/node"
+      - dependency-name: '@types/node'
         update-types:
-          - "version-update:semver-major"
-          - "version-update:semver-minor"
+          - 'version-update:semver-major'
+          - 'version-update:semver-minor'
       # As a library, upgrading TypeScript and using new language features would
       # be a breaking change for users who have not yet upgraded their TS version
-      - dependency-name: "typescript"
+      - dependency-name: 'typescript'
