@@ -19,27 +19,13 @@ jobs:
         with:
           node-version: lts/*
           cache: npm
-      - run: npm ci
-      - run: npm run prettier -- --check
-      - run: npm run lint
-      - run: npm run build
-      - run: npm run docs:ci
-      - name: Validate up-to-date documentation
-        run: |
-          git add --renormalize .
-          if (( "$(git diff HEAD --ignore-space-at-eol --ignore-cr-at-eol | wc -l)" != 0 )); then
-            cat << EOF >> $GITHUB_STEP_SUMMARY
-          ### Detected uncommitted changes
-
-          \`\`\`shell
-          $(git diff HEAD)
-          \`\`\`
-          EOF
-            git diff HEAD
-            exit 1
-          fi
-
-      - run: npm test
-      - run: npm publish --provenance
+      - name: Install dependencies
+        run: npm ci
+      - name: Rebuild generated files
+        run: npm run prepare-pr
+      - name: Validated generated API and doc changes have been committed
+        run: ./validate-generated-files.sh
+      - name: Publish
+        run: npm publish --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
