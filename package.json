@@ -54,7 +54,8 @@
   },
   "main": "./lib/cookie",
   "files": [
-    "lib"
+    "lib",
+    "test"
   ],
   "scripts": {
     "version": "genversion lib/version.js && git add lib/version.js",
