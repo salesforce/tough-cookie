@@ -52,8 +52,7 @@ const safeToStringImpl = (val: unknown, seenArrays = new WeakSet()): string => {
     return Array.isArray(val)
       ? // Arrays have a weird custom toString that we need to replicate
         safeArrayToString(val, seenArrays)
-      : // eslint-disable-next-line @typescript-eslint/no-base-to-string
-        String(val)
+      : String(val)
   } else {
     // This case should just be objects with null prototype, so we can just use Object#toString
     return objectToString(val)
