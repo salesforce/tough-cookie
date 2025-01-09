@@ -219,4 +219,4 @@ export default [
     test: 'IAintNoDateFool',
     expected: null,
   },
-]
+] as const

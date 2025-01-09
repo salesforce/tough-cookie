@@ -26,7 +26,8 @@
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
     /* Compatibility */
-    "ignoreDeprecations": "5.0"
+    "ignoreDeprecations": "5.0",
+    "isolatedModules": true
   },
   "include": ["lib"],
   "exclude": ["jest.config.ts"]

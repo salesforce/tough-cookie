@@ -17,9 +17,9 @@ The following values can be used to configure how a [CookieJar](./tough-cookie.c
 **Signature:**
 
 ```typescript
-PrefixSecurityEnum: Readonly<{
-    SILENT: "silent";
-    STRICT: "strict";
-    DISABLED: "unsafe-disabled";
-}>
+PrefixSecurityEnum: {
+    readonly SILENT: "silent";
+    readonly STRICT: "strict";
+    readonly DISABLED: "unsafe-disabled";
+}
 ```

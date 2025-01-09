@@ -245,11 +245,11 @@ export function permuteDomain(domain: string, allowSpecialUseDomain?: boolean): 
 export function permutePath(path: string): string[];
 
 // @public
-export const PrefixSecurityEnum: Readonly<{
-    SILENT: "silent";
-    STRICT: "strict";
-    DISABLED: "unsafe-disabled";
-}>;
+export const PrefixSecurityEnum: {
+    readonly SILENT: "silent";
+    readonly STRICT: "strict";
+    readonly DISABLED: "unsafe-disabled";
+};
 
 // @public
 export type SerializedCookie = {

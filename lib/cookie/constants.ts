@@ -11,11 +11,12 @@
  * - `unsafe-disabled` - Disables cookie prefix checking.
  * @public
  */
-export const PrefixSecurityEnum = Object.freeze({
+export const PrefixSecurityEnum = {
   SILENT: 'silent',
   STRICT: 'strict',
   DISABLED: 'unsafe-disabled',
-})
+} as const
+Object.freeze(PrefixSecurityEnum)
 
 const IP_V6_REGEX = `
 \\[?(?:
@@ -32,7 +33,7 @@ const IP_V6_REGEX = `
   .replace(/\s*\/\/.*$/gm, '')
   .replace(/\n/g, '')
   .trim()
-export const IP_V6_REGEX_OBJECT = new RegExp(`^${IP_V6_REGEX}$`)
+export const IP_V6_REGEX_OBJECT: RegExp = new RegExp(`^${IP_V6_REGEX}$`)
 
 /**
  * A JSON representation of a {@link CookieJar}.
