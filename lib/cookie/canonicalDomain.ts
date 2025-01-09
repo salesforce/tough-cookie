@@ -1,6 +1,14 @@
 import { IP_V6_REGEX_OBJECT } from './constants'
 import type { Nullable } from '../utils'
-import { domainToASCII } from 'node:url'
+
+/**
+ * Normalizes a domain to lowercase and punycode-encoded.
+ * Runtime-agnostic equivalent to node's `domainToASCII`.
+ * @see https://nodejs.org/docs/latest-v22.x/api/url.html#urldomaintoasciidomain
+ */
+function domainToASCII(domain: string): string {
+  return new URL(`http://${domain}`).hostname
+}
 
 /**
  * Transforms a domain name into a canonical domain name. The canonical domain name is a domain name
