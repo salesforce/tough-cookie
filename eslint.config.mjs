@@ -2,7 +2,9 @@
 
 import eslint from '@eslint/js'
 import prettierRecommended from 'eslint-plugin-prettier/recommended'
+// eslint-disable-next-line import/no-unresolved
 import tseslint from 'typescript-eslint'
+import { flatConfigs as pluginImport } from 'eslint-plugin-import'
 import globals from 'globals'
 
 export default tseslint.config(
@@ -11,6 +13,9 @@ export default tseslint.config(
   },
   eslint.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
+  pluginImport.recommended,
+  // @ts-expect-error not sure why the plugin isn't type correctly, but it works...
+  pluginImport.typescript,
   prettierRecommended,
   {
     languageOptions: {
@@ -25,6 +30,14 @@ export default tseslint.config(
     },
     rules: {
       '@typescript-eslint/explicit-function-return-type': 'error',
+      'import/no-nodejs-modules': 'error',
+    },
+  },
+  {
+    files: ['lib/__tests__/**', 'test/**'],
+    rules: {
+      // We only run tests in node, so we can use node's builtins
+      'import/no-nodejs-modules': 'off',
     },
   },
   {
