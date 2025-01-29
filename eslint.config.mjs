@@ -2,19 +2,17 @@
 
 import eslint from '@eslint/js'
 import prettierRecommended from 'eslint-plugin-prettier/recommended'
-// eslint-disable-next-line import/no-unresolved
-import tseslint from 'typescript-eslint'
+import { config, configs } from 'typescript-eslint'
 import { flatConfigs as pluginImport } from 'eslint-plugin-import'
 import globals from 'globals'
 
-export default tseslint.config(
+export default config(
   {
     ignores: ['dist', 'jest.config.ts'],
   },
   eslint.configs.recommended,
-  ...tseslint.configs.strictTypeChecked,
+  ...configs.strictTypeChecked,
   pluginImport.recommended,
-  // @ts-expect-error not sure why the plugin isn't type correctly, but it works...
   pluginImport.typescript,
   prettierRecommended,
   {
@@ -43,13 +41,21 @@ export default tseslint.config(
   {
     // Once we remove the legacy vows tests in ./test, we can remove these JS-specific rules
     files: ['test/**/*.js', 'eslint.config.mjs'],
-    ...tseslint.configs.disableTypeChecked,
+    ...configs.disableTypeChecked,
     rules: {
-      ...tseslint.configs.disableTypeChecked.rules,
+      ...configs.disableTypeChecked.rules,
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/no-var-requires': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
+  {
+    // other configuration are omitted for brevity
+    settings: {
+      'import/resolver': {
+        typescript: {}, // this loads <rootdir>/tsconfig.json to eslint
+      },
     },
   },
 )
