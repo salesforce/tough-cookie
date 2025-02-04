@@ -18,7 +18,7 @@
         Expected Output: "EXPLOIT FAILED"
 */
 
-const tough = require('tough-cookie');
+let tough = require('tough-cookie');
 
 async function runExploit() {
   // Create a CookieJar with rejectPublicSuffixes set to false
@@ -42,4 +42,4 @@ async function runExploit() {
   }
 }
 
-await runExploit();
+runExploit();
