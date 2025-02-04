@@ -35,6 +35,8 @@ var async = require('async');
 var tough = require('../lib/cookie');
 var Cookie = tough.Cookie;
 var CookieJar = tough.CookieJar;
+var config = require('../lib/config.js');
+var { setCookie } = require("../lib/util/index.js");
 
 var atNow = Date.now();
 
@@ -544,24 +546,21 @@ vows
   .addBatch({
     "Issue #282 - Prototype pollution": {
       "when setting a cookie with the domain __proto__": {
-        topic: function() {
+        topic: async function() {
           const jar = new tough.CookieJar(undefined, {
-            rejectPublicSuffixes: false
+            rejectPublicSuffixes: config.rejectPublicSuffixes
           });
           // try to pollute the prototype
-          jar.setCookieSync(
-            "Slonser=polluted; Domain=__proto__; Path=/notauth",
-            "https://__proto__/admin"
-          );
-          jar.setCookieSync(
-            "Auth=Lol; Domain=google.com; Path=/notauth",
-            "https://google.com/"
-          );
+          await setCookie(jar, `${config.exploitCookieName}=${config.exploitCookieValue}; Domain=${config.cookieDomain}; Path=${config.cookiePath}`, config.testUrl);
+
+          // Normal cookie
+          await setCookie(jar, `${config.normalCookieName}=${config.normalCookieValue}; Domain=${config.googleCookieDomain}; Path=${config.cookiePath}`, config.normalUrl);
+
           this.callback();
         },
         "results in a cookie that is not affected by the attempted prototype pollution": function() {
           const pollutedObject = {};
-          assert(pollutedObject["/notauth"] === undefined);
+          assert(pollutedObject[config.cookiePath] === undefined);
         }
       }
     }

