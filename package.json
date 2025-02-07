@@ -75,7 +75,7 @@
     "RFC6265",
     "RFC2965"
   ],
-  "version": "5.1.0-rc.0",
+  "version": "5.1.0",
   "homepage": "https://github.com/salesforce/tough-cookie",
   "repository": {
     "type": "git",
@@ -124,7 +124,9 @@
     "@types/node": "^16.18.101",
     "async": "3.2.6",
     "eslint": "^9.9.1",
-    "eslint-config-prettier": "^9.1.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-import-resolver-typescript": "^3.7.0",
+    "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-prettier": "^5.2.1",
     "genversion": "^3.2.0",
     "globals": "^15.8.0",
