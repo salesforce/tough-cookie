@@ -59,4 +59,4 @@ export default [
     test: 'Thu, 10 Dec 2009 13:57:2 GMT',
     expected: 'Thu, 10 Dec 2009 13:57:02 GMT',
   },
-]
+] as const

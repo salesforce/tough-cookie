@@ -42,9 +42,10 @@ describe('IETF http state tests', () => {
       const jar = new CookieJar()
       const expected = testCase.sent
       const sentFrom = `http://home.example.org/cookie-parser?${testCase.test}`
-      const sentTo = testCase['sent-to']
-        ? url.resolve('http://home.example.org', testCase['sent-to'])
-        : `http://home.example.org/cookie-parser-result?${testCase.test}`
+      const sentTo =
+        'sent-to' in testCase
+          ? url.resolve('http://home.example.org', testCase['sent-to'])
+          : `http://home.example.org/cookie-parser-result?${testCase.test}`
 
       testCase['received'].forEach((cookieStr) => {
         jar.setCookieSync(cookieStr, sentFrom, { ignoreError: true })

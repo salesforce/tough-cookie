@@ -1330,4 +1330,4 @@ export default [
     received: ['\tfoo\t=\tbar\t \t;\tttt'],
     sent: [{ name: 'foo', value: 'bar' }],
   },
-]
+] as const
