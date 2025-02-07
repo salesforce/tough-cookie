@@ -1,0 +1,25 @@
+name: Stop Fixing CVE-2023-26136
+on:
+  pull_request:
+    paths:
+      - 'lib/memstore.js'
+
+jobs:
+  no-thank-you:
+    name: It's Already Fixed
+    runs-on: ubuntu-latest
+    steps:
+      - run: gh pr close "$PR" --comment "$COMMENT"
+        env:
+          PR: '${{ github.event.number }}'
+          COMMENT: >
+            The prototype pollution vulnerability exposed via `MemoryCookieStore`
+            ([CVE-2023-26136](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-26136)) has
+            been patched since [version 4.1.3](https://github.com/salesforce/tough-cookie/releases/v4.1.3).
+            Please upgrade your code to use the latest version of `tough-cookie`.
+
+            If you are using `tough-cookie` as a transitive dependency (for example, if you're using
+            `tough-cookie` through the deprecated `request` package), then you can use npm's
+            [`overrides`](https://docs.npmjs.com/cli/v10/configuring-npm/package-json?v=true#overrides)
+            or yarn's [`resolutions`](https://classic.yarnpkg.com/en/docs/package-json/#toc-resolutions)
+            to upgrade safely to v4.1.3.
