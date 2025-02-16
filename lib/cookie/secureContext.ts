@@ -97,7 +97,7 @@ function hostNoBrackets(host: string): string {
  * - Points to a loopback address (IPv4 127.0.0.0/8 or IPv6 ::1)
  * - Uses localhost or *.localhost hostnames
  * 
- * @param {string} urlString - The URL to check
+ * @param {string} inputUrl - The URL to check
  * @returns {boolean}
  * @see {@link https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin W3C Spec}
  */
