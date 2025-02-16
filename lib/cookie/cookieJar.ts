@@ -23,6 +23,7 @@ import { defaultPath } from './defaultPath'
 import { domainMatch } from './domainMatch'
 import { cookieCompare } from './cookieCompare'
 import { version } from '../version'
+import { isPotentiallyTrustworthy } from './secureContext'
 
 const defaultSetCookieOptions: SetCookieOptions = {
   loose: false,
@@ -858,9 +859,7 @@ export class CookieJar {
     const host = canonicalDomain(context.hostname)
     const path = context.pathname || '/'
 
-    const secure =
-      context.protocol &&
-      (context.protocol == 'https:' || context.protocol == 'wss:')
+    const secure = isPotentiallyTrustworthy(url);
 
     let sameSiteLevel = 0
     if (options.sameSiteContext) {
