@@ -79,8 +79,8 @@ function isLocalHostname(host: string): boolean {
  * Removes leading and trailing square brackets if present.
  * Adapted from https://github.com/chromium/chromium/blob/main/url/gurl.cc#L440-L448
  *
- * @param {string} host
- * @returns {string}
+ * @param host - The host string to process.
+ * @returns The host string without leading and trailing square brackets if previously present.
  */
 function hostNoBrackets(host: string): string {
   if (host.length >= 2 && host.startsWith('[') && host.endsWith(']')) {
@@ -97,8 +97,8 @@ function hostNoBrackets(host: string): string {
  * - Points to a loopback address (IPv4 127.0.0.0/8 or IPv6 ::1)
  * - Uses localhost or *.localhost hostnames
  * 
- * @param {string} inputUrl - The URL to check
- * @returns {boolean}
+ * @param inputUrl - The URL string or URL object to check.
+ * @returns `true` if the URL is potentially trustworthy, otherwise `false`.
  * @see {@link https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin W3C Spec}
  */
 export function isPotentiallyTrustworthy(inputUrl: string | URL): boolean {
