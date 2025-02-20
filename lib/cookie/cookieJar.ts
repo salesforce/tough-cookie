@@ -859,7 +859,7 @@ export class CookieJar {
     const host = canonicalDomain(context.hostname)
     const path = context.pathname || '/'
 
-    const secure = isPotentiallyTrustworthy(url);
+    const secure = isPotentiallyTrustworthy(url)
 
     let sameSiteLevel = 0
     if (options.sameSiteContext) {

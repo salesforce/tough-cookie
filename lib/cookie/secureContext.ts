@@ -1,5 +1,5 @@
-import { URL } from 'url';
-import { isIP, isIPv4, isIPv6 } from 'net';
+import { URL } from 'url'
+import { isIP, isIPv4, isIPv6 } from 'net'
 
 /**
  * Checks if the given IPv4 address is in the 127.0.0.0/8 loopback range.
@@ -10,12 +10,12 @@ import { isIP, isIPv4, isIPv6 } from 'net';
  */
 function isLoopbackV4(address: string): boolean {
   // 127.0.0.0/8: first octet = 127
-  const octets = address.split('.');
+  const octets = address.split('.')
   return (
     octets.length === 4 &&
     octets[0] !== undefined &&
     parseInt(octets[0], 10) === 127
-  );
+  )
 }
 
 /**
@@ -30,7 +30,7 @@ function isLoopbackV6(address: string): boolean {
   // which compresses IPv6 addresses, therefore the IPv6
   // loopback address will always be compressed to '[::1]':
   // https://url.spec.whatwg.org/#concept-ipv6-serializer
-  return (address === '::1');
+  return address === '::1'
 }
 
 /**
@@ -42,14 +42,14 @@ function isLoopbackV6(address: string): boolean {
  */
 function isIpLoopback(address: string): boolean {
   if (isIPv4(address)) {
-    return isLoopbackV4(address);
+    return isLoopbackV4(address)
   }
 
   if (isIPv6(address)) {
-    return isLoopbackV6(address);
+    return isLoopbackV6(address)
   }
 
-  return false;
+  return false
 }
 
 /**
@@ -60,7 +60,7 @@ function isIpLoopback(address: string): boolean {
  * @returns `true` if the host ends with `.localhost`, otherwise `false`.
  */
 function isNormalizedLocalhostTLD(lowerHost: string): boolean {
-  return lowerHost.endsWith('.localhost');
+  return lowerHost.endsWith('.localhost')
 }
 
 /**
@@ -71,9 +71,8 @@ function isNormalizedLocalhostTLD(lowerHost: string): boolean {
  * @returns `true` if the host is considered local, otherwise `false`.
  */
 function isLocalHostname(host: string): boolean {
-  const lowerHost = host.toLowerCase();
-  return lowerHost === 'localhost' ||
-    isNormalizedLocalhostTLD(lowerHost);
+  const lowerHost = host.toLowerCase()
+  return lowerHost === 'localhost' || isNormalizedLocalhostTLD(lowerHost)
 }
 
 /**
@@ -85,56 +84,54 @@ function isLocalHostname(host: string): boolean {
  */
 function hostNoBrackets(host: string): string {
   if (host.length >= 2 && host.startsWith('[') && host.endsWith(']')) {
-    return host.substring(1, host.length - 1);
+    return host.substring(1, host.length - 1)
   }
-  return host;
+  return host
 }
 
 /**
  * Determines if a URL string represents a potentially trustworthy origin.
- * 
+ *
  * A URL is considered potentially trustworthy if it:
  * - Uses HTTPS or WSS schemes
  * - Points to a loopback address (IPv4 127.0.0.0/8 or IPv6 ::1)
  * - Uses localhost or *.localhost hostnames
- * 
+ *
  * @param inputUrl - The URL string or URL object to check.
  * @returns `true` if the URL is potentially trustworthy, otherwise `false`.
  * @see {@link https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin W3C Spec}
  */
 export function isPotentiallyTrustworthy(inputUrl: string | URL): boolean {
-  let url: URL;
+  let url: URL
 
   // try ... catch doubles as an opaque origin check
   if (typeof inputUrl === 'string') {
     try {
-      url = new URL(inputUrl);
+      url = new URL(inputUrl)
     } catch {
-      return false;
+      return false
     }
   } else {
-    url = inputUrl;
+    url = inputUrl
   }
 
-  const scheme = url.protocol.replace(':', '').toLowerCase();
-  const hostname = hostNoBrackets(
-    url.hostname
-  ).replace(/\.+$/, '');
+  const scheme = url.protocol.replace(':', '').toLowerCase()
+  const hostname = hostNoBrackets(url.hostname).replace(/\.+$/, '')
 
   if (
     scheme === 'https' ||
     scheme === 'wss' // https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin
   ) {
-    return true;
+    return true
   }
 
   // If it's already an IP literal, check if it's a loopback address
   if (isIP(hostname)) {
-    return isIpLoopback(hostname);
+    return isIpLoopback(hostname)
   }
 
   // RFC 6761 states that localhost names will always resolve
   // to the respective IP loopback address:
   // https://datatracker.ietf.org/doc/html/rfc6761#section-6.3
-  return isLocalHostname(hostname);
+  return isLocalHostname(hostname)
 }
