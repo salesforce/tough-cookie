@@ -1,5 +1,4 @@
-import { URL } from 'url'
-import { isIP, isIPv4, isIPv6 } from 'net'
+import { IP_V4_REGEX_OBJECT, IP_V6_REGEX_OBJECT } from './constants'
 
 /**
  * Checks if the given IPv4 address is in the 127.0.0.0/8 loopback range.
@@ -31,25 +30,6 @@ function isLoopbackV6(address: string): boolean {
   // loopback address will always be compressed to '[::1]':
   // https://url.spec.whatwg.org/#concept-ipv6-serializer
   return address === '::1'
-}
-
-/**
- * Determines if the given address (IPv4 or IPv6) is a loopback address.
- *
- * @remarks
- * @param address - The IP address to check.
- * @returns `true` if the address is loopback, otherwise `false`.
- */
-function isIpLoopback(address: string): boolean {
-  if (isIPv4(address)) {
-    return isLoopbackV4(address)
-  }
-
-  if (isIPv6(address)) {
-    return isLoopbackV6(address)
-  }
-
-  return false
 }
 
 /**
@@ -126,8 +106,12 @@ export function isPotentiallyTrustworthy(inputUrl: string | URL): boolean {
   }
 
   // If it's already an IP literal, check if it's a loopback address
-  if (isIP(hostname)) {
-    return isIpLoopback(hostname)
+  if (IP_V4_REGEX_OBJECT.test(hostname)) {
+    return isLoopbackV4(hostname)
+  }
+
+  if (IP_V6_REGEX_OBJECT.test(hostname)) {
+    return isLoopbackV6(hostname)
   }
 
   // RFC 6761 states that localhost names will always resolve
