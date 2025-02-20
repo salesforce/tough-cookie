@@ -53,14 +53,14 @@ function isIpLoopback(address: string): boolean {
 }
 
 /**
- * Checks if the given host ends with the `.localhost` TLD (case-insensitive).
+ * Checks if the given lowercase host ends with the `.localhost` TLD.
  *
  * @remarks
- * @param host - The host string to check.
+ * @param lowerHost - The lowercase host string to check.
  * @returns `true` if the host ends with `.localhost`, otherwise `false`.
  */
-function isNormalizedLocalhostTLD(host: string): boolean {
-  return host.toLowerCase().endsWith('.localhost');
+function isNormalizedLocalhostTLD(lowerHost: string): boolean {
+  return lowerHost.endsWith('.localhost');
 }
 
 /**
@@ -71,8 +71,9 @@ function isNormalizedLocalhostTLD(host: string): boolean {
  * @returns `true` if the host is considered local, otherwise `false`.
  */
 function isLocalHostname(host: string): boolean {
-  return host.toLowerCase() === 'localhost' ||
-    isNormalizedLocalhostTLD(host);
+  const lowerHost = host.toLowerCase();
+  return lowerHost === 'localhost' ||
+    isNormalizedLocalhostTLD(lowerHost);
 }
 
 /**
