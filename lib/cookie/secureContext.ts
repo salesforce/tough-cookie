@@ -1,12 +1,5 @@
 import { IP_V4_REGEX_OBJECT, IP_V6_REGEX_OBJECT } from './constants'
 
-/**
- * Checks if the given IPv4 address is in the 127.0.0.0/8 loopback range.
- *
- * @remarks
- * @param address - The IPv4 address to check.
- * @returns `true` if the address is loopback, otherwise `false`.
- */
 function isLoopbackV4(address: string): boolean {
   // 127.0.0.0/8: first octet = 127
   const octets = address.split('.')
@@ -17,13 +10,6 @@ function isLoopbackV4(address: string): boolean {
   )
 }
 
-/**
- * Checks if the given IPv6 address is the loopback address (`::1`).
- *
- * @remarks
- * @param address - The IPv6 address to check.
- * @returns `true` if the address is loopback, otherwise `false`.
- */
 function isLoopbackV6(address: string): boolean {
   // new URL(...) follows the WHATWG URL Standard
   // which compresses IPv6 addresses, therefore the IPv6
@@ -32,36 +18,16 @@ function isLoopbackV6(address: string): boolean {
   return address === '::1'
 }
 
-/**
- * Checks if the given lowercase host ends with the `.localhost` TLD.
- *
- * @remarks
- * @param lowerHost - The lowercase host string to check.
- * @returns `true` if the host ends with `.localhost`, otherwise `false`.
- */
 function isNormalizedLocalhostTLD(lowerHost: string): boolean {
   return lowerHost.endsWith('.localhost')
 }
 
-/**
- * Checks if the given host is `localhost` or matches `*.localhost`.
- *
- * @remarks
- * @param host - The host string to check.
- * @returns `true` if the host is considered local, otherwise `false`.
- */
 function isLocalHostname(host: string): boolean {
   const lowerHost = host.toLowerCase()
   return lowerHost === 'localhost' || isNormalizedLocalhostTLD(lowerHost)
 }
 
-/**
- * Removes leading and trailing square brackets if present.
- * Adapted from https://github.com/chromium/chromium/blob/main/url/gurl.cc#L440-L448
- *
- * @param host - The host string to process.
- * @returns The host string without leading and trailing square brackets if previously present.
- */
+// Adapted from https://github.com/chromium/chromium/blob/main/url/gurl.cc#L440-L448
 function hostNoBrackets(host: string): string {
   if (host.length >= 2 && host.startsWith('[') && host.endsWith(']')) {
     return host.substring(1, host.length - 1)
