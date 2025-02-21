@@ -859,7 +859,8 @@ export class CookieJar {
     const host = canonicalDomain(context.hostname)
     const path = context.pathname || '/'
 
-    const secure = isPotentiallyTrustworthy(url)
+    // https://www.w3.org/TR/secure-contexts/#is-origin-trustworthy
+    const potentiallyTrustworthy = isPotentiallyTrustworthy(url)
 
     let sameSiteLevel = 0
     if (options.sameSiteContext) {
@@ -904,7 +905,7 @@ export class CookieJar {
 
       // "If the cookie's secure-only-flag is true, then the request-uri's
       // scheme must denote a "secure" protocol"
-      if (c.secure && !secure) {
+      if (c.secure && !potentiallyTrustworthy) {
         return false
       }
 
