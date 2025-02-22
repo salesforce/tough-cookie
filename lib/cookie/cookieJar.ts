@@ -859,6 +859,9 @@ export class CookieJar {
     const host = canonicalDomain(context.hostname)
     const path = context.pathname || '/'
 
+    // https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-19#section-5.8.3-2.1.2.3.2
+    // deliberately expects the user agent to determine the notion of a "secure" connection,
+    // and in practice this converges to a "potentially trustworthy origin" as defined in:
     // https://www.w3.org/TR/secure-contexts/#is-origin-trustworthy
     const potentiallyTrustworthy = isPotentiallyTrustworthy(url)
 
