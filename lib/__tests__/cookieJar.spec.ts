@@ -1026,6 +1026,129 @@ describe('CookieJar', () => {
       ])
     })
   })
+
+  describe('Potentially Trustworthy Contexts', () => {
+    let jar: CookieJar
+
+    beforeEach(() => {
+      jar = new CookieJar()
+    })
+
+    it('should store and retrieve a secure cookie on http://localhost', async () => {
+      const c = await jar.setCookie(
+        'mysession=abc; Secure; Path=/',
+        'http://localhost/test',
+      )
+      expect(c).toBeInstanceOf(Cookie)
+      expect(c?.key).toBe('mysession')
+      expect(c?.value).toBe('abc')
+
+      // Because `localhost` is now considered trustworthy, we should retrieve the Secure cookie.
+      const cookies = await jar.getCookies('http://localhost/test')
+      expect(cookies.map((ck) => ck.key)).toEqual(['mysession'])
+    })
+
+    it('should store and retrieve a secure cookie on http://127.0.0.1', async () => {
+      const c = await jar.setCookie(
+        'loopcookie=loop123; Secure; Path=/',
+        'http://127.0.0.1/',
+      )
+      expect(c).toBeInstanceOf(Cookie)
+      expect(c?.key).toBe('loopcookie')
+      expect(c?.value).toBe('loop123')
+
+      // Loopback IPv4 addresses are also considered trustworthy
+      const cookies = await jar.getCookies('http://127.0.0.1/')
+      expect(cookies.map((ck) => ck.key)).toEqual(['loopcookie'])
+    })
+
+    it('should store and retrieve a secure cookie on http://[::1]', async () => {
+      const c = await jar.setCookie(
+        'ipv6cookie=ipv6val; Secure; Path=/',
+        'http://[::1]/',
+      )
+      expect(c).toBeInstanceOf(Cookie)
+      expect(c?.key).toBe('ipv6cookie')
+      expect(c?.value).toBe('ipv6val')
+
+      // IPv6 loopback is also deemed trustworthy
+      const cookies = await jar.getCookies('http://[::1]/')
+      expect(cookies.map((ck) => ck.key)).toEqual(['ipv6cookie'])
+    })
+
+    it('should NOT retrieve a secure cookie set on http://example.com', async () => {
+      const c = await jar.setCookie(
+        'secret=123; Secure; Path=/',
+        'http://example.com/',
+      )
+      expect(c).toBeInstanceOf(Cookie)
+      expect(c?.key).toBe('secret')
+      expect(c?.value).toBe('123')
+
+      // Plain HTTP + "example.com" is not a loopback or localhost -> not a trustworthy origin
+      // So a Secure cookie should NOT be returned.
+      const cookies = await jar.getCookies('http://example.com/')
+      const cookieKeys = cookies.map((ck) => ck.key)
+      expect(cookieKeys).not.toContain('secret')
+    })
+
+    it('should return false for an invalid URL string', async () => {
+      expect.assertions(1)
+      await expect(
+        jar.setCookie('securecookie=1; Secure; Path=/', 'invalid-url'),
+      ).rejects.toThrow()
+    })
+
+    it('should accept a pre-constructed URL object', async () => {
+      const urlObject = new URL('http://localhost/foo')
+      const c = await jar.setCookie('testurlobj=abc; Secure', urlObject)
+      expect(c).toBeInstanceOf(Cookie)
+      expect(c?.key).toBe('testurlobj')
+
+      // Because it's localhost, the cookie is considered secure.
+      const cookies = await jar.getCookies(urlObject)
+      expect(cookies.map((ck) => ck.key)).toEqual(['testurlobj'])
+    })
+
+    it('should store and retrieve a secure cookie on *.localhost', async () => {
+      const c = await jar.setCookie(
+        'appcookie=someval; Secure; Path=/',
+        'http://subdomain.localhost/',
+      )
+      expect(c).toBeInstanceOf(Cookie)
+      expect(c?.key).toBe('appcookie')
+      expect(c?.value).toBe('someval')
+
+      const cookies = await jar.getCookies('http://subdomain.localhost/')
+      expect(cookies.map((ck) => ck.key)).toEqual(['appcookie'])
+    })
+
+    it('should store and retrieve a secure cookie on https://example.com', async () => {
+      const c = await jar.setCookie(
+        'secureCookie=onHTTPS; Secure; Path=/',
+        'https://example.com/',
+      )
+      expect(c).toBeInstanceOf(Cookie)
+      expect(c?.key).toBe('secureCookie')
+      expect(c?.value).toBe('onHTTPS')
+
+      const cookies = await jar.getCookies('https://example.com/')
+      expect(cookies.map((ck) => ck.key)).toEqual(['secureCookie'])
+    })
+
+    it('should store and retrieve a secure cookie on wss://example.com', async () => {
+      const c = await jar.setCookie(
+        'wssCookie=onWSS; Secure; Path=/',
+        'wss://example.com/',
+      )
+      expect(c).toBeInstanceOf(Cookie)
+      expect(c?.key).toBe('wssCookie')
+      expect(c?.value).toBe('onWSS')
+
+      const cookies = await jar.getCookies('wss://example.com/')
+      expect(cookies.map((ck) => ck.key)).toEqual(['wssCookie'])
+    })
+  })
 })
 
 it('should allow cookies with the same name under different domains and/or paths', async () => {

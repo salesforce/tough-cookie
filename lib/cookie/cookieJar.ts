@@ -23,6 +23,7 @@ import { defaultPath } from './defaultPath'
 import { domainMatch } from './domainMatch'
 import { cookieCompare } from './cookieCompare'
 import { version } from '../version'
+import { isPotentiallyTrustworthy } from './secureContext'
 
 const defaultSetCookieOptions: SetCookieOptions = {
   loose: false,
@@ -858,9 +859,11 @@ export class CookieJar {
     const host = canonicalDomain(context.hostname)
     const path = context.pathname || '/'
 
-    const secure =
-      context.protocol &&
-      (context.protocol == 'https:' || context.protocol == 'wss:')
+    // https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-19#section-5.8.3-2.1.2.3.2
+    // deliberately expects the user agent to determine the notion of a "secure" connection,
+    // and in practice this converges to a "potentially trustworthy origin" as defined in:
+    // https://www.w3.org/TR/secure-contexts/#is-origin-trustworthy
+    const potentiallyTrustworthy = isPotentiallyTrustworthy(url)
 
     let sameSiteLevel = 0
     if (options.sameSiteContext) {
@@ -905,7 +908,7 @@ export class CookieJar {
 
       // "If the cookie's secure-only-flag is true, then the request-uri's
       // scheme must denote a "secure" protocol"
-      if (c.secure && !secure) {
+      if (c.secure && !potentiallyTrustworthy) {
         return false
       }
 
