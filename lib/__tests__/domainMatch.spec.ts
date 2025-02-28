@@ -74,6 +74,9 @@ describe('domainMatch', () => {
     ['🫠.com', 'xn--129h.com', true], // Emoji!
     ['ρһіѕһ.info', 'xn--2xa01ac71bc.info', true], // Greek + Cyrillic characters
     ['猫.cat', 'xn--z7x.cat', true], // Japanese characters
+
+    // domain that needs to be canonicalized
+    ['www.google.com', '.google.com', true],
   ])('domainMatch(%s, %s) => %s', (string, domain, expectedValue) => {
     expect(domainMatch(string, domain)).toBe(expectedValue)
   })
