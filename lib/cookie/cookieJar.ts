@@ -91,6 +91,7 @@ const defaultGetCookieOptions: GetCookiesOptions = {
   allPaths: false,
   sameSiteContext: undefined,
   sort: undefined,
+  allowSecureOnLocal: true,
 }
 
 /**
@@ -151,6 +152,19 @@ export interface GetCookiesOptions {
    * Defaults to `undefined` if not provided.
    */
   sort?: boolean | undefined
+  /**
+   * Flag to indicate if localhost and loopback addresses with an unsecure scheme should retrieve `Secure` cookies.
+   *
+   * If `true`, localhost, loopback addresses or similarly local addresses are treated as secure contexts
+   * and thus will retrieve `Secure` cookies even with an unsecure scheme.
+   *
+   * If `false`, only secure schemes (`https` and `wss`) will retrieve `Secure` cookies.
+   *
+   * @remarks
+   * When set to `true`, the {@link https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin | potentially trustworthy}
+   * algorithm is followed to determine if a URL is considered a secure context.
+   */
+  allowSecureOnLocal?: boolean | undefined
 }
 
 /**
@@ -863,7 +877,10 @@ export class CookieJar {
     // deliberately expects the user agent to determine the notion of a "secure" connection,
     // and in practice this converges to a "potentially trustworthy origin" as defined in:
     // https://www.w3.org/TR/secure-contexts/#is-origin-trustworthy
-    const potentiallyTrustworthy = isPotentiallyTrustworthy(url)
+    const potentiallyTrustworthy = isPotentiallyTrustworthy(
+      url,
+      options.allowSecureOnLocal ?? true,
+    )
 
     let sameSiteLevel = 0
     if (options.sameSiteContext) {

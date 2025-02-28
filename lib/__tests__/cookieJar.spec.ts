@@ -1148,6 +1148,90 @@ describe('CookieJar', () => {
       const cookies = await jar.getCookies('wss://example.com/')
       expect(cookies.map((ck) => ck.key)).toEqual(['wssCookie'])
     })
+
+    describe('when allowSecureOnLocal is set to false', () => {
+      it('should store but NOT retrieve a secure cookie on http://localhost', async () => {
+        await jar.setCookie(
+          'testLocalhost=abc; Secure; Path=/',
+          'http://localhost/test',
+        )
+        // By default (or explicitly true), it is retrieved.
+        const cookiesDefault = await jar.getCookies('http://localhost/test')
+        expect(cookiesDefault.map((c) => c.key)).toContain('testLocalhost')
+
+        // Now retrieving with allowSecureOnLocal = false should skip the secure cookie.
+        const cookiesFalse = await jar.getCookies('http://localhost/test', {
+          allowSecureOnLocal: false,
+        })
+        expect(cookiesFalse.map((c) => c.key)).not.toContain('testLocalhost')
+      })
+
+      it('should store but NOT retrieve a secure cookie on http://127.0.0.1', async () => {
+        await jar.setCookie(
+          'loopcookie=loopval; Secure; Path=/',
+          'http://127.0.0.1/',
+        )
+        // Default retrieval => present
+        const cookiesDefault = await jar.getCookies('http://127.0.0.1/')
+        expect(cookiesDefault.map((c) => c.key)).toContain('loopcookie')
+
+        // Retrieval with allowSecureOnLocal = false => not present
+        const cookiesFalse = await jar.getCookies('http://127.0.0.1/', {
+          allowSecureOnLocal: false,
+        })
+        expect(cookiesFalse.map((c) => c.key)).not.toContain('loopcookie')
+      })
+
+      it('should store but NOT retrieve a secure cookie on http://[::1]', async () => {
+        await jar.setCookie(
+          'ipv6cookie=ipv6val; Secure; Path=/',
+          'http://[::1]/',
+        )
+        // Default retrieval => present
+        const cookiesDefault = await jar.getCookies('http://[::1]/')
+        expect(cookiesDefault.map((c) => c.key)).toContain('ipv6cookie')
+
+        // Retrieval with allowSecureOnLocal = false => not present
+        const cookiesFalse = await jar.getCookies('http://[::1]/', {
+          allowSecureOnLocal: false,
+        })
+        expect(cookiesFalse.map((c) => c.key)).not.toContain('ipv6cookie')
+      })
+
+      it('should store but NOT retrieve a secure cookie on http://subdomain.localhost', async () => {
+        await jar.setCookie(
+          'appcookie=someval; Secure; Path=/',
+          'http://subdomain.localhost/',
+        )
+        // Default retrieval => present
+        const cookiesDefault = await jar.getCookies(
+          'http://subdomain.localhost/',
+        )
+        expect(cookiesDefault.map((c) => c.key)).toContain('appcookie')
+
+        // Retrieval with allowSecureOnLocal = false => not present
+        const cookiesFalse = await jar.getCookies(
+          'http://subdomain.localhost/',
+          {
+            allowSecureOnLocal: false,
+          },
+        )
+        expect(cookiesFalse.map((c) => c.key)).not.toContain('appcookie')
+      })
+
+      it('should STILL retrieve a secure cookie on https://localhost even if allowSecureOnLocal = false', async () => {
+        // Because https:// is itself a secure scheme, it is always "potentially trustworthy."
+        await jar.setCookie(
+          'secureLocalCookie=onHTTPS; Secure; Path=/',
+          'https://localhost/',
+        )
+        // Even with allowSecureOnLocal = false, the scheme is HTTPS, which is trusted.
+        const cookies = await jar.getCookies('https://localhost/', {
+          allowSecureOnLocal: false,
+        })
+        expect(cookies.map((c) => c.key)).toContain('secureLocalCookie')
+      })
+    })
   })
 })
 

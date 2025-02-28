@@ -40,14 +40,19 @@ function hostNoBrackets(host: string): string {
  *
  * A URL is considered potentially trustworthy if it:
  * - Uses HTTPS or WSS schemes
- * - Points to a loopback address (IPv4 127.0.0.0/8 or IPv6 ::1)
- * - Uses localhost or *.localhost hostnames
+ * - If `allowSecureOnLocal` is `true`:
+ *   - Points to a loopback address (IPv4 127.0.0.0/8 or IPv6 ::1)
+ *   - Uses localhost or *.localhost hostnames
  *
  * @param inputUrl - The URL string or URL object to check.
+ * @param allowSecureOnLocal - Whether to treat localhost and loopback addresses as trustworthy.
  * @returns `true` if the URL is potentially trustworthy, otherwise `false`.
  * @see {@link https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin W3C Spec}
  */
-export function isPotentiallyTrustworthy(inputUrl: string | URL): boolean {
+export function isPotentiallyTrustworthy(
+  inputUrl: string | URL,
+  allowSecureOnLocal: boolean = true,
+): boolean {
   let url: URL
 
   // try ... catch doubles as an opaque origin check
@@ -69,6 +74,10 @@ export function isPotentiallyTrustworthy(inputUrl: string | URL): boolean {
     scheme === 'wss' // https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin
   ) {
     return true
+  }
+
+  if (!allowSecureOnLocal) {
+    return false
   }
 
   // If it's already an IP literal, check if it's a loopback address
