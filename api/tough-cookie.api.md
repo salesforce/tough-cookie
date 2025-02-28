@@ -168,6 +168,7 @@ export function fromJSON(str: unknown): Cookie | undefined;
 
 // @public
 export interface GetCookiesOptions {
+    allowSecureOnLocal?: boolean | undefined;
     allPaths?: boolean | undefined;
     expire?: boolean | undefined;
     http?: boolean | undefined;

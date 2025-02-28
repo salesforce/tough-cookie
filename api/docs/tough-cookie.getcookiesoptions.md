@@ -37,6 +37,29 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
+[allowSecureOnLocal?](./tough-cookie.getcookiesoptions.allowsecureonlocal.md)
+
+
+</td><td>
+
+
+</td><td>
+
+boolean \| undefined
+
+
+</td><td>
+
+_(Optional)_ Flag to indicate if localhost and loopback addresses with an unsecure scheme should retrieve `Secure` cookies.
+
+If `true`<!-- -->, localhost, loopback addresses or similarly local addresses are treated as secure contexts and thus will retrieve `Secure` cookies even with an unsecure scheme.
+
+If `false`<!-- -->, only secure schemes (`https` and `wss`<!-- -->) will retrieve `Secure` cookies.
+
+
+</td></tr>
+<tr><td>
+
 [allPaths?](./tough-cookie.getcookiesoptions.allpaths.md)
 
 
@@ -117,7 +140,7 @@ _(Optional)_ Set this to 'none', 'lax', or 'strict' to enforce SameSite cookies 
 
 - `'none'` - This indicates a cross-origin request.
 
-- `undefined` - SameSite is not be enforced! This can be a valid use-case for when CSRF isn't in the threat model of the system being built.
+- `undefined` - SameSite is not enforced! This can be a valid use-case for when CSRF isn't in the threat model of the system being built.
 
 Defaults to `undefined` if not provided.
 
