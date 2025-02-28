@@ -47,7 +47,7 @@ function hostNoBrackets(host: string): string {
  * @param inputUrl - The URL string or URL object to check.
  * @param allowSecureOnLocal - Whether to treat localhost and loopback addresses as trustworthy.
  * @returns `true` if the URL is potentially trustworthy, otherwise `false`.
- * @see {@link https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin W3C Spec}
+ * @see {@link https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin | Potentially Trustworthy Origin algorithm}
  */
 export function isPotentiallyTrustworthy(
   inputUrl: string | URL,
