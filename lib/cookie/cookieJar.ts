@@ -55,7 +55,7 @@ export interface SetCookieOptions {
    *
    * - `'none'` - This indicates a cross-origin request.
    *
-   * - `undefined` - SameSite is not be enforced! This can be a valid use-case for when
+   * - `undefined` - SameSite is not enforced! This can be a valid use-case for when
    *     CSRF isn't in the threat model of the system being built.
    *
    * Defaults to `undefined` if not provided.
@@ -110,7 +110,7 @@ export interface GetCookiesOptions {
    *
    * @remarks
    * - Using `false` returns expired cookies and does not remove them from the
-   *     store which is potentially useful for replaying `Set-Cookie` headers.
+   *     store, which is potentially useful for replaying `Set-Cookie` headers.
    *
    * Defaults to `true` if not provided.
    */
@@ -135,7 +135,7 @@ export interface GetCookiesOptions {
    *
    * - `'none'` - This indicates a cross-origin request.
    *
-   * - `undefined` - SameSite is not be enforced! This can be a valid use-case for when
+   * - `undefined` - SameSite is not enforced! This can be a valid use-case for when
    *     CSRF isn't in the threat model of the system being built.
    *
    * Defaults to `undefined` if not provided.
@@ -369,7 +369,7 @@ export class CookieJar {
    *     properties.
    *
    * - As per the RFC, the {@link Cookie.hostOnly} flag is set if there was no `Domain={value}`
-   *     atttribute on the cookie string. The {@link Cookie.domain} property is set to the
+   *     attribute on the cookie string. The {@link Cookie.domain} property is set to the
    *     fully-qualified hostname of `currentUrl` in this case. Matching this cookie requires an
    *     exact hostname match (not a {@link domainMatch} as per usual)
    *
@@ -392,7 +392,7 @@ export class CookieJar {
    *     properties.
    *
    * - As per the RFC, the {@link Cookie.hostOnly} flag is set if there was no `Domain={value}`
-   *     atttribute on the cookie string. The {@link Cookie.domain} property is set to the
+   *     attribute on the cookie string. The {@link Cookie.domain} property is set to the
    *     fully-qualified hostname of `currentUrl` in this case. Matching this cookie requires an
    *     exact hostname match (not a {@link domainMatch} as per usual)
    *
@@ -417,7 +417,7 @@ export class CookieJar {
    *     properties.
    *
    * - As per the RFC, the {@link Cookie.hostOnly} flag is set if there was no `Domain={value}`
-   *     atttribute on the cookie string. The {@link Cookie.domain} property is set to the
+   *     attribute on the cookie string. The {@link Cookie.domain} property is set to the
    *     fully-qualified hostname of `currentUrl` in this case. Matching this cookie requires an
    *     exact hostname match (not a {@link domainMatch} as per usual)
    *
@@ -735,7 +735,7 @@ export class CookieJar {
    *     properties.
    *
    * - As per the RFC, the {@link Cookie.hostOnly} flag is set if there was no `Domain={value}`
-   *     atttribute on the cookie string. The {@link Cookie.domain} property is set to the
+   *     attribute on the cookie string. The {@link Cookie.domain} property is set to the
    *     fully-qualified hostname of `currentUrl` in this case. Matching this cookie requires an
    *     exact hostname match (not a {@link domainMatch} as per usual)
    *
