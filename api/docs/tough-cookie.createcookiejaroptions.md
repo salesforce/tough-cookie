@@ -37,6 +37,29 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
+[allowSecureOnLocal?](./tough-cookie.createcookiejaroptions.allowsecureonlocal.md)
+
+
+</td><td>
+
+
+</td><td>
+
+boolean \| undefined
+
+
+</td><td>
+
+_(Optional)_ Flag to indicate if localhost and loopback addresses with an unsecure scheme should store and retrieve `Secure` cookies.
+
+If `true`<!-- -->, localhost, loopback addresses or similarly local addresses are treated as secure contexts and thus will store and retrieve `Secure` cookies even with an unsecure scheme.
+
+If `false`<!-- -->, only secure schemes (`https` and `wss`<!-- -->) will store and retrieve `Secure` cookies.
+
+
+</td></tr>
+<tr><td>
+
 [allowSpecialUseDomain?](./tough-cookie.createcookiejaroptions.allowspecialusedomain.md)
 
 
