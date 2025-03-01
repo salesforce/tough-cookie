@@ -124,6 +124,7 @@ export class CookieJar {
 
 // @public
 export interface CreateCookieJarOptions {
+    allowSecureOnLocal?: boolean | undefined;
     allowSpecialUseDomain?: boolean | undefined;
     looseMode?: boolean | undefined;
     prefixSecurity?: 'strict' | 'silent' | 'unsafe-disabled' | undefined;
@@ -168,7 +169,6 @@ export function fromJSON(str: unknown): Cookie | undefined;
 
 // @public
 export interface GetCookiesOptions {
-    allowSecureOnLocal?: boolean | undefined;
     allPaths?: boolean | undefined;
     expire?: boolean | undefined;
     http?: boolean | undefined;
