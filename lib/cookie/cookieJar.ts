@@ -91,7 +91,6 @@ const defaultGetCookieOptions: GetCookiesOptions = {
   allPaths: false,
   sameSiteContext: undefined,
   sort: undefined,
-  allowSecureOnLocal: true,
 }
 
 /**
@@ -152,19 +151,6 @@ export interface GetCookiesOptions {
    * Defaults to `undefined` if not provided.
    */
   sort?: boolean | undefined
-  /**
-   * Flag to indicate if localhost and loopback addresses with an unsecure scheme should retrieve `Secure` cookies.
-   *
-   * If `true`, localhost, loopback addresses or similarly local addresses are treated as secure contexts
-   * and thus will retrieve `Secure` cookies even with an unsecure scheme.
-   *
-   * If `false`, only secure schemes (`https` and `wss`) will retrieve `Secure` cookies.
-   *
-   * @remarks
-   * When set to `true`, the {@link https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin | potentially trustworthy}
-   * algorithm is followed to determine if a URL is considered a secure context.
-   */
-  allowSecureOnLocal?: boolean | undefined
 }
 
 /**
@@ -198,6 +184,19 @@ export interface CreateCookieJarOptions {
    * Defaults to `true` if not specified.
    */
   allowSpecialUseDomain?: boolean | undefined
+  /**
+   * Flag to indicate if localhost and loopback addresses with an unsecure scheme should store and retrieve `Secure` cookies.
+   *
+   * If `true`, localhost, loopback addresses or similarly local addresses are treated as secure contexts
+   * and thus will store and retrieve `Secure` cookies even with an unsecure scheme.
+   *
+   * If `false`, only secure schemes (`https` and `wss`) will store and retrieve `Secure` cookies.
+   *
+   * @remarks
+   * When set to `true`, the {@link https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin | potentially trustworthy}
+   *  algorithm is followed to determine if a URL is considered a secure context.
+   */
+  allowSecureOnLocal?: boolean | undefined
 }
 
 const SAME_SITE_CONTEXT_VAL_ERR =
@@ -312,6 +311,7 @@ export class CookieJar {
   private readonly rejectPublicSuffixes: boolean
   private readonly enableLooseMode: boolean
   private readonly allowSpecialUseDomain: boolean
+  private readonly allowSecureOnLocal: boolean
 
   /**
    * The configured {@link Store} for the {@link CookieJar}.
@@ -343,6 +343,7 @@ export class CookieJar {
     this.rejectPublicSuffixes = options?.rejectPublicSuffixes ?? true
     this.enableLooseMode = options?.looseMode ?? false
     this.allowSpecialUseDomain = options?.allowSpecialUseDomain ?? true
+    this.allowSecureOnLocal = options?.allowSecureOnLocal ?? true
     this.prefixSecurity = getNormalizedPrefixSecurity(
       options?.prefixSecurity ?? 'silent',
     )
@@ -607,7 +608,23 @@ export class CookieJar {
       cookie.pathIsDefault = true
     }
 
-    // S5.3 step 8: NOOP; secure attribute
+    // S5.3 step 8: secure attribute:
+    // "If the request-uri does not denote a "secure" connection
+    // (as defined by the user agent), and the cookie's secure-only-flag
+    // is true, then abort these steps and ignore the cookie entirely."
+    const potentiallyTrustworthy = isPotentiallyTrustworthy(
+      url,
+      this.allowSecureOnLocal,
+    )
+    if (!potentiallyTrustworthy && cookie.secure) {
+      const err = new Error(
+        'Cookie is Secure but this is not a secure connection',
+      )
+      return options?.ignoreError
+        ? promiseCallback.resolve(undefined)
+        : promiseCallback.reject(err)
+    }
+
     // S5.3 step 9: NOOP; httpOnly attribute
 
     // S5.3 step 10
@@ -879,7 +896,7 @@ export class CookieJar {
     // https://www.w3.org/TR/secure-contexts/#is-origin-trustworthy
     const potentiallyTrustworthy = isPotentiallyTrustworthy(
       url,
-      options.allowSecureOnLocal ?? true,
+      this.allowSecureOnLocal,
     )
 
     let sameSiteLevel = 0

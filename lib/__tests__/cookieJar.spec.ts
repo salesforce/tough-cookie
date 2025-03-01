@@ -451,29 +451,36 @@ describe('CookieJar', () => {
 
     describe('retrieving cookies', () => {
       beforeEach(async () => {
-        const url = 'http://example.com/index.html'
+        const insecureUrl = 'http://example.com/index.html'
+        const secureUrl = 'https://example.com/index.html'
 
-        await cookieJar.setCookie('a=1; Domain=example.com; Path=/', url)
+        await cookieJar.setCookie(
+          'a=1; Domain=example.com; Path=/',
+          insecureUrl,
+        )
         jest.advanceTimersByTime(1000)
 
         await cookieJar.setCookie(
           'b=2; Domain=example.com; Path=/; HttpOnly',
-          url,
+          insecureUrl,
         )
         jest.advanceTimersByTime(1000)
 
         await cookieJar.setCookie(
           'c=3; Domain=example.com; Path=/; Secure',
-          url,
+          secureUrl,
         )
         jest.advanceTimersByTime(1000)
 
         // path
-        await cookieJar.setCookie('d=4; Domain=example.com; Path=/foo', url)
+        await cookieJar.setCookie(
+          'd=4; Domain=example.com; Path=/foo',
+          insecureUrl,
+        )
         jest.advanceTimersByTime(1000)
 
         // host only
-        await cookieJar.setCookie('e=5', url)
+        await cookieJar.setCookie('e=5', insecureUrl)
         jest.advanceTimersByTime(1000)
 
         // other domain
@@ -486,14 +493,14 @@ describe('CookieJar', () => {
         // expired
         await cookieJar.setCookie(
           'g=7; Domain=example.com; Path=/; Expires=Tue, 18 Oct 2011 00:00:00 GMT',
-          url,
+          insecureUrl,
         )
         jest.advanceTimersByTime(1000)
 
         // expired via Max-Age
         await cookieJar.setCookie(
           'h=8; Domain=example.com; Path=/; Max-Age=1',
-          url,
+          insecureUrl,
         )
         jest.advanceTimersByTime(2000) // so that 'h=8' expires
       })
@@ -740,32 +747,37 @@ describe('CookieJar', () => {
 
     describe('retrieving cookie strings', () => {
       beforeEach(async () => {
-        const url = 'http://example.com/index.html'
+        const insecureUrl = 'http://example.com/index.html'
+        const secureUrl = 'https://example.com/index.html'
 
         const at = (timeFromNow: number): { now: Date } => ({
           now: new Date(Date.now() + timeFromNow),
         })
 
         const cookies = await Promise.all([
-          cookieJar.setCookie('a=1; Domain=example.com; Path=/', url, at(0)),
+          cookieJar.setCookie(
+            'a=1; Domain=example.com; Path=/',
+            insecureUrl,
+            at(0),
+          ),
           cookieJar.setCookie(
             'b=2; Domain=example.com; Path=/; HttpOnly',
-            url,
+            insecureUrl,
             at(1000),
           ),
           cookieJar.setCookie(
             'c=3; Domain=example.com; Path=/; Secure',
-            url,
+            secureUrl,
             at(2000),
           ),
           // path
           cookieJar.setCookie(
             'd=4; Domain=example.com; Path=/foo',
-            url,
+            insecureUrl,
             at(3000),
           ),
           // host only
-          cookieJar.setCookie('e=5', url, at(4000)),
+          cookieJar.setCookie('e=5', insecureUrl, at(4000)),
           // other domain
           cookieJar.setCookie(
             'f=6; Domain=nodejs.org; Path=/',
@@ -775,13 +787,13 @@ describe('CookieJar', () => {
           // expired
           cookieJar.setCookie(
             'g=7; Domain=example.com; Path=/; Expires=Tue, 18 Oct 2011 00:00:00 GMT',
-            url,
+            insecureUrl,
             at(6000),
           ),
           // expired via Max-Age
           cookieJar.setCookie(
             'h=8; Domain=example.com; Path=/; Max-Age=1',
-            url,
+            insecureUrl,
           ),
         ])
 
@@ -837,32 +849,37 @@ describe('CookieJar', () => {
 
     describe('retrieving cookie strings', () => {
       beforeEach(async () => {
-        const url = 'http://example.com/index.html'
+        const insecureUrl = 'http://example.com/index.html'
+        const secureUrl = 'https://example.com/index.html'
 
         const at = (timeFromNow: number): { now: Date } => ({
           now: new Date(Date.now() + timeFromNow),
         })
 
         const cookies = await Promise.all([
-          cookieJar.setCookie('a=1; Domain=example.com; Path=/', url, at(0)),
+          cookieJar.setCookie(
+            'a=1; Domain=example.com; Path=/',
+            insecureUrl,
+            at(0),
+          ),
           cookieJar.setCookie(
             'b=2; Domain=example.com; Path=/; HttpOnly',
-            url,
+            insecureUrl,
             at(1000),
           ),
           cookieJar.setCookie(
             'c=3; Domain=example.com; Path=/; Secure',
-            url,
+            secureUrl,
             at(2000),
           ),
           // path
           cookieJar.setCookie(
             'd=4; Domain=example.com; Path=/foo',
-            url,
+            insecureUrl,
             at(3000),
           ),
           // host only
-          cookieJar.setCookie('e=5', url, at(4000)),
+          cookieJar.setCookie('e=5', insecureUrl, at(4000)),
           // other domain
           cookieJar.setCookie(
             'f=6; Domain=nodejs.org; Path=/',
@@ -872,13 +889,13 @@ describe('CookieJar', () => {
           // expired
           cookieJar.setCookie(
             'g=7; Domain=example.com; Path=/; Expires=Tue, 18 Oct 2011 00:00:00 GMT',
-            url,
+            insecureUrl,
             at(6000),
           ),
           // expired via Max-Age
           cookieJar.setCookie(
             'h=8; Domain=example.com; Path=/; Max-Age=1',
-            url,
+            insecureUrl,
           ),
         ])
 
@@ -1076,22 +1093,6 @@ describe('CookieJar', () => {
       expect(cookies.map((ck) => ck.key)).toEqual(['ipv6cookie'])
     })
 
-    it('should NOT retrieve a secure cookie set on http://example.com', async () => {
-      const c = await jar.setCookie(
-        'secret=123; Secure; Path=/',
-        'http://example.com/',
-      )
-      expect(c).toBeInstanceOf(Cookie)
-      expect(c?.key).toBe('secret')
-      expect(c?.value).toBe('123')
-
-      // Plain HTTP + "example.com" is not a loopback or localhost -> not a trustworthy origin
-      // So a Secure cookie should NOT be returned.
-      const cookies = await jar.getCookies('http://example.com/')
-      const cookieKeys = cookies.map((ck) => ck.key)
-      expect(cookieKeys).not.toContain('secret')
-    })
-
     it('should return false for an invalid URL string', async () => {
       expect.assertions(1)
       await expect(
@@ -1150,86 +1151,126 @@ describe('CookieJar', () => {
     })
 
     describe('when allowSecureOnLocal is set to false', () => {
-      it('should store but NOT retrieve a secure cookie on http://localhost', async () => {
-        await jar.setCookie(
-          'testLocalhost=abc; Secure; Path=/',
-          'http://localhost/test',
-        )
-        // By default (or explicitly true), it is retrieved.
-        const cookiesDefault = await jar.getCookies('http://localhost/test')
-        expect(cookiesDefault.map((c) => c.key)).toContain('testLocalhost')
-
-        // Now retrieving with allowSecureOnLocal = false should skip the secure cookie.
-        const cookiesFalse = await jar.getCookies('http://localhost/test', {
-          allowSecureOnLocal: false,
-        })
-        expect(cookiesFalse.map((c) => c.key)).not.toContain('testLocalhost')
+      beforeEach(() => {
+        jar = new CookieJar(null, { allowSecureOnLocal: false })
       })
 
-      it('should store but NOT retrieve a secure cookie on http://127.0.0.1', async () => {
-        await jar.setCookie(
-          'loopcookie=loopval; Secure; Path=/',
-          'http://127.0.0.1/',
-        )
-        // Default retrieval => present
-        const cookiesDefault = await jar.getCookies('http://127.0.0.1/')
-        expect(cookiesDefault.map((c) => c.key)).toContain('loopcookie')
-
-        // Retrieval with allowSecureOnLocal = false => not present
-        const cookiesFalse = await jar.getCookies('http://127.0.0.1/', {
-          allowSecureOnLocal: false,
+      describe('Storing a secure cookie on a non-secure local origin', () => {
+        it('should throw when setting a Secure cookie on http://localhost', async () => {
+          await expect(
+            jar.setCookie(
+              'testLocalhost=abc; Secure; Path=/',
+              'http://localhost/',
+            ),
+          ).rejects.toThrow(
+            'Cookie is Secure but this is not a secure connection',
+          )
         })
-        expect(cookiesFalse.map((c) => c.key)).not.toContain('loopcookie')
+
+        it('should throw when setting a Secure cookie on http://127.0.0.1', async () => {
+          await expect(
+            jar.setCookie('loopcookie=val; Secure', 'http://127.0.0.1/'),
+          ).rejects.toThrow(
+            'Cookie is Secure but this is not a secure connection',
+          )
+        })
+
+        it('should throw when setting a Secure cookie on http://[::1]', async () => {
+          await expect(
+            jar.setCookie('ipv6cookie=ipv6val; Secure', 'http://[::1]/'),
+          ).rejects.toThrow(
+            'Cookie is Secure but this is not a secure connection',
+          )
+        })
+
+        it('should throw when setting a Secure cookie on http://subdomain.localhost', async () => {
+          await expect(
+            jar.setCookie(
+              'appcookie=someval; Secure',
+              'http://subdomain.localhost/',
+            ),
+          ).rejects.toThrow(
+            'Cookie is Secure but this is not a secure connection',
+          )
+        })
+
+        it('should NOT throw if ignoreError=true, but the cookie is NOT stored', async () => {
+          await expect(
+            jar.setCookie('ignoredCookie=val; Secure', 'http://localhost/', {
+              ignoreError: true,
+            }),
+          ).resolves.toBeUndefined()
+
+          const cookies = await jar.getCookies('http://localhost/')
+          expect(cookies.map((c) => c.key)).not.toContain('ignoredCookie')
+        })
       })
 
-      it('should store but NOT retrieve a secure cookie on http://[::1]', async () => {
-        await jar.setCookie(
-          'ipv6cookie=ipv6val; Secure; Path=/',
-          'http://[::1]/',
-        )
-        // Default retrieval => present
-        const cookiesDefault = await jar.getCookies('http://[::1]/')
-        expect(cookiesDefault.map((c) => c.key)).toContain('ipv6cookie')
+      describe('Storing a secure cookie on a secure local origin', () => {
+        it('should allow storing on https://localhost and retrieve it from https://localhost', async () => {
+          // https:// is always considered potentially trustworthy
+          await expect(
+            jar.setCookie('secureLocal=foo; Secure', 'https://localhost/'),
+          ).resolves.toBeInstanceOf(Cookie)
 
-        // Retrieval with allowSecureOnLocal = false => not present
-        const cookiesFalse = await jar.getCookies('http://[::1]/', {
-          allowSecureOnLocal: false,
+          // Retrieving from the secure origin => cookie should be returned
+          const cookiesHttps = await jar.getCookies('https://localhost/')
+          expect(cookiesHttps.map((c) => c.key)).toContain('secureLocal')
         })
-        expect(cookiesFalse.map((c) => c.key)).not.toContain('ipv6cookie')
+
+        it('should NOT retrieve a secure cookie set on https://localhost if requested from http://localhost', async () => {
+          await jar.setCookie('secureLocal=foo; Secure', 'https://localhost/')
+          // Retrieving from a non-secure scheme => should NOT return the secure cookie
+          const cookiesHttp = await jar.getCookies('http://localhost/')
+          expect(cookiesHttp.map((c) => c.key)).not.toContain('secureLocal')
+        })
+
+        it('should allow storing on https://127.0.0.1 and retrieve it from https://127.0.0.1 only', async () => {
+          await jar.setCookie(
+            'secureLoopback=abc; Secure',
+            'https://127.0.0.1/',
+          )
+          // Secure retrieval => cookie should be returned
+          const cookiesSecure = await jar.getCookies('https://127.0.0.1/')
+          expect(cookiesSecure.map((c) => c.key)).toContain('secureLoopback')
+
+          // Non-secure retrieval => not returned
+          const cookiesInsecure = await jar.getCookies('http://127.0.0.1/')
+          expect(cookiesInsecure.map((c) => c.key)).not.toContain(
+            'secureLoopback',
+          )
+        })
+
+        it('should allow storing on wss://localhost and retrieve it from wss://localhost only', async () => {
+          await jar.setCookie('wsscookie=val; Secure', 'wss://localhost/')
+          const cookiesWss = await jar.getCookies('wss://localhost/')
+          expect(cookiesWss.map((c) => c.key)).toContain('wsscookie')
+
+          // ws:// is not a secure scheme => should not see the cookie
+          const cookiesWs = await jar.getCookies('ws://localhost/')
+          expect(cookiesWs.map((c) => c.key)).not.toContain('wsscookie')
+        })
       })
 
-      it('should store but NOT retrieve a secure cookie on http://subdomain.localhost', async () => {
-        await jar.setCookie(
-          'appcookie=someval; Secure; Path=/',
-          'http://subdomain.localhost/',
-        )
-        // Default retrieval => present
-        const cookiesDefault = await jar.getCookies(
-          'http://subdomain.localhost/',
-        )
-        expect(cookiesDefault.map((c) => c.key)).toContain('appcookie')
-
-        // Retrieval with allowSecureOnLocal = false => not present
-        const cookiesFalse = await jar.getCookies(
-          'http://subdomain.localhost/',
-          {
-            allowSecureOnLocal: false,
-          },
-        )
-        expect(cookiesFalse.map((c) => c.key)).not.toContain('appcookie')
-      })
-
-      it('should STILL retrieve a secure cookie on https://localhost even if allowSecureOnLocal = false', async () => {
-        // Because https:// is itself a secure scheme, it is always "potentially trustworthy."
-        await jar.setCookie(
-          'secureLocalCookie=onHTTPS; Secure; Path=/',
-          'https://localhost/',
-        )
-        // Even with allowSecureOnLocal = false, the scheme is HTTPS, which is trusted.
-        const cookies = await jar.getCookies('https://localhost/', {
-          allowSecureOnLocal: false,
+      describe('Storing a non-secure (plain) cookie on any local origin', () => {
+        // These tests confirm that "allowSecureOnLocal = false" doesn't block normal cookies
+        it('should store and retrieve a non-secure cookie on http://localhost', async () => {
+          await jar.setCookie('plainCookie=123; Path=/', 'http://localhost/')
+          const cookies = await jar.getCookies('http://localhost/')
+          expect(cookies.map((c) => c.key)).toContain('plainCookie')
         })
-        expect(cookies.map((c) => c.key)).toContain('secureLocalCookie')
+
+        it('should store and retrieve a non-secure cookie on http://127.0.0.1', async () => {
+          await jar.setCookie('plainLoop=xyz; Path=/', 'http://127.0.0.1/')
+          const cookies = await jar.getCookies('http://127.0.0.1/')
+          expect(cookies.map((c) => c.key)).toContain('plainLoop')
+        })
+
+        it('should store and retrieve a non-secure cookie on https://localhost', async () => {
+          await jar.setCookie('plainSecure=abc; Path=/', 'https://localhost/')
+          const cookies = await jar.getCookies('https://localhost/')
+          expect(cookies.map((c) => c.key)).toContain('plainSecure')
+        })
       })
     })
   })
