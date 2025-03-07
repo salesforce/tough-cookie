@@ -245,6 +245,8 @@ export class MemoryCookieStore extends Store {
 
     const { domain, path, key } = cookie
 
+    // Guarding against invalid input
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (domain == null || path == null || key == null) {
       return promiseCallback.resolve(undefined)
     }
