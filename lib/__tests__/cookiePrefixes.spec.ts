@@ -1,5 +1,5 @@
-import { PrefixSecurityEnum } from '../cookie/constants'
-import { CookieJar } from '../cookie/cookieJar'
+import { PrefixSecurityEnum } from '../cookie/constants.js'
+import { CookieJar } from '../cookie/cookieJar.js'
 
 let cookieJar: CookieJar
 const insecureUrl = 'http://www.example.com'
