@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest'
 import { PrefixSecurityEnum } from '../cookie/constants.js'
 import { CookieJar } from '../cookie/cookieJar.js'
 

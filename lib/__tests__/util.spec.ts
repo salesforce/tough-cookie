@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest'
 import { safeToString } from '../utils.js'
 
 describe('safeToString', () => {

@@ -29,6 +29,5 @@
     "ignoreDeprecations": "5.0",
     "isolatedModules": true
   },
-  "include": ["lib"],
-  "exclude": ["jest.config.ts"]
+  "include": ["lib"]
 }

@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest'
 import { canonicalDomain } from '../cookie/canonicalDomain.js'
 
 describe('canonicalDomain', () => {

@@ -28,6 +28,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+
+import { beforeEach, describe, expect, it } from 'vitest'
 import { Cookie } from '../cookie/cookie.js'
 import { CookieJar } from '../cookie/cookieJar.js'
 import type {
@@ -291,7 +293,7 @@ describe('cookieJar serialization', () => {
         }),
       ])
       expect((cookies[0] as Cookie).TTL(Date.now())).toBe(Infinity)
-      expect((cookies[1] as Cookie).TTL(Date.now())).toBe(3600 * 1000)
+      expect((cookies[1] as Cookie).TTL(Date.now())).toBe(3_600_000)
     })
   })
 })

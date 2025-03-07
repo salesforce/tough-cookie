@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest'
 import { permutePath } from '../cookie/permutePath.js'
 import { pathMatch } from '../pathMatch.js'
 

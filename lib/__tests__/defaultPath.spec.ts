@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest'
 import { defaultPath } from '../cookie/defaultPath.js'
 
 describe('defaultPath', () => {
