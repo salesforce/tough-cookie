@@ -1,6 +1,6 @@
 // date-time parsing constants (RFC6265 S5.1.1)
 
-import type { Nullable } from '../utils'
+import type { Nullable } from '../utils.js'
 
 // eslint-disable-next-line no-control-regex
 const DATE_DELIM = /[\x09\x20-\x2F\x3B-\x40\x5B-\x60\x7B-\x7E]/

@@ -1,5 +1,5 @@
-import { IP_V6_REGEX_OBJECT } from './constants'
-import type { Nullable } from '../utils'
+import { IP_V6_REGEX_OBJECT } from './constants.js'
+import type { Nullable } from '../utils.js'
 
 /**
  * Normalizes a domain to lowercase and punycode-encoded.

@@ -1,4 +1,4 @@
-import { Cookie } from '../cookie/cookie'
+import { Cookie } from '../cookie/cookie.js'
 
 describe('Cookie.toJSON()', () => {
   it('should serialize a cookie to JSON', () => {
