@@ -61,7 +61,7 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
       })
 
       it('should fail silently when no Domain or Path', async () => {
-        await cookieJar.setCookie('__Host-SID=12345', insecureUrl, {})
+        await cookieJar.setCookie('__Host-SID=12345; Secure', secureUrl, {})
         const cookies = await cookieJar.getCookies(insecureUrl)
         expect(cookies).toEqual([])
       })
