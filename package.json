@@ -96,7 +96,7 @@
     "build": "npm run _build:clean && npm run _build:compile",
     "lint": "npm run _lint:check",
     "prepack": "npm run build",
-    "prepare-pr": "npm test && npm run _api:update && npm run _docs:generate && npm run _format:fix && npm run _lint:fix",
+    "prepare-pr": "npm run build && npm test && npm run _api:update && npm run _docs:generate && npm run _format:fix && npm run _lint:fix",
     "test": "jest",
     "version": "npm run _version:generate && npm run prepare-pr && git add --renormalize .",
     "_api:check": "api-extractor run --verbose",
