@@ -31,7 +31,6 @@
 
 import { Cookie } from '../cookie/cookie.js'
 
-// ported from test/api_test.js (cookie tests)
 describe('Cookie', () => {
   let cookie: Cookie
 

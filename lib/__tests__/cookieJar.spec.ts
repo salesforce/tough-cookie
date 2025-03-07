@@ -36,9 +36,6 @@ import { MemoryCookieStore } from '../memstore.js'
 import { Store } from '../store.js'
 import { version } from '../version.js'
 
-// ported from:
-// - test/api_test.js (cookie jar tests)
-// - test/cookie_jar_test.js
 describe('CookieJar', () => {
   let cookieJar: CookieJar
 
