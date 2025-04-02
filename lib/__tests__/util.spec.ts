@@ -2,8 +2,6 @@ import { describe, expect, it } from 'vitest'
 import { safeToString } from '../utils.js'
 
 describe('safeToString', () => {
-  const recursiveArray: unknown[] = [1]
-  recursiveArray.push([[recursiveArray], 2, [[recursiveArray]]], 3)
   const testCases = [
     [undefined, 'undefined'],
     [null, 'null'],
@@ -21,10 +19,15 @@ describe('safeToString', () => {
       [Object.create(null), Symbol('safeToString')],
       '[object Object],Symbol(safeToString)',
     ],
-    [recursiveArray, '1,,2,,3'],
   ]
 
   it.each(testCases)('works on %s', (input, output) => {
     expect(safeToString(input)).toBe(String(output))
+  })
+
+  it('works on recursive array', () => {
+    const recursiveArray: unknown[] = [1]
+    recursiveArray.push([[recursiveArray], 2, [[recursiveArray]]], 3)
+    expect(safeToString(recursiveArray)).toBe('1,,2,,3')
   })
 })
