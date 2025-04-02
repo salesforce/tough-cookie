@@ -3,14 +3,18 @@ import { Cookie } from '../cookie/cookie.js'
 
 describe('Cookie.toJSON()', () => {
   it('should serialize a cookie to JSON', () => {
+    const start = new Date().toISOString()
     const cookie = Cookie.parse(
       'alpha=beta; Domain=example.com; Path=/foo; Expires=Tue, 19 Jan 2038 03:14:07 GMT; HttpOnly',
     )
+    const finish = new Date().toISOString()
     if (!cookie) {
       throw new Error('This should not be undefined')
     }
     expect(cookie.toJSON()).toEqual({
-      creation: new Date().toISOString(),
+      // Sometimes we roll over a millisecond, so we need to check both
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      creation: expect.toBeOneOf([start, finish]),
       domain: 'example.com',
       expires: '2038-01-19T03:14:07.000Z',
       httpOnly: true,

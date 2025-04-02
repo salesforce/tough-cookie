@@ -175,11 +175,15 @@ describe('cookieJar serialization', () => {
   describe('with a moderately-sized store', () => {
     let jar: CookieJar
     let expires: Date
+    let start: string
+    let finish: string
 
     beforeEach(async () => {
       expires = new Date(Date.now() + 86400000)
 
       jar = new CookieJar()
+
+      start = new Date().toISOString()
 
       // Do paths first since the MemoryCookieStore index is domain at the top
       // level. This should cause the preservation of creation order in
@@ -224,6 +228,8 @@ describe('cookieJar serialization', () => {
           ignoreError: true,
         })
       }
+
+      finish = new Date().toISOString()
     })
 
     it('should have the expected metadata', async () => {
@@ -272,8 +278,9 @@ describe('cookieJar serialization', () => {
 
         expect(serializedCookie.hostOnly).toBe(serializedCookie.key === 'honly')
 
-        expect(serializedCookie.creation).toBe(new Date().toISOString())
-        expect(serializedCookie.lastAccessed).toBe(new Date().toISOString())
+        // Sometimes we roll over a millisecond, so we check both timestamps
+        expect(serializedCookie.creation).toBeOneOf([start, finish])
+        expect(serializedCookie.lastAccessed).toBeOneOf([start, finish])
       })
     })
 
