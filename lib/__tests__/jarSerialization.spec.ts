@@ -28,6 +28,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+
+import { beforeEach, describe, expect, it } from 'vitest'
 import { Cookie } from '../cookie/cookie.js'
 import { CookieJar } from '../cookie/cookieJar.js'
 import type {
@@ -173,11 +175,15 @@ describe('cookieJar serialization', () => {
   describe('with a moderately-sized store', () => {
     let jar: CookieJar
     let expires: Date
+    let start: string
+    let finish: string
 
     beforeEach(async () => {
       expires = new Date(Date.now() + 86400000)
 
       jar = new CookieJar()
+
+      start = new Date().toISOString()
 
       // Do paths first since the MemoryCookieStore index is domain at the top
       // level. This should cause the preservation of creation order in
@@ -222,6 +228,8 @@ describe('cookieJar serialization', () => {
           ignoreError: true,
         })
       }
+
+      finish = new Date().toISOString()
     })
 
     it('should have the expected metadata', async () => {
@@ -270,8 +278,9 @@ describe('cookieJar serialization', () => {
 
         expect(serializedCookie.hostOnly).toBe(serializedCookie.key === 'honly')
 
-        expect(serializedCookie.creation).toBe(new Date().toISOString())
-        expect(serializedCookie.lastAccessed).toBe(new Date().toISOString())
+        // Sometimes we roll over a millisecond, so we check both timestamps
+        expect(serializedCookie.creation).toBeOneOf([start, finish])
+        expect(serializedCookie.lastAccessed).toBeOneOf([start, finish])
       })
     })
 
@@ -291,7 +300,7 @@ describe('cookieJar serialization', () => {
         }),
       ])
       expect((cookies[0] as Cookie).TTL(Date.now())).toBe(Infinity)
-      expect((cookies[1] as Cookie).TTL(Date.now())).toBe(3600 * 1000)
+      expect((cookies[1] as Cookie).TTL(Date.now())).toBe(3_600_000)
     })
   })
 })

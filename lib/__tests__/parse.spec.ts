@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest'
 import { Cookie } from '../cookie/cookie.js'
 import { performance } from 'node:perf_hooks'
 
@@ -397,7 +398,7 @@ describe('Cookie.parse', () => {
       output: undefined,
     },
   ])('Cookie.parse("$input")', (testCase) => {
-    // Repeating the character in the input makes the jest output obnoxiously long, so instead we
+    // Repeating the character in the input makes the test output obnoxiously long, so instead we
     // use a template pattern and replace it.
     const input = testCase.input?.replace(/<REPEAT (.)>/, (_, char: string) =>
       char.repeat(65535),

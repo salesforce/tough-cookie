@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest'
 import { inspect } from 'node:util'
 import { Cookie } from '../cookie/cookie.js'
 
