@@ -28,12 +28,15 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-import { Cookie } from '../cookie/cookie'
-import { CookieJar } from '../cookie/cookieJar'
-import type { SerializedCookie, SerializedCookieJar } from '../cookie/constants'
-import { MemoryCookieStore } from '../memstore'
-import { Store } from '../store'
-import { version } from '../version'
+import { Cookie } from '../cookie/cookie.js'
+import { CookieJar } from '../cookie/cookieJar.js'
+import type {
+  SerializedCookie,
+  SerializedCookieJar,
+} from '../cookie/constants.js'
+import { MemoryCookieStore } from '../memstore.js'
+import { Store } from '../store.js'
+import { version } from '../version.js'
 
 describe('cookieJar serialization', () => {
   it('should provide the list of serialized properties available for a Cookie with `Cookie.serializableProperties`', () => {

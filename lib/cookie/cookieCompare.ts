@@ -1,4 +1,4 @@
-import type { Cookie } from './cookie'
+import type { Cookie } from './cookie.js'
 
 /**
  * The maximum timestamp a cookie, in milliseconds. The value is (2^31 - 1) seconds since the Unix

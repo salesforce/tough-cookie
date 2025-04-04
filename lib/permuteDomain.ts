@@ -1,4 +1,4 @@
-import { getPublicSuffix } from './getPublicSuffix'
+import { getPublicSuffix } from './getPublicSuffix.js'
 
 /**
  * Generates the permutation of all possible values that {@link domainMatch} the given `domain` parameter. The
