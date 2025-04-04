@@ -84,7 +84,7 @@ export function domainMatch(
   /* " o All of the following [three] conditions hold:" */
 
   /* "* The domain string is a suffix of the string" */
-  const idx = _str.lastIndexOf(cookieDomain)
+  const idx = _str.lastIndexOf(_domStr)
   if (idx <= 0) {
     return false // it's a non-match (-1) or prefix (0)
   }

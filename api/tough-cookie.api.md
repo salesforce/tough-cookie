@@ -300,7 +300,7 @@ export class Store {
 }
 
 // @public
-export const version = "5.1.1";
+export const version = "5.1.2";
 
 // (No @packageDocumentation comment for this package)
 
