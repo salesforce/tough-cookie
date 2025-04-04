@@ -14,7 +14,7 @@ expire?: boolean | undefined;
 
 ## Remarks
 
-- Using `false` returns expired cookies and does not remove them from the store which is potentially useful for replaying `Set-Cookie` headers.
+- Using `false` returns expired cookies and does not remove them from the store, which is potentially useful for replaying `Set-Cookie` headers.
 
 Defaults to `true` if not provided.
 
