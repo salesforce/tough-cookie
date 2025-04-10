@@ -1,20 +1,20 @@
-import { describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { Cookie } from '../cookie/cookie.js'
+
+beforeAll(() => vi.useFakeTimers())
+afterAll(() => vi.useRealTimers())
 
 describe('Cookie.toJSON()', () => {
   it('should serialize a cookie to JSON', () => {
-    const start = new Date().toISOString()
     const cookie = Cookie.parse(
       'alpha=beta; Domain=example.com; Path=/foo; Expires=Tue, 19 Jan 2038 03:14:07 GMT; HttpOnly',
     )
-    const finish = new Date().toISOString()
-    if (!cookie) {
-      throw new Error('This should not be undefined')
-    }
-    expect(cookie.toJSON()).toEqual({
+    expect(cookie).toBeInstanceOf(Cookie)
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    expect(cookie!.toJSON()).toEqual({
       // Sometimes we roll over a millisecond, so we need to check both
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      creation: expect.toBeOneOf([start, finish]),
+
+      creation: new Date().toISOString(),
       domain: 'example.com',
       expires: '2038-01-19T03:14:07.000Z',
       httpOnly: true,
