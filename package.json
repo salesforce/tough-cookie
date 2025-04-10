@@ -116,24 +116,24 @@
     "node": ">=16"
   },
   "devDependencies": {
-    "@eslint/js": "^9.7.0",
-    "@microsoft/api-documenter": "^7.25.7",
-    "@microsoft/api-extractor": "^7.47.2",
+    "@eslint/js": "^9.24.0",
+    "@microsoft/api-documenter": "^7.26.20",
+    "@microsoft/api-extractor": "^7.52.3",
     "@types/node": "^18.19.79",
-    "@vitest/eslint-plugin": "^1.1.36",
-    "eslint": "^9.9.1",
-    "eslint-config-prettier": "^10.0.1",
-    "eslint-import-resolver-typescript": "^4.3.1",
+    "@vitest/eslint-plugin": "^1.1.40",
+    "eslint": "^9.24.0",
+    "eslint-config-prettier": "^10.1.2",
+    "eslint-import-resolver-typescript": "^4.3.2",
     "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-prettier": "^5.2.6",
     "genversion": "^3.2.0",
     "globals": "^16.0.0",
-    "prettier": "^3.3.3",
+    "prettier": "^3.5.3",
     "typescript": "5.5.3",
-    "typescript-eslint": "^8.0.1",
-    "vitest": "^3.0.8"
+    "typescript-eslint": "^8.29.1",
+    "vitest": "^3.1.1"
   },
   "dependencies": {
-    "tldts": "^6.1.32"
+    "tldts": "^6.1.85"
   }
 }
