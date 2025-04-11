@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest'
 import { domainMatch } from '../cookie/domainMatch.js'
 
 describe('domainMatch', () => {

@@ -29,12 +29,31 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+/* eslint vitest/expect-expect: [error, {assertFunctionNames: [expect, assertions]}] */
+
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest'
 import { Cookie } from '../cookie/cookie.js'
 import { CookieJar } from '../cookie/cookieJar.js'
 import type { SerializedCookieJar } from '../cookie/constants.js'
 import { MemoryCookieStore } from '../memstore.js'
 import { Store } from '../store.js'
 import { version } from '../version.js'
+
+beforeAll(() => {
+  vi.useFakeTimers()
+})
+
+afterAll(() => {
+  vi.useRealTimers()
+})
 
 describe('CookieJar', () => {
   let cookieJar: CookieJar
@@ -95,7 +114,7 @@ describe('CookieJar', () => {
           value: 'expiry',
         }),
       )
-      jest.advanceTimersByTime(1)
+      vi.advanceTimersByTime(1)
       const cookies = await cookieJar.getCookies('http://www.example.com', {
         http: true,
         expire: false,
@@ -166,7 +185,7 @@ describe('CookieJar', () => {
         }),
       )
 
-      jest.advanceTimersByTime(10000)
+      vi.advanceTimersByTime(10000)
       const t1 = new Date()
       cookie = await cookieJar.setCookie(
         cookie,
@@ -184,7 +203,7 @@ describe('CookieJar', () => {
       expect(cookie?.isPersistent()).toBe(false)
 
       // updates the last access when retrieving a cookie
-      jest.advanceTimersByTime(10000)
+      vi.advanceTimersByTime(10000)
       const t2 = new Date()
       const cookies = await cookieJar.getCookies(
         'http://example.com/index.html',
@@ -455,51 +474,51 @@ describe('CookieJar', () => {
           'a=1; Domain=example.com; Path=/',
           insecureUrl,
         )
-        jest.advanceTimersByTime(1000)
+        vi.advanceTimersByTime(1000)
 
         await cookieJar.setCookie(
           'b=2; Domain=example.com; Path=/; HttpOnly',
           insecureUrl,
         )
-        jest.advanceTimersByTime(1000)
+        vi.advanceTimersByTime(1000)
 
         await cookieJar.setCookie(
           'c=3; Domain=example.com; Path=/; Secure',
           secureUrl,
         )
-        jest.advanceTimersByTime(1000)
+        vi.advanceTimersByTime(1000)
 
         // path
         await cookieJar.setCookie(
           'd=4; Domain=example.com; Path=/foo',
           insecureUrl,
         )
-        jest.advanceTimersByTime(1000)
+        vi.advanceTimersByTime(1000)
 
         // host only
         await cookieJar.setCookie('e=5', insecureUrl)
-        jest.advanceTimersByTime(1000)
+        vi.advanceTimersByTime(1000)
 
         // other domain
         await cookieJar.setCookie(
           'f=6; Domain=nodejs.org; Path=/',
           'http://nodejs.org',
         )
-        jest.advanceTimersByTime(1000)
+        vi.advanceTimersByTime(1000)
 
         // expired
         await cookieJar.setCookie(
           'g=7; Domain=example.com; Path=/; Expires=Tue, 18 Oct 2011 00:00:00 GMT',
           insecureUrl,
         )
-        jest.advanceTimersByTime(1000)
+        vi.advanceTimersByTime(1000)
 
         // expired via Max-Age
         await cookieJar.setCookie(
           'h=8; Domain=example.com; Path=/; Max-Age=1',
           insecureUrl,
         )
-        jest.advanceTimersByTime(2000) // so that 'h=8' expires
+        vi.advanceTimersByTime(2000) // so that 'h=8' expires
       })
 
       it('should be able to get the cookies for http://nodejs.org', async () => {
@@ -794,7 +813,7 @@ describe('CookieJar', () => {
           ),
         ])
 
-        jest.advanceTimersByTime(2000) // so that 'h=8' expires
+        vi.advanceTimersByTime(2000) // so that 'h=8' expires
 
         expect(cookies).toHaveLength(8)
       })
@@ -896,7 +915,7 @@ describe('CookieJar', () => {
           ),
         ])
 
-        jest.advanceTimersByTime(2000) // so that 'h=8' expires
+        vi.advanceTimersByTime(2000) // so that 'h=8' expires
 
         expect(cookies).toHaveLength(8)
       })
@@ -1278,28 +1297,28 @@ it('should allow cookies with the same name under different domains and/or paths
   const url = 'http://www.example.com/'
 
   await cookieJar.setCookie('aaaa=xxxx; Domain=www.example.com', url)
-  jest.advanceTimersByTime(1000)
+  vi.advanceTimersByTime(1000)
 
   await cookieJar.setCookie('aaaa=1111; Domain=www.example.com', url)
-  jest.advanceTimersByTime(1000)
+  vi.advanceTimersByTime(1000)
 
   await cookieJar.setCookie('aaaa=yyyy; Domain=example.com', url)
-  jest.advanceTimersByTime(1000)
+  vi.advanceTimersByTime(1000)
 
   await cookieJar.setCookie('aaaa=2222; Domain=example.com', url)
-  jest.advanceTimersByTime(1000)
+  vi.advanceTimersByTime(1000)
 
   await cookieJar.setCookie(
     'aaaa=zzzz; Domain=www.example.com; Path=/pathA',
     url,
   )
-  jest.advanceTimersByTime(1000)
+  vi.advanceTimersByTime(1000)
 
   await cookieJar.setCookie(
     'aaaa=3333; Domain=www.example.com; Path=/pathA',
     url,
   )
-  jest.advanceTimersByTime(1000)
+  vi.advanceTimersByTime(1000)
 
   const cookies = await cookieJar.getCookies('http://www.example.com/pathA')
   // may break with sorting; sorting should put 3333 first due to longest path
@@ -1355,7 +1374,7 @@ describe('setCookie errors', () => {
     const cookieJar = new CookieJar()
     await expect(
       cookieJar.setCookie('L=12; Domain=example.ch; Path=/', 'example.ch'),
-    ).rejects.toThrow(new TypeError('Invalid URL'))
+    ).rejects.toThrow('Invalid URL')
   })
 })
 
@@ -1476,7 +1495,7 @@ it('should fix issue #154 - Expiry should not be affected by creation date', asy
   expect(initialCookies[0]?.expiryDate()).toEqual(new Date(now + 60 * 1000))
 
   // advance the time by 1s, so now = 1000
-  jest.advanceTimersByTime(1000)
+  vi.advanceTimersByTime(1000)
 
   await jar.setCookie('foo=bar; Max-Age=60;', 'https://example.com')
 
@@ -1686,7 +1705,7 @@ describe.each(['local', 'example', 'invalid', 'localhost', 'test'])(
       })
     }
 
-    it('should reject special domain cookies if allowSpecialUseDomain: true', async () => {
+    it('should reject special domain cookies if allowSpecialUseDomain: false', async () => {
       expect.assertions(1)
       const cookieJar = new CookieJar(new MemoryCookieStore(), {
         rejectPublicSuffixes: true,
@@ -1746,27 +1765,31 @@ describe('Synchronous API on async CookieJar', () => {
 })
 
 describe('validation errors invoke callbacks', () => {
-  it('getCookies', (done) => {
+  it('getCookies', async () => {
     const invalidUrl = {}
     const cookieJar = new CookieJar()
-    // @ts-expect-error deliberately trigger validation error
-    void cookieJar.getCookies(invalidUrl, (err) => {
-      expect(err).toMatchObject({
-        message: '`url` argument is not a string or URL.',
+    await new Promise<void>((done) => {
+      // @ts-expect-error deliberately trigger validation error
+      void cookieJar.getCookies(invalidUrl, (err) => {
+        expect(err).toMatchObject({
+          message: '`url` argument is not a string or URL.',
+        })
+        done()
       })
-      done()
     })
   })
 
-  it('setCookie', (done) => {
+  it('setCookie', async () => {
     const invalidUrl = {}
     const cookieJar = new CookieJar()
-    // @ts-expect-error deliberately trigger validation error
-    void cookieJar.setCookie('a=b', invalidUrl, (err) => {
-      expect(err).toMatchObject({
-        message: '`url` argument is not a string or URL.',
+    await new Promise<void>((done) => {
+      // @ts-expect-error deliberately trigger validation error
+      void cookieJar.setCookie('a=b', invalidUrl, (err) => {
+        expect(err).toMatchObject({
+          message: '`url` argument is not a string or URL.',
+        })
+        done()
       })
-      done()
     })
   })
 })

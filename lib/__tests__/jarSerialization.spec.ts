@@ -28,6 +28,16 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest'
 import { Cookie } from '../cookie/cookie.js'
 import { CookieJar } from '../cookie/cookieJar.js'
 import type {
@@ -37,6 +47,9 @@ import type {
 import { MemoryCookieStore } from '../memstore.js'
 import { Store } from '../store.js'
 import { version } from '../version.js'
+
+beforeAll(() => vi.useFakeTimers())
+afterAll(() => vi.useRealTimers())
 
 describe('cookieJar serialization', () => {
   it('should provide the list of serialized properties available for a Cookie with `Cookie.serializableProperties`', () => {
@@ -176,7 +189,6 @@ describe('cookieJar serialization', () => {
 
     beforeEach(async () => {
       expires = new Date(Date.now() + 86400000)
-
       jar = new CookieJar()
 
       // Do paths first since the MemoryCookieStore index is domain at the top
@@ -270,6 +282,7 @@ describe('cookieJar serialization', () => {
 
         expect(serializedCookie.hostOnly).toBe(serializedCookie.key === 'honly')
 
+        // Sometimes we roll over a millisecond, so we check both timestamps
         expect(serializedCookie.creation).toBe(new Date().toISOString())
         expect(serializedCookie.lastAccessed).toBe(new Date().toISOString())
       })
@@ -291,7 +304,7 @@ describe('cookieJar serialization', () => {
         }),
       ])
       expect((cookies[0] as Cookie).TTL(Date.now())).toBe(Infinity)
-      expect((cookies[1] as Cookie).TTL(Date.now())).toBe(3600 * 1000)
+      expect((cookies[1] as Cookie).TTL(Date.now())).toBe(3_600_000)
     })
   })
 })

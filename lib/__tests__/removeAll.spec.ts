@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from 'vitest'
 import type { Cookie } from '../cookie/cookie.js'
 import { CookieJar } from '../cookie/cookieJar.js'
 import { MemoryCookieStore } from '../memstore.js'
@@ -32,7 +33,7 @@ describe('store removeAllCookies API', () => {
 
       // replace remove cookie behavior to throw an error on the 4th invocation
       const _removeCookie = store.removeCookie.bind(store)
-      const spy = jest.spyOn(store, 'removeCookie')
+      const spy = vi.spyOn(store, 'removeCookie')
       spy.mockImplementationOnce((domain, path, key, callback) => {
         _removeCookie.call(store, domain, path, key, callback)
       })
@@ -68,7 +69,7 @@ describe('store removeAllCookies API', () => {
 
       // replace remove cookie behavior to throw an error on the 4th invocation
       const _removeCookie = store.removeCookie.bind(store)
-      const spy = jest.spyOn(store, 'removeCookie')
+      const spy = vi.spyOn(store, 'removeCookie')
       spy.mockImplementation((domain, path, key, callback) => {
         if (spy.mock.calls.length % 2 === 1) {
           callback(

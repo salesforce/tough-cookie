@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest'
 import { permuteDomain } from '../permuteDomain.js'
 
 describe('permuteDomain', () => {
