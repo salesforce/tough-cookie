@@ -1,6 +1,9 @@
-import { describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { inspect } from 'node:util'
 import { Cookie } from '../cookie/cookie.js'
+
+beforeAll(() => vi.useFakeTimers())
+afterAll(() => vi.useRealTimers())
 
 describe('Cookie utils', () => {
   describe('custom inspect', () => {
