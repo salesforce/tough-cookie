@@ -1,4 +1,4 @@
-import { IP_V4_REGEX_OBJECT, IP_V6_REGEX_OBJECT } from './constants'
+import { IP_V4_REGEX_OBJECT, IP_V6_REGEX_OBJECT } from './constants.js'
 
 function isLoopbackV4(address: string): boolean {
   // 127.0.0.0/8: first octet = 127
