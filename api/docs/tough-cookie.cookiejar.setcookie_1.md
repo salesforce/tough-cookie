@@ -103,5 +103,5 @@ void
 
 - If successfully persisted, the [Cookie](./tough-cookie.cookie.md) will have updated [Cookie.creation](./tough-cookie.cookie.creation.md)<!-- -->, [Cookie.lastAccessed](./tough-cookie.cookie.lastaccessed.md) and [Cookie.hostOnly](./tough-cookie.cookie.hostonly.md) properties.
 
-- As per the RFC, the [Cookie.hostOnly](./tough-cookie.cookie.hostonly.md) flag is set if there was no `Domain={value}` atttribute on the cookie string. The [Cookie.domain](./tough-cookie.cookie.domain.md) property is set to the fully-qualified hostname of `currentUrl` in this case. Matching this cookie requires an exact hostname match (not a [domainMatch()](./tough-cookie.domainmatch.md) as per usual)
+- As per the RFC, the [Cookie.hostOnly](./tough-cookie.cookie.hostonly.md) flag is set if there was no `Domain={value}` attribute on the cookie string. The [Cookie.domain](./tough-cookie.cookie.domain.md) property is set to the fully-qualified hostname of `currentUrl` in this case. Matching this cookie requires an exact hostname match (not a [domainMatch()](./tough-cookie.domainmatch.md) as per usual)
 

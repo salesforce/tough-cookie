@@ -41,14 +41,16 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
         ])
       })
 
-      it('should fail silently if cookie has Secure attribute but domain is http', async () => {
-        await cookieJar.setCookie(
-          '__Secure-SID=12345; Domain=example.com; Secure',
-          insecureUrl,
-          {},
+      it('should throw if cookie has Secure attribute but domain is http', async () => {
+        await expect(
+          cookieJar.setCookie(
+            '__Secure-SID=12345; Domain=example.com; Secure',
+            insecureUrl,
+            {},
+          ),
+        ).rejects.toThrow(
+          'Cookie is Secure but this is not a secure connection',
         )
-        const cookies = await cookieJar.getCookies(insecureUrl)
-        expect(cookies).toEqual([])
       })
     })
 
@@ -60,7 +62,7 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
       })
 
       it('should fail silently when no Domain or Path', async () => {
-        await cookieJar.setCookie('__Host-SID=12345; Secure', insecureUrl, {})
+        await cookieJar.setCookie('__Host-SID=12345; Secure', secureUrl, {})
         const cookies = await cookieJar.getCookies(insecureUrl)
         expect(cookies).toEqual([])
       })
@@ -68,20 +70,20 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
       it('should fail silently when no Path', async () => {
         await cookieJar.setCookie(
           '__Host-SID=12345; Secure; Domain=example.com',
-          insecureUrl,
+          secureUrl,
           {},
         )
-        const cookies = await cookieJar.getCookies(insecureUrl)
+        const cookies = await cookieJar.getCookies(secureUrl)
         expect(cookies).toEqual([])
       })
 
       it('should fail silently with Domain', async () => {
         await cookieJar.setCookie(
           '__Host-SID=12345; Secure; Domain=example.com; Path=/',
-          insecureUrl,
+          secureUrl,
           {},
         )
-        const cookies = await cookieJar.getCookies(insecureUrl)
+        const cookies = await cookieJar.getCookies(secureUrl)
         expect(cookies).toEqual([])
       })
 
