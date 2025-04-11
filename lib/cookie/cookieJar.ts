@@ -1,10 +1,10 @@
-import { getPublicSuffix } from '../getPublicSuffix'
-import * as validators from '../validators'
-import { ParameterError } from '../validators'
-import { Store } from '../store'
-import { MemoryCookieStore } from '../memstore'
-import { pathMatch } from '../pathMatch'
-import { Cookie } from './cookie'
+import { getPublicSuffix } from '../getPublicSuffix.js'
+import * as validators from '../validators.js'
+import { ParameterError } from '../validators.js'
+import { Store } from '../store.js'
+import { MemoryCookieStore } from '../memstore.js'
+import { pathMatch } from '../pathMatch.js'
+import { Cookie } from './cookie.js'
 import {
   Callback,
   createPromiseCallback,
@@ -12,18 +12,18 @@ import {
   inOperator,
   Nullable,
   safeToString,
-} from '../utils'
-import { canonicalDomain } from './canonicalDomain'
+} from '../utils.js'
+import { canonicalDomain } from './canonicalDomain.js'
 import {
   IP_V6_REGEX_OBJECT,
   PrefixSecurityEnum,
   SerializedCookieJar,
-} from './constants'
-import { defaultPath } from './defaultPath'
-import { domainMatch } from './domainMatch'
-import { cookieCompare } from './cookieCompare'
-import { version } from '../version'
-import { isPotentiallyTrustworthy } from './secureContext'
+} from './constants.js'
+import { defaultPath } from './defaultPath.js'
+import { domainMatch } from './domainMatch.js'
+import { cookieCompare } from './cookieCompare.js'
+import { version } from '../version.js'
+import { isPotentiallyTrustworthy } from './secureContext.js'
 
 const defaultSetCookieOptions: SetCookieOptions = {
   loose: false,

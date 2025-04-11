@@ -39,16 +39,8 @@ export default config(
     },
   },
   {
-    // Once we remove the legacy vows tests in ./test, we can remove these JS-specific rules
-    files: ['test/**/*.js', 'eslint.config.mjs'],
+    files: ['eslint.config.mjs'],
     ...configs.disableTypeChecked,
-    rules: {
-      ...configs.disableTypeChecked.rules,
-      '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/no-var-requires': 'off',
-      '@typescript-eslint/no-unused-vars': 'off',
-      '@typescript-eslint/no-require-imports': 'off',
-    },
   },
   {
     // other configuration are omitted for brevity

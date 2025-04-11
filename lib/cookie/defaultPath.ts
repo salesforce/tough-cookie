@@ -1,4 +1,4 @@
-import type { Nullable } from '../utils'
+import type { Nullable } from '../utils.js'
 
 /**
  * Given a current request/response path, gives the path appropriate for storing

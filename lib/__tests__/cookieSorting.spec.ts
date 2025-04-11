@@ -1,6 +1,6 @@
-import { Cookie } from '../cookie/cookie'
-import { cookieCompare } from '../cookie/cookieCompare'
-import { CookieJar } from '../cookie/cookieJar'
+import { Cookie } from '../cookie/cookie.js'
+import { cookieCompare } from '../cookie/cookieCompare.js'
+import { CookieJar } from '../cookie/cookieJar.js'
 
 describe('Cookie sorting', () => {
   describe('assumptions', () => {

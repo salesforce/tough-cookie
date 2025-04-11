@@ -1,4 +1,4 @@
-import { version } from '../version'
+import { version } from '../version.js'
 
 describe('version file', () => {
   it('should have a valid semver version', () => {

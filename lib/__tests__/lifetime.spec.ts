@@ -1,4 +1,4 @@
-import { Cookie } from '../cookie/cookie'
+import { Cookie } from '../cookie/cookie.js'
 
 describe('Lifetime', () => {
   it('should be able to set a TTL using max-age', () => {

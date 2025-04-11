@@ -30,11 +30,11 @@
  */
 
 import url from 'url'
-import parserData from './data/parser'
-import bsdExampleDates from './data/dates/bsd-examples'
-import exampleDates from './data/dates/examples'
-import { CookieJar } from '../cookie/cookieJar'
-import { parseDate } from '../cookie/parseDate'
+import parserData from './data/parser.js'
+import bsdExampleDates from './data/dates/bsd-examples.js'
+import exampleDates from './data/dates/examples.js'
+import { CookieJar } from '../cookie/cookieJar.js'
+import { parseDate } from '../cookie/parseDate.js'
 
 describe('IETF http state tests', () => {
   describe('Set/get cookie tests', () => {
