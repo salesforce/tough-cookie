@@ -23,6 +23,7 @@ import { defaultPath } from './defaultPath'
 import { domainMatch } from './domainMatch'
 import { cookieCompare } from './cookieCompare'
 import { version } from '../version'
+import { isPotentiallyTrustworthy } from './secureContext'
 
 const defaultSetCookieOptions: SetCookieOptions = {
   loose: false,
@@ -54,7 +55,7 @@ export interface SetCookieOptions {
    *
    * - `'none'` - This indicates a cross-origin request.
    *
-   * - `undefined` - SameSite is not be enforced! This can be a valid use-case for when
+   * - `undefined` - SameSite is not enforced! This can be a valid use-case for when
    *     CSRF isn't in the threat model of the system being built.
    *
    * Defaults to `undefined` if not provided.
@@ -109,7 +110,7 @@ export interface GetCookiesOptions {
    *
    * @remarks
    * - Using `false` returns expired cookies and does not remove them from the
-   *     store which is potentially useful for replaying `Set-Cookie` headers.
+   *     store, which is potentially useful for replaying `Set-Cookie` headers.
    *
    * Defaults to `true` if not provided.
    */
@@ -134,7 +135,7 @@ export interface GetCookiesOptions {
    *
    * - `'none'` - This indicates a cross-origin request.
    *
-   * - `undefined` - SameSite is not be enforced! This can be a valid use-case for when
+   * - `undefined` - SameSite is not enforced! This can be a valid use-case for when
    *     CSRF isn't in the threat model of the system being built.
    *
    * Defaults to `undefined` if not provided.
@@ -183,6 +184,19 @@ export interface CreateCookieJarOptions {
    * Defaults to `true` if not specified.
    */
   allowSpecialUseDomain?: boolean | undefined
+  /**
+   * Flag to indicate if localhost and loopback addresses with an unsecure scheme should store and retrieve `Secure` cookies.
+   *
+   * If `true`, localhost, loopback addresses or similarly local addresses are treated as secure contexts
+   * and thus will store and retrieve `Secure` cookies even with an unsecure scheme.
+   *
+   * If `false`, only secure schemes (`https` and `wss`) will store and retrieve `Secure` cookies.
+   *
+   * @remarks
+   * When set to `true`, the {@link https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin | potentially trustworthy}
+   *  algorithm is followed to determine if a URL is considered a secure context.
+   */
+  allowSecureOnLocal?: boolean | undefined
 }
 
 const SAME_SITE_CONTEXT_VAL_ERR =
@@ -297,6 +311,7 @@ export class CookieJar {
   private readonly rejectPublicSuffixes: boolean
   private readonly enableLooseMode: boolean
   private readonly allowSpecialUseDomain: boolean
+  private readonly allowSecureOnLocal: boolean
 
   /**
    * The configured {@link Store} for the {@link CookieJar}.
@@ -328,6 +343,7 @@ export class CookieJar {
     this.rejectPublicSuffixes = options?.rejectPublicSuffixes ?? true
     this.enableLooseMode = options?.looseMode ?? false
     this.allowSpecialUseDomain = options?.allowSpecialUseDomain ?? true
+    this.allowSecureOnLocal = options?.allowSecureOnLocal ?? true
     this.prefixSecurity = getNormalizedPrefixSecurity(
       options?.prefixSecurity ?? 'silent',
     )
@@ -368,7 +384,7 @@ export class CookieJar {
    *     properties.
    *
    * - As per the RFC, the {@link Cookie.hostOnly} flag is set if there was no `Domain={value}`
-   *     atttribute on the cookie string. The {@link Cookie.domain} property is set to the
+   *     attribute on the cookie string. The {@link Cookie.domain} property is set to the
    *     fully-qualified hostname of `currentUrl` in this case. Matching this cookie requires an
    *     exact hostname match (not a {@link domainMatch} as per usual)
    *
@@ -391,7 +407,7 @@ export class CookieJar {
    *     properties.
    *
    * - As per the RFC, the {@link Cookie.hostOnly} flag is set if there was no `Domain={value}`
-   *     atttribute on the cookie string. The {@link Cookie.domain} property is set to the
+   *     attribute on the cookie string. The {@link Cookie.domain} property is set to the
    *     fully-qualified hostname of `currentUrl` in this case. Matching this cookie requires an
    *     exact hostname match (not a {@link domainMatch} as per usual)
    *
@@ -416,7 +432,7 @@ export class CookieJar {
    *     properties.
    *
    * - As per the RFC, the {@link Cookie.hostOnly} flag is set if there was no `Domain={value}`
-   *     atttribute on the cookie string. The {@link Cookie.domain} property is set to the
+   *     attribute on the cookie string. The {@link Cookie.domain} property is set to the
    *     fully-qualified hostname of `currentUrl` in this case. Matching this cookie requires an
    *     exact hostname match (not a {@link domainMatch} as per usual)
    *
@@ -592,7 +608,23 @@ export class CookieJar {
       cookie.pathIsDefault = true
     }
 
-    // S5.3 step 8: NOOP; secure attribute
+    // S5.3 step 8: secure attribute:
+    // "If the request-uri does not denote a "secure" connection
+    // (as defined by the user agent), and the cookie's secure-only-flag
+    // is true, then abort these steps and ignore the cookie entirely."
+    const potentiallyTrustworthy = isPotentiallyTrustworthy(
+      url,
+      this.allowSecureOnLocal,
+    )
+    if (!potentiallyTrustworthy && cookie.secure) {
+      const err = new Error(
+        'Cookie is Secure but this is not a secure connection',
+      )
+      return options?.ignoreError
+        ? promiseCallback.resolve(undefined)
+        : promiseCallback.reject(err)
+    }
+
     // S5.3 step 9: NOOP; httpOnly attribute
 
     // S5.3 step 10
@@ -734,7 +766,7 @@ export class CookieJar {
    *     properties.
    *
    * - As per the RFC, the {@link Cookie.hostOnly} flag is set if there was no `Domain={value}`
-   *     atttribute on the cookie string. The {@link Cookie.domain} property is set to the
+   *     attribute on the cookie string. The {@link Cookie.domain} property is set to the
    *     fully-qualified hostname of `currentUrl` in this case. Matching this cookie requires an
    *     exact hostname match (not a {@link domainMatch} as per usual)
    *
@@ -858,9 +890,14 @@ export class CookieJar {
     const host = canonicalDomain(context.hostname)
     const path = context.pathname || '/'
 
-    const secure =
-      context.protocol &&
-      (context.protocol == 'https:' || context.protocol == 'wss:')
+    // https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-19#section-5.8.3-2.1.2.3.2
+    // deliberately expects the user agent to determine the notion of a "secure" connection,
+    // and in practice this converges to a "potentially trustworthy origin" as defined in:
+    // https://www.w3.org/TR/secure-contexts/#is-origin-trustworthy
+    const potentiallyTrustworthy = isPotentiallyTrustworthy(
+      url,
+      this.allowSecureOnLocal,
+    )
 
     let sameSiteLevel = 0
     if (options.sameSiteContext) {
@@ -905,7 +942,7 @@ export class CookieJar {
 
       // "If the cookie's secure-only-flag is true, then the request-uri's
       // scheme must denote a "secure" protocol"
-      if (c.secure && !secure) {
+      if (c.secure && !potentiallyTrustworthy) {
         return false
       }
 

@@ -289,6 +289,7 @@ vows
       topic: function() {
         const cj = new CookieJar();
         const ex = "http://example.com/index.html";
+        const exSecure = "https://example.com/index.html";
         const tasks = [];
         tasks.push(next => {
           cj.setCookie("a=1; Domain=example.com; Path=/", ex, at(0), next);
@@ -304,7 +305,7 @@ vows
         tasks.push(next => {
           cj.setCookie(
             "c=3; Domain=example.com; Path=/; Secure",
-            ex,
+            exSecure,
             at(2000),
             next
           );
