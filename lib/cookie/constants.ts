@@ -35,6 +35,9 @@ const IP_V6_REGEX = `
   .trim()
 export const IP_V6_REGEX_OBJECT: RegExp = new RegExp(`^${IP_V6_REGEX}$`)
 
+const IP_V4_REGEX = `(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])`
+export const IP_V4_REGEX_OBJECT: RegExp = new RegExp(`^${IP_V4_REGEX}$`)
+
 /**
  * A JSON representation of a {@link CookieJar}.
  * @public

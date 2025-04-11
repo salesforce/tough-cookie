@@ -12,7 +12,7 @@ Set this to 'none', 'lax', or 'strict' to enforce SameSite cookies upon retrieva
 
 - `'none'` - This indicates a cross-origin request.
 
-- `undefined` - SameSite is not be enforced! This can be a valid use-case for when CSRF isn't in the threat model of the system being built.
+- `undefined` - SameSite is not enforced! This can be a valid use-case for when CSRF isn't in the threat model of the system being built.
 
 Defaults to `undefined` if not provided.
 
