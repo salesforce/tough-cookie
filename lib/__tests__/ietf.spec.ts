@@ -29,6 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+import { describe, expect, it } from 'vitest'
 import url from 'url'
 import parserData from './data/parser.js'
 import bsdExampleDates from './data/dates/bsd-examples.js'

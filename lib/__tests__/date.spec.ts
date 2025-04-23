@@ -28,6 +28,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+import { describe, expect, it } from 'vitest'
 
 type DateParsingTestCase = {
   [key: string]: boolean
