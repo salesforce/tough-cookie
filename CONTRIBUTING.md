@@ -1,5 +1,3 @@
-_This is a suggested `CONTRIBUTING.md` file template for use by open sourced Salesforce projects. The main goal of this file is to make clear the intents and expectations that end-users may have regarding this project and how/if to engage with it. Adjust as needed (especially look for `{project_slug}` which refers to the org and repo name of your project) and remove this paragraph before committing to your repo._
-
 # Contributing Guide For tough-cookie
 
 This page lists the operational governance model of this project, as well as the recommendations and requirements for how to best contribute to tough-cookie. We strive to obey these as best as possible. As always, thanks for contributing – we hope these guidelines make it easier and shed some light on our approach and processes.
@@ -24,9 +22,9 @@ Use GitHub Issues page to submit issues, enhancement requests and discuss ideas.
 ### New Features
 
 - If you'd like to add new functionality to this project, describe the problem you want to solve in a [new Issue](https://github.com/salesforce/tough-cookie/issues/new).
-- Issues that have been identified as a feature request will be labelled `enhancement`.
+- Issues that have been identified as a feature request will be labelled `FeatureRequest`.
 - If you'd like to implement the new feature, please wait for feedback from the project
-  maintainers before spending too much time writing the code. In some cases, `enhancement`s may
+  maintainers before spending too much time writing the code. In some cases, feature requests may
   not align well with the project objectives at the time.
 
 ### Tests, Documentation, Miscellaneous
@@ -50,7 +48,6 @@ Issues labelled `good first contribution`.
 - [x] Tests
   - The test suite, if provided, must be complete and pass
   - Increase code coverage, not versa.
-  - Use any of our testkits that contains a bunch of testing facilities you would need. For example: `import com.salesforce.op.test._` and borrow inspiration from existing tests.
 - [x] Dependencies
   - Minimize number of dependencies.
   - Prefer Apache 2.0, BSD3, MIT, ISC and MPL licenses.
@@ -64,7 +61,7 @@ Issues labelled `good first contribution`.
 3. **Create** a new branch to contain your work (e.g. `git br fix-issue-11`)
 4. **Commit** changes to your own branch.
 5. **Push** your work back up to your fork. (e.g. `git push fix-issue-11`)
-6. **Submit** a Pull Request against the `main` branch and refer to the issue(s) you are fixing. Try not to pollute your pull request with unintended changes. Keep it simple and small.
+6. **Submit** a Pull Request against the `master` branch and refer to the issue(s) you are fixing. Try not to pollute your pull request with unintended changes. Keep it simple and small.
 7. **Sign** the Salesforce CLA (you will be prompted to do so when submitting the Pull Request)
 
 > **NOTE**: Be sure to [sync your fork](https://help.github.com/articles/syncing-a-fork/) before making a pull request.
