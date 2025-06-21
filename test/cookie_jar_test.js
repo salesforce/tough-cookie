@@ -541,4 +541,32 @@ vows
       }
     }
   })
+  .addBatch({
+    // CVE-2023-26136: Prototype pollution via Domain=__proto__
+    "Issue #282 - Prototype pollution (CVE-2023-26136)": {
+      "when setting a cookie with the domain __proto__": {
+        topic: function () {
+          const jar = new tough.CookieJar(undefined, {
+            rejectPublicSuffixes: false
+          });
+          // Attempt prototype pollution via cookie domain '__proto__'
+          jar.setCookieSync(
+            "Slonser=polluted; Domain=__proto__; Path=/notauth",
+            "https://__proto__/admin"
+          );
+          // Set a normal cookie for control
+          jar.setCookieSync(
+            "Auth=Lol; Domain=google.com; Path=/notauth",
+            "https://google.com/"
+          );
+          this.callback();
+        },
+        "results in a cookie that is not affected by the attempted prototype pollution": function () {
+          const pollutedObject = {};
+          // If prototype is polluted, this would return an object
+          assert.strictEqual(pollutedObject["/notauth"], undefined);
+        }
+      }
+    }
+  })  
   .export(module);
