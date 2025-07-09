@@ -63,6 +63,7 @@ the path of the cookie
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 boolean

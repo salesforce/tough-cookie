@@ -622,3 +622,4 @@ Alias of [CookieJar.serializeSync()](./tough-cookie.cookiejar.serializesync.md)<
 
 </td></tr>
 </tbody></table>
+

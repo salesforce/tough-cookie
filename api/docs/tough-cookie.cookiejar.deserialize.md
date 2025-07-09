@@ -63,6 +63,7 @@ A function to call after the [CookieJar](./tough-cookie.cookiejar.md) has been d
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 void

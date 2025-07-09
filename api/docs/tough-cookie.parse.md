@@ -63,6 +63,7 @@ _(Optional)_ Configures `strict` or `loose` mode for cookie parsing
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 [Cookie](./tough-cookie.cookie.md) \| undefined

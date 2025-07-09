@@ -79,6 +79,7 @@ A function to call after a cookie has been successfully retrieved.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 void

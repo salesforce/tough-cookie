@@ -81,6 +81,7 @@ _(Optional)_ If `true` then special-use domain suffixes, will be allowed in matc
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[Cookie](./tough-cookie.cookie.md)<!-- -->\[\]&gt;

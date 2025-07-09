@@ -71,6 +71,7 @@ the second Cookie for comparison
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 number

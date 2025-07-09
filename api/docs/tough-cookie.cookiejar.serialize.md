@@ -47,6 +47,7 @@ A function to call after the CookieJar has been serialized
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 void

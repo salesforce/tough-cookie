@@ -63,6 +63,7 @@ _(Optional)_ The underlying store to persist the deserialized cookies into.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 [CookieJar](./tough-cookie.cookiejar.md)

@@ -47,6 +47,7 @@ the domain name to generate the canonical domain from
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 string \| undefined

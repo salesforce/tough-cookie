@@ -51,6 +51,7 @@ _(Optional)_ can be used to provide a time offset (instead of [Cookie.lastAccess
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Date \| undefined

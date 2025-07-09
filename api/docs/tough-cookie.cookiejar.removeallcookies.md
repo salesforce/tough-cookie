@@ -47,6 +47,7 @@ A function to call when all the cookies have been removed.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 void

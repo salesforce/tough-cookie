@@ -47,3 +47,4 @@ _(Optional)_ The attributes to set on the cookie
 
 </td></tr>
 </tbody></table>
+

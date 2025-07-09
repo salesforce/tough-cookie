@@ -63,6 +63,7 @@ A function to call when the CookieJar is cloned.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 void

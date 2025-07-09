@@ -47,6 +47,7 @@ _(Optional)_ passing an explicit value is mostly used for testing purposes since
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 number

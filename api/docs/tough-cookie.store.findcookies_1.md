@@ -97,6 +97,7 @@ _(Optional)_ A function to call with either the found cookies or an error.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 void

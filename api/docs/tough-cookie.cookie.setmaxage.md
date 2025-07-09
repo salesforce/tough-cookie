@@ -47,6 +47,7 @@ the new value for the 'Max-Age' attribute (in seconds).
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 void

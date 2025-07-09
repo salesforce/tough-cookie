@@ -47,6 +47,7 @@ The domain to store the cookie with.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[Cookie](./tough-cookie.cookie.md)<!-- -->\[\]&gt;

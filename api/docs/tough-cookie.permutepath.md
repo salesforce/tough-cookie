@@ -47,6 +47,7 @@ the path to generate permutations for
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 string\[\]

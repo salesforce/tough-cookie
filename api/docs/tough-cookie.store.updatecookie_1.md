@@ -79,6 +79,7 @@ A function to call when the cookie has been updated or an error has occurred.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 void

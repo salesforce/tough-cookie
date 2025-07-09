@@ -79,6 +79,7 @@ A function to call after the `Cookie` header string has been created.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 void

@@ -112,3 +112,4 @@ The version of `tough-cookie` used during serialization.
 
 </td></tr>
 </tbody></table>
+

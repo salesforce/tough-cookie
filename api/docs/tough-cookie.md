@@ -428,3 +428,4 @@ A JSON object that is created when [Cookie.toJSON()](./tough-cookie.cookie.tojso
 
 </td></tr>
 </tbody></table>
+
