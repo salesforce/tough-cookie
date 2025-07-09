@@ -63,6 +63,7 @@ A function to call when the cookie has been stored or an error has occurred.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 void

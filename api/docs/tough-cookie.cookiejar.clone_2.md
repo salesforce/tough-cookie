@@ -47,6 +47,7 @@ _(Optional)_ The target [Store](./tough-cookie.store.md) to clone cookies into.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[CookieJar](./tough-cookie.cookiejar.md)<!-- -->&gt;

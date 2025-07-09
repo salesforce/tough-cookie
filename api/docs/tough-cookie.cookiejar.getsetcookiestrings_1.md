@@ -79,6 +79,7 @@ A function to call after the `Set-Cookie` header strings have been created.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 void

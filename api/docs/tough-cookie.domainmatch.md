@@ -79,6 +79,7 @@ _(Optional)_ The canonicalize parameter toggles whether the domain parameters ge
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 boolean \| undefined

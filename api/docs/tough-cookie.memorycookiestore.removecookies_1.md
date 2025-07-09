@@ -79,6 +79,7 @@ A function to call when the cookies have been removed or an error occurs.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 void

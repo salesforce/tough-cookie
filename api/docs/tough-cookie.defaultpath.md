@@ -47,6 +47,7 @@ _(Optional)_ the path portion of the request-uri (excluding the hostname, query,
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 string

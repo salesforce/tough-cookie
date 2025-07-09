@@ -63,6 +63,7 @@ _(Optional)_ flag to control if [Special Use Domains](https://www.rfc-editor.org
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 string\[\] \| undefined

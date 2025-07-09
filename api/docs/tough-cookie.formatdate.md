@@ -47,6 +47,7 @@ the date value to format
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 string

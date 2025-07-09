@@ -63,6 +63,7 @@ the cookie to replace the one already present in the store.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;
