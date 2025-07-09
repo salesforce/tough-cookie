@@ -9,7 +9,7 @@ Options for configuring how [getPublicSuffix()](./tough-cookie.getpublicsuffix.m
 **Signature:**
 
 ```typescript
-export interface GetPublicSuffixOptions
+export interface GetPublicSuffixOptions 
 ```
 
 ## Properties
