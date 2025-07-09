@@ -47,6 +47,7 @@ The cookie to store.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

@@ -63,6 +63,7 @@ _(Optional)_ Configuration settings to use when retrieving the cookies.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;string\[\] \| undefined&gt;

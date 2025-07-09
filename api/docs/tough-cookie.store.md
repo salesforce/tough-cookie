@@ -11,7 +11,7 @@ The storage model for each [CookieJar](./tough-cookie.cookiejar.md) instance can
 **Signature:**
 
 ```typescript
-export declare class Store 
+export declare class Store
 ```
 
 ## Remarks
@@ -349,3 +349,4 @@ Update an existing [Cookie](./tough-cookie.cookie.md)<!-- -->. The implementatio
 
 </td></tr>
 </tbody></table>
+

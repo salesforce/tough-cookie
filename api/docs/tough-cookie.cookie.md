@@ -9,7 +9,7 @@ An HTTP cookie (web cookie, browser cookie) is a small piece of data that a serv
 **Signature:**
 
 ```typescript
-export declare class Cookie 
+export declare class Cookie
 ```
 
 ## Constructors
@@ -620,3 +620,4 @@ Computes the TTL relative to now (milliseconds).
 
 </td></tr>
 </tbody></table>
+

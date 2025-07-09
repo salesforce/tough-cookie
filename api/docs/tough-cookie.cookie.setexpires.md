@@ -47,6 +47,7 @@ the new value for the 'Expires' attribute of the cookie.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 void

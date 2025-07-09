@@ -79,6 +79,7 @@ _(Optional)_ Configuration settings to use when storing the cookie.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;[Cookie](./tough-cookie.cookie.md) \| undefined&gt;

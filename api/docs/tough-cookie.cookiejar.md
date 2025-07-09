@@ -11,7 +11,7 @@ It also supports a pluggable persistence layer via [Store](./tough-cookie.store.
 **Signature:**
 
 ```typescript
-export declare class CookieJar 
+export declare class CookieJar
 ```
 
 ## Constructors
@@ -622,3 +622,4 @@ Alias of [CookieJar.serializeSync()](./tough-cookie.cookiejar.serializesync.md)<
 
 </td></tr>
 </tbody></table>
+

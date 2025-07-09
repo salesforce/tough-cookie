@@ -47,6 +47,7 @@ A function to call when all the cookies have been retrieved or an error occurs.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 void

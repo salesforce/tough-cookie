@@ -9,7 +9,7 @@ Configuration options used when calling `CookieJar.setCookie(...)`
 **Signature:**
 
 ```typescript
-export interface SetCookieOptions 
+export interface SetCookieOptions
 ```
 
 ## Properties
@@ -149,3 +149,4 @@ Defaults to `undefined` if not provided.
 
 </td></tr>
 </tbody></table>
+

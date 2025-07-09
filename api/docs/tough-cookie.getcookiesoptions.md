@@ -9,7 +9,7 @@ Configuration options used when calling `CookieJar.getCookies(...)`<!-- -->.
 **Signature:**
 
 ```typescript
-export interface GetCookiesOptions 
+export interface GetCookiesOptions
 ```
 
 ## Properties
@@ -145,3 +145,4 @@ Defaults to `undefined` if not provided.
 
 </td></tr>
 </tbody></table>
+

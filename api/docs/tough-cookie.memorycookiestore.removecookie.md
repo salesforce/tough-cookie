@@ -79,6 +79,7 @@ The cookie name to match against.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Promise&lt;void&gt;

@@ -95,6 +95,7 @@ A function to call after a cookie has been successfully stored.
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 void

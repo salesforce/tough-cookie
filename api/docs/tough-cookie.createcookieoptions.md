@@ -9,7 +9,7 @@ Configurable values that can be set when creating a [Cookie](./tough-cookie.cook
 **Signature:**
 
 ```typescript
-export interface CreateCookieOptions 
+export interface CreateCookieOptions
 ```
 
 ## Properties
@@ -304,3 +304,4 @@ _(Optional)_ The value of the cookie
 
 </td></tr>
 </tbody></table>
+

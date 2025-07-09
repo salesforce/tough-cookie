@@ -63,6 +63,7 @@ _(Optional)_ optional configuration for controlling how the public suffix is det
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 string \| undefined

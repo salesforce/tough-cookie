@@ -47,6 +47,7 @@ An unparsed JSON string or a value that has already been parsed as JSON
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 [Cookie](./tough-cookie.cookie.md) \| undefined

@@ -47,6 +47,7 @@ the cookie date string
 
 </td></tr>
 </tbody></table>
+
 **Returns:**
 
 Date \| undefined

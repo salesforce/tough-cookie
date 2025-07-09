@@ -9,7 +9,7 @@ Options for configuring how [getPublicSuffix()](./tough-cookie.getpublicsuffix.m
 **Signature:**
 
 ```typescript
-export interface GetPublicSuffixOptions 
+export interface GetPublicSuffixOptions
 ```
 
 ## Properties
@@ -74,3 +74,4 @@ _(Optional)_ If set to `true` then any errors that occur while executing [getPub
 
 </td></tr>
 </tbody></table>
+
