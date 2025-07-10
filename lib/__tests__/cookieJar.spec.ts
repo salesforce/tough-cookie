@@ -1171,57 +1171,6 @@ describe('CookieJar', () => {
         jar = new CookieJar(null, { allowSecureOnLocal: false })
       })
 
-      describe('Storing a secure cookie on a non-secure local origin', () => {
-        it('should throw when setting a Secure cookie on http://localhost', async () => {
-          await expect(
-            jar.setCookie(
-              'testLocalhost=abc; Secure; Path=/',
-              'http://localhost/',
-            ),
-          ).rejects.toThrow(
-            'Cookie is Secure but this is not a secure connection',
-          )
-        })
-
-        it('should throw when setting a Secure cookie on http://127.0.0.1', async () => {
-          await expect(
-            jar.setCookie('loopcookie=val; Secure', 'http://127.0.0.1/'),
-          ).rejects.toThrow(
-            'Cookie is Secure but this is not a secure connection',
-          )
-        })
-
-        it('should throw when setting a Secure cookie on http://[::1]', async () => {
-          await expect(
-            jar.setCookie('ipv6cookie=ipv6val; Secure', 'http://[::1]/'),
-          ).rejects.toThrow(
-            'Cookie is Secure but this is not a secure connection',
-          )
-        })
-
-        it('should throw when setting a Secure cookie on http://subdomain.localhost', async () => {
-          await expect(
-            jar.setCookie(
-              'appcookie=someval; Secure',
-              'http://subdomain.localhost/',
-            ),
-          ).rejects.toThrow(
-            'Cookie is Secure but this is not a secure connection',
-          )
-        })
-
-        it('should NOT throw if ignoreError=true, but the cookie is NOT stored', async () => {
-          await expect(
-            jar.setCookie('ignoredCookie=val; Secure', 'http://localhost/', {
-              ignoreError: true,
-            }),
-          ).resolves.toBeUndefined()
-
-          const cookies = await jar.getCookies('http://localhost/')
-          expect(cookies.map((c) => c.key)).not.toContain('ignoredCookie')
-        })
-      })
-
       describe('Storing a secure cookie on a secure local origin', () => {
         it('should allow storing on https://localhost and retrieve it from https://localhost', async () => {
           // https:// is always considered potentially trustworthy

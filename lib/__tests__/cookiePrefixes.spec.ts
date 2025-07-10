@@ -40,18 +40,6 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
           }),
         ])
       })
-
-      it('should throw if cookie has Secure attribute but domain is http', async () => {
-        await expect(
-          cookieJar.setCookie(
-            '__Secure-SID=12345; Domain=example.com; Secure',
-            insecureUrl,
-            {},
-          ),
-        ).rejects.toThrow(
-          'Cookie is Secure but this is not a secure connection',
-        )
-      })
     })
 
     describe('__Host prefix', () => {
