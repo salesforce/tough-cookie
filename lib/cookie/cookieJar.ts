@@ -608,23 +608,7 @@ export class CookieJar {
       cookie.pathIsDefault = true
     }
 
-    // S5.3 step 8: secure attribute:
-    // "If the request-uri does not denote a "secure" connection
-    // (as defined by the user agent), and the cookie's secure-only-flag
-    // is true, then abort these steps and ignore the cookie entirely."
-    const potentiallyTrustworthy = isPotentiallyTrustworthy(
-      url,
-      this.allowSecureOnLocal,
-    )
-    if (!potentiallyTrustworthy && cookie.secure) {
-      const err = new Error(
-        'Cookie is Secure but this is not a secure connection',
-      )
-      return options?.ignoreError
-        ? promiseCallback.resolve(undefined)
-        : promiseCallback.reject(err)
-    }
-
+    // S5.3 step 8: NOOP; secure attribute
     // S5.3 step 9: NOOP; httpOnly attribute
 
     // S5.3 step 10
