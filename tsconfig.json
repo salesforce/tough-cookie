@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     /* Language and Environment */
-    // We only support node 18+, but v16 still works. We'll target v16 until it becomes a burden.
+    // We only support node LTS versions, but v16 still works. We'll target v16 until it becomes a burden.
     // For recommended settings for each node version, see https://github.com/microsoft/TypeScript/wiki/Node-Target-Mapping
     "target": "ES2021",
     "lib": ["ES2021"],
