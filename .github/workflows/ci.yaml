@@ -58,6 +58,8 @@ jobs:
         with:
           node-version: lts/*
           cache: npm
+      - name: Install dependencies
+        run: npm ci
       - name: Verify types & entrypoints
         run: npx --yes @arethetypeswrong/cli --pack .
 
