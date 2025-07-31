@@ -1,6 +1,6 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-extractor.schema.json",
-  "mainEntryPointFilePath": "<projectFolder>/dist/cookie/index.d.ts",
+  "mainEntryPointFilePath": "<projectFolder>/dist/index.d.ts",
   "newlineKind": "lf",
   "apiReport": {
     "enabled": true,
