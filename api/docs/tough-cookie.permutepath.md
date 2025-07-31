@@ -9,7 +9,7 @@ Generates the permutation of all possible values that [pathMatch()](./tough-cook
 **Signature:**
 
 ```typescript
-export declare function permutePath(path: string): string[];
+declare function permutePath(path: string): string[];
 ```
 
 ## Parameters

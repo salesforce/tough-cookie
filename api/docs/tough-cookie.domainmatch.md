@@ -9,7 +9,7 @@ Answers "does this real domain match the domain in a cookie?". The `domain` is t
 **Signature:**
 
 ```typescript
-export declare function domainMatch(domain?: Nullable<string>, cookieDomain?: Nullable<string>, canonicalize?: boolean): boolean | undefined;
+declare function domainMatch(domain?: Nullable<string>, cookieDomain?: Nullable<string>, canonicalize?: boolean): boolean | undefined;
 ```
 
 ## Parameters

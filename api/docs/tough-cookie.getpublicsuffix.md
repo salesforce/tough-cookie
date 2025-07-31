@@ -9,7 +9,7 @@ Returns the public suffix of this hostname. The public suffix is the shortest do
 **Signature:**
 
 ```typescript
-export declare function getPublicSuffix(domain: string, options?: GetPublicSuffixOptions): string | undefined;
+declare function getPublicSuffix(domain: string, options?: GetPublicSuffixOptions): string | undefined;
 ```
 
 ## Parameters

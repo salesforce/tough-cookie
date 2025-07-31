@@ -9,7 +9,7 @@ Given a current request/response path, gives the path appropriate for storing in
 **Signature:**
 
 ```typescript
-export declare function defaultPath(path?: Nullable<string>): string;
+declare function defaultPath(path?: Nullable<string>): string;
 ```
 
 ## Parameters

@@ -9,5 +9,5 @@ The inverse of NonNullable<T>.
 **Signature:**
 
 ```typescript
-export type Nullable<T> = T | null | undefined;
+type Nullable<T> = T | null | undefined;
 ```

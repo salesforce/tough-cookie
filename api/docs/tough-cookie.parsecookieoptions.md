@@ -9,7 +9,7 @@ Optional configuration to be used when parsing cookies.
 **Signature:**
 
 ```typescript
-export interface ParseCookieOptions 
+interface ParseCookieOptions 
 ```
 
 ## Properties

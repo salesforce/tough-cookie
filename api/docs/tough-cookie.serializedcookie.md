@@ -9,7 +9,7 @@ A JSON object that is created when [Cookie.toJSON()](./tough-cookie.cookie.tojso
 **Signature:**
 
 ```typescript
-export type SerializedCookie = {
+type SerializedCookie = {
     key?: string;
     value?: string;
     [key: string]: unknown;

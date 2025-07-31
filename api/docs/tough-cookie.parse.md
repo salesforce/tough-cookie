@@ -9,7 +9,7 @@ Parses a string into a Cookie object.
 **Signature:**
 
 ```typescript
-export declare function parse(str: string, options?: ParseCookieOptions): Cookie | undefined;
+declare function parse(str: string, options?: ParseCookieOptions): Cookie | undefined;
 ```
 
 ## Parameters

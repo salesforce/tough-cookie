@@ -9,7 +9,7 @@ Transforms a domain name into a canonical domain name. The canonical domain name
 **Signature:**
 
 ```typescript
-export declare function canonicalDomain(domainName: Nullable<string>): string | undefined;
+declare function canonicalDomain(domainName: Nullable<string>): string | undefined;
 ```
 
 ## Parameters

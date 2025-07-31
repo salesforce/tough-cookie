@@ -9,7 +9,7 @@ A JSON representation of a [CookieJar](./tough-cookie.cookiejar.md)<!-- -->.
 **Signature:**
 
 ```typescript
-export interface SerializedCookieJar 
+interface SerializedCookieJar 
 ```
 
 ## Properties

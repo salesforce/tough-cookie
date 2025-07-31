@@ -9,7 +9,7 @@ Configuration options used when calling `CookieJar.getCookies(...)`<!-- -->.
 **Signature:**
 
 ```typescript
-export interface GetCookiesOptions 
+interface GetCookiesOptions 
 ```
 
 ## Properties

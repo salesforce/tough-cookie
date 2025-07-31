@@ -9,7 +9,7 @@ An in-memory [Store](./tough-cookie.store.md) implementation for [CookieJar](./t
 **Signature:**
 
 ```typescript
-export declare class MemoryCookieStore extends Store 
+declare class MemoryCookieStore extends Store 
 ```
 **Extends:** [Store](./tough-cookie.store.md)
 

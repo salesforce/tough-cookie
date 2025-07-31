@@ -9,7 +9,7 @@ An HTTP cookie (web cookie, browser cookie) is a small piece of data that a serv
 **Signature:**
 
 ```typescript
-export declare class Cookie 
+declare class Cookie 
 ```
 
 ## Constructors
