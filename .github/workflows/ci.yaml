@@ -61,7 +61,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Verify types & entrypoints
-        run: npx --yes @arethetypeswrong/cli --pack .
+        run: npm run _lint:types
 
   api:
     name: API & Doc Validation
