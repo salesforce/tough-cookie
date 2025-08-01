@@ -9,7 +9,7 @@ Does the reverse of [Cookie.toJSON()](./tough-cookie.cookie.tojson.md)<!-- -->.
 **Signature:**
 
 ```typescript
-export declare function fromJSON(str: unknown): Cookie | undefined;
+declare function fromJSON(str: unknown): Cookie | undefined;
 ```
 
 ## Parameters

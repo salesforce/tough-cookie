@@ -9,7 +9,7 @@ Configuration settings to be used with a [CookieJar](./tough-cookie.cookiejar.md
 **Signature:**
 
 ```typescript
-export interface CreateCookieJarOptions 
+interface CreateCookieJarOptions 
 ```
 
 ## Properties

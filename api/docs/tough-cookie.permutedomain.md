@@ -9,7 +9,7 @@ Generates the permutation of all possible values that [domainMatch()](./tough-co
 **Signature:**
 
 ```typescript
-export declare function permuteDomain(domain: string, allowSpecialUseDomain?: boolean): string[] | undefined;
+declare function permuteDomain(domain: string, allowSpecialUseDomain?: boolean): string[] | undefined;
 ```
 
 ## Parameters

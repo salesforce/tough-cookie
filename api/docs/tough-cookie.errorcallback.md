@@ -9,5 +9,5 @@ A callback function that only accepts an error.
 **Signature:**
 
 ```typescript
-export interface ErrorCallback 
+interface ErrorCallback 
 ```

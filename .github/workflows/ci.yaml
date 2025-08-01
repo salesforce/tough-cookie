@@ -47,6 +47,22 @@ jobs:
       - name: Run tests
         run: npm test
 
+  esm_cjs:
+    name: Types & Entrypoints
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Verify types & entrypoints
+        run: npm run _lint:types
+
   api:
     name: API & Doc Validation
     runs-on: ubuntu-latest

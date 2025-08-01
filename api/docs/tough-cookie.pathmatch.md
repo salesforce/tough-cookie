@@ -9,7 +9,7 @@ Answers "does the request-path path-match a given cookie-path?" as per [RFC6265 
 **Signature:**
 
 ```typescript
-export declare function pathMatch(reqPath: string, cookiePath: string): boolean;
+declare function pathMatch(reqPath: string, cookiePath: string): boolean;
 ```
 
 ## Parameters

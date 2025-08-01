@@ -17,7 +17,7 @@ The sort algorithm is, in order of precedence:
 **Signature:**
 
 ```typescript
-export declare function cookieCompare(a: Cookie, b: Cookie): number;
+declare function cookieCompare(a: Cookie, b: Cookie): number;
 ```
 
 ## Parameters

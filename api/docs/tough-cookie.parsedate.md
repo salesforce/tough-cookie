@@ -9,7 +9,7 @@ Parse a cookie date string into a [Date](https://developer.mozilla.org/en-US/doc
 **Signature:**
 
 ```typescript
-export declare function parseDate(cookieDate: Nullable<string>): Date | undefined;
+declare function parseDate(cookieDate: Nullable<string>): Date | undefined;
 ```
 
 ## Parameters

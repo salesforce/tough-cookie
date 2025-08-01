@@ -9,7 +9,7 @@ Represents a validation error.
 **Signature:**
 
 ```typescript
-export declare class ParameterError extends Error 
+declare class ParameterError extends Error 
 ```
 **Extends:** Error
 

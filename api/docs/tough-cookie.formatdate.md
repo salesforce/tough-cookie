@@ -9,7 +9,7 @@ Format a [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Referenc
 **Signature:**
 
 ```typescript
-export declare function formatDate(date: Date): string;
+declare function formatDate(date: Date): string;
 ```
 
 ## Parameters
