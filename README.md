@@ -137,7 +137,7 @@ await cookieJar.setCookie(
 ### Potentially Trustworthy Origins are considered "Secure"
 
 The definition of a "Secure" connection is not explicitly defined by [RFC6265bis][rfc6265bis-tracker] but the following text is
-provided in [RFC6265bis - Section 5.8.3]():
+provided in [RFC6265bis - Section 5.8.3][secure-connection-note]:
 
 > [!NOTE]
 > Typically, user agents consider a connection secure if the connection makes use of transport-layer security, such as
