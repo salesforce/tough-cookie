@@ -134,6 +134,44 @@ await cookieJar.setCookie(
 > [!NOTE]
 > It is highly recommended that you read [RFC6265bis - Section 4.1.3][cookie-prefixes-implementation] for more details on Cookie Prefixes.
 
+### Potentially Trustworthy Origins are considered "Secure"
+
+The definition of a "Secure" connection is not explicitly defined by [RFC6265bis][rfc6265bis-tracker] but the following text is
+provided in [RFC6265bis - Section 5.8.3][secure-connection-note]:
+
+> [!NOTE]
+> Typically, user agents consider a connection secure if the connection makes use of transport-layer security, such as
+> SSL or TLS, or if the host is trusted. For example, most user agents consider "https" to be a scheme that denotes a
+> secure protocol and "localhost" to be trusted host.
+
+As well as a note to [Appendix A. Changes from RFC6265][secure-connection-appendix-a] which refers to **"potentially trustworthy
+origins"** which are defined in the [Secure Contexts - W3C Candidate Recommendation Draft][potentially-trustworthy-origin]:
+
+> [!Note]
+> Considers potentially trustworthy origins as "secure".
+
+Since most web browsers treat `localhost` as a trustworthy origin, by default, so does `tough-cookie`. To disable this
+behavior, the `CookieStore` must be configured with:
+
+```typescript
+import { CookieJar, MemoryCookieStore } from 'tough-cookie'
+
+const cookieJar = new CookieJar(new MemoryCookieStore(), {
+  // add configuration so localhost will not be considered trustworthy
+  // (fyi - this doesn't apply to https cookies on localhost as those use a secure protocol)
+  allowSecureOnLocal: false,
+})
+
+// this cookie will be persisted to storage
+await cookieJar.setCookie(
+  'SID=12345; Domain=localhost; Secure;',
+  'http://localhost',
+)
+
+// but, on retrieval, it will not be returned
+await cookieJar.getCookiesSync('http://localhost')
+```
+
 ## Node.js Version Support
 
 We follow the [Node.js release schedule](https://github.com/nodejs/Release#release-schedule) and support
@@ -150,5 +188,8 @@ for older versions of node, and we will do so in consultation with our community
 [rfc6265bis-tracker]: https://datatracker.ietf.org/doc/draft-ietf-httpbis-rfc6265bis/
 [samesite-implementation]: https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-02#section-8.8
 [cookie-prefixes-implementation]: https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-02#section-4.1.3
+[secure-connection-note]: https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-19#section-5.8.3-2.1.2.3.1
+[secure-connection-appendix-a]: https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-19#appendix-A-1.7.1
+[potentially-trustworthy-origin]: https://www.w3.org/TR/secure-contexts/#is-origin-trustworthy
 [prs-welcome-badge]: https://img.shields.io/badge/PRs-welcome-brightgreen.svg
 [yarn-repo]: https://yarnpkg.com/package?name=tough-cookie
