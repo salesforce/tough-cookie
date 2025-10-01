@@ -162,7 +162,7 @@ describe('Dates', () => {
   })
 
   describe('regexp denial of service attack vectors', () => {
-    const TOO_MANY_XS = String('x').repeat(65535)
+    const TOO_MANY_XS = 'x'.repeat(65535)
 
     it('should avoid unbounded regexps when parsing the hour from a date', () => {
       expect(
