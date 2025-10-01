@@ -92,7 +92,9 @@ function parseTime(token: string): number[] | undefined {
 }
 
 function parseMonth(token: string): number | undefined {
-  token = String(token).slice(0, 3).toLowerCase()
+  token = String(token as unknown)
+    .slice(0, 3)
+    .toLowerCase()
   switch (token) {
     case 'jan':
       return MONTH_TO_NUM.jan
