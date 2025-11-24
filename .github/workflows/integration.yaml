@@ -20,21 +20,23 @@ jobs:
   integration-with-canvas:
     name: Integration (jsdom + node-canvas)
     runs-on: ubuntu-latest
+    env:
+      TEST_SUITE: 'node-canvas'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: ./tough-cookie
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           repository: jsdom/jsdom
           ref: main
           path: ./jsdom
           submodules: recursive
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: lts/*
       - name: Install required image manipulation packages with APT
-        run: sudo apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+        run: sudo apt-get update && sudo apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
       - name: Build tough-cookie
         id: package
         run: |
@@ -50,25 +52,25 @@ jobs:
           npm ci
           npm uninstall tough-cookie
           npm install ../tough-cookie/${{ steps.package.outputs.tough_cookie_tarball }}
-          npm install canvas
+          npm install canvas@3
         working-directory: ./jsdom
       - name: Run tests
-        run: npm test -- --retries 1
+        run: npm test
         working-directory: ./jsdom
   integration:
     name: Integration (jsdom)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: ./tough-cookie
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           repository: jsdom/jsdom
           ref: main
           path: ./jsdom
           submodules: recursive
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: lts/*
       - name: Build tough-cookie
@@ -88,5 +90,5 @@ jobs:
           npm install ../tough-cookie/${{ steps.package.outputs.tough_cookie_tarball }}
         working-directory: ./jsdom
       - name: Run tests
-        run: npm run test -- --retries 1
+        run: npm run test
         working-directory: ./jsdom
