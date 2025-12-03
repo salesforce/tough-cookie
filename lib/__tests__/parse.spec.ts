@@ -407,9 +407,11 @@ describe('Cookie.parse', () => {
 
     const value = input === undefined ? undefined : input.valueOf()
     const cookie = Cookie.parse(value as string, parseOptions)
+    // eslint-disable-next-line vitest/no-conditional-expect
     expect(cookie).toEqual(output && expect.objectContaining(output))
 
     if (cookie && typeof assertValidateReturns === 'boolean') {
+      // eslint-disable-next-line vitest/no-conditional-expect
       expect(cookie.validate()).toBe(assertValidateReturns)
     }
   })
