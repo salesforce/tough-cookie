@@ -73,30 +73,14 @@ describe('IETF http state tests', () => {
     it.each(exampleDates)(
       `ietf_data/dates/examples: $test`,
       ({ test, expected }) => {
-        if (expected) {
-          const date = parseDate(test)
-          if (!date) {
-            throw new Error('This should have parsed')
-          }
-          expect(date.toUTCString()).toBe(expected)
-        } else {
-          expect(parseDate(test)).toBeUndefined()
-        }
+        expect(parseDate(test)?.toUTCString()).toBe(expected || undefined)
       },
     )
 
     it.each(bsdExampleDates)(
       `ietf_data/dates/bsd_examples: $test`,
       ({ test, expected }) => {
-        if (expected) {
-          const date = parseDate(test)
-          if (!date) {
-            throw new Error('This should have parsed')
-          }
-          expect(date.toUTCString()).toBe(expected)
-        } else {
-          expect(parseDate(test)).toBeUndefined()
-        }
+        expect(parseDate(test)?.toUTCString()).toBe(expected || undefined)
       },
     )
   })
