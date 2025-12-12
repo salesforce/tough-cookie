@@ -253,32 +253,24 @@ describe('cookieJar serialization', () => {
             domain?: string
             path?: string
           }
-          expect(typeof parsedValue.domain).toBe('string')
-          expect(typeof parsedValue.path).toBe('string')
+          // eslint-disable-next-line vitest/no-conditional-expect
+          expect(parsedValue.domain).toBeTypeOf('string')
+          // eslint-disable-next-line vitest/no-conditional-expect
+          expect(parsedValue.path).toBeTypeOf('string')
         }
 
-        if (
-          serializedCookie.key === 'infExp' ||
-          serializedCookie.key === 'max'
-        ) {
-          expect(serializedCookie.expires).toBeFalsy()
-        } else {
-          expect(serializedCookie.expires).toBe(expires.toISOString())
-        }
+        const expiry =
+          serializedCookie.key === 'infExp' || serializedCookie.key === 'max'
+            ? undefined
+            : expires.toISOString()
+        expect(serializedCookie.expires).toBe(expiry)
 
-        if (serializedCookie.key === 'max') {
-          expect(serializedCookie.maxAge).toBe(3600)
-        } else {
-          expect(serializedCookie.maxAge).toBeUndefined()
-        }
+        const maxAge = serializedCookie.key === 'max' ? 3600 : undefined
+        expect(serializedCookie.maxAge).toBe(maxAge)
 
-        if (serializedCookie.key === 'flags') {
-          expect(serializedCookie.secure).toBe(true)
-          expect(serializedCookie.httpOnly).toBe(true)
-        } else {
-          expect(serializedCookie.secure).toBeUndefined()
-          expect(serializedCookie.httpOnly).toBeUndefined()
-        }
+        const flag = serializedCookie.key === 'flags' ? true : undefined
+        expect(serializedCookie.secure).toBe(flag)
+        expect(serializedCookie.httpOnly).toBe(flag)
 
         expect(serializedCookie.hostOnly).toBe(serializedCookie.key === 'honly')
 

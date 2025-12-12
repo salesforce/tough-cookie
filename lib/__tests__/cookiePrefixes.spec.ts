@@ -6,6 +6,8 @@ let cookieJar: CookieJar
 const insecureUrl = 'http://www.example.com'
 const secureUrl = 'https://www.example.com'
 
+/* eslint vitest/no-standalone-expect: [error, {additionalTestBlockFunctions: [beforeEach]}]*/
+
 describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
   describe('silent', () => {
     beforeEach(() => {
