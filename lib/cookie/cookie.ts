@@ -45,7 +45,6 @@ const COOKIE_OCTETS = /^[\x21\x23-\x2B\x2D-\x3A\x3C-\x5B\x5D-\x7E]+$/
 // Note ';' is \x3B
 const PATH_VALUE = /[\x20-\x3A\x3C-\x7E]+/
 
-// eslint-disable-next-line no-control-regex
 const CONTROL_CHARS = /[\x00-\x1F]/
 
 // From Chromium // '\r', '\n' and '\0' should be treated as a terminator in
