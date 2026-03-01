@@ -130,7 +130,7 @@
     "@microsoft/api-extractor": "^7.52.3",
     "@types/node": "^20.19.6",
     "@vitest/eslint-plugin": "^1.1.40",
-    "eslint": "^9.39.1",
+    "eslint": "^10.0.2",
     "eslint-config-prettier": "^10.1.2",
     "eslint-import-resolver-typescript": "^4.3.2",
     "eslint-plugin-import": "^2.31.0",
