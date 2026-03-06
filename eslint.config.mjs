@@ -30,6 +30,7 @@ export default config(
     rules: {
       '@typescript-eslint/explicit-function-return-type': 'error',
       'import/no-nodejs-modules': 'error',
+      'no-control-regex': 'off',
     },
   },
   {

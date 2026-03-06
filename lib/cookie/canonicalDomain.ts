@@ -60,7 +60,7 @@ export function canonicalDomain(
   }
 
   // convert to IDN if any non-ASCII characters
-  // eslint-disable-next-line no-control-regex
+
   if (/[^\u0001-\u007f]/.test(str)) {
     return domainToASCII(str)
   }
