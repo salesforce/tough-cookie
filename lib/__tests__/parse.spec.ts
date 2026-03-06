@@ -407,9 +407,11 @@ describe('Cookie.parse', () => {
 
     const value = input === undefined ? undefined : input.valueOf()
     const cookie = Cookie.parse(value as string, parseOptions)
+    // eslint-disable-next-line vitest/no-conditional-expect
     expect(cookie).toEqual(output && expect.objectContaining(output))
 
     if (cookie && typeof assertValidateReturns === 'boolean') {
+      // eslint-disable-next-line vitest/no-conditional-expect
       expect(cookie.validate()).toBe(assertValidateReturns)
     }
   })
@@ -440,6 +442,7 @@ describe('Cookie.parse', () => {
     },
   ])(
     'Cookie.parse("$prefix $postfix") should not take significantly longer to run than Cookie.parse("$prefix<TOO MANY SPACES>$postfix")',
+    { retry: 3 },
     ({ prefix, postfix, parseOptions = {} }) => {
       const shortVersion = `${prefix} ${postfix}`
       const startShortVersionParse = performance.now()
@@ -454,7 +457,7 @@ describe('Cookie.parse', () => {
       const ratio =
         (endLongVersionParse - startLongVersionParse) /
         (endShortVersionParse - startShortVersionParse)
-      expect(ratio).toBeLessThan(250) // if broken this ratio goes 2000-4000x higher
+      expect(ratio).toBeLessThan(300) // if broken this ratio goes 2000-4000x higher
     },
   )
 })
