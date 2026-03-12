@@ -14,17 +14,6 @@ updates:
         update-types:
           - 'minor'
           - 'patch'
-      dev-dependencies:
-        dependency-type: 'development'
-        exclude-patterns:
-          - 'eslint*'
-          - '@eslint/*'
-          - 'typescript-eslint'
-          - '@typescript-eslint/*'
-          - '@vitest/eslint-plugin'
-        update-types:
-          - 'minor'
-          - 'patch'
       eslint:
         patterns:
           - 'eslint*'
@@ -32,6 +21,11 @@ updates:
           - 'typescript-eslint'
           - '@typescript-eslint/*'
           - '@vitest/eslint-plugin'
+      dev-dependencies:
+        dependency-type: 'development'
+        update-types:
+          - 'minor'
+          - 'patch'
     ignore:
       # We want @types/node to match the *lowest* version of node.js that we support
       - dependency-name: '@types/node'
