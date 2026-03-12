@@ -14,6 +14,13 @@ updates:
         update-types:
           - 'minor'
           - 'patch'
+      eslint:
+        patterns:
+          - 'eslint*'
+          - '@eslint/*'
+          - 'typescript-eslint'
+          - '@typescript-eslint/*'
+          - '@vitest/eslint-plugin'
       dev-dependencies:
         dependency-type: 'development'
         update-types:
