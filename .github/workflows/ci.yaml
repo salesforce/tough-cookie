@@ -81,8 +81,6 @@ jobs:
       - name: Check API
         run: npm run _api:check
       - name: Generate docs
-        # there is a bug in api-documenter that causes it not to respect 'lf' endings
-        # so we need to run prettier via `_docs:fix` as a workaround
-        run: npm run _docs:generate && npm run _docs:fix
+        run: npm run _docs:generate
       - name: Validated generated API and doc changes have been committed
         run: ./validate-generated-files.sh
