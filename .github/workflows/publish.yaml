@@ -20,6 +20,7 @@ jobs:
         with:
           node-version: lts/*
           cache: npm
+          registry-url: 'https://registry.npmjs.org'
       - name: Install dependencies
         run: npm ci
       - name: Rebuild generated files
@@ -28,5 +29,3 @@ jobs:
         run: ./validate-generated-files.sh
       - name: Publish
         run: npm publish --provenance
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
