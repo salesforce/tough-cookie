@@ -86,6 +86,8 @@ boolean \| undefined
 
 ## Remarks
 
+This implementation is compliant with RFC6265 Section 5.1.3 and compatible with [draft-ietf-httpbis-rfc6265bis-22](https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-22#section-5.1.3) which adds a clarifying note that both inputs must be canonicalized but is otherwise identical.
+
 \#\#\# 5.1.3. Domain Matching
 
 A string domain-matches a given domain string if at least one of the following conditions hold:
