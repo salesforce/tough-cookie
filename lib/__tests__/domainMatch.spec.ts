@@ -9,6 +9,9 @@ describe('domainMatch', () => {
       ['example.com', null, undefined],
       [null, null, undefined],
       [undefined, undefined, undefined],
+      ['', 'example.com', false],
+      ['example.com', '', false],
+      ['', '', true],
     ])('domainMatch(%s, %s) => %s', (domain, cookieDomain, expected) => {
       expect(domainMatch(domain, cookieDomain)).toBe(expected)
     })
@@ -35,6 +38,7 @@ describe('domainMatch', () => {
     it.each([
       ['example.com', 'example.com', true],
       ['com', 'com', true],
+      ['localhost', 'localhost', true],
       ['::1', '::1', true], // identical IPv6
       ['::3Xam:1e', '::3xaM:1e', true], // identical after canonicalization, even though malformed
       ['3xam::1e', '3xam::1e', true], // identical malformed IPv6
@@ -72,6 +76,10 @@ describe('domainMatch', () => {
 
       // trailing dot
       ['example.com', 'example.com.', false], // RFC6265 S4.1.2.3
+
+      // dot-only inputs
+      ['.', '.', true],
+      ['..', '.', true], // canonicalization strips leading dot from '..' leaving '.', which matches
     ])('domainMatch(%s, %s) => %s', (domain, cookieDomain, expected) => {
       expect(domainMatch(domain, cookieDomain)).toBe(expected)
     })
@@ -116,6 +124,20 @@ describe('domainMatch', () => {
       ['192.168.0.1.example.com', 'example.com', true],
     ])('domainMatch(%s, %s) => %s', (domain, cookieDomain, expected) => {
       expect(domainMatch(domain, cookieDomain)).toBe(expected)
+    })
+  })
+
+  describe('canonicalize=false', () => {
+    it.each([
+      // pre-canonicalized inputs match normally
+      ['www.example.com', 'example.com', true],
+      ['example.com', 'example.com', true],
+      // mixed case is NOT canonicalized — fails identity check
+      ['Example.com', 'example.com', false],
+      // leading dot is NOT stripped
+      ['www.google.com', '.google.com', false],
+    ])('domainMatch(%s, %s, false) => %s', (domain, cookieDomain, expected) => {
+      expect(domainMatch(domain, cookieDomain, false)).toBe(expected)
     })
   })
 })
