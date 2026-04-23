@@ -237,7 +237,7 @@ function getCookieContext(url: unknown): UrlContext {
 
 type SameSiteLevel = keyof (typeof Cookie)['sameSiteLevel']
 function checkSameSiteContext(value: string): SameSiteLevel | undefined {
-  const context = String(value as unknown).toLowerCase()
+  const context = value.toLowerCase()
   if (context === 'none' || context === 'lax' || context === 'strict') {
     return context
   } else {

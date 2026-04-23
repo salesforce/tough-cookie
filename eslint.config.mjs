@@ -3,7 +3,7 @@
 import eslint from '@eslint/js'
 import prettierRecommended from 'eslint-plugin-prettier/recommended'
 import { config, configs } from 'typescript-eslint'
-import { flatConfigs as pluginImport } from 'eslint-plugin-import'
+import { flatConfigs as pluginImport } from 'eslint-plugin-import-x'
 import globals from 'globals'
 import vitest from '@vitest/eslint-plugin'
 
@@ -29,7 +29,7 @@ export default config(
     },
     rules: {
       '@typescript-eslint/explicit-function-return-type': 'error',
-      'import/no-nodejs-modules': 'error',
+      'import-x/no-nodejs-modules': 'error',
       'no-control-regex': 'off',
     },
   },
@@ -39,19 +39,11 @@ export default config(
     rules: {
       ...vitest.configs.recommended.rules,
       // We only run tests in node, so we can use node's builtins
-      'import/no-nodejs-modules': 'off',
+      'import-x/no-nodejs-modules': 'off',
     },
   },
   {
     files: ['eslint.config.mjs'],
     ...configs.disableTypeChecked,
-  },
-  {
-    // other configuration are omitted for brevity
-    settings: {
-      'import/resolver': {
-        typescript: {}, // this loads <rootdir>/tsconfig.json to eslint
-      },
-    },
   },
 )
