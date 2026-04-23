@@ -14,6 +14,10 @@ const IP_REGEX_LOWERCASE =
  * but it helps to think of it as a "suffix match".
  *
  * @remarks
+ * This implementation is compliant with RFC6265 Section 5.1.3 and compatible with
+ * {@link https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-22#section-5.1.3 | draft-ietf-httpbis-rfc6265bis-22}
+ * which adds a clarifying note that both inputs must be canonicalized but is otherwise identical.
+ *
  * ### 5.1.3.  Domain Matching
  *
  * A string domain-matches a given domain string if at least one of the
@@ -49,6 +53,7 @@ export function domainMatch(
   cookieDomain?: Nullable<string>,
   canonicalize?: boolean,
 ): boolean | undefined {
+  // Library-specific: null/undefined input handling (not in RFC)
   if (domain == null || cookieDomain == null) {
     return undefined
   }
@@ -56,6 +61,8 @@ export function domainMatch(
   let _str: Nullable<string>
   let _domStr: Nullable<string>
 
+  // Library-specific: optional canonicalization (not in RFC)
+  // The RFC algorithm assumes inputs are already canonicalized.
   if (canonicalize !== false) {
     _str = canonicalDomain(domain)
     _domStr = canonicalDomain(cookieDomain)
@@ -64,44 +71,50 @@ export function domainMatch(
     _domStr = cookieDomain
   }
 
+  // Library-specific: canonicalization failure handling (not in RFC)
   if (_str == null || _domStr == null) {
     return undefined
   }
 
-  /*
-   * S5.1.3:
-   * "A string domain-matches a given domain string if at least one of the
-   * following conditions hold:"
-   *
-   * " o The domain string and the string are identical. (Note that both the
-   * domain string and the string will have been canonicalized to lower case at
-   * this point)"
-   */
+  // https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-22#section-5.1.3-1
+  // Note: This algorithm expects that both inputs are canonicalized.
+
+  // https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-22#section-5.1.3-2
+  // A string domain-matches a given domain string if at least one of the
+  // following conditions hold:
+
+  // https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-22#section-5.1.3-3.1.1
+  // The domain string and the string are identical. (Note that both the
+  // domain string and the string will have been canonicalized to lower case at
+  // this point.)
   if (_str == _domStr) {
     return true
   }
 
-  /* " o All of the following [three] conditions hold:" */
+  // https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-22#section-5.1.3-3.2.1
+  // All of the following conditions hold:
 
-  /* "* The domain string is a suffix of the string" */
+  // https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-22#section-5.1.3-3.2.2.1.1
+  // The domain string is a suffix of the string.
   const idx = _str.lastIndexOf(_domStr)
   if (idx <= 0) {
     return false // it's a non-match (-1) or prefix (0)
   }
 
-  // next, check it's a proper suffix
-  // e.g., "a.b.c".indexOf("b.c") === 2
-  // 5 === 3+2
+  // Verify it's a proper suffix (not just a substring match)
+  // e.g., "a.b.c".lastIndexOf("b.c") === 2, and 5 === 3 + 2
   if (_str.length !== _domStr.length + idx) {
     return false // it's not a suffix
   }
 
-  /* "  * The last character of the string that is not included in the
-   * domain string is a %x2E (".") character." */
+  // https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-22#section-5.1.3-3.2.2.2.1
+  // The last character of the string that is not included in the
+  // domain string is a %x2E (".") character.
   if (_str.substring(idx - 1, idx) !== '.') {
     return false // doesn't align on "."
   }
 
-  /* "  * The string is a host name (i.e., not an IP address)." */
+  // https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-22#section-5.1.3-3.2.2.3.1
+  // The string is a host name (i.e., not an IP address).
   return !IP_REGEX_LOWERCASE.test(_str)
 }
