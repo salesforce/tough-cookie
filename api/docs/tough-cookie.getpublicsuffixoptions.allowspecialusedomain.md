@@ -12,6 +12,10 @@ If set to `true` then the following [Special Use Domains](https://www.rfc-editor
 allowSpecialUseDomain?: boolean | undefined;
 ```
 
+## Default Value
+
+false
+
 ## Remarks
 
 In testing scenarios it's common to configure the cookie store with so that `http://localhost` can be used as a domain:
