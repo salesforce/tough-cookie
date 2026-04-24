@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { CookiePath } from '../cookie/cookiePath.js'
 import { defaultPathCases } from './data/defaultPathCases.js'
+import { pathMatchCases } from './data/pathMatchCases.js'
 
 describe('CookiePath', () => {
   describe('ROOT', () => {
@@ -51,6 +52,20 @@ describe('CookiePath', () => {
       'defaultPath($input) => "$expected"',
       ({ input, expected }) => {
         expect(CookiePath.defaultPath(input)).toBe(expected)
+      },
+    )
+  })
+
+  describe('match', () => {
+    it.each(pathMatchCases)(
+      'match("%s", "%s") => %s',
+      (requestPath, cookiePath, expectedValue) => {
+        expect(
+          CookiePath.match(
+            CookiePath.parse(requestPath)!,
+            CookiePath.parse(cookiePath)!,
+          ),
+        ).toBe(expectedValue)
       },
     )
   })

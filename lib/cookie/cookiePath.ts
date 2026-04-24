@@ -56,4 +56,30 @@ export namespace CookiePath {
     const requestPath = parse(path ?? '') ?? ROOT
     return parentPath(requestPath) ?? ROOT
   }
+
+  /**
+   * Determines if a request path matches a cookie path per
+   * {@link https://www.rfc-editor.org/rfc/rfc6265.html#section-5.1.4 | RFC 6265 §5.1.4}.
+   *
+   * @param reqPath - the path of the request
+   * @param cookiePath - the path of the cookie
+   */
+  export function match(reqPath: CookiePath, cookiePath: CookiePath): boolean {
+    if (cookiePath === reqPath) {
+      return true
+    }
+
+    const idx = reqPath.indexOf(cookiePath)
+    if (idx === 0) {
+      if (cookiePath[cookiePath.length - 1] === '/') {
+        return true
+      }
+
+      if (reqPath.startsWith(cookiePath) && reqPath[cookiePath.length] === '/') {
+        return true
+      }
+    }
+
+    return false
+  }
 }
