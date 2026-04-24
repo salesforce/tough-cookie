@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { CookiePath } from '../cookie/cookiePath.js'
 import { defaultPathCases } from './data/defaultPathCases.js'
 import { pathMatchCases } from './data/pathMatchCases.js'
+import { permutePathCases } from './data/permutePathCases.js'
 
 describe('CookiePath', () => {
   describe('ROOT', () => {
@@ -35,12 +36,9 @@ describe('CookiePath', () => {
       { input: '/foo/bar', expected: '/foo' },
       { input: '/foo/bar/', expected: '/foo/bar' },
       { input: '/foo', expected: '/' },
-    ])(
-      'parentPath of "$input" is "$expected"',
-      ({ input, expected }) => {
-        expect(CookiePath.parentPath(CookiePath.parse(input)!)).toBe(expected)
-      },
-    )
+    ])('parentPath of "$input" is "$expected"', ({ input, expected }) => {
+      expect(CookiePath.parentPath(CookiePath.parse(input)!)).toBe(expected)
+    })
 
     it('returns undefined for ROOT', () => {
       expect(CookiePath.parentPath(CookiePath.ROOT)).toBeUndefined()
@@ -66,6 +64,21 @@ describe('CookiePath', () => {
             CookiePath.parse(cookiePath)!,
           ),
         ).toBe(expectedValue)
+      },
+    )
+  })
+
+  describe('permute', () => {
+    it.each([...permutePathCases])(
+      'permute("$path") => $permutations',
+      ({ path, permutations }) => {
+        const parsed = CookiePath.parse(path)!
+        expect(CookiePath.permute(parsed)).toEqual([...permutations])
+        permutations.forEach((permutation) => {
+          expect(CookiePath.match(parsed, CookiePath.parse(permutation)!)).toBe(
+            true,
+          )
+        })
       },
     )
   })
