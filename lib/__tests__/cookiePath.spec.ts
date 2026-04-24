@@ -26,4 +26,22 @@ describe('CookiePath', () => {
       expect(CookiePath.parse(input)).toBeUndefined()
     })
   })
+
+  describe('parentPath', () => {
+    it.each([
+      { input: '/foo/bar/baz', expected: '/foo/bar' },
+      { input: '/foo/bar', expected: '/foo' },
+      { input: '/foo/bar/', expected: '/foo/bar' },
+      { input: '/foo', expected: '/' },
+    ])(
+      'parentPath of "$input" is "$expected"',
+      ({ input, expected }) => {
+        expect(CookiePath.parentPath(CookiePath.parse(input)!)).toBe(expected)
+      },
+    )
+
+    it('returns undefined for ROOT', () => {
+      expect(CookiePath.parentPath(CookiePath.ROOT)).toBeUndefined()
+    })
+  })
 })
