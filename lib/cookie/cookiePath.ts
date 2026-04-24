@@ -30,4 +30,17 @@ export namespace CookiePath {
     if (!input.startsWith('/')) return undefined
     return input as CookiePath
   }
+
+  /**
+   * Returns the parent path by stripping the last segment, or `undefined`
+   * if the path is already the root (`/`).
+   *
+   * @param path - a validated cookie path
+   */
+  export function parentPath(path: CookiePath): CookiePath | undefined {
+    if (path === '/') return undefined
+    const lastSlashIndex = path.lastIndexOf('/')
+    if (lastSlashIndex === 0) return ROOT
+    return path.slice(0, lastSlashIndex) as CookiePath
+  }
 }
