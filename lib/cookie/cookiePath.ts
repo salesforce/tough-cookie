@@ -1,3 +1,5 @@
+import type { Nullable } from '../utils.js'
+
 declare const tag: unique symbol
 
 /**
@@ -42,5 +44,16 @@ export namespace CookiePath {
     const lastSlashIndex = path.lastIndexOf('/')
     if (lastSlashIndex === 0) return ROOT
     return path.slice(0, lastSlashIndex) as CookiePath
+  }
+
+  /**
+   * Computes the default cookie path from a request URI path per
+   * {@link https://www.rfc-editor.org/rfc/rfc6265.html#section-5.1.4 | RFC 6265 §5.1.4}.
+   *
+   * @param path - the path portion of the request URI
+   */
+  export function defaultPath(path?: Nullable<string>): CookiePath {
+    const requestPath = parse(path ?? '') ?? ROOT
+    return parentPath(requestPath) ?? ROOT
   }
 }

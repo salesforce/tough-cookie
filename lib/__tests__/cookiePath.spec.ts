@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { CookiePath } from '../cookie/cookiePath.js'
+import { defaultPathCases } from './data/defaultPathCases.js'
 
 describe('CookiePath', () => {
   describe('ROOT', () => {
@@ -43,5 +44,14 @@ describe('CookiePath', () => {
     it('returns undefined for ROOT', () => {
       expect(CookiePath.parentPath(CookiePath.ROOT)).toBeUndefined()
     })
+  })
+
+  describe('defaultPath', () => {
+    it.each([...defaultPathCases])(
+      'defaultPath($input) => "$expected"',
+      ({ input, expected }) => {
+        expect(CookiePath.defaultPath(input)).toBe(expected)
+      },
+    )
   })
 })
