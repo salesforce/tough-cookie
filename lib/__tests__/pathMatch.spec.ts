@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-deprecated */
 import { describe, expect, it } from 'vitest'
 import { pathMatch } from '../pathMatch.js'
 import { pathMatchCases } from './data/pathMatchCases.js'
