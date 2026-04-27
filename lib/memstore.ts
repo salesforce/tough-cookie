@@ -1,5 +1,5 @@
 import type { Cookie } from './cookie/cookie.js'
-import { pathMatch } from './pathMatch.js'
+import { CookiePath } from './cookie/cookiePath.js'
 import { permuteDomain } from './permuteDomain.js'
 import { Store } from './store.js'
 import {
@@ -180,11 +180,14 @@ export class MemoryCookieStore extends Store {
         }
       }
     } else {
+      const parsedPath = CookiePath.parse(path) ?? CookiePath.ROOT
       pathMatcher = function matchRFC(domainIndex): void {
-        //NOTE: we should use path-match algorithm from S5.1.4 here
-        //(see : https://github.com/ChromiumWebApps/chromium/blob/b3d3b4da8bb94c1b2e061600df106d590fda3620/net/cookies/canonical_cookie.cc#L299)
         for (const cookiePath in domainIndex) {
-          if (pathMatch(path, cookiePath)) {
+          const parsedCookiePath = CookiePath.parse(cookiePath)
+          if (
+            parsedCookiePath &&
+            CookiePath.match(parsedPath, parsedCookiePath)
+          ) {
             const pathIndex = domainIndex[cookiePath]
             for (const key in pathIndex) {
               const value = pathIndex[key]

@@ -3,7 +3,7 @@ import * as validators from '../validators.js'
 import { ParameterError } from '../validators.js'
 import { Store } from '../store.js'
 import { MemoryCookieStore } from '../memstore.js'
-import { pathMatch } from '../pathMatch.js'
+import { CookiePath } from './cookiePath.js'
 import { Cookie } from './cookie.js'
 import {
   Callback,
@@ -19,7 +19,6 @@ import {
   PrefixSecurityEnum,
   SerializedCookieJar,
 } from './constants.js'
-import { defaultPath } from './defaultPath.js'
 import { domainMatch } from './domainMatch.js'
 import { cookieCompare } from './cookieCompare.js'
 import { version } from '../version.js'
@@ -604,7 +603,7 @@ export class CookieJar {
     //attribute-value is not %x2F ("/"):
     //Let cookie-path be the default-path.
     if (!cookie.path || cookie.path[0] !== '/') {
-      cookie.path = defaultPath(context.pathname)
+      cookie.path = CookiePath.defaultPath(context.pathname)
       cookie.pathIsDefault = true
     }
 
@@ -872,7 +871,7 @@ export class CookieJar {
     }
 
     const host = canonicalDomain(context.hostname)
-    const path = context.pathname || '/'
+    const path = CookiePath.parse(context.pathname) ?? CookiePath.ROOT
 
     // https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-19#section-5.8.3-2.1.2.3.2
     // deliberately expects the user agent to determine the notion of a "secure" connection,
@@ -920,7 +919,12 @@ export class CookieJar {
       }
 
       // "The request-uri's path path-matches the cookie's path."
-      if (!allPaths && typeof c.path === 'string' && !pathMatch(path, c.path)) {
+      const parsedCookiePath =
+        typeof c.path === 'string' ? CookiePath.parse(c.path) : undefined
+      if (
+        !allPaths &&
+        (!parsedCookiePath || !CookiePath.match(path, parsedCookiePath))
+      ) {
         return false
       }
 
