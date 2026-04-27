@@ -1,4 +1,5 @@
 export { MemoryCookieStore, type MemoryCookieStoreIndex } from '../memstore.js'
+// eslint-disable-next-line @typescript-eslint/no-deprecated
 export { pathMatch } from '../pathMatch.js'
 export { permuteDomain } from '../permuteDomain.js'
 export {
@@ -27,10 +28,13 @@ export {
   type GetCookiesOptions,
   type SetCookieOptions,
 } from './cookieJar.js'
+export { CookiePath } from './cookiePath.js'
+// eslint-disable-next-line @typescript-eslint/no-deprecated
 export { defaultPath } from './defaultPath.js'
 export { domainMatch } from './domainMatch.js'
 export { formatDate } from './formatDate.js'
 export { parseDate } from './parseDate.js'
+// eslint-disable-next-line @typescript-eslint/no-deprecated
 export { permutePath } from './permutePath.js'
 
 import { Cookie, ParseCookieOptions } from './cookie.js'
