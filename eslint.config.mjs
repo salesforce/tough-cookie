@@ -40,6 +40,7 @@ export default config(
       ...vitest.configs.recommended.rules,
       // We only run tests in node, so we can use node's builtins
       'import/no-nodejs-modules': 'off',
+      '@typescript-eslint/no-non-null-assertion': 'off',
     },
   },
   {
