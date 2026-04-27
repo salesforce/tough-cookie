@@ -11,3 +11,8 @@ If set to `true` then any errors that occur while executing [getPublicSuffix()](
 ```typescript
 ignoreError?: boolean | undefined;
 ```
+
+## Default Value
+
+false
+
