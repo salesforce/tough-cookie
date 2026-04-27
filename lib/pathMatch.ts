@@ -1,3 +1,5 @@
+import { CookiePath } from './cookie/cookiePath.js'
+
 /**
  * Answers "does the request-path path-match a given cookie-path?" as per {@link https://www.rfc-editor.org/rfc/rfc6265.html#section-5.1.4 | RFC6265 Section 5.1.4}.
  * This is essentially a prefix-match where cookiePath is a prefix of reqPath.
@@ -12,29 +14,19 @@
  *
  * @param reqPath - the path of the request
  * @param cookiePath - the path of the cookie
+ * @deprecated Use {@link CookiePath.match} instead with validated {@link CookiePath} values.
  * @public
  */
 export function pathMatch(reqPath: string, cookiePath: string): boolean {
-  // "o  The cookie-path and the request-path are identical."
-  if (cookiePath === reqPath) {
-    return true
+  const parsedReqPath = CookiePath.parse(reqPath)
+  const parsedCookiePath = CookiePath.parse(cookiePath)
+  if (!parsedReqPath || !parsedCookiePath) {
+    // When inputs don't start with "/", they are not valid cookie paths per
+    // RFC 6265. The only case where the original algorithm could return true
+    // for such inputs is exact string equality (the prefix-matching branches
+    // require "/" to function correctly). This preserves backward compatibility
+    // for direct callers passing non-standard paths.
+    return reqPath === cookiePath
   }
-
-  const idx = reqPath.indexOf(cookiePath)
-  if (idx === 0) {
-    // "o  The cookie-path is a prefix of the request-path, and the last
-    // character of the cookie-path is %x2F ("/")."
-    if (cookiePath[cookiePath.length - 1] === '/') {
-      return true
-    }
-
-    // " o  The cookie-path is a prefix of the request-path, and the first
-    // character of the request-path that is not included in the cookie- path
-    // is a %x2F ("/") character."
-    if (reqPath.startsWith(cookiePath) && reqPath[cookiePath.length] === '/') {
-      return true
-    }
-  }
-
-  return false
+  return CookiePath.match(parsedReqPath, parsedCookiePath)
 }
