@@ -4,6 +4,11 @@
 
 ## pathMatch() function
 
+> Warning: This API is now obsolete.
+> 
+> This function will be removed in a future version of tough-cookie. If you rely on this function, please open an issue to discuss why it should remain public.
+> 
+
 Answers "does the request-path path-match a given cookie-path?" as per [RFC6265 Section 5.1.4](https://www.rfc-editor.org/rfc/rfc6265.html#section-5.1.4)<!-- -->. This is essentially a prefix-match where cookiePath is a prefix of reqPath.
 
 **Signature:**

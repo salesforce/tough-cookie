@@ -1,5 +1,5 @@
 import type { Nullable } from '../utils.js'
-import { CookiePath } from './cookiePath.js'
+import * as CookiePath from './cookiePath.js'
 
 /**
  * Given a current request/response path, gives the path appropriate for storing
@@ -37,7 +37,7 @@ import { CookiePath } from './cookiePath.js'
  * ```
  *
  * @param path - the path portion of the request-uri (excluding the hostname, query, fragment, and so on)
- * @deprecated Use {@link CookiePath.defaultPath} instead.
+ * @deprecated This function will be removed in a future version of tough-cookie. If you rely on this function, please open an issue to discuss why it should remain public.
  * @public
  */
 export function defaultPath(path?: Nullable<string>): string {

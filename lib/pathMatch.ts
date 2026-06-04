@@ -1,4 +1,4 @@
-import { CookiePath } from './cookie/cookiePath.js'
+import * as CookiePath from './cookie/cookiePath.js'
 
 /**
  * Answers "does the request-path path-match a given cookie-path?" as per {@link https://www.rfc-editor.org/rfc/rfc6265.html#section-5.1.4 | RFC6265 Section 5.1.4}.
@@ -14,7 +14,7 @@ import { CookiePath } from './cookie/cookiePath.js'
  *
  * @param reqPath - the path of the request
  * @param cookiePath - the path of the cookie
- * @deprecated Use {@link CookiePath.match} instead with validated {@link CookiePath} values.
+ * @deprecated This function will be removed in a future version of tough-cookie. If you rely on this function, please open an issue to discuss why it should remain public.
  * @public
  */
 export function pathMatch(reqPath: string, cookiePath: string): boolean {

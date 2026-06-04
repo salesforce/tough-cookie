@@ -4,6 +4,11 @@
 
 ## permutePath() function
 
+> Warning: This API is now obsolete.
+> 
+> This function will be removed in a future version of tough-cookie. If you rely on this function, please open an issue to discuss why it should remain public.
+> 
+
 Generates the permutation of all possible values that [pathMatch()](./tough-cookie.pathmatch.md) the `path` parameter. The array is in longest-to-shortest order. Useful when building custom [Store](./tough-cookie.store.md) implementations.
 
 **Signature:**

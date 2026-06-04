@@ -1,4 +1,4 @@
-import { CookiePath } from './cookiePath.js'
+import * as CookiePath from './cookiePath.js'
 
 /**
  * Generates the permutation of all possible values that {@link pathMatch} the `path` parameter.
@@ -11,7 +11,7 @@ import { CookiePath } from './cookiePath.js'
  * ```
  *
  * @param path - the path to generate permutations for
- * @deprecated Use {@link CookiePath.permute} instead with a validated {@link CookiePath} value.
+ * @deprecated This function will be removed in a future version of tough-cookie. If you rely on this function, please open an issue to discuss why it should remain public.
  * @public
  */
 export function permutePath(path: string): string[] {
