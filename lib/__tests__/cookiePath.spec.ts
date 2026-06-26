@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { CookiePath } from '../cookie/cookiePath.js'
+import * as CookiePath from '../cookie/cookiePath.js'
 import { defaultPathCases } from './data/defaultPathCases.js'
 import { pathMatchCases } from './data/pathMatchCases.js'
 import { permutePathCases } from './data/permutePathCases.js'
@@ -46,7 +46,7 @@ describe('CookiePath', () => {
   })
 
   describe('defaultPath', () => {
-    it.each([...defaultPathCases])(
+    it.each(defaultPathCases)(
       'defaultPath($input) => "$expected"',
       ({ input, expected }) => {
         expect(CookiePath.defaultPath(input)).toBe(expected)
@@ -69,7 +69,7 @@ describe('CookiePath', () => {
   })
 
   describe('permute', () => {
-    it.each([...permutePathCases])(
+    it.each(permutePathCases)(
       'permute("$path") => $permutations',
       ({ path, permutations }) => {
         const parsed = CookiePath.parse(path)!

@@ -1,3 +1,5 @@
+// Shared between the CookiePath.permute spec and the deprecated
+// `permutePath` wrapper spec so both are verified against the same corpus.
 export const permutePathCases = [
   {
     path: '/',
