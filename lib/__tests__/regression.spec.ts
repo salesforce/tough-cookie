@@ -33,6 +33,25 @@ describe('Regression Tests', () => {
     )
   })
 
+  it('should not decode authority when getting cookies', async () => {
+    const cookieJar = new CookieJar()
+    await cookieJar.setCookie('a=b; Path=/', 'https://example.com/')
+    const cookieStr = await cookieJar.getCookieString(
+      'https://example.com%5C@example.net/',
+    )
+    expect(cookieStr).toBe('')
+  })
+
+  it('should not decode authority when setting cookies', async () => {
+    const cookieJar = new CookieJar()
+    await cookieJar.setCookie(
+      'a=b; Path=/',
+      'https://example.com%5C@example.net/',
+    )
+    const cookieStr = await cookieJar.getCookieString('https://example.com/')
+    expect(cookieStr).toBe('')
+  })
+
   it('should allow setCookie (without options) callback works even if it is not instanceof Function (GH-158/GH-175)', () => {
     expect.assertions(2)
     const cookieJar = new CookieJar()
