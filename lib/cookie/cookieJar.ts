@@ -613,6 +613,7 @@ export class CookieJar {
     //attribute-value is not %x2F ("/"):
     //Let cookie-path be the default-path.
     if (!cookie.path || cookie.path[0] !== '/') {
+      // eslint-disable-next-line @typescript-eslint/no-deprecated -- migrated to CookiePath in a follow-up
       cookie.path = defaultPath(context.pathname)
       cookie.pathIsDefault = true
     }
@@ -929,7 +930,12 @@ export class CookieJar {
       }
 
       // "The request-uri's path path-matches the cookie's path."
-      if (!allPaths && typeof c.path === 'string' && !pathMatch(path, c.path)) {
+      if (
+        !allPaths &&
+        typeof c.path === 'string' &&
+        // eslint-disable-next-line @typescript-eslint/no-deprecated -- migrated to CookiePath in a follow-up
+        !pathMatch(path, c.path)
+      ) {
         return false
       }
 
