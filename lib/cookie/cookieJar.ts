@@ -225,10 +225,19 @@ function getCookieContext(url: unknown): UrlContext {
       protocol: url.protocol,
     }
   } else if (typeof url === 'string') {
+    const parsed = new URL(url)
+    // Decode the path so percent-encoded segments match stored cookie paths
+    // (RFC 6265 §5.4). Only the pathname gets decoded, not the full URI.
+    let pathname = parsed.pathname
     try {
-      return new URL(decodeURI(url))
+      pathname = decodeURI(pathname)
     } catch {
-      return new URL(url)
+      // Malformed percent-encoding in the path; match it verbatim.
+    }
+    return {
+      hostname: parsed.hostname,
+      pathname,
+      protocol: parsed.protocol,
     }
   } else {
     throw new ParameterError('`url` argument is not a string or URL.')
