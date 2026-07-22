@@ -4,9 +4,9 @@
 
 ## CreateCookieJarOptions.allowSecureOnLocal property
 
-Flag to indicate if localhost and loopback addresses with an unsecure scheme should store and retrieve `Secure` cookies.
+Flag to indicate if localhost and loopback addresses with an insecure scheme should store and retrieve `Secure` cookies.
 
-If `true`<!-- -->, localhost, loopback addresses or similarly local addresses are treated as secure contexts and thus will store and retrieve `Secure` cookies even with an unsecure scheme.
+If `true`<!-- -->, localhost, loopback addresses or similarly local addresses are treated as secure contexts and thus will store and retrieve `Secure` cookies even with an insecure scheme.
 
 If `false`<!-- -->, only secure schemes (`https` and `wss`<!-- -->) will store and retrieve `Secure` cookies.
 
