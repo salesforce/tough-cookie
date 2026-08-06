@@ -1,4 +1,4 @@
-import { getDomain } from 'tldts'
+import { getDomain } from 'tldkit'
 
 // RFC 6761
 const SPECIAL_USE_DOMAINS = ['local', 'example', 'invalid', 'localhost', 'test']
