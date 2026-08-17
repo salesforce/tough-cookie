@@ -35,7 +35,11 @@ import { inOperator } from '../utils.js'
 import { formatDate } from './formatDate.js'
 import { parseDate } from './parseDate.js'
 import { canonicalDomain } from './canonicalDomain.js'
-import type { SerializedCookie } from './constants.js'
+import {
+  IP_V4_REGEX_OBJECT,
+  IP_V6_REGEX_OBJECT,
+  type SerializedCookie,
+} from './constants.js'
 
 // From RFC6265 S4.1.1
 // note that it excludes \x3B ";"
@@ -682,7 +686,11 @@ export class Cookie {
         return false // S4.1.2.3 suggests that this is bad. domainMatch() tests confirm this
       }
       const suffix = getPublicSuffix(cdomain)
-      if (suffix == null) {
+      if (
+        suffix == null &&
+        !IP_V4_REGEX_OBJECT.test(cdomain) &&
+        !IP_V6_REGEX_OBJECT.test(cdomain)
+      ) {
         // it's a public suffix
         return false
       }

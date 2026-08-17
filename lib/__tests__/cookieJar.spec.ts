@@ -366,6 +366,26 @@ describe('CookieJar', () => {
       expect(cookie?.TTL()).toBe(Infinity)
       expect(cookie?.isPersistent()).toBe(false)
     })
+
+    it.each([
+      { testCase: 'loopback', IPv4: '127.0.0.1' },
+      { testCase: 'public', IPv4: '8.8.8.8' },
+    ])('should store a $testCase IPv4', async (test) => {
+      const t0 = new Date()
+      cookie = await cookieJar.setCookie(
+        `a=b; Domain=${test.IPv4}; Path=/`,
+        `http://${test.IPv4}/`,
+      )
+      expect(cookie).toEqual(
+        expect.objectContaining({
+          creation: t0,
+          lastAccessed: t0,
+          domain: test.IPv4,
+        }),
+      )
+      expect(cookie?.TTL()).toBe(Infinity)
+      expect(cookie?.isPersistent()).toBe(false)
+    })
   })
 
   describe('getCookies', () => {

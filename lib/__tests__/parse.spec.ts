@@ -182,6 +182,16 @@ describe('Cookie.parse', () => {
       },
       assertValidateReturns: false,
     },
+    // IPv4 literal is not a public suffix
+    {
+      input: 'a=b; domain=127.0.0.1',
+      output: {
+        key: 'a',
+        value: 'b',
+        domain: '127.0.0.1',
+      },
+      assertValidateReturns: true,
+    },
     // public suffix foonet.net - top level
     {
       input: 'a=b; domain=foonet.net',
