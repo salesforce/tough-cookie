@@ -1300,6 +1300,21 @@ it('should allow cookies with the same name under different domains and/or paths
 })
 
 describe('setCookie errors', () => {
+  it('should allow and retrieve a cookie set with an explicit IPv4 Domain attribute', async () => {
+    const cookieJar = new CookieJar()
+    const cookie = await cookieJar.setCookie(
+      'foo=bar; Domain=127.0.0.1; Path=/',
+      'http://127.0.0.1/',
+    )
+    expect(cookie).toBeDefined()
+    expect(cookie.domain).toBe('127.0.0.1')
+    const cookies = await cookieJar.getCookies('http://127.0.0.1/')
+    expect(cookies).toHaveLength(1)
+    expect(cookies[0]?.key).toBe('foo')
+    expect(cookies[0]?.value).toBe('bar')
+    expect(cookies[0]?.domain).toBe('127.0.0.1')
+  })
+
   it('should throw an error if domain is set to a public suffix', async () => {
     const cookieJar = new CookieJar()
     await expect(

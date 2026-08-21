@@ -568,8 +568,8 @@ export class CookieJar {
             : null
         if (
           suffix == null &&
-          !IP_V4_REGEX_OBJECT.test(cookie.domain) &&
-          !IP_V6_REGEX_OBJECT.test(cookie.domain)
+          !IP_V4_REGEX_OBJECT.test(cdomain ?? '') &&
+          !IP_V6_REGEX_OBJECT.test(cdomain ?? '')
         ) {
           // e.g. "com"
           const err = new Error('Cookie has domain set to a public suffix')
