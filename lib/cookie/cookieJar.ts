@@ -15,6 +15,7 @@ import {
 } from '../utils.js'
 import { canonicalDomain } from './canonicalDomain.js'
 import {
+  IP_V4_REGEX_OBJECT,
   IP_V6_REGEX_OBJECT,
   PrefixSecurityEnum,
   SerializedCookieJar,
@@ -565,7 +566,11 @@ export class CookieJar {
                 ignoreError: options?.ignoreError,
               })
             : null
-        if (suffix == null && !IP_V6_REGEX_OBJECT.test(cookie.domain)) {
+        if (
+          suffix == null &&
+          !IP_V4_REGEX_OBJECT.test(cdomain ?? '') &&
+          !IP_V6_REGEX_OBJECT.test(cdomain ?? '')
+        ) {
           // e.g. "com"
           const err = new Error('Cookie has domain set to a public suffix')
 
