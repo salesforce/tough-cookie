@@ -185,10 +185,10 @@ export interface CreateCookieJarOptions {
    */
   allowSpecialUseDomain?: boolean | undefined
   /**
-   * Flag to indicate if localhost and loopback addresses with an unsecure scheme should store and retrieve `Secure` cookies.
+   * Flag to indicate if localhost and loopback addresses with an insecure scheme should store and retrieve `Secure` cookies.
    *
    * If `true`, localhost, loopback addresses or similarly local addresses are treated as secure contexts
-   * and thus will store and retrieve `Secure` cookies even with an unsecure scheme.
+   * and thus will store and retrieve `Secure` cookies even with an insecure scheme.
    *
    * If `false`, only secure schemes (`https` and `wss`) will store and retrieve `Secure` cookies.
    *
@@ -225,10 +225,19 @@ function getCookieContext(url: unknown): UrlContext {
       protocol: url.protocol,
     }
   } else if (typeof url === 'string') {
+    const parsed = new URL(url)
+    // Decode the path so percent-encoded segments match stored cookie paths
+    // (RFC 6265 §5.4). Only the pathname gets decoded, not the full URI.
+    let pathname = parsed.pathname
     try {
-      return new URL(decodeURI(url))
+      pathname = decodeURI(pathname)
     } catch {
-      return new URL(url)
+      // Malformed percent-encoding in the path; match it verbatim.
+    }
+    return {
+      hostname: parsed.hostname,
+      pathname,
+      protocol: parsed.protocol,
     }
   } else {
     throw new ParameterError('`url` argument is not a string or URL.')
