@@ -386,6 +386,30 @@ describe('CookieJar', () => {
       expect(cookie?.TTL()).toBe(Infinity)
       expect(cookie?.isPersistent()).toBe(false)
     })
+
+    // Round-trip: an explicit IPv4 Domain must be retrievable, not merely
+    // storable. Before the fix in this PR the cookie was rejected at set time,
+    // so there was nothing to retrieve.
+    it.each([
+      { testCase: 'loopback', IPv4: '127.0.0.1' },
+      { testCase: 'public', IPv4: '8.8.8.8' },
+    ])(
+      'should retrieve a cookie set with an explicit $testCase IPv4 Domain',
+      async (test) => {
+        await cookieJar.setCookie(
+          `a=b; Domain=${test.IPv4}; Path=/`,
+          `http://${test.IPv4}/`,
+        )
+        const cookies = await cookieJar.getCookies(`http://${test.IPv4}/`)
+        expect(cookies).toEqual([
+          expect.objectContaining({
+            key: 'a',
+            value: 'b',
+            domain: test.IPv4,
+          }),
+        ])
+      },
+    )
   })
 
   describe('getCookies', () => {
