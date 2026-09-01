@@ -1331,7 +1331,7 @@ describe('setCookie errors', () => {
       'http://127.0.0.1/',
     )
     expect(cookie).toBeDefined()
-    expect(cookie.domain).toBe('127.0.0.1')
+    expect(cookie?.domain).toBe('127.0.0.1')
     const cookies = await cookieJar.getCookies('http://127.0.0.1/')
     expect(cookies).toHaveLength(1)
     expect(cookies[0]?.key).toBe('foo')
