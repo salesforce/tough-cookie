@@ -750,8 +750,11 @@ export class Cookie {
       }
     }
 
-    if (this.maxAge != null && this.maxAge != Infinity) {
-      str += `; Max-Age=${String(this.maxAge)}`
+    if (this.maxAge != null && this.maxAge !== 'Infinity') {
+      // "-Infinity" isn't a valid Max-Age token per RFC6265 (delta-seconds is a
+      // plain signed integer), so a cookie that's been set to expire
+      // immediately gets a real number instead of the literal word.
+      str += `; Max-Age=${this.maxAge === '-Infinity' ? '0' : String(this.maxAge)}`
     }
 
     if (this.domain && !this.hostOnly) {

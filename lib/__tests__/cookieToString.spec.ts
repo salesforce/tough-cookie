@@ -51,4 +51,17 @@ describe('Cookie.toString()', () => {
     })
     expect(cookie.toString()).toBe('a=b; Expires=Fri, 10 Sep 2010 10:10:10 GMT')
   })
+
+  it('should omit Max-Age entirely when it has been set to Infinity', () => {
+    const cookie = new Cookie({ key: 'a', value: 'b' })
+    cookie.setMaxAge(Infinity)
+    expect(cookie.toString()).toBe('a=b')
+  })
+
+  it('should output a real Max-Age, not the word "-Infinity", for a cookie set to expire immediately', () => {
+    const cookie = new Cookie({ key: 'a', value: 'b' })
+    cookie.setMaxAge(-Infinity)
+    expect(cookie.maxAge).toBe('-Infinity')
+    expect(cookie.toString()).toBe('a=b; Max-Age=0')
+  })
 })
