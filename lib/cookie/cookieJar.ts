@@ -220,9 +220,17 @@ function getCookieContext(url: unknown): UrlContext {
     'protocol' in url &&
     typeof url.protocol === 'string'
   ) {
+    // Decode the path so percent-encoded segments match stored cookie paths
+    // (RFC 6265 §5.4), consistent with the string branch below.
+    let pathname = url.pathname
+    try {
+      pathname = decodeURI(pathname)
+    } catch {
+      // Malformed percent-encoding in the path; match it verbatim.
+    }
     return {
       hostname: url.hostname,
-      pathname: url.pathname,
+      pathname,
       protocol: url.protocol,
     }
   } else if (typeof url === 'string') {
