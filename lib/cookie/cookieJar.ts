@@ -295,7 +295,8 @@ function isHostPrefixConditionMet(cookie: Cookie): boolean {
       cookie.secure &&
       cookie.hostOnly &&
       cookie.path != null &&
-      cookie.path === '/',
+      cookie.path === '/' &&
+      !cookie.pathIsDefault,
     )
   )
 }
