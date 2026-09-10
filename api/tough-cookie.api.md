@@ -149,7 +149,7 @@ export interface CreateCookieOptions {
     value?: string;
 }
 
-// @public
+// @public @deprecated
 export function defaultPath(path?: Nullable<string>): string;
 
 // @public
@@ -236,13 +236,13 @@ export interface ParseCookieOptions {
 // @public
 export function parseDate(cookieDate: Nullable<string>): Date | undefined;
 
-// @public
+// @public @deprecated
 export function pathMatch(reqPath: string, cookiePath: string): boolean;
 
 // @public
 export function permuteDomain(domain: string, allowSpecialUseDomain?: boolean): string[] | undefined;
 
-// @public
+// @public @deprecated
 export function permutePath(path: string): string[];
 
 // @public
