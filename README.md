@@ -33,7 +33,7 @@ const resCookie = Cookie.parse(
   'foo=bar; Domain=example.com; Path=/; Expires=Tue, 21 Oct 2025 00:00:00 GMT',
 )
 // generate a Set-Cookie response header
-const setCookieHeader = cookie.toString()
+const setCookieHeader = resCookie.toString()
 
 // store and retrieve cookies
 const cookieJar = new CookieJar() // uses the in-memory store by default
