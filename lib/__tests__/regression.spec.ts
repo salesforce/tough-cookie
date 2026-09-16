@@ -52,6 +52,19 @@ describe('Regression Tests', () => {
     expect(cookieStr).toBe('')
   })
 
+  it('should decode the request path consistently for string and URL object inputs', async () => {
+    const cookieJar = new CookieJar()
+    await cookieJar.setCookie('a=b; Path=/foo bar', 'https://example.com/')
+    const viaString = await cookieJar.getCookieString(
+      'https://example.com/foo%20bar/baz',
+    )
+    const viaUrl = await cookieJar.getCookieString(
+      new URL('https://example.com/foo%20bar/baz'),
+    )
+    expect(viaString).toBe('a=b')
+    expect(viaUrl).toBe(viaString)
+  })
+
   it('should allow setCookie (without options) callback works even if it is not instanceof Function (GH-158/GH-175)', () => {
     expect.assertions(2)
     const cookieJar = new CookieJar()
