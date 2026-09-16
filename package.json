@@ -115,7 +115,7 @@
     "_format:fix": "prettier . --write",
     "_lint:check": "eslint .",
     "_lint:fix": "eslint . --fix",
-    "_lint:types": "attw --pack .",
+    "_lint:types": "tsc -p tsconfig.type-tests.json && attw --pack .",
     "_version:generate": "genversion --template version-template.ejs --force lib/version.ts"
   },
   "//": "We only support node LTS versions, but v16 still works. We won't block v16 until it becomes a burden.",
