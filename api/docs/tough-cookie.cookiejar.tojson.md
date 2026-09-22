@@ -9,9 +9,9 @@ Alias of [CookieJar.serializeSync()](./tough-cookie.cookiejar.serializesync.md)<
 **Signature:**
 
 ```typescript
-toJSON(): SerializedCookieJar | undefined;
+toJSON(): SerializedCookieJar;
 ```
 **Returns:**
 
-[SerializedCookieJar](./tough-cookie.serializedcookiejar.md) \| undefined
+[SerializedCookieJar](./tough-cookie.serializedcookiejar.md)
 
