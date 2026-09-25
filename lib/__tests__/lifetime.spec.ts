@@ -23,6 +23,13 @@ describe('Lifetime', () => {
     expect(cookie.validate()).toBe(false)
   })
 
+  it('should treat an infinite max-age as never expiring', () => {
+    const cookie = new Cookie({ key: 'a', value: 'b' })
+    cookie.setMaxAge(Infinity)
+    expect(cookie.TTL()).toBe(Infinity)
+    expect(cookie.expiryTime(new Date(9_000_000))).toBe(Infinity)
+  })
+
   it('should be able control the TTL with max-age and expiry in the future', () => {
     const cookie = new Cookie({
       key: 'a',
