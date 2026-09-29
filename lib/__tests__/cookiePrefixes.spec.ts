@@ -42,6 +42,16 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
           }),
         ])
       })
+
+      it('should reject a valid __Secure- cookie set over an insecure origin', async () => {
+        await expect(
+          cookieJar.setCookie(
+            '__Secure-SID=12345; Secure; Domain=example.com',
+            insecureUrl,
+            {},
+          ),
+        ).rejects.toThrow('Cookie is Secure but this is not a secure connection')
+      })
     })
 
     describe('__Host prefix', () => {
@@ -91,6 +101,12 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
           }),
         ])
       })
+
+      it('should reject a valid __Host- cookie set over an insecure origin', async () => {
+        await expect(
+          cookieJar.setCookie('__Host-SID=12345; Secure; Path=/', insecureUrl, {}),
+        ).rejects.toThrow('Cookie is Secure but this is not a secure connection')
+      })
     })
   })
 
@@ -127,6 +143,18 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
           ),
         ).rejects.toThrow(
           'Cookie has __Secure prefix but Secure attribute is not set',
+        )
+      })
+
+      it('should reject a valid __Secure- cookie set over an insecure origin', async () => {
+        await expect(
+          cookieJar.setCookie(
+            '__Secure-SID=12345; Secure; Domain=example.com',
+            insecureUrl,
+            {},
+          ),
+        ).rejects.toThrow(
+          'Cookie is Secure but this is not a secure connection',
         )
       })
     })
@@ -181,6 +209,22 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
           }),
         ])
       })
+
+      it('should reject a valid __Host- cookie set over an insecure origin', async () => {
+        await expect(
+          cookieJar.setCookie('__Host-SID=12345; Secure; Path=/', insecureUrl, {}),
+        ).rejects.toThrow(
+          'Cookie is Secure but this is not a secure connection',
+        )
+      })
+    })
+
+    describe('non-prefixed Secure cookie', () => {
+      it('should reject a plain Secure cookie set over an insecure origin', async () => {
+        await expect(
+          cookieJar.setCookie('SID=12345; Secure', insecureUrl, {}),
+        ).rejects.toThrow('Cookie is Secure but this is not a secure connection')
+      })
     })
   })
 
@@ -224,6 +268,67 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
           }),
         ])
       })
+    })
+
+    describe('non-prefixed Secure cookie', () => {
+      it('still rejects a Secure cookie set over an insecure origin', async () => {
+        // unsafe-disabled bypasses the prefix-attribute checks only; the
+        // origin check runs before the prefixSecurity block and is gated
+        // solely on `ignoreError`, so it still applies here.
+        await expect(
+          cookieJar.setCookie('SID=12345; Secure', insecureUrl, {}),
+        ).rejects.toThrow('Cookie is Secure but this is not a secure connection')
+      })
+    })
+
+  })
+
+  describe('prefixed cookie over http://localhost', () => {
+    const localhostUrl = 'http://localhost/'
+
+    it('is stored when allowSecureOnLocal is true (default)', async () => {
+      const jar = new CookieJar(null, {
+        prefixSecurity: 'strict',
+        allowSecureOnLocal: true,
+      })
+      await jar.setCookie('__Secure-SID=12345; Secure', localhostUrl, {})
+      const cookies = await jar.getCookies(localhostUrl)
+      expect(cookies).toEqual([
+        expect.objectContaining({ key: '__Secure-SID', value: '12345' }),
+      ])
+    })
+
+    it('is rejected when allowSecureOnLocal is false', async () => {
+      const jar = new CookieJar(null, {
+        prefixSecurity: 'strict',
+        allowSecureOnLocal: false,
+      })
+      await expect(
+        jar.setCookie('__Secure-SID=12345; Secure', localhostUrl, {}),
+      ).rejects.toThrow('Cookie is Secure but this is not a secure connection')
+    })
+
+    it('rejects a __Host- cookie when allowSecureOnLocal is false', async () => {
+      const jar = new CookieJar(null, {
+        prefixSecurity: 'strict',
+        allowSecureOnLocal: false,
+      })
+      await expect(
+        jar.setCookie('__Host-SID=12345; Secure; Path=/', localhostUrl, {}),
+      ).rejects.toThrow('Cookie is Secure but this is not a secure connection')
+    })
+
+    it('is silenced by ignoreError, not by silent mode', async () => {
+      const jar = new CookieJar(null, {
+        prefixSecurity: 'silent',
+        allowSecureOnLocal: false,
+      })
+      // The S5.7 step-13 origin check gates on ignoreError, not prefixSecurity mode.
+      await jar.setCookie('__Secure-SID=12345; Secure', localhostUrl, {
+        ignoreError: true,
+      })
+      const cookies = await jar.getCookies(localhostUrl)
+      expect(cookies).toEqual([])
     })
   })
 })
