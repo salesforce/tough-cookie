@@ -6,7 +6,7 @@
 
 Locates all [Cookie](./tough-cookie.cookie.md) values matching the given `domain` and `path`<!-- -->.
 
-The resulting list is checked for applicability to the current request according to the RFC (`domain-match`<!-- -->, `path-match`<!-- -->, `http-only-flag`<!-- -->, `secure-flag`<!-- -->, `expiry`<!-- -->, and so on), so it's OK to use an optimistic search algorithm when implementing this method. However, the search algorithm used SHOULD try to find cookies that [domainMatch()](./tough-cookie.domainmatch.md) the `domain` and [pathMatch()](./tough-cookie.pathmatch.md) the `path` in order to limit the amount of checking that needs to be done.
+The resulting list is checked for applicability to the current request according to the RFC (`domain-match`<!-- -->, `path-match`<!-- -->,`http-only-flag`<!-- -->, `secure-flag`<!-- -->, `expiry`<!-- -->, and so on), so it's OK to use an optimistic search algorithm when implementing this method. However, the search algorithm used SHOULD try to find cookies that [domainMatch()](./tough-cookie.domainmatch.md) the `domain` and[pathMatch()](./tough-cookie.pathmatch.md) the `path` in order to limit the amount of checking that needs to be done.
 
 **Signature:**
 

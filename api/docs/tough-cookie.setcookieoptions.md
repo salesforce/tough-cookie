@@ -136,13 +136,13 @@ Defaults to `Date.now()` if not provided.
 
 _(Optional)_ Set this to 'none', 'lax', or 'strict' to enforce SameSite cookies upon storage.
 
-- `'strict'` - If the request is on the same "site for cookies" (see the RFC draft for more information), pass this option to add a layer of defense against CSRF.
+- `'strict'` - If the request is on the same "site for cookies" (see the RFC draft  for more information), pass this option to add a layer of defense against CSRF.
 
-- `'lax'` - If the request is from another site, but is directly because of navigation by the user, such as, `<link type=prefetch>` or `<a href="...">`<!-- -->, then use `lax`<!-- -->.
+- `'lax'` - If the request is from another site, but is directly because of navigation  by the user, such as, `<link type=prefetch>` or `<a href="...">`<!-- -->, then use `lax`<!-- -->.
 
 - `'none'` - This indicates a cross-origin request.
 
-- `undefined` - SameSite is not enforced! This can be a valid use-case for when CSRF isn't in the threat model of the system being built.
+- `undefined` - SameSite is not enforced! This can be a valid use-case for when  CSRF isn't in the threat model of the system being built.
 
 Defaults to `undefined` if not provided.
 
