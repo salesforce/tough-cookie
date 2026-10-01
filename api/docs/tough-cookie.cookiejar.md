@@ -4,7 +4,7 @@
 
 ## CookieJar class
 
-A CookieJar is for storage and retrieval of [Cookie](./tough-cookie.cookie.md) objects as defined in [RFC6265 - Section 5.3](https://www.rfc-editor.org/rfc/rfc6265.html#section-5.3)<!-- -->.
+A CookieJar is for storage and retrieval of [Cookie](./tough-cookie.cookie.md) objects as defined in[RFC6265 - Section 5.3](https://www.rfc-editor.org/rfc/rfc6265.html#section-5.3)<!-- -->.
 
 It also supports a pluggable persistence layer via [Store](./tough-cookie.store.md)<!-- -->.
 
@@ -355,7 +355,7 @@ Synchronously retrieve the list of cookies that can be sent in a Cookie header f
 
 </td><td>
 
-Accepts the same options as `.getCookies()` but returns a string suitable for a `Cookie` header rather than an Array.
+Accepts the same options as `.getCookies()` but returns a string suitable for a`Cookie` header rather than an Array.
 
 
 </td></tr>
@@ -369,7 +369,7 @@ Accepts the same options as `.getCookies()` but returns a string suitable for a 
 
 </td><td>
 
-Accepts the same options as `.getCookies()` but returns a string suitable for a `Cookie` header rather than an Array.
+Accepts the same options as `.getCookies()` but returns a string suitable for a`Cookie` header rather than an Array.
 
 
 </td></tr>
@@ -383,7 +383,7 @@ Accepts the same options as `.getCookies()` but returns a string suitable for a 
 
 </td><td>
 
-Accepts the same options as `.getCookies()` but returns a string suitable for a `Cookie` header rather than an Array.
+Accepts the same options as `.getCookies()` but returns a string suitable for a`Cookie` header rather than an Array.
 
 
 </td></tr>
@@ -397,7 +397,7 @@ Accepts the same options as `.getCookies()` but returns a string suitable for a 
 
 </td><td>
 
-Synchronous version of `.getCookieString()`<!-- -->. Accepts the same options as `.getCookies()` but returns a string suitable for a `Cookie` header rather than an Array.
+Synchronous version of `.getCookieString()`<!-- -->. Accepts the same options as `.getCookies()` but returns a string suitable for a`Cookie` header rather than an Array.
 
 <strong>Note</strong>: Only works if the configured Store is also synchronous.
 
