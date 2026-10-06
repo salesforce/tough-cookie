@@ -839,6 +839,9 @@ export class Cookie {
   expiryTime(now?: Date): number | undefined {
     // expiryTime() replaces the "expiry-time" parts of S5.3 step 3 (setCookie() elsewhere)
     if (this.maxAge != null) {
+      if (this.maxAge === 'Infinity') {
+        return Infinity
+      }
       const relativeTo = now || this.lastAccessed || new Date()
       const maxAge = typeof this.maxAge === 'number' ? this.maxAge : -Infinity
       const age = maxAge <= 0 ? -Infinity : maxAge * 1000
