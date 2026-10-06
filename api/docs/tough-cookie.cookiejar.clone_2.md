@@ -56,5 +56,5 @@ Promise&lt;[CookieJar](./tough-cookie.cookiejar.md)<!-- -->&gt;
 
 - When no [Store](./tough-cookie.store.md) is provided, a new [MemoryCookieStore](./tough-cookie.memorycookiestore.md) will be used.
 
-- Transferring between store types is supported so long as the source implements `.getAllCookies()` and the destination implements `.putCookie()`<!-- -->.
+- Transferring between store types is supported so long as the source  implements `.getAllCookies()` and the destination implements `.putCookie()`<!-- -->.
 

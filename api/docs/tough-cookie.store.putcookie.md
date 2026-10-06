@@ -4,7 +4,7 @@
 
 ## Store.putCookie() method
 
-Adds a new [Cookie](./tough-cookie.cookie.md) to the store. The implementation SHOULD replace any existing cookie with the same `domain`<!-- -->, `path`<!-- -->, and `key` properties.
+Adds a new [Cookie](./tough-cookie.cookie.md) to the store. The implementation SHOULD replace any existing cookie with the same `domain`<!-- -->,`path`<!-- -->, and `key` properties.
 
 **Signature:**
 
