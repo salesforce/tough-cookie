@@ -72,9 +72,9 @@ export class CookieJar {
     clone(callback: Callback<CookieJar>): void;
     clone(newStore: Store, callback: Callback<CookieJar>): void;
     clone(newStore?: Store): Promise<CookieJar>;
-    cloneSync(newStore?: Store): CookieJar | undefined;
-    // @internal (undocumented)
-    _cloneSync(newStore?: Store): CookieJar | undefined;
+    cloneSync(newStore?: Store): CookieJar;
+    // @internal @deprecated (undocumented)
+    _cloneSync(newStore?: Store): CookieJar;
     static deserialize(strOrObj: string | object, callback: Callback<CookieJar>): void;
     static deserialize(strOrObj: string | object, store: Store, callback: Callback<CookieJar>): void;
     static deserialize(strOrObj: string | object, store?: Store): Promise<CookieJar>;
@@ -102,7 +102,7 @@ export class CookieJar {
     getSetCookieStrings(url: string, options: GetCookiesOptions, callback?: Callback<string[] | undefined>): unknown;
     getSetCookieStringsSync(url: string, options?: GetCookiesOptions): string[];
     // @internal
-    _importCookies(serialized: unknown, callback: Callback<CookieJar>): void;
+    _importCookies(serialized: unknown): Promise<void>;
     // @internal (undocumented)
     _importCookiesSync(serialized: unknown): void;
     readonly prefixSecurity: string;
@@ -111,7 +111,7 @@ export class CookieJar {
     removeAllCookiesSync(): void;
     serialize(callback: Callback<SerializedCookieJar>): void;
     serialize(): Promise<SerializedCookieJar>;
-    serializeSync(): SerializedCookieJar | undefined;
+    serializeSync(): SerializedCookieJar;
     setCookie(cookie: string | Cookie, url: string | URL, callback: Callback<Cookie | undefined>): void;
     setCookie(cookie: string | Cookie, url: string | URL, options: SetCookieOptions, callback: Callback<Cookie | undefined>): void;
     setCookie(cookie: string | Cookie, url: string | URL, options?: SetCookieOptions): Promise<Cookie | undefined>;
@@ -119,7 +119,7 @@ export class CookieJar {
     setCookie(cookie: string | Cookie, url: string | URL, options: SetCookieOptions | Callback<Cookie | undefined>, callback?: Callback<Cookie | undefined>): unknown;
     setCookieSync(cookie: string | Cookie, url: string, options?: SetCookieOptions): Cookie | undefined;
     readonly store: Store;
-    toJSON(): SerializedCookieJar | undefined;
+    toJSON(): SerializedCookieJar;
 }
 
 // @public

@@ -987,9 +987,7 @@ describe('CookieJar', () => {
         },
         syncStyle() {
           const result = cookieJar.serializeSync()
-          if (!result) {
-            throw new Error('This should have been undefined')
-          }
+          expect(result).toBeDefined()
           data = result
         },
       },
@@ -1344,9 +1342,7 @@ describe('loose mode', () => {
   it('should retain loose mode when cloning cookie store with loose mode enabled', async () => {
     const cookieJar = new CookieJar(null, { looseMode: true })
     const cookieJarAsJson = cookieJar.toJSON()
-    if (!cookieJarAsJson) {
-      throw new Error('This should not have been undefined')
-    }
+    expect(cookieJarAsJson).toBeDefined()
     const clonedCookieJar = CookieJar.fromJSON(cookieJarAsJson)
     await clonedCookieJar.setCookie('FooBar', 'http://www.foonet.net')
     const cookies = await clonedCookieJar.getCookies('http://www.foonet.net')
