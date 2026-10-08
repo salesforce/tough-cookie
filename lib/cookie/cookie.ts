@@ -35,7 +35,7 @@ import { inOperator } from '../utils.js'
 import { formatDate } from './formatDate.js'
 import { parseDate } from './parseDate.js'
 import { canonicalDomain } from './canonicalDomain.js'
-import type { SerializedCookie } from './constants.js'
+import type { SameSiteLevel, SerializedCookie } from './constants.js'
 
 // From RFC6265 S4.1.1
 // note that it excludes \x3B ";"
@@ -306,9 +306,14 @@ function fromJSON(str: unknown): Cookie | undefined {
       switch (prop) {
         case 'key':
         case 'value':
-        case 'sameSite':
           if (typeof val === 'string') {
             c[prop] = val
+          }
+          break
+        case 'sameSite':
+          if (typeof val === 'string') {
+            // Preserve legacy serialized values without changing runtime behavior.
+            c.sameSite = val as SameSiteLevel
           }
           break
         case 'expires':
@@ -398,7 +403,7 @@ export interface CreateCookieOptions {
   /** {@inheritDoc Cookie.lastAccessed} */
   lastAccessed?: Date | 'Infinity' | null
   /** {@inheritDoc Cookie.sameSite} */
-  sameSite?: string | undefined
+  sameSite?: SameSiteLevel | undefined
 }
 
 const cookieDefaults = {
@@ -508,7 +513,7 @@ export class Cookie {
    * The 'SameSite' attribute of a cookie as defined in RFC6265bis
    * (See {@link https://www.ietf.org/archive/id/draft-ietf-httpbis-rfc6265bis-13.html#section-5.2 | RFC6265bis (v13) Section 5.2 }).
    */
-  sameSite: string | undefined
+  sameSite: SameSiteLevel | undefined
 
   /**
    * Create a new Cookie instance.

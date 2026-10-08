@@ -184,6 +184,7 @@ describe('Same-Site Cookies', function () {
 
   describe('Canonicalized Strings', () => {
     it('garbage in = garbage out', () => {
+      // @ts-expect-error deliberately test invalid input from JavaScript callers
       garbage.sameSite = 'GaRbAGe'
       expect(garbage.toString()).toBe(
         'garbageIn=treatedAsNone; SameSite=GaRbAGe',
