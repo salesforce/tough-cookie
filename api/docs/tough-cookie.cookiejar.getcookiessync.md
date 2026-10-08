@@ -11,7 +11,7 @@ Synchronously retrieve the list of cookies that can be sent in a Cookie header f
 **Signature:**
 
 ```typescript
-getCookiesSync(url: string, options?: GetCookiesOptions): Cookie[];
+getCookiesSync(url: string | URL, options?: GetCookiesOptions): Cookie[];
 ```
 
 ## Parameters
@@ -39,7 +39,7 @@ url
 
 </td><td>
 
-string
+string \| URL
 
 
 </td><td>
