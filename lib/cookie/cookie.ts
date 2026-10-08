@@ -33,6 +33,7 @@ import * as validators from '../validators.js'
 import { inOperator } from '../utils.js'
 
 import { formatDate } from './formatDate.js'
+import { CookieName } from './cookieName.js'
 import { parseDate } from './parseDate.js'
 import { canonicalDomain } from './canonicalDomain.js'
 import type { SerializedCookie } from './constants.js'
@@ -655,6 +656,9 @@ export class Cookie {
    * @beta
    */
   validate(): boolean {
+    if (CookieName.parse(this.key) === undefined) {
+      return false
+    }
     if (!this.value || !COOKIE_OCTETS.test(this.value)) {
       return false
     }
