@@ -35,7 +35,7 @@ An HTTP cookie (web cookie, browser cookie) is a small piece of data that a serv
 
 </td><td>
 
-A CookieJar is for storage and retrieval of [Cookie](./tough-cookie.cookie.md) objects as defined in [RFC6265 - Section 5.3](https://www.rfc-editor.org/rfc/rfc6265.html#section-5.3)<!-- -->.
+A CookieJar is for storage and retrieval of [Cookie](./tough-cookie.cookie.md) objects as defined in[RFC6265 - Section 5.3](https://www.rfc-editor.org/rfc/rfc6265.html#section-5.3)<!-- -->.
 
 It also supports a pluggable persistence layer via [Store](./tough-cookie.store.md)<!-- -->.
 
@@ -48,7 +48,7 @@ It also supports a pluggable persistence layer via [Store](./tough-cookie.store.
 
 </td><td>
 
-An in-memory [Store](./tough-cookie.store.md) implementation for [CookieJar](./tough-cookie.cookiejar.md)<!-- -->. This is the default implementation used by [CookieJar](./tough-cookie.cookiejar.md) and supports both async and sync operations. Also supports serialization, getAllCookies, and removeAllCookies.
+An in-memory [Store](./tough-cookie.store.md) implementation for [CookieJar](./tough-cookie.cookiejar.md)<!-- -->. This is the default implementation used by[CookieJar](./tough-cookie.cookiejar.md) and supports both async and sync operations. Also supports serialization, getAllCookies, and removeAllCookies.
 
 
 </td></tr>
@@ -72,7 +72,7 @@ Represents a validation error.
 
 Base class for [CookieJar](./tough-cookie.cookiejar.md) stores.
 
-The storage model for each [CookieJar](./tough-cookie.cookiejar.md) instance can be replaced with a custom implementation. The default is [MemoryCookieStore](./tough-cookie.memorycookiestore.md)<!-- -->.
+The storage model for each [CookieJar](./tough-cookie.cookiejar.md) instance can be replaced with a custom implementation. The default is[MemoryCookieStore](./tough-cookie.memorycookiestore.md)<!-- -->.
 
 
 </td></tr>
@@ -139,7 +139,7 @@ Given a current request/response path, gives the path appropriate for storing in
 
 </td><td>
 
-Answers "does this real domain match the domain in a cookie?". The `domain` is the "current" domain name and the `cookieDomain` is the "cookie" domain name. Matches according to [RFC6265 - Section 5.1.3](https://www.rfc-editor.org/rfc/rfc6265.html#section-5.1.3)<!-- -->, but it helps to think of it as a "suffix match".
+Answers "does this real domain match the domain in a cookie?". The `domain` is the "current" domain name and the`cookieDomain` is the "cookie" domain name. Matches according to [RFC6265 - Section 5.1.3](https://www.rfc-editor.org/rfc/rfc6265.html#section-5.1.3)<!-- -->, but it helps to think of it as a "suffix match".
 
 
 </td></tr>
@@ -194,7 +194,7 @@ Parses a string into a Cookie object.
 
 </td><td>
 
-Parse a cookie date string into a [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date)<!-- -->. Parses according to [RFC6265 - Section 5.1.1](https://www.rfc-editor.org/rfc/rfc6265.html#section-5.1.1)<!-- -->, not [Date.parse()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse)<!-- -->.
+Parse a cookie date string into a [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date)<!-- -->. Parses according to[RFC6265 - Section 5.1.1](https://www.rfc-editor.org/rfc/rfc6265.html#section-5.1.1)<!-- -->, not[Date.parse()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse)<!-- -->.
 
 
 </td></tr>

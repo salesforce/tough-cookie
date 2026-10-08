@@ -4,7 +4,7 @@
 
 ## MemoryCookieStore.updateCookie() method
 
-Update an existing [Cookie](./tough-cookie.cookie.md)<!-- -->. The implementation MUST update the `value` for a cookie with the same `domain`<!-- -->, `path`<!-- -->, and `key`<!-- -->. The implementation SHOULD check that the old value in the store is equivalent to oldCookie - how the conflict is resolved is up to the store.
+Update an existing [Cookie](./tough-cookie.cookie.md)<!-- -->. The implementation MUST update the `value` for a cookie with the same `domain`<!-- -->,`path`<!-- -->, and `key`<!-- -->. The implementation SHOULD check that the old value in the store is equivalent to oldCookie - how the conflict is resolved is up to the store.
 
 **Signature:**
 

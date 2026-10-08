@@ -17,7 +17,7 @@ Promise&lt;void&gt;
 
 ## Remarks
 
-- This is a new backwards-compatible feature of tough-cookie version 2.5, so not all Stores will implement it efficiently. For Stores that do not implement `removeAllCookies`<!-- -->, the fallback is to call `removeCookie` after `getAllCookies`<!-- -->.
+- This is a new backwards-compatible feature of tough-cookie version 2.5,  so not all Stores will implement it efficiently. For Stores that do not  implement `removeAllCookies`<!-- -->, the fallback is to call `removeCookie` after  `getAllCookies`<!-- -->.
 
 - If `getAllCookies` fails or isn't implemented in the Store, an error is returned.
 

@@ -4,7 +4,7 @@
 
 ## domainMatch() function
 
-Answers "does this real domain match the domain in a cookie?". The `domain` is the "current" domain name and the `cookieDomain` is the "cookie" domain name. Matches according to [RFC6265 - Section 5.1.3](https://www.rfc-editor.org/rfc/rfc6265.html#section-5.1.3)<!-- -->, but it helps to think of it as a "suffix match".
+Answers "does this real domain match the domain in a cookie?". The `domain` is the "current" domain name and the`cookieDomain` is the "cookie" domain name. Matches according to [RFC6265 - Section 5.1.3](https://www.rfc-editor.org/rfc/rfc6265.html#section-5.1.3)<!-- -->, but it helps to think of it as a "suffix match".
 
 **Signature:**
 
@@ -86,19 +86,19 @@ boolean \| undefined
 
 ## Remarks
 
-This implementation is compliant with RFC6265 Section 5.1.3 and compatible with [draft-ietf-httpbis-rfc6265bis-22](https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-22#section-5.1.3) which adds a clarifying note that both inputs must be canonicalized but is otherwise identical.
+This implementation is compliant with RFC6265 Section 5.1.3 and compatible with[draft-ietf-httpbis-rfc6265bis-22](https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-22#section-5.1.3) which adds a clarifying note that both inputs must be canonicalized but is otherwise identical.
 
 \#\#\# 5.1.3. Domain Matching
 
 A string domain-matches a given domain string if at least one of the following conditions hold:
 
-- The domain string and the string are identical. (Note that both the domain string and the string will have been canonicalized to lower case at this point.)
+- The domain string and the string are identical. (Note that both  the domain string and the string will have been canonicalized to  lower case at this point.)
 
 - All of the following conditions hold:
 
 - The domain string is a suffix of the string.
 
-- The last character of the string that is not included in the domain string is a %x2E (".") character.
+- The last character of the string that is not included in the  domain string is a %x2E (".") character.
 
 - The string is a host name (i.e., not an IP address).
 
