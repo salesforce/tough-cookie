@@ -44,6 +44,7 @@ export class Cookie {
     static sameSiteCanonical: {
         readonly strict: "Strict";
         readonly lax: "Lax";
+        readonly none: "None";
     };
     // @internal (undocumented)
     static sameSiteLevel: {
