@@ -158,6 +158,29 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
           `Cookie has __Host prefix but either Secure or HostOnly attribute is not set or Path is not '/'`,
         )
       })
+
+      it('should error when there is no explicit Path attribute', async () => {
+        await expect(
+          cookieJar.setCookie('__Host-SID=12345; Secure', secureUrl, {}),
+        ).rejects.toThrow(
+          `Cookie has __Host prefix but either Secure or HostOnly attribute is not set or Path is not '/'`,
+        )
+      })
+
+      it('should work with an explicit Path of /', async () => {
+        await cookieJar.setCookie(
+          '__Host-SID=12345; Secure; Path=/',
+          secureUrl,
+          {},
+        )
+        const cookies = await cookieJar.getCookies(secureUrl)
+        expect(cookies).toEqual([
+          expect.objectContaining({
+            key: '__Host-SID',
+            value: '12345',
+          }),
+        ])
+      })
     })
   })
 
