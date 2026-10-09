@@ -4,16 +4,14 @@ A Node.js implementation of [RFC6265][rfc6265-tracker] for cookie parsing, stora
 
 ## Getting Started
 
-Install Tough Cookie using [`npm`][npm-repo]:
+Install Tough Cookie using a package manager like [`npm`][npm-repo], [`yarn`][yarn-repo], or `bun`:
 
 ```shell
 npm install tough-cookie
-```
-
-or [`yarn`][yarn-repo]:
-
-```shell
+# or
 yarn add tough-cookie
+# or
+bun add tough-cookie
 ```
 
 ## Usage
