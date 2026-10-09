@@ -1025,4 +1025,4 @@ export class Cookie {
     'lastAccessed',
     'sameSite',
   ] as const
-    }
+}
