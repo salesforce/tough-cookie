@@ -652,6 +652,10 @@ export class Cookie {
    *
    * @remarks
    * Works for a few things, but is by no means comprehensive.
+   * Checks that the cookie name is a non-empty token as defined in RFC 6265 Section 4.1.1.
+   * Nameless cookies (including those parsed in loose mode or created with `new Cookie({ value })`)
+   * and names containing characters outside the token grammar (such as `a b`) return `false`.
+   * Parsing and storage remain permissive; this check only applies to explicit validation.
    *
    * @beta
    */
@@ -1021,4 +1025,4 @@ export class Cookie {
     'lastAccessed',
     'sameSite',
   ] as const
-}
+    }
