@@ -74,9 +74,7 @@ describe('CookieJar', () => {
             'foo=bar',
             'http://example.com',
             (_error, result) => {
-              if (result == null) {
-                throw new Error('Result should not have been undefined')
-              }
+              expect(result).toBeDefined()
               cookie = result
               done()
             },
@@ -90,9 +88,7 @@ describe('CookieJar', () => {
             'foo=bar',
             'http://example.com',
           )
-          if (result == null) {
-            throw new Error('Result should not have been undefined')
-          }
+          expect(cookie).toBeDefined()
           cookie = result
         },
       },
@@ -741,12 +737,10 @@ describe('CookieJar', () => {
         {
           callbackStyle(done) {
             cookieJar.getCookieString('http://example.com', (_err, result) => {
-              if (typeof result === 'string') {
-                cookieString = result
-                done()
-              } else {
-                throw new Error('Result should not have been undefined')
-              }
+              expect(result).toBeTypeOf('string')
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              cookieString = result!
+              done()
             })
           },
           async asyncStyle() {
@@ -841,9 +835,7 @@ describe('CookieJar', () => {
             cookieJar.getSetCookieStrings(
               'http://example.com',
               (_error, result) => {
-                if (!result) {
-                  throw new Error('Result should not have been undefined')
-                }
+                expect(result).toBeDefined()
                 cookieHeaders = result
                 done()
               },
@@ -975,10 +967,9 @@ describe('CookieJar', () => {
       {
         callbackStyle(done) {
           cookieJar.serialize((_error, result) => {
-            if (!result) {
-              throw new Error()
-            }
-            data = result
+            expect(result).toBeDefined()
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            data = result!
             done()
           })
         },
@@ -987,10 +978,9 @@ describe('CookieJar', () => {
         },
         syncStyle() {
           const result = cookieJar.serializeSync()
-          if (!result) {
-            throw new Error('This should have been undefined')
-          }
-          data = result
+          expect(result).toBeDefined()
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          data = result!
         },
       },
       () => {
@@ -1343,10 +1333,9 @@ describe('loose mode', () => {
 
   it('should retain loose mode when cloning cookie store with loose mode enabled', async () => {
     const cookieJar = new CookieJar(null, { looseMode: true })
-    const cookieJarAsJson = cookieJar.toJSON()
-    if (!cookieJarAsJson) {
-      throw new Error('This should not have been undefined')
-    }
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const cookieJarAsJson = cookieJar.toJSON()!
+    expect(cookieJarAsJson).toBeDefined()
     const clonedCookieJar = CookieJar.fromJSON(cookieJarAsJson)
     await clonedCookieJar.setCookie('FooBar', 'http://www.foonet.net')
     const cookies = await clonedCookieJar.getCookies('http://www.foonet.net')
@@ -1759,10 +1748,10 @@ function createCookie(
     hostOnly?: boolean
   } = {},
 ): Cookie {
-  const cookie = Cookie.parse(cookieString)
-  if (!cookie) {
-    throw new Error('This should not be undefined')
-  }
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const cookie = Cookie.parse(cookieString)!
+  expect(cookie).toBeDefined()
+
   if (options.hostOnly) {
     cookie.hostOnly = options.hostOnly
   }
