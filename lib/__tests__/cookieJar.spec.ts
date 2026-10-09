@@ -1287,6 +1287,15 @@ describe('setCookie errors', () => {
     ).rejects.toThrow('Cookie has domain set to a public suffix')
   })
 
+  it('should allow IPv4 literal domain attribute without rejecting as public suffix', async () => {
+    const cookieJar = new CookieJar()
+    const cookie = await cookieJar.setCookie(
+      'a=b; Domain=127.0.0.1; Path=/',
+      'http://127.0.0.1/',
+    )
+    expect(cookie?.domain).toBe('127.0.0.1')
+  })
+
   it('should throw an error if domains do not match', async () => {
     const cookieJar = new CookieJar()
     await expect(
