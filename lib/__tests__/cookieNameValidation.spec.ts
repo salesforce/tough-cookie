@@ -6,31 +6,47 @@ import { CookieJar } from '../cookie/cookieJar.js'
 const validName =
   "!#$%&'*+-.0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ^_`abcdefghijklmnopqrstuvwxyz|~"
 
+const invalidCharacters = Array.from({ length: 128 }, (_, code) =>
+  String.fromCharCode(code),
+).filter((character) => !validName.includes(character))
+
 describe('Cookie name validation', () => {
-  it('accepts every ASCII token character', () => {
-    for (const key of validName) {
-      expect(new Cookie({ key, value: 'value' }).validate()).toBe(true)
-    }
+  it.each(Array.from(validName))('accepts the token character %j', (key) => {
+    expect(new Cookie({ key, value: 'value' }).validate()).toBe(true)
+  })
+
+  it('accepts a name made of every token character', () => {
     expect(new Cookie({ key: validName, value: 'value' }).validate()).toBe(true)
   })
 
-  it('rejects every ASCII character outside the token grammar', () => {
-    const invalidCharacters = Array.from({ length: 128 }, (_, code) =>
-      String.fromCharCode(code),
-    ).filter((character) => !validName.includes(character))
-    for (const character of invalidCharacters) {
+  it.each(invalidCharacters)(
+    'rejects the non-token character %j',
+    (character) => {
       expect(
         new Cookie({ key: `a${character}b`, value: 'value' }).validate(),
       ).toBe(false)
-    }
-  })
-
-  it.each(['', 'name\n', 'name\r\n', 'café', '名前', 'a=b', 'a;b', 'a b'])(
-    'rejects the invalid name %j',
-    (key) => {
-      expect(new Cookie({ key, value: 'value' }).validate()).toBe(false)
     },
   )
+
+  it.each([
+    '',
+    'name\n',
+    'name\r\n',
+    'café',
+    '名前',
+    'a=b',
+    'a;b',
+    'a b',
+    '=',
+    '\x7f',
+    '\x80',
+    '\xa0',
+    '\xff',
+    '🍪',
+    '\ud800',
+  ])('rejects the invalid name %j', (key) => {
+    expect(new Cookie({ key, value: 'value' }).validate()).toBe(false)
+  })
 
   it('does not tighten the permissive Set-Cookie parser', () => {
     const cookie = Cookie.parse('a b=value')
