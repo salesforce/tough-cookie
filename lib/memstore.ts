@@ -184,6 +184,7 @@ export class MemoryCookieStore extends Store {
         //NOTE: we should use path-match algorithm from S5.1.4 here
         //(see : https://github.com/ChromiumWebApps/chromium/blob/b3d3b4da8bb94c1b2e061600df106d590fda3620/net/cookies/canonical_cookie.cc#L299)
         for (const cookiePath in domainIndex) {
+          // eslint-disable-next-line @typescript-eslint/no-deprecated -- migrated to CookiePath in a follow-up
           if (pathMatch(path, cookiePath)) {
             const pathIndex = domainIndex[cookiePath]
             for (const key in pathIndex) {
