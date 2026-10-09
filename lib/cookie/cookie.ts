@@ -33,6 +33,7 @@ import * as validators from '../validators.js'
 import { inOperator } from '../utils.js'
 
 import { formatDate } from './formatDate.js'
+import { CookieName } from './cookieName.js'
 import { parseDate } from './parseDate.js'
 import { canonicalDomain } from './canonicalDomain.js'
 import type { SerializedCookie } from './constants.js'
@@ -651,10 +652,17 @@ export class Cookie {
    *
    * @remarks
    * Works for a few things, but is by no means comprehensive.
+   * Checks that the cookie name is a non-empty token as defined in RFC 6265 Section 4.1.1.
+   * Nameless cookies (including those parsed in loose mode or created with `new Cookie({ value })`)
+   * and names containing characters outside the token grammar (such as `a b`) return `false`.
+   * Parsing and storage remain permissive; this check only applies to explicit validation.
    *
    * @beta
    */
   validate(): boolean {
+    if (CookieName.parse(this.key) === undefined) {
+      return false
+    }
     if (!this.value || !COOKIE_OCTETS.test(this.value)) {
       return false
     }
