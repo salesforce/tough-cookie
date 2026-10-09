@@ -775,7 +775,7 @@ export class Cookie {
     if (this.httpOnly) {
       str += '; HttpOnly'
     }
-    if (this.sameSite && this.sameSite !== 'none') {
+    if (this.sameSite) {
       if (
         this.sameSite.toLowerCase() ===
         Cookie.sameSiteCanonical.lax.toLowerCase()
@@ -786,6 +786,11 @@ export class Cookie {
         Cookie.sameSiteCanonical.strict.toLowerCase()
       ) {
         str += `; SameSite=${Cookie.sameSiteCanonical.strict}`
+      } else if (
+        this.sameSite.toLowerCase() ===
+        Cookie.sameSiteCanonical.none.toLowerCase()
+      ) {
+        str += `; SameSite=${Cookie.sameSiteCanonical.none}`
       } else {
         str += `; SameSite=${this.sameSite}`
       }
@@ -1003,6 +1008,7 @@ export class Cookie {
   static sameSiteCanonical = {
     strict: 'Strict',
     lax: 'Lax',
+    none: 'None',
   } as const
 
   /**

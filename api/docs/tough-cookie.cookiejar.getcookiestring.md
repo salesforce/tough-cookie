@@ -9,7 +9,7 @@ Accepts the same options as `.getCookies()` but returns a string suitable for a`
 **Signature:**
 
 ```typescript
-getCookieString(url: string, options: GetCookiesOptions, callback: Callback<string | undefined>): void;
+getCookieString(url: string | URL, options: GetCookiesOptions, callback: Callback<string | undefined>): void;
 ```
 
 ## Parameters
@@ -37,7 +37,7 @@ url
 
 </td><td>
 
-string
+string \| URL
 
 
 </td><td>
