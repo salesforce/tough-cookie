@@ -9,7 +9,7 @@ Retrieve the list of cookies that can be sent in a Cookie header for the current
 **Signature:**
 
 ```typescript
-getCookies(url: string): Promise<Cookie[]>;
+getCookies(url: string | URL, callback: Callback<Cookie[]>): void;
 ```
 
 ## Parameters
@@ -37,7 +37,7 @@ url
 
 </td><td>
 
-string
+string \| URL
 
 
 </td><td>
@@ -46,11 +46,27 @@ The domain to store the cookie with.
 
 
 </td></tr>
+<tr><td>
+
+callback
+
+
+</td><td>
+
+[Callback](./tough-cookie.callback.md)<!-- -->&lt;[Cookie](./tough-cookie.cookie.md)<!-- -->\[\]&gt;
+
+
+</td><td>
+
+A function to call after a cookie has been successfully retrieved.
+
+
+</td></tr>
 </tbody></table>
 
 **Returns:**
 
-Promise&lt;[Cookie](./tough-cookie.cookie.md)<!-- -->\[\]&gt;
+void
 
 ## Remarks
 

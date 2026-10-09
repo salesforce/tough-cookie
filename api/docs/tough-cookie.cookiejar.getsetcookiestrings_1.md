@@ -9,7 +9,7 @@ Returns an array of strings suitable for `Set-Cookie` headers. Accepts the same 
 **Signature:**
 
 ```typescript
-getSetCookieStrings(url: string, options: GetCookiesOptions, callback: Callback<string[] | undefined>): void;
+getSetCookieStrings(url: string | URL, options: GetCookiesOptions, callback: Callback<string[] | undefined>): void;
 ```
 
 ## Parameters
@@ -37,7 +37,7 @@ url
 
 </td><td>
 
-string
+string \| URL
 
 
 </td><td>

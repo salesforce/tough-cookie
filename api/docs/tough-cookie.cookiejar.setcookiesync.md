@@ -11,7 +11,7 @@ Synchronously attempt to set the [Cookie](./tough-cookie.cookie.md) in the [Cook
 **Signature:**
 
 ```typescript
-setCookieSync(cookie: string | Cookie, url: string, options?: SetCookieOptions): Cookie | undefined;
+setCookieSync(cookie: string | Cookie, url: string | URL, options?: SetCookieOptions): Cookie | undefined;
 ```
 
 ## Parameters
@@ -55,7 +55,7 @@ url
 
 </td><td>
 
-string
+string \| URL
 
 
 </td><td>

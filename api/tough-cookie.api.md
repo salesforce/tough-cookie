@@ -83,25 +83,24 @@ export class CookieJar {
     static deserialize(strOrObj: string | object, store?: Store | Callback<CookieJar>, callback?: Callback<CookieJar>): unknown;
     static deserializeSync(strOrObj: string | SerializedCookieJar, store?: Store): CookieJar;
     static fromJSON(jsonString: string | SerializedCookieJar, store?: Store): CookieJar;
-    getCookies(url: string): Promise<Cookie[]>;
-    getCookies(url: string, callback: Callback<Cookie[]>): void;
+    getCookies(url: string | URL, callback: Callback<Cookie[]>): void;
     getCookies(url: string | URL, options: GetCookiesOptions | undefined, callback: Callback<Cookie[]>): void;
     getCookies(url: string | URL, options?: GetCookiesOptions): Promise<Cookie[]>;
     // @internal
     getCookies(url: string | URL, options: GetCookiesOptions | undefined | Callback<Cookie[]>, callback?: Callback<Cookie[]>): unknown;
-    getCookiesSync(url: string, options?: GetCookiesOptions): Cookie[];
-    getCookieString(url: string, options: GetCookiesOptions, callback: Callback<string | undefined>): void;
-    getCookieString(url: string, callback: Callback<string | undefined>): void;
-    getCookieString(url: string, options?: GetCookiesOptions): Promise<string>;
+    getCookiesSync(url: string | URL, options?: GetCookiesOptions): Cookie[];
+    getCookieString(url: string | URL, options: GetCookiesOptions, callback: Callback<string | undefined>): void;
+    getCookieString(url: string | URL, callback: Callback<string | undefined>): void;
+    getCookieString(url: string | URL, options?: GetCookiesOptions): Promise<string>;
     // @internal
-    getCookieString(url: string, options: GetCookiesOptions | Callback<string | undefined>, callback?: Callback<string | undefined>): unknown;
-    getCookieStringSync(url: string, options?: GetCookiesOptions): string;
-    getSetCookieStrings(url: string, callback: Callback<string[] | undefined>): void;
-    getSetCookieStrings(url: string, options: GetCookiesOptions, callback: Callback<string[] | undefined>): void;
-    getSetCookieStrings(url: string, options?: GetCookiesOptions): Promise<string[] | undefined>;
+    getCookieString(url: string | URL, options: GetCookiesOptions | Callback<string | undefined>, callback?: Callback<string | undefined>): unknown;
+    getCookieStringSync(url: string | URL, options?: GetCookiesOptions): string;
+    getSetCookieStrings(url: string | URL, callback: Callback<string[] | undefined>): void;
+    getSetCookieStrings(url: string | URL, options: GetCookiesOptions, callback: Callback<string[] | undefined>): void;
+    getSetCookieStrings(url: string | URL, options?: GetCookiesOptions): Promise<string[] | undefined>;
     // @internal
-    getSetCookieStrings(url: string, options: GetCookiesOptions, callback?: Callback<string[] | undefined>): unknown;
-    getSetCookieStringsSync(url: string, options?: GetCookiesOptions): string[];
+    getSetCookieStrings(url: string | URL, options: GetCookiesOptions, callback?: Callback<string[] | undefined>): unknown;
+    getSetCookieStringsSync(url: string | URL, options?: GetCookiesOptions): string[];
     // @internal
     _importCookies(serialized: unknown, callback: Callback<CookieJar>): void;
     // @internal (undocumented)
@@ -118,7 +117,7 @@ export class CookieJar {
     setCookie(cookie: string | Cookie, url: string | URL, options?: SetCookieOptions): Promise<Cookie | undefined>;
     // @internal
     setCookie(cookie: string | Cookie, url: string | URL, options: SetCookieOptions | Callback<Cookie | undefined>, callback?: Callback<Cookie | undefined>): unknown;
-    setCookieSync(cookie: string | Cookie, url: string, options?: SetCookieOptions): Cookie | undefined;
+    setCookieSync(cookie: string | Cookie, url: string | URL, options?: SetCookieOptions): Cookie | undefined;
     readonly store: Store;
     toJSON(): SerializedCookieJar | undefined;
 }
