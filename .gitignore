@@ -10,3 +10,4 @@ coverage
 .bash_history
 dist/
 tmp/
+/raw/

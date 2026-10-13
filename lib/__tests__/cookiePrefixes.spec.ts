@@ -50,7 +50,9 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
             insecureUrl,
             {},
           ),
-        ).rejects.toThrow('Cookie is Secure but this is not a secure connection')
+        ).rejects.toThrow(
+          'Cookie is Secure but this is not a secure connection',
+        )
       })
     })
 
@@ -104,8 +106,14 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
 
       it('should reject a valid __Host- cookie set over an insecure origin', async () => {
         await expect(
-          cookieJar.setCookie('__Host-SID=12345; Secure; Path=/', insecureUrl, {}),
-        ).rejects.toThrow('Cookie is Secure but this is not a secure connection')
+          cookieJar.setCookie(
+            '__Host-SID=12345; Secure; Path=/',
+            insecureUrl,
+            {},
+          ),
+        ).rejects.toThrow(
+          'Cookie is Secure but this is not a secure connection',
+        )
       })
     })
   })
@@ -212,7 +220,11 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
 
       it('should reject a valid __Host- cookie set over an insecure origin', async () => {
         await expect(
-          cookieJar.setCookie('__Host-SID=12345; Secure; Path=/', insecureUrl, {}),
+          cookieJar.setCookie(
+            '__Host-SID=12345; Secure; Path=/',
+            insecureUrl,
+            {},
+          ),
         ).rejects.toThrow(
           'Cookie is Secure but this is not a secure connection',
         )
@@ -223,7 +235,9 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
       it('should reject a plain Secure cookie set over an insecure origin', async () => {
         await expect(
           cookieJar.setCookie('SID=12345; Secure', insecureUrl, {}),
-        ).rejects.toThrow('Cookie is Secure but this is not a secure connection')
+        ).rejects.toThrow(
+          'Cookie is Secure but this is not a secure connection',
+        )
       })
     })
   })
@@ -277,10 +291,11 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
         // solely on `ignoreError`, so it still applies here.
         await expect(
           cookieJar.setCookie('SID=12345; Secure', insecureUrl, {}),
-        ).rejects.toThrow('Cookie is Secure but this is not a secure connection')
+        ).rejects.toThrow(
+          'Cookie is Secure but this is not a secure connection',
+        )
       })
     })
-
   })
 
   describe('prefixed cookie over http://localhost', () => {

@@ -627,15 +627,20 @@ export class CookieJar {
     }
 
     // RFC 6265bis-22 S5.7 (Storage Model), step 13:
-    // https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-22#section-5.7-3.13.1
+    // Provenance: https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-22#section-5.7-3.13.1
     // "If the request-uri does not denote a "secure" connection (as defined by
     //  the user agent), and the cookie's secure-only-flag is true, then abort
     //  these steps and ignore the cookie entirely."
     // The RFC deliberately leaves "secure connection" for the user agent to define;
     // tough-cookie uses the "potentially trustworthy" URL algorithm for that purpose
     // (see secureContext.ts).
-    if (cookie.secure && !isPotentiallyTrustworthy(url, this.allowSecureOnLocal)) {
-      const err = new Error('Cookie is Secure but this is not a secure connection')
+    if (
+      cookie.secure &&
+      !isPotentiallyTrustworthy(url, this.allowSecureOnLocal)
+    ) {
+      const err = new Error(
+        'Cookie is Secure but this is not a secure connection',
+      )
       return options?.ignoreError
         ? promiseCallback.resolve(undefined)
         : promiseCallback.reject(err)

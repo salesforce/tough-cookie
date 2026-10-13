@@ -118,10 +118,11 @@ const cookieJar = new CookieJar(new MemoryCookieStore(), {
   prefixSecurity: 'silent',
 })
 
-// this cookie will be silently ignored since the url is insecure (http)
+// ignoreError silences the general Secure-cookie origin rejection
 await cookieJar.setCookie(
   '__Secure-SID=12345; Domain=example.com; Secure;',
   'http://example.com',
+  { ignoreError: true },
 )
 
 // this cookie will be stored since the url is secure (https)
@@ -165,12 +166,16 @@ const cookieJar = new CookieJar(new MemoryCookieStore(), {
 // this cookie will be persisted to storage
 await cookieJar.setCookie(
   'SID=12345; Domain=localhost; Secure;',
-  'http://localhost',
+  'https://localhost',
 )
 
 // but, on retrieval, it will not be returned
 await cookieJar.getCookiesSync('http://localhost')
 ```
+
+Secure cookies set on an untrustworthy origin are rejected, including
+unprefixed cookies. `ignoreError: true` silently discards them; it does not
+store them. This origin check applies independently of `prefixSecurity`.
 
 ## Node.js Version Support
 
