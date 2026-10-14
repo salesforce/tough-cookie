@@ -54,6 +54,19 @@ jobs:
           npm install ../tough-cookie/${{ steps.package.outputs.tough_cookie_tarball }}
           npm install canvas@3
         working-directory: ./jsdom
+      - name: Update jsdom expectation for Secure cookies set over WS
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync, writeFileSync } from 'node:fs'
+          const path = 'test/web-platform-tests/to-run.yaml'
+          const from = 'secure/set-from-ws.sub.html: [fail, Secure cookies are accepted from insecure WebSocket connections]'
+          const source = readFileSync(path, 'utf8')
+          if (!source.includes(from) && source.includes('secure/set-from-ws.sub.html:')) {
+            throw new Error('The jsdom expectation changed; review it before updating')
+          }
+          writeFileSync(path, source.replace(from, ''))
+          NODE
+        working-directory: ./jsdom
       - name: Run tests
         run: npm test
         working-directory: ./jsdom
@@ -88,6 +101,19 @@ jobs:
           npm ci
           npm uninstall tough-cookie
           npm install ../tough-cookie/${{ steps.package.outputs.tough_cookie_tarball }}
+        working-directory: ./jsdom
+      - name: Update jsdom expectation for Secure cookies set over WS
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync, writeFileSync } from 'node:fs'
+          const path = 'test/web-platform-tests/to-run.yaml'
+          const from = 'secure/set-from-ws.sub.html: [fail, Secure cookies are accepted from insecure WebSocket connections]'
+          const source = readFileSync(path, 'utf8')
+          if (!source.includes(from) && source.includes('secure/set-from-ws.sub.html:')) {
+            throw new Error('The jsdom expectation changed; review it before updating')
+          }
+          writeFileSync(path, source.replace(from, ''))
+          NODE
         working-directory: ./jsdom
       - name: Run tests
         run: npm run test

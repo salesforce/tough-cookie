@@ -155,8 +155,8 @@ function parse(str: string, options?: ParseCookieOptions): Cookie | undefined {
    * the previous value.
    */
   const cookie_avs = unparsed.split(';')
-  while (cookie_avs.length) {
-    const av = (cookie_avs.shift() ?? '').trim()
+  for (const cookie_av of cookie_avs) {
+    const av = cookie_av.trim()
     if (av.length === 0) {
       // happens if ";;" appears
       continue
