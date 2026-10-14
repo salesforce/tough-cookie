@@ -4,12 +4,12 @@
 
 ## CookieJar.getCookieString() method
 
-Accepts the same options as `.getCookies()` but returns a string suitable for a `Cookie` header rather than an Array.
+Accepts the same options as `.getCookies()` but returns a string suitable for a`Cookie` header rather than an Array.
 
 **Signature:**
 
 ```typescript
-getCookieString(url: string, callback: Callback<string | undefined>): void;
+getCookieString(url: string | URL, callback: Callback<string | undefined>): void;
 ```
 
 ## Parameters
@@ -37,7 +37,7 @@ url
 
 </td><td>
 
-string
+string \| URL
 
 
 </td><td>

@@ -4,14 +4,14 @@
 
 ## CookieJar.getCookieStringSync() method
 
-Synchronous version of `.getCookieString()`<!-- -->. Accepts the same options as `.getCookies()` but returns a string suitable for a `Cookie` header rather than an Array.
+Synchronous version of `.getCookieString()`<!-- -->. Accepts the same options as `.getCookies()` but returns a string suitable for a`Cookie` header rather than an Array.
 
 <strong>Note</strong>: Only works if the configured Store is also synchronous.
 
 **Signature:**
 
 ```typescript
-getCookieStringSync(url: string, options?: GetCookiesOptions): string;
+getCookieStringSync(url: string | URL, options?: GetCookiesOptions): string;
 ```
 
 ## Parameters
@@ -39,7 +39,7 @@ url
 
 </td><td>
 
-string
+string \| URL
 
 
 </td><td>

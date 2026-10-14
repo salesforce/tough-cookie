@@ -33,6 +33,7 @@ import * as validators from '../validators.js'
 import { inOperator } from '../utils.js'
 
 import { formatDate } from './formatDate.js'
+import { CookieName } from './cookieName.js'
 import { parseDate } from './parseDate.js'
 import { canonicalDomain } from './canonicalDomain.js'
 import type { SerializedCookie } from './constants.js'
@@ -651,10 +652,17 @@ export class Cookie {
    *
    * @remarks
    * Works for a few things, but is by no means comprehensive.
+   * Checks that the cookie name is a non-empty token as defined in RFC 6265 Section 4.1.1.
+   * Nameless cookies (including those parsed in loose mode or created with `new Cookie({ value })`)
+   * and names containing characters outside the token grammar (such as `a b`) return `false`.
+   * Parsing and storage remain permissive; this check only applies to explicit validation.
    *
    * @beta
    */
   validate(): boolean {
+    if (CookieName.parse(this.key) === undefined) {
+      return false
+    }
     if (!this.value || !COOKIE_OCTETS.test(this.value)) {
       return false
     }
@@ -767,7 +775,7 @@ export class Cookie {
     if (this.httpOnly) {
       str += '; HttpOnly'
     }
-    if (this.sameSite && this.sameSite !== 'none') {
+    if (this.sameSite) {
       if (
         this.sameSite.toLowerCase() ===
         Cookie.sameSiteCanonical.lax.toLowerCase()
@@ -778,6 +786,11 @@ export class Cookie {
         Cookie.sameSiteCanonical.strict.toLowerCase()
       ) {
         str += `; SameSite=${Cookie.sameSiteCanonical.strict}`
+      } else if (
+        this.sameSite.toLowerCase() ===
+        Cookie.sameSiteCanonical.none.toLowerCase()
+      ) {
+        str += `; SameSite=${Cookie.sameSiteCanonical.none}`
       } else {
         str += `; SameSite=${this.sameSite}`
       }
@@ -839,6 +852,9 @@ export class Cookie {
   expiryTime(now?: Date): number | undefined {
     // expiryTime() replaces the "expiry-time" parts of S5.3 step 3 (setCookie() elsewhere)
     if (this.maxAge != null) {
+      if (this.maxAge === 'Infinity') {
+        return Infinity
+      }
       const relativeTo = now || this.lastAccessed || new Date()
       const maxAge = typeof this.maxAge === 'number' ? this.maxAge : -Infinity
       const age = maxAge <= 0 ? -Infinity : maxAge * 1000
@@ -992,6 +1008,7 @@ export class Cookie {
   static sameSiteCanonical = {
     strict: 'Strict',
     lax: 'Lax',
+    none: 'None',
   } as const
 
   /**
