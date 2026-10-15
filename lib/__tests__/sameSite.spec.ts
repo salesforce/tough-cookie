@@ -198,6 +198,37 @@ describe('Same-Site Cookies', function () {
       expect(lax.toString()).toBe('lax=okay; SameSite=Lax')
     })
 
+    it('preserves explicit SameSite=None when parsing and serializing', () => {
+      const cookie = parse('cross=allowed; Secure; SameSite=nOnE')
+      const serialized = cookie.toString()
+      expect(serialized).toBe('cross=allowed; Secure; SameSite=None')
+      expect(parse(serialized).sameSite).toBe('none')
+    })
+
+    it.each(['none', 'None', 'NONE', 'nOnE'])(
+      'canonicalizes an explicitly constructed SameSite=%s cookie',
+      (sameSite) => {
+        const cookie = new Cookie({
+          key: 'cross',
+          value: 'allowed',
+          secure: true,
+          sameSite,
+        })
+        expect(cookie.toString()).toBe('cross=allowed; Secure; SameSite=None')
+      },
+    )
+
+    it('preserves explicit SameSite=None in CookieJar Set-Cookie headers', async () => {
+      const secureUrl = 'https://example.com/'
+      await cookieJar.setCookie(
+        'cross=allowed; Path=/; Secure; SameSite=None',
+        secureUrl,
+      )
+      expect(await cookieJar.getSetCookieStrings(secureUrl)).toEqual([
+        'cross=allowed; Path=/; Secure; SameSite=None',
+      ])
+    })
+
     it('omit if same-site was not specified', () => {
       expect(normal.toString()).toBe('normal=whatever')
     })
