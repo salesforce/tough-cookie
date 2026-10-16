@@ -54,6 +54,18 @@ jobs:
           npm install ../tough-cookie/${{ steps.package.outputs.tough_cookie_tarball }}
           npm install canvas@3
         working-directory: ./jsdom
+      - name: Update jsdom WPT expectations
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import { readFileSync, writeFileSync } from 'node:fs'
+          const path = 'test/web-platform-tests/to-run.yaml'
+          const failure = '[fail, fetch not implemented and cookie prefix handling is incomplete]'
+          const from = `prefix/**: ${failure}`
+          const to = from.replace('prefix/**:', 'prefix/!(__host.explicit-path.https.window.html):')
+          writeFileSync(path, readFileSync(path, 'utf8').replace(from, to))
+          NODE
+        working-directory: ./jsdom
       - name: Run tests
         run: npm test
         working-directory: ./jsdom
@@ -88,6 +100,18 @@ jobs:
           npm ci
           npm uninstall tough-cookie
           npm install ../tough-cookie/${{ steps.package.outputs.tough_cookie_tarball }}
+        working-directory: ./jsdom
+      - name: Update jsdom WPT expectations
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import { readFileSync, writeFileSync } from 'node:fs'
+          const path = 'test/web-platform-tests/to-run.yaml'
+          const failure = '[fail, fetch not implemented and cookie prefix handling is incomplete]'
+          const from = `prefix/**: ${failure}`
+          const to = from.replace('prefix/**:', 'prefix/!(__host.explicit-path.https.window.html):')
+          writeFileSync(path, readFileSync(path, 'utf8').replace(from, to))
+          NODE
         working-directory: ./jsdom
       - name: Run tests
         run: npm run test

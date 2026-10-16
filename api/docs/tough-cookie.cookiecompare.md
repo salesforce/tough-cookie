@@ -84,7 +84,7 @@ The user agent SHOULD sort the cookie-list in the following order:
 
 - Cookies with longer paths are listed before cookies with shorter paths.
 
-- Among cookies that have equal-length path fields, cookies with earlier creation-times are listed before cookies with later creation-times.
+- Among cookies that have equal-length path fields, cookies with  earlier creation-times are listed before cookies with later  creation-times.
 
 NOTE: Not all user agents sort the cookie-list in this order, but this order reflects common practice when this document was written, and, historically, there have been servers that (erroneously) depended on this order.
 

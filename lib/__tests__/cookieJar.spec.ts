@@ -1483,6 +1483,17 @@ it('should fix issue #261 - URL objects should be accepted in setCookie', async 
   ])
 })
 
+it('should accept URL objects in all cookie retrieval methods', async () => {
+  const jar = new CookieJar()
+  const url = new URL('https://example.com')
+  jar.setCookieSync('foo=bar', url)
+  expect(jar.getCookiesSync(url).map(String)).toEqual(['foo=bar; Path=/'])
+  expect(await jar.getCookieString(url)).toBe('foo=bar')
+  expect(jar.getCookieStringSync(url)).toBe('foo=bar')
+  expect(await jar.getSetCookieStrings(url)).toEqual(['foo=bar; Path=/'])
+  expect(jar.getSetCookieStringsSync(url)).toEqual(['foo=bar; Path=/'])
+})
+
 // special use domains under a sub-domain
 describe.each(['local', 'example', 'invalid', 'localhost', 'test'])(
   'when special use domain is dev.%s',
