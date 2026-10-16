@@ -62,11 +62,9 @@ describe('Cookie.fromJSON()', () => {
       lastAccessed: 'Infinity',
     })
     const cookie = Cookie.fromJSON(json)
-    if (!cookie) {
-      throw new Error('This should not be null')
-    }
-    expect(cookie.expires).toBe('Infinity')
-    expect(cookie.creation).toBe('Infinity')
-    expect(cookie.lastAccessed).toBe('Infinity')
+    expect(cookie).toBeDefined()
+    expect(cookie?.expires).toBe('Infinity')
+    expect(cookie?.creation).toBe('Infinity')
+    expect(cookie?.lastAccessed).toBe('Infinity')
   })
 })

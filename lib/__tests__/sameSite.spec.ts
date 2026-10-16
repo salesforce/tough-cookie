@@ -13,10 +13,9 @@ describe('Same-Site Cookies', function () {
 
   const parse = (cookieString: string): Cookie => {
     const result = Cookie.parse(cookieString)
-    if (!result) {
-      throw new Error('This should not be undefined')
-    }
-    return result
+    expect(result).toBeDefined()
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return result!
   }
 
   beforeEach(() => {
