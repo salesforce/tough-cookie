@@ -18,6 +18,7 @@ import {
   IP_V4_REGEX_OBJECT,
   IP_V6_REGEX_OBJECT,
   PrefixSecurityEnum,
+  type PrefixSecurityMode,
   SerializedCookieJar,
 } from './constants.js'
 import { defaultPath } from './defaultPath.js'
@@ -172,11 +173,11 @@ export interface CreateCookieJarOptions {
    */
   looseMode?: boolean | undefined
   /**
-   * Controls how cookie prefixes are handled. See {@link PrefixSecurityEnum}.
+   * Controls how cookie prefixes are handled. See {@link PrefixSecurityMode}.
    *
    * Defaults to `silent` if not specified.
    */
-  prefixSecurity?: 'strict' | 'silent' | 'unsafe-disabled' | undefined
+  prefixSecurity?: PrefixSecurityMode | undefined
   /**
    * Accepts {@link https://datatracker.ietf.org/doc/html/rfc6761 | special-use domains } such as `local`.
    * This is not in the standard, but is used sometimes on the web and is accepted by most browsers. It is
@@ -302,11 +303,9 @@ function isHostPrefixConditionMet(cookie: Cookie): boolean {
   )
 }
 
-type PrefixSecurityValue =
-  (typeof PrefixSecurityEnum)[keyof typeof PrefixSecurityEnum]
 function getNormalizedPrefixSecurity(
   prefixSecurity: string,
-): PrefixSecurityValue {
+): PrefixSecurityMode {
   const normalizedPrefixSecurity = prefixSecurity.toLowerCase()
   /* The three supported options */
   switch (normalizedPrefixSecurity) {
@@ -338,9 +337,9 @@ export class CookieJar {
   readonly store: Store
 
   /**
-   * The configured {@link PrefixSecurityEnum} value for the {@link CookieJar}.
+   * The configured {@link PrefixSecurityMode} value for the {@link CookieJar}.
    */
-  readonly prefixSecurity: string
+  readonly prefixSecurity: PrefixSecurityMode
 
   /**
    * Creates a new `CookieJar` instance.

@@ -110,12 +110,12 @@ Defaults to `false` if not specified.
 
 </td><td>
 
-'strict' \| 'silent' \| 'unsafe-disabled' \| undefined
+[PrefixSecurityMode](./tough-cookie.prefixsecuritymode.md) \| undefined
 
 
 </td><td>
 
-_(Optional)_ Controls how cookie prefixes are handled. See [PrefixSecurityEnum](./tough-cookie.prefixsecurityenum.md)<!-- -->.
+_(Optional)_ Controls how cookie prefixes are handled. See [PrefixSecurityMode](./tough-cookie.prefixsecuritymode.md)<!-- -->.
 
 Defaults to `silent` if not specified.
 
