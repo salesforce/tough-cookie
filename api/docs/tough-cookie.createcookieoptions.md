@@ -256,7 +256,7 @@ _(Optional)_ A boolean flag indicating if a cookie had no 'Path' attribute and t
 
 </td><td>
 
-string \| undefined
+[SameSiteLevel](./tough-cookie.samesitelevel.md) \| undefined
 
 
 </td><td>

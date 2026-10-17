@@ -418,6 +418,17 @@ The inverse of NonNullable<T>.
 </td></tr>
 <tr><td>
 
+[SameSiteLevel](./tough-cookie.samesitelevel.md)
+
+
+</td><td>
+
+The normalized values of the SameSite cookie attribute and request context.
+
+
+</td></tr>
+<tr><td>
+
 [SerializedCookie](./tough-cookie.serializedcookie.md)
 
 
