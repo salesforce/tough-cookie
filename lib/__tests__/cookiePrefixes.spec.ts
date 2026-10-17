@@ -1,5 +1,8 @@
-import { beforeEach, describe, expect, it } from 'vitest'
-import { PrefixSecurityEnum } from '../cookie/constants.js'
+import { beforeEach, describe, expect, expectTypeOf, it } from 'vitest'
+import {
+  PrefixSecurityEnum,
+  type PrefixSecurityMode,
+} from '../cookie/constants.js'
 import { CookieJar } from '../cookie/cookieJar.js'
 
 let cookieJar: CookieJar
@@ -224,6 +227,39 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
           }),
         ])
       })
+    })
+  })
+
+  describe('PrefixSecurityMode type and configuration', () => {
+    it('types CookieJar.prefixSecurity as PrefixSecurityMode', () => {
+      const jar = new CookieJar()
+      expect(jar.prefixSecurity).toBe('silent')
+      expectTypeOf(jar.prefixSecurity).toEqualTypeOf<PrefixSecurityMode>()
+      expectTypeOf<PrefixSecurityMode>().toEqualTypeOf<
+        'silent' | 'strict' | 'unsafe-disabled'
+      >()
+    })
+
+    it('defaults to silent mode when option is omitted', () => {
+      const jar = new CookieJar()
+      expect(jar.prefixSecurity).toBe('silent')
+    })
+
+    it('normalizes valid PrefixSecurityMode options case-insensitively', () => {
+      const strictJar = new CookieJar(null, { prefixSecurity: 'strict' })
+      expect(strictJar.prefixSecurity).toBe('strict')
+
+      const disabledJar = new CookieJar(null, {
+        prefixSecurity: 'unsafe-disabled',
+      })
+      expect(disabledJar.prefixSecurity).toBe('unsafe-disabled')
+    })
+
+    it('falls back to silent mode for unrecognized string values', () => {
+      const jar = new CookieJar(null, {
+        prefixSecurity: 'unknown-mode' as unknown as PrefixSecurityMode,
+      })
+      expect(jar.prefixSecurity).toBe('silent')
     })
   })
 })

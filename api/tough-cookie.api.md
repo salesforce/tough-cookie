@@ -105,7 +105,7 @@ export class CookieJar {
     _importCookies(serialized: unknown, callback: Callback<CookieJar>): void;
     // @internal (undocumented)
     _importCookiesSync(serialized: unknown): void;
-    readonly prefixSecurity: string;
+    readonly prefixSecurity: PrefixSecurityMode;
     removeAllCookies(callback: ErrorCallback): void;
     removeAllCookies(): Promise<void>;
     removeAllCookiesSync(): void;
@@ -127,7 +127,7 @@ export interface CreateCookieJarOptions {
     allowSecureOnLocal?: boolean | undefined;
     allowSpecialUseDomain?: boolean | undefined;
     looseMode?: boolean | undefined;
-    prefixSecurity?: 'strict' | 'silent' | 'unsafe-disabled' | undefined;
+    prefixSecurity?: PrefixSecurityMode | undefined;
     rejectPublicSuffixes?: boolean | undefined;
 }
 
@@ -251,6 +251,9 @@ export const PrefixSecurityEnum: {
     readonly STRICT: "strict";
     readonly DISABLED: "unsafe-disabled";
 };
+
+// @public
+export type PrefixSecurityMode = (typeof PrefixSecurityEnum)[keyof typeof PrefixSecurityEnum];
 
 // @public
 export type SerializedCookie = {

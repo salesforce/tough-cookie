@@ -12,6 +12,7 @@ export { type Callback, type ErrorCallback, type Nullable } from '../utils.js'
 export { canonicalDomain } from './canonicalDomain.js'
 export {
   PrefixSecurityEnum,
+  type PrefixSecurityMode,
   type SerializedCookie,
   type SerializedCookieJar,
 } from './constants.js'
