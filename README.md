@@ -181,6 +181,23 @@ Secure cookies set on an untrustworthy origin are rejected, including
 unprefixed cookies. `ignoreError: true` silently discards them; it does not
 store them. This origin check applies independently of `prefixSecurity`.
 
+To restore the previous behavior of storing Secure cookies regardless of the
+origin they were set from, the `CookieJar` must be configured with:
+
+```typescript
+import { CookieJar, MemoryCookieStore } from 'tough-cookie'
+
+const cookieJar = new CookieJar(new MemoryCookieStore(), {
+  enforceSecureOrigin: false,
+})
+
+// this cookie will be persisted to storage
+await cookieJar.setCookie('SID=12345; Secure;', 'http://example.com')
+
+// but, on retrieval, it will only be returned for secure origins
+const cookies = await cookieJar.getCookies('https://example.com')
+```
+
 ## Node.js Version Support
 
 We follow the [Node.js release schedule](https://github.com/nodejs/Release#release-schedule) and support

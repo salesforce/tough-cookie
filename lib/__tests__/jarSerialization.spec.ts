@@ -174,6 +174,29 @@ describe('cookieJar serialization', () => {
       expect(clonedJar.store).toEqual(jar.store)
     })
 
+    it('should preserve enforceSecureOrigin when cloned', async () => {
+      const insecureJar = new CookieJar(null, { enforceSecureOrigin: false })
+
+      const clonedJar = await insecureJar.clone()
+      await clonedJar.setCookie('secure=foo; Secure', 'http://example.com/')
+      const cookies = await clonedJar.getCookies('https://example.com/')
+      expect(cookies.map((c) => c.key)).toContain('secure')
+    })
+
+    it('should preserve enforceSecureOrigin through serialization', () => {
+      const insecureJar = new CookieJar(null, { enforceSecureOrigin: false })
+
+      const serializedJar = insecureJar.serializeSync()
+      expect(serializedJar?.enforceSecureOrigin).toBe(false)
+
+      const deserializedJar = CookieJar.deserializeSync(
+        JSON.stringify(serializedJar),
+      )
+      deserializedJar.setCookieSync('secure=foo; Secure', 'http://example.com/')
+      const cookies = deserializedJar.getCookiesSync('https://example.com/')
+      expect(cookies.map((c) => c.key)).toContain('secure')
+    })
+
     it('should raise an error when attempting to synchronously clone to an async store', () => {
       const newStore = new MemoryCookieStore()
       newStore.synchronous = false

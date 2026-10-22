@@ -136,6 +136,44 @@ describe('Secure-cookie setting origin', () => {
     expect(await jar.getCookieString('http://example.com/')).toBe('SID=12345')
   })
 
+  describe('enforceSecureOrigin: false', () => {
+    for (const prefixSecurity of [
+      'silent',
+      'strict',
+      'unsafe-disabled',
+    ] as const) {
+      it.each(cookies)(
+        `stores %s over remote HTTP with prefixSecurity: ${prefixSecurity}`,
+        async (cookie) => {
+          const jar = new CookieJar(null, {
+            prefixSecurity,
+            enforceSecureOrigin: false,
+          })
+          const stored = await jar.setCookie(cookie, 'http://example.com/')
+          expect(await jar.getCookies('https://example.com/')).toEqual([stored])
+        },
+      )
+    }
+
+    it('still withholds Secure cookies on insecure retrieval', async () => {
+      const jar = new CookieJar(null, { enforceSecureOrigin: false })
+      await jar.setCookie('SID=12345; Secure', 'http://example.com/')
+      expect(await jar.getCookies('http://example.com/')).toEqual([])
+    })
+
+    it('still applies prefix checks', async () => {
+      const jar = new CookieJar(null, {
+        prefixSecurity: 'strict',
+        enforceSecureOrigin: false,
+      })
+      await expect(
+        jar.setCookie('__Secure-SID=12345', 'http://example.com/'),
+      ).rejects.toThrow(
+        'Cookie has __Secure prefix but Secure attribute is not set',
+      )
+    })
+  })
+
   it('does not carry a remote HTTP-set Secure cookie into WSS', async () => {
     const jar = new CookieJar()
     await jar.setCookie('SID=12345; Secure', 'http://example.com/', {

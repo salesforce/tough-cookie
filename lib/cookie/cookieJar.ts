@@ -199,6 +199,21 @@ export interface CreateCookieJarOptions {
    *  algorithm is followed to determine if a URL is considered a secure context.
    */
   allowSecureOnLocal?: boolean | undefined
+  /**
+   * Flag to indicate if `Secure` cookies set from an unsecure origin should be rejected.
+   *
+   * If `true`, a cookie with the `Secure` attribute is only stored when it is set from a secure context
+   * (see {@link CreateCookieJarOptions.allowSecureOnLocal}). This applies to all `Secure` cookies, not just
+   * those with a `__Secure-` or `__Host-` prefix, and is independent of {@link CreateCookieJarOptions.prefixSecurity}.
+   *
+   * If `false`, `Secure` cookies are stored regardless of the origin they were set from.
+   *
+   * Defaults to `true` if not specified.
+   *
+   * @remarks
+   * See {@link https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-22#section-5.7-3.13.1 | RFC6265bis draft -22, Section 5.7 step 13}.
+   */
+  enforceSecureOrigin?: boolean | undefined
 }
 
 const SAME_SITE_CONTEXT_VAL_ERR =
@@ -330,6 +345,7 @@ export class CookieJar {
   private readonly enableLooseMode: boolean
   private readonly allowSpecialUseDomain: boolean
   private readonly allowSecureOnLocal: boolean
+  private readonly enforceSecureOrigin: boolean
 
   /**
    * The configured {@link Store} for the {@link CookieJar}.
@@ -363,6 +379,7 @@ export class CookieJar {
     this.enableLooseMode = options?.looseMode ?? false
     this.allowSpecialUseDomain = options?.allowSpecialUseDomain ?? true
     this.allowSecureOnLocal = options?.allowSecureOnLocal ?? true
+    this.enforceSecureOrigin = options?.enforceSecureOrigin ?? true
     this.prefixSecurity = getNormalizedPrefixSecurity(
       options?.prefixSecurity ?? 'silent',
     )
@@ -640,6 +657,7 @@ export class CookieJar {
     // tough-cookie uses the "potentially trustworthy" URL algorithm for that purpose
     // (see secureContext.ts).
     if (
+      this.enforceSecureOrigin &&
       cookie.secure &&
       !isPotentiallyTrustworthy(url, this.allowSecureOnLocal)
     ) {
@@ -1268,6 +1286,7 @@ export class CookieJar {
       rejectPublicSuffixes: this.rejectPublicSuffixes,
       enableLooseMode: this.enableLooseMode,
       allowSpecialUseDomain: this.allowSpecialUseDomain,
+      enforceSecureOrigin: this.enforceSecureOrigin,
       prefixSecurity: getNormalizedPrefixSecurity(this.prefixSecurity),
 
       // this gets filled from getAllCookies:
@@ -1725,6 +1744,7 @@ export class CookieJar {
       rejectPublicSuffixes: readSerializedBoolean('rejectPublicSuffixes'),
       looseMode: readSerializedBoolean('enableLooseMode'),
       allowSpecialUseDomain: readSerializedBoolean('allowSpecialUseDomain'),
+      enforceSecureOrigin: readSerializedBoolean('enforceSecureOrigin'),
       prefixSecurity: getNormalizedPrefixSecurity(
         readSerializedString('prefixSecurity') ?? 'silent',
       ),
@@ -1785,6 +1805,7 @@ export class CookieJar {
       rejectPublicSuffixes: readSerializedBoolean('rejectPublicSuffixes'),
       looseMode: readSerializedBoolean('enableLooseMode'),
       allowSpecialUseDomain: readSerializedBoolean('allowSpecialUseDomain'),
+      enforceSecureOrigin: readSerializedBoolean('enforceSecureOrigin'),
       prefixSecurity: getNormalizedPrefixSecurity(
         readSerializedString('prefixSecurity') ?? 'silent',
       ),
