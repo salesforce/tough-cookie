@@ -136,7 +136,7 @@ describe('Secure-cookie setting origin', () => {
     expect(await jar.getCookieString('http://example.com/')).toBe('SID=12345')
   })
 
-  describe('enforceSecureOrigin: false', () => {
+  describe('enforceSecureOriginOnStorage: false', () => {
     for (const prefixSecurity of [
       'silent',
       'strict',
@@ -147,7 +147,7 @@ describe('Secure-cookie setting origin', () => {
         async (cookie) => {
           const jar = new CookieJar(null, {
             prefixSecurity,
-            enforceSecureOrigin: false,
+            enforceSecureOriginOnStorage: false,
           })
           const stored = await jar.setCookie(cookie, 'http://example.com/')
           expect(await jar.getCookies('https://example.com/')).toEqual([stored])
@@ -156,7 +156,7 @@ describe('Secure-cookie setting origin', () => {
     }
 
     it('still withholds Secure cookies on insecure retrieval', async () => {
-      const jar = new CookieJar(null, { enforceSecureOrigin: false })
+      const jar = new CookieJar(null, { enforceSecureOriginOnStorage: false })
       await jar.setCookie('SID=12345; Secure', 'http://example.com/')
       expect(await jar.getCookies('http://example.com/')).toEqual([])
     })
@@ -164,7 +164,7 @@ describe('Secure-cookie setting origin', () => {
     it('still applies prefix checks', async () => {
       const jar = new CookieJar(null, {
         prefixSecurity: 'strict',
-        enforceSecureOrigin: false,
+        enforceSecureOriginOnStorage: false,
       })
       await expect(
         jar.setCookie('__Secure-SID=12345', 'http://example.com/'),

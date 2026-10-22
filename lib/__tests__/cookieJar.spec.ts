@@ -1053,7 +1053,7 @@ describe('CookieJar', () => {
             },
           ],
           enableLooseMode: false,
-          enforceSecureOrigin: true,
+          enforceSecureOriginOnStorage: true,
           prefixSecurity: 'silent',
           rejectPublicSuffixes: true,
           storeType: 'MemoryCookieStore',

@@ -182,13 +182,15 @@ unprefixed cookies. `ignoreError: true` silently discards them; it does not
 store them. This origin check applies independently of `prefixSecurity`.
 
 To restore the previous behavior of storing Secure cookies regardless of the
-origin they were set from, the `CookieJar` must be configured with:
+origin they were set from, the `CookieJar` must be configured with the following.
+This only affects storage; Secure cookies are still only returned for secure
+origins on retrieval.
 
 ```typescript
 import { CookieJar, MemoryCookieStore } from 'tough-cookie'
 
 const cookieJar = new CookieJar(new MemoryCookieStore(), {
-  enforceSecureOrigin: false,
+  enforceSecureOriginOnStorage: false,
 })
 
 // this cookie will be persisted to storage

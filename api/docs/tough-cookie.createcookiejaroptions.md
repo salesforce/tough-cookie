@@ -81,7 +81,7 @@ Defaults to `true` if not specified.
 </td></tr>
 <tr><td>
 
-[enforceSecureOrigin?](./tough-cookie.createcookiejaroptions.enforcesecureorigin.md)
+[enforceSecureOriginOnStorage?](./tough-cookie.createcookiejaroptions.enforcesecureoriginonstorage.md)
 
 
 </td><td>
@@ -99,6 +99,8 @@ _(Optional)_ Flag to indicate if `Secure` cookies set from an unsecure origin sh
 If `true`<!-- -->, a cookie with the `Secure` attribute is only stored when it is set from a secure context (see [CreateCookieJarOptions.allowSecureOnLocal](./tough-cookie.createcookiejaroptions.allowsecureonlocal.md)<!-- -->). This applies to all `Secure` cookies, not just those with a `__Secure-` or `__Host-` prefix, and is independent of [CreateCookieJarOptions.prefixSecurity](./tough-cookie.createcookiejaroptions.prefixsecurity.md)<!-- -->.
 
 If `false`<!-- -->, `Secure` cookies are stored regardless of the origin they were set from.
+
+This only affects storage. On retrieval, `Secure` cookies are only returned for secure contexts regardless of this setting.
 
 Defaults to `true` if not specified.
 

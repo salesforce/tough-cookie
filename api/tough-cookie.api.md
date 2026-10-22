@@ -126,7 +126,7 @@ export class CookieJar {
 export interface CreateCookieJarOptions {
     allowSecureOnLocal?: boolean | undefined;
     allowSpecialUseDomain?: boolean | undefined;
-    enforceSecureOrigin?: boolean | undefined;
+    enforceSecureOriginOnStorage?: boolean | undefined;
     looseMode?: boolean | undefined;
     prefixSecurity?: PrefixSecurityMode | undefined;
     rejectPublicSuffixes?: boolean | undefined;

@@ -174,8 +174,10 @@ describe('cookieJar serialization', () => {
       expect(clonedJar.store).toEqual(jar.store)
     })
 
-    it('should preserve enforceSecureOrigin when cloned', async () => {
-      const insecureJar = new CookieJar(null, { enforceSecureOrigin: false })
+    it('should preserve enforceSecureOriginOnStorage when cloned', async () => {
+      const insecureJar = new CookieJar(null, {
+        enforceSecureOriginOnStorage: false,
+      })
 
       const clonedJar = await insecureJar.clone()
       await clonedJar.setCookie('secure=foo; Secure', 'http://example.com/')
@@ -183,11 +185,13 @@ describe('cookieJar serialization', () => {
       expect(cookies.map((c) => c.key)).toContain('secure')
     })
 
-    it('should preserve enforceSecureOrigin through serialization', () => {
-      const insecureJar = new CookieJar(null, { enforceSecureOrigin: false })
+    it('should preserve enforceSecureOriginOnStorage through serialization', () => {
+      const insecureJar = new CookieJar(null, {
+        enforceSecureOriginOnStorage: false,
+      })
 
       const serializedJar = insecureJar.serializeSync()
-      expect(serializedJar?.enforceSecureOrigin).toBe(false)
+      expect(serializedJar?.enforceSecureOriginOnStorage).toBe(false)
 
       const deserializedJar = CookieJar.deserializeSync(
         JSON.stringify(serializedJar),
@@ -197,11 +201,11 @@ describe('cookieJar serialization', () => {
       expect(cookies.map((c) => c.key)).toContain('secure')
     })
 
-    it('should default enforceSecureOrigin to true when missing from a serialized jar', () => {
+    it('should default enforceSecureOriginOnStorage to true when missing from a serialized jar', () => {
       const serializedJar = new CookieJar(null, {
-        enforceSecureOrigin: false,
+        enforceSecureOriginOnStorage: false,
       }).serializeSync()
-      delete serializedJar?.enforceSecureOrigin
+      delete serializedJar?.enforceSecureOriginOnStorage
 
       const deserializedJar = CookieJar.deserializeSync(
         JSON.stringify(serializedJar),
