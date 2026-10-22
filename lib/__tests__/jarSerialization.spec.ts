@@ -197,6 +197,23 @@ describe('cookieJar serialization', () => {
       expect(cookies.map((c) => c.key)).toContain('secure')
     })
 
+    it('should default enforceSecureOrigin to true when missing from a serialized jar', () => {
+      const serializedJar = new CookieJar(null, {
+        enforceSecureOrigin: false,
+      }).serializeSync()
+      delete serializedJar?.enforceSecureOrigin
+
+      const deserializedJar = CookieJar.deserializeSync(
+        JSON.stringify(serializedJar),
+      )
+      expect(() =>
+        deserializedJar.setCookieSync(
+          'secure=foo; Secure',
+          'http://example.com/',
+        ),
+      ).toThrow('Cookie is Secure but this is not a secure connection')
+    })
+
     it('should raise an error when attempting to synchronously clone to an async store', () => {
       const newStore = new MemoryCookieStore()
       newStore.synchronous = false
