@@ -398,9 +398,11 @@ export class CookieJar {
     }
     let syncErr: Error | null = null
     let syncResult: T | undefined
+    let called = false
 
     try {
       fn.call(this, (error: Error | null, result?: T) => {
+        called = true
         syncErr = error
         syncResult = result
       })
@@ -409,9 +411,14 @@ export class CookieJar {
     }
 
     if (syncErr) throw syncErr
-
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return syncResult!
+    // false positive
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (!called) {
+      throw new Error(
+        'Store is marked synchronous but did not invoke its callback synchronously',
+      )
+    }
+    return syncResult as T
   }
 
   /**
