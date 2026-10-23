@@ -339,7 +339,8 @@ export class CookieJar {
   /**
    * The configured {@link PrefixSecurityMode} value for the {@link CookieJar}.
    */
-  readonly prefixSecurity: PrefixSecurityMode
+  // `string` instead of the union type for backwards compatibility (can be removed in a major)
+  readonly prefixSecurity: string
 
   /**
    * Creates a new `CookieJar` instance.
