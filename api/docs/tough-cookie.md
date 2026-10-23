@@ -418,6 +418,19 @@ The inverse of NonNullable<T>.
 </td></tr>
 <tr><td>
 
+[PrefixSecurityMode](./tough-cookie.prefixsecuritymode.md)
+
+
+</td><td>
+
+Prefix security enforcement mode for a CookieJar per RFC 6265bis.
+
+- `'silent'` - Enable cookie prefix checking but silently ignores the cookie if conditions are not met. Default. - `'strict'` - Enables cookie prefix checking and will raise an error if conditions are not met. - `'unsafe-disabled'` - Disables cookie prefix checking.
+
+
+</td></tr>
+<tr><td>
+
 [SerializedCookie](./tough-cookie.serializedcookie.md)
 
 

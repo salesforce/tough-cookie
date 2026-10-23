@@ -83,12 +83,12 @@ Description
 
 </td><td>
 
-string
+[PrefixSecurityMode](./tough-cookie.prefixsecuritymode.md)
 
 
 </td><td>
 
-The configured [PrefixSecurityEnum](./tough-cookie.prefixsecurityenum.md) value for the [CookieJar](./tough-cookie.cookiejar.md)<!-- -->.
+The configured [PrefixSecurityMode](./tough-cookie.prefixsecuritymode.md) value for the [CookieJar](./tough-cookie.cookiejar.md)<!-- -->.
 
 
 </td></tr>

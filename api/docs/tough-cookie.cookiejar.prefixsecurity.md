@@ -4,10 +4,10 @@
 
 ## CookieJar.prefixSecurity property
 
-The configured [PrefixSecurityEnum](./tough-cookie.prefixsecurityenum.md) value for the [CookieJar](./tough-cookie.cookiejar.md)<!-- -->.
+The configured [PrefixSecurityMode](./tough-cookie.prefixsecuritymode.md) value for the [CookieJar](./tough-cookie.cookiejar.md)<!-- -->.
 
 **Signature:**
 
 ```typescript
-readonly prefixSecurity: string;
+readonly prefixSecurity: PrefixSecurityMode;
 ```
