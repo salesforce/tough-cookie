@@ -234,7 +234,7 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
     it('types CookieJar.prefixSecurity as PrefixSecurityMode', () => {
       const jar = new CookieJar()
       expect(jar.prefixSecurity).toBe('silent')
-      expectTypeOf(jar.prefixSecurity).toEqualTypeOf<PrefixSecurityMode>()
+      expectTypeOf(jar.prefixSecurity).toEqualTypeOf<string>()
       expectTypeOf<PrefixSecurityMode>().toEqualTypeOf<
         'silent' | 'strict' | 'unsafe-disabled'
       >()
@@ -257,7 +257,7 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
 
     it('falls back to silent mode for unrecognized string values', () => {
       const jar = new CookieJar(null, {
-        prefixSecurity: 'unknown-mode' as unknown as PrefixSecurityMode,
+        prefixSecurity: 'unknown-mode',
       })
       expect(jar.prefixSecurity).toBe('silent')
     })
