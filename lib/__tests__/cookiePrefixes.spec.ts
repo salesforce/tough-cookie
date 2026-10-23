@@ -257,7 +257,7 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
 
     it('falls back to silent mode for unrecognized string values', () => {
       const jar = new CookieJar(null, {
-        prefixSecurity: 'unknown-mode',
+        prefixSecurity: 'unknown-mode' as PrefixSecurityMode,
       })
       expect(jar.prefixSecurity).toBe('silent')
     })
