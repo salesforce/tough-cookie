@@ -83,7 +83,7 @@ Description
 
 </td><td>
 
-[PrefixSecurityMode](./tough-cookie.prefixsecuritymode.md)
+string
 
 
 </td><td>

@@ -9,5 +9,5 @@ The configured [PrefixSecurityMode](./tough-cookie.prefixsecuritymode.md) value 
 **Signature:**
 
 ```typescript
-readonly prefixSecurity: PrefixSecurityMode;
+readonly prefixSecurity: string;
 ```

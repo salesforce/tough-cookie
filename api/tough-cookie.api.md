@@ -105,7 +105,7 @@ export class CookieJar {
     _importCookies(serialized: unknown, callback: Callback<CookieJar>): void;
     // @internal (undocumented)
     _importCookiesSync(serialized: unknown): void;
-    readonly prefixSecurity: PrefixSecurityMode;
+    readonly prefixSecurity: string;
     removeAllCookies(callback: ErrorCallback): void;
     removeAllCookies(): Promise<void>;
     removeAllCookiesSync(): void;
