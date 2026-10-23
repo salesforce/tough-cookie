@@ -9,5 +9,5 @@ The 'SameSite' attribute of a cookie as defined in RFC6265bis (See [RFC6265bis (
 **Signature:**
 
 ```typescript
-sameSite?: string | undefined;
+sameSite?: SameSiteLevel | undefined;
 ```

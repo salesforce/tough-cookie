@@ -19,7 +19,7 @@ Defaults to `undefined` if not provided.
 **Signature:**
 
 ```typescript
-sameSiteContext?: 'none' | 'lax' | 'strict' | undefined;
+sameSiteContext?: SameSiteLevel | undefined;
 ```
 
 ## Remarks

@@ -129,7 +129,7 @@ Defaults to `Date.now()` if not provided.
 
 </td><td>
 
-'strict' \| 'lax' \| 'none' \| undefined
+[SameSiteLevel](./tough-cookie.samesitelevel.md) \| undefined
 
 
 </td><td>
