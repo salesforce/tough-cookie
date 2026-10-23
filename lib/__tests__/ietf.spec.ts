@@ -60,11 +60,9 @@ describe('IETF http state tests', () => {
       expect(actual.length).toBe(expected.length)
       actual.forEach((actualCookie, idx) => {
         const expectedCookie = expected[idx]
-        if (!expectedCookie) {
-          throw new Error('This should not be undefined')
-        }
-        expect(actualCookie.key).toBe(expectedCookie.name)
-        expect(actualCookie.value).toBe(expectedCookie.value)
+        expect(expectedCookie).toBeDefined()
+        expect(actualCookie.key).toBe(expectedCookie?.name)
+        expect(actualCookie.value).toBe(expectedCookie?.value)
       })
     })
   })
