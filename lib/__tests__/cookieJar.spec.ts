@@ -1039,6 +1039,7 @@ describe('CookieJar', () => {
       },
       () => {
         const expected: SerializedCookieJar = {
+          allowSecureOnLocal: true,
           allowSpecialUseDomain: true,
           cookies: [
             {

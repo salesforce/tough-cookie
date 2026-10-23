@@ -1249,6 +1249,7 @@ export class CookieJar {
       rejectPublicSuffixes: this.rejectPublicSuffixes,
       enableLooseMode: this.enableLooseMode,
       allowSpecialUseDomain: this.allowSpecialUseDomain,
+      allowSecureOnLocal: this.allowSecureOnLocal,
       prefixSecurity: getNormalizedPrefixSecurity(this.prefixSecurity),
 
       // this gets filled from getAllCookies:
@@ -1706,6 +1707,7 @@ export class CookieJar {
       rejectPublicSuffixes: readSerializedBoolean('rejectPublicSuffixes'),
       looseMode: readSerializedBoolean('enableLooseMode'),
       allowSpecialUseDomain: readSerializedBoolean('allowSpecialUseDomain'),
+      allowSecureOnLocal: readSerializedBoolean('allowSecureOnLocal'),
       prefixSecurity: getNormalizedPrefixSecurity(
         readSerializedString('prefixSecurity') ?? 'silent',
       ),
@@ -1766,6 +1768,7 @@ export class CookieJar {
       rejectPublicSuffixes: readSerializedBoolean('rejectPublicSuffixes'),
       looseMode: readSerializedBoolean('enableLooseMode'),
       allowSpecialUseDomain: readSerializedBoolean('allowSpecialUseDomain'),
+      allowSecureOnLocal: readSerializedBoolean('allowSecureOnLocal'),
       prefixSecurity: getNormalizedPrefixSecurity(
         readSerializedString('prefixSecurity') ?? 'silent',
       ),
