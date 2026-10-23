@@ -11,7 +11,7 @@ Produces a deep clone of this CookieJar. Modifications to the original do not af
 **Signature:**
 
 ```typescript
-cloneSync(newStore?: Store): CookieJar | undefined;
+cloneSync(newStore?: Store): CookieJar;
 ```
 
 ## Parameters
@@ -52,7 +52,7 @@ _(Optional)_ The target [Store](./tough-cookie.store.md) to clone cookies into.
 
 **Returns:**
 
-[CookieJar](./tough-cookie.cookiejar.md) \| undefined
+[CookieJar](./tough-cookie.cookiejar.md)
 
 ## Remarks
 

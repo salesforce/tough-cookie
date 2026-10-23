@@ -368,19 +368,19 @@ export class CookieJar {
     this.store = store ?? new MemoryCookieStore()
   }
 
-  private callSync<T>(
-    fn: (this: CookieJar, callback: Callback<T>) => void,
-  ): T | undefined {
+  private callSync<T>(fn: (this: CookieJar, callback: Callback<T>) => void): T {
     if (!this.store.synchronous) {
       throw new Error(
         'CookieJar store is not synchronous; use async API instead.',
       )
     }
     let syncErr: Error | null = null
-    let syncResult: T | undefined = undefined
+    let syncResult: T | undefined
+    let called = false
 
     try {
       fn.call(this, (error: Error | null, result?: T) => {
+        called = true
         syncErr = error
         syncResult = result
       })
@@ -389,8 +389,14 @@ export class CookieJar {
     }
 
     if (syncErr) throw syncErr
-
-    return syncResult
+    // false positive
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (!called) {
+      throw new Error(
+        'Store is marked synchronous but did not invoke its callback synchronously',
+      )
+    }
+    return syncResult as T
   }
 
   /**
@@ -1024,7 +1030,7 @@ export class CookieJar {
    * @param options - Configuration settings to use when retrieving the cookies.
    */
   getCookiesSync(url: string | URL, options?: GetCookiesOptions): Cookie[] {
-    return this.callSync(this.getCookies.bind(this, url, options)) ?? []
+    return this.callSync(this.getCookies.bind(this, url, options))
   }
 
   /**
@@ -1294,7 +1300,7 @@ export class CookieJar {
    *
    * <strong>Note</strong>: Only works if the configured Store is also synchronous.
    */
-  serializeSync(): SerializedCookieJar | undefined {
+  serializeSync(): SerializedCookieJar {
     return this.callSync((callback) => {
       this.serialize(callback)
     })
@@ -1304,7 +1310,7 @@ export class CookieJar {
    * Alias of {@link CookieJar.serializeSync}. Allows the cookie to be serialized
    * with `JSON.stringify(cookieJar)`.
    */
-  toJSON(): SerializedCookieJar | undefined {
+  toJSON(): SerializedCookieJar {
     return this.serializeSync()
   }
 
@@ -1312,7 +1318,7 @@ export class CookieJar {
    * Use the class method CookieJar.deserialize instead of calling this directly
    * @internal
    */
-  _importCookies(serialized: unknown, callback: Callback<CookieJar>): void {
+  async _importCookies(serialized: unknown): Promise<void> {
     let cookies: unknown[] | undefined = undefined
 
     if (
@@ -1325,49 +1331,48 @@ export class CookieJar {
     }
 
     if (!cookies) {
-      callback(new Error('serialized jar has no cookies array'), undefined)
-      return
+      throw new Error('serialized jar has no cookies array')
     }
 
-    cookies = cookies.slice() // do not modify the original
-
-    const putNext: ErrorCallback = (err) => {
-      if (err) {
-        callback(err, undefined)
-        return
-      }
-
-      if (Array.isArray(cookies)) {
-        if (!cookies.length) {
-          callback(err, this)
-          return
-        }
-
-        let cookie
-        try {
-          cookie = Cookie.fromJSON(cookies.shift())
-        } catch (e) {
-          callback(e instanceof Error ? e : new Error(), undefined)
-          return
-        }
-
-        if (cookie === undefined) {
-          putNext(null) // skip this cookie
-          return
-        }
-
-        this.store.putCookie(cookie, putNext)
+    for (const json of cookies) {
+      const cookie = Cookie.fromJSON(json)
+      if (cookie) {
+        const promiseCallback = createPromiseCallback<never>()
+        this.store.putCookie(cookie, promiseCallback.callback)
+        await promiseCallback.promise
       }
     }
-
-    putNext(null)
   }
 
   /**
+   *
    * @internal
    */
   _importCookiesSync(serialized: unknown): void {
-    this.callSync(this._importCookies.bind(this, serialized))
+    let cookies: unknown[] | undefined = undefined
+
+    if (
+      serialized &&
+      typeof serialized === 'object' &&
+      inOperator('cookies', serialized) &&
+      Array.isArray(serialized.cookies)
+    ) {
+      cookies = serialized.cookies
+    }
+
+    if (!cookies) {
+      throw new Error('serialized jar has no cookies array')
+    }
+
+    for (const json of cookies) {
+      const cookie = Cookie.fromJSON(json)
+      if (cookie) {
+        // `this.store` is validated as synchronous before calling this method,
+        // so we know there's no need to wait for the promise
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this.store.putCookie(cookie)
+      }
+    }
   }
 
   /**
@@ -1437,15 +1442,11 @@ export class CookieJar {
 
   /**
    * @internal
+   * @deprecated no longer used; implementation moved fully into `cloneSync`
    */
-  _cloneSync(newStore?: Store): CookieJar | undefined {
-    const cloneFn =
-      newStore && typeof newStore !== 'function'
-        ? this.clone.bind(this, newStore)
-        : this.clone.bind(this)
-    return this.callSync((callback) => {
-      cloneFn(callback)
-    })
+  _cloneSync(newStore?: Store): CookieJar {
+    const serialized = this.serializeSync()
+    return CookieJar.deserializeSync(serialized, newStore)
   }
 
   /**
@@ -1463,16 +1464,17 @@ export class CookieJar {
    *
    * @param newStore - The target {@link Store} to clone cookies into.
    */
-  cloneSync(newStore?: Store): CookieJar | undefined {
-    if (!newStore) {
-      return this._cloneSync()
-    }
-    if (!newStore.synchronous) {
+  cloneSync(newStore?: Store): CookieJar {
+    if (newStore && !newStore.synchronous) {
       throw new Error(
         'CookieJar clone destination store is not synchronous; use async API instead.',
       )
     }
-    return this._cloneSync(newStore)
+
+    const serialized = this.serializeSync()
+    return newStore
+      ? CookieJar.deserializeSync(serialized, newStore)
+      : CookieJar.deserializeSync(serialized)
   }
 
   /**
@@ -1656,6 +1658,10 @@ export class CookieJar {
     strOrObj: string | object,
     store?: Store | Callback<CookieJar>,
     callback?: Callback<CookieJar>,
+    // we technically always return a promise, but it should be ignored if a callback is provided
+    // `void` isn't supposed to be used in unions, so instead we use `unknown`.
+    // This signature is separate from the implementation so that the end user sees `unknown`,
+    // while the implementation can return `Promise<CookieJar>` and be type checked correctly.
   ): unknown
   /**
    * @internal No doc because this is the overload implementation
@@ -1664,7 +1670,7 @@ export class CookieJar {
     strOrObj: string | object,
     store?: Store | Callback<CookieJar>,
     callback?: Callback<CookieJar>,
-  ): unknown {
+  ): Promise<CookieJar> {
     if (typeof store === 'function') {
       callback = store
       store = undefined
@@ -1710,13 +1716,14 @@ export class CookieJar {
       ),
     })
 
-    jar._importCookies(serialized, (err) => {
-      if (err) {
-        promiseCallback.callback(err)
-        return
-      }
-      promiseCallback.callback(null, jar)
-    })
+    jar._importCookies(serialized).then(
+      () => {
+        promiseCallback.callback(null, jar)
+      },
+      (err: unknown) => {
+        promiseCallback.callback(err as Error)
+      },
+    )
 
     return promiseCallback.promise
   }
