@@ -35,6 +35,7 @@ import { inOperator } from '../utils.js'
 import { formatDate } from './formatDate.js'
 import { CookieName } from './cookieName.js'
 import { parseDate } from './parseDate.js'
+import { MaxAgeSeconds } from './maxAgeSeconds.js'
 import { canonicalDomain } from './canonicalDomain.js'
 import {
   IP_V4_REGEX_OBJECT,
@@ -836,7 +837,12 @@ export class Cookie {
     // expiration date of the cookie.
     // (Concurs with S5.3 step 3)
     if (this.maxAge != null && typeof this.maxAge === 'number') {
-      return this.maxAge <= 0 ? 0 : this.maxAge * 1000
+      const maxAge = MaxAgeSeconds.parse(this.maxAge)
+      if (maxAge !== undefined) {
+        return maxAge <= 0 ? 0 : MaxAgeSeconds.toMilliseconds(maxAge)
+      }
+      // Preserve numeric Infinity, -Infinity and NaN from public properties.
+      return this.maxAge <= 0 ? 0 : this.maxAge
     }
 
     const expires = this.expires
@@ -865,7 +871,13 @@ export class Cookie {
       }
       const relativeTo = now || this.lastAccessed || new Date()
       const maxAge = typeof this.maxAge === 'number' ? this.maxAge : -Infinity
-      const age = maxAge <= 0 ? -Infinity : maxAge * 1000
+      const seconds = MaxAgeSeconds.parse(maxAge)
+      const age =
+        maxAge <= 0
+          ? -Infinity
+          : seconds !== undefined
+            ? MaxAgeSeconds.toMilliseconds(seconds)
+            : maxAge
       if (relativeTo === 'Infinity') {
         return Infinity
       }
