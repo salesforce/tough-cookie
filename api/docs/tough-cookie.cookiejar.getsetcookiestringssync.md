@@ -11,7 +11,7 @@ Synchronous version of `.getSetCookieStrings()`<!-- -->. Returns an array of str
 **Signature:**
 
 ```typescript
-getSetCookieStringsSync(url: string, options?: GetCookiesOptions): string[];
+getSetCookieStringsSync(url: string | URL, options?: GetCookiesOptions): string[];
 ```
 
 ## Parameters
@@ -39,7 +39,7 @@ url
 
 </td><td>
 
-string
+string \| URL
 
 
 </td><td>

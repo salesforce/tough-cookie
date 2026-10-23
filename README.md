@@ -24,16 +24,20 @@ import { Cookie, CookieJar } from 'tough-cookie'
 // parse a `Cookie` request header
 const reqCookies = 'ID=298zf09hf012fh2; csrf=u32t4o3tb3gg43; _gat=1'
   .split(';')
-  .map(Cookie.parse)
+  .map((str) => Cookie.parse(str))
+  .filter((cookie) => cookie !== undefined)
 // generate a `Cookie` request header
-const cookieHeader = reqCookies.map((cookie) => cookie.cookieString()).join(';')
+const cookieHeader = reqCookies
+  .map((cookie) => cookie.cookieString())
+  .join('; ')
 
 // parse a Set-Cookie response header
 const resCookie = Cookie.parse(
-  'foo=bar; Domain=example.com; Path=/; Expires=Tue, 21 Oct 2025 00:00:00 GMT',
+  'foo=bar; Domain=example.com; Path=/; Max-Age=3600',
 )
+if (!resCookie) throw new Error('invalid Set-Cookie header')
 // generate a Set-Cookie response header
-const setCookieHeader = cookie.toString()
+const setCookieHeader = resCookie.toString()
 
 // store and retrieve cookies
 const cookieJar = new CookieJar() // uses the in-memory store by default
@@ -46,7 +50,7 @@ const matchingCookies = await cookieJar.getCookies('https://example.com/')
 
 ## RFC6265bis
 
-Support for [RFC6265bis][rfc6265bis-tracker] is being developed. As these revisions to [RFC6252][rfc6265-tracker] are
+Support for [RFC6265bis][rfc6265bis-tracker] is being developed. As these revisions to [RFC6265][rfc6265-tracker] are
 still in `Active Internet-Draft` state, the areas of support that follow are subject to change.
 
 ### SameSite Cookies
@@ -151,7 +155,7 @@ origins"** which are defined in the [Secure Contexts - W3C Candidate Recommendat
 > Considers potentially trustworthy origins as "secure".
 
 Since most web browsers treat `localhost` as a trustworthy origin, by default, so does `tough-cookie`. To disable this
-behavior, the `CookieStore` must be configured with:
+behavior, the `CookieJar` must be configured with:
 
 ```typescript
 import { CookieJar, MemoryCookieStore } from 'tough-cookie'
@@ -169,7 +173,7 @@ await cookieJar.setCookie(
 )
 
 // but, on retrieval, it will not be returned
-await cookieJar.getCookiesSync('http://localhost')
+const cookies = await cookieJar.getCookies('http://localhost')
 ```
 
 ## Node.js Version Support
@@ -186,10 +190,10 @@ for older versions of node, and we will do so in consultation with our community
 [rfc6265-tracker]: https://datatracker.ietf.org/doc/rfc6265/
 [rfc6265bis-badge]: https://img.shields.io/badge/RFC-6265bis-flat?labelColor=000000&color=666666
 [rfc6265bis-tracker]: https://datatracker.ietf.org/doc/draft-ietf-httpbis-rfc6265bis/
-[samesite-implementation]: https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-02#section-8.8
-[cookie-prefixes-implementation]: https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-02#section-4.1.3
-[secure-connection-note]: https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-19#section-5.8.3-2.1.2.3.1
-[secure-connection-appendix-a]: https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-19#appendix-A-1.7.1
+[samesite-implementation]: https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-22#section-8.8
+[cookie-prefixes-implementation]: https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-22#section-4.1.3
+[secure-connection-note]: https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-22#section-5.8.3
+[secure-connection-appendix-a]: https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-22#appendix-A
 [potentially-trustworthy-origin]: https://www.w3.org/TR/secure-contexts/#is-origin-trustworthy
 [prs-welcome-badge]: https://img.shields.io/badge/PRs-welcome-brightgreen.svg
 [yarn-repo]: https://yarnpkg.com/package?name=tough-cookie

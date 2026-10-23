@@ -18,5 +18,5 @@ allowSecureOnLocal?: boolean | undefined;
 
 ## Remarks
 
-When set to `true`<!-- -->, the [potentially trustworthy](https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin) algorithm is followed to determine if a URL is considered a secure context.
+When set to `true`<!-- -->, the [potentially trustworthy](https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin)  algorithm is followed to determine if a URL is considered a secure context.
 

@@ -15,8 +15,10 @@ import {
 } from '../utils.js'
 import { canonicalDomain } from './canonicalDomain.js'
 import {
+  IP_V4_REGEX_OBJECT,
   IP_V6_REGEX_OBJECT,
   PrefixSecurityEnum,
+  type PrefixSecurityMode,
   SerializedCookieJar,
 } from './constants.js'
 import { defaultPath } from './defaultPath.js'
@@ -171,11 +173,11 @@ export interface CreateCookieJarOptions {
    */
   looseMode?: boolean | undefined
   /**
-   * Controls how cookie prefixes are handled. See {@link PrefixSecurityEnum}.
+   * Controls how cookie prefixes are handled. See {@link PrefixSecurityMode}.
    *
    * Defaults to `silent` if not specified.
    */
-  prefixSecurity?: 'strict' | 'silent' | 'unsafe-disabled' | undefined
+  prefixSecurity?: PrefixSecurityMode | undefined
   /**
    * Accepts {@link https://datatracker.ietf.org/doc/html/rfc6761 | special-use domains } such as `local`.
    * This is not in the standard, but is used sometimes on the web and is accepted by most browsers. It is
@@ -301,11 +303,9 @@ function isHostPrefixConditionMet(cookie: Cookie): boolean {
   )
 }
 
-type PrefixSecurityValue =
-  (typeof PrefixSecurityEnum)[keyof typeof PrefixSecurityEnum]
 function getNormalizedPrefixSecurity(
   prefixSecurity: string,
-): PrefixSecurityValue {
+): PrefixSecurityMode {
   const normalizedPrefixSecurity = prefixSecurity.toLowerCase()
   /* The three supported options */
   switch (normalizedPrefixSecurity) {
@@ -337,9 +337,9 @@ export class CookieJar {
   readonly store: Store
 
   /**
-   * The configured {@link PrefixSecurityEnum} value for the {@link CookieJar}.
+   * The configured {@link PrefixSecurityMode} value for the {@link CookieJar}.
    */
-  readonly prefixSecurity: string
+  readonly prefixSecurity: PrefixSecurityMode
 
   /**
    * Creates a new `CookieJar` instance.
@@ -580,7 +580,11 @@ export class CookieJar {
                 ignoreError: options?.ignoreError,
               })
             : null
-        if (suffix == null && !IP_V6_REGEX_OBJECT.test(cookie.domain)) {
+        if (
+          suffix == null &&
+          !IP_V4_REGEX_OBJECT.test(cdomain ?? '') &&
+          !IP_V6_REGEX_OBJECT.test(cdomain ?? '')
+        ) {
           // e.g. "com"
           const err = new Error('Cookie has domain set to a public suffix')
 
@@ -785,7 +789,7 @@ export class CookieJar {
    */
   setCookieSync(
     cookie: string | Cookie,
-    url: string,
+    url: string | URL,
     options?: SetCookieOptions,
   ): Cookie | undefined {
     const setCookieFn = options
@@ -804,21 +808,9 @@ export class CookieJar {
    * - The {@link Cookie.lastAccessed} property will be updated on all returned cookies.
    *
    * @param url - The domain to store the cookie with.
-   */
-  getCookies(url: string): Promise<Cookie[]>
-  /**
-   * Retrieve the list of cookies that can be sent in a Cookie header for the
-   * current URL.
-   *
-   * @remarks
-   * - The array of cookies returned will be sorted according to {@link cookieCompare}.
-   *
-   * - The {@link Cookie.lastAccessed} property will be updated on all returned cookies.
-   *
-   * @param url - The domain to store the cookie with.
    * @param callback - A function to call after a cookie has been successfully retrieved.
    */
-  getCookies(url: string, callback: Callback<Cookie[]>): void
+  getCookies(url: string | URL, callback: Callback<Cookie[]>): void
   /**
    * Retrieve the list of cookies that can be sent in a Cookie header for the
    * current URL.
@@ -1037,7 +1029,7 @@ export class CookieJar {
    * @param url - The domain to store the cookie with.
    * @param options - Configuration settings to use when retrieving the cookies.
    */
-  getCookiesSync(url: string, options?: GetCookiesOptions): Cookie[] {
+  getCookiesSync(url: string | URL, options?: GetCookiesOptions): Cookie[] {
     return this.callSync(this.getCookies.bind(this, url, options))
   }
 
@@ -1050,7 +1042,7 @@ export class CookieJar {
    * @param callback - A function to call after the `Cookie` header string has been created.
    */
   getCookieString(
-    url: string,
+    url: string | URL,
     options: GetCookiesOptions,
     callback: Callback<string | undefined>,
   ): void
@@ -1061,7 +1053,10 @@ export class CookieJar {
    * @param url - The domain to store the cookie with.
    * @param callback - A function to call after the `Cookie` header string has been created.
    */
-  getCookieString(url: string, callback: Callback<string | undefined>): void
+  getCookieString(
+    url: string | URL,
+    callback: Callback<string | undefined>,
+  ): void
   /**
    * Accepts the same options as `.getCookies()` but returns a string suitable for a
    * `Cookie` header rather than an Array.
@@ -1069,12 +1064,15 @@ export class CookieJar {
    * @param url - The domain to store the cookie with.
    * @param options - Configuration settings to use when retrieving the cookies.
    */
-  getCookieString(url: string, options?: GetCookiesOptions): Promise<string>
+  getCookieString(
+    url: string | URL,
+    options?: GetCookiesOptions,
+  ): Promise<string>
   /**
    * @internal No doc because this is an overload that supports the implementation
    */
   getCookieString(
-    url: string,
+    url: string | URL,
     options: GetCookiesOptions | Callback<string | undefined>,
     callback?: Callback<string | undefined>,
   ): unknown
@@ -1082,7 +1080,7 @@ export class CookieJar {
    * @internal No doc because this is the overload implementation
    */
   getCookieString(
-    url: string,
+    url: string | URL,
     options?: GetCookiesOptions | Callback<string | undefined>,
     callback?: Callback<string | undefined>,
   ): unknown {
@@ -1118,7 +1116,7 @@ export class CookieJar {
    * @param url - The domain to store the cookie with.
    * @param options - Configuration settings to use when retrieving the cookies.
    */
-  getCookieStringSync(url: string, options?: GetCookiesOptions): string {
+  getCookieStringSync(url: string | URL, options?: GetCookiesOptions): string {
     return (
       this.callSync(
         options
@@ -1136,7 +1134,7 @@ export class CookieJar {
    * @param callback - A function to call after the `Set-Cookie` header strings have been created.
    */
   getSetCookieStrings(
-    url: string,
+    url: string | URL,
     callback: Callback<string[] | undefined>,
   ): void
   /**
@@ -1148,7 +1146,7 @@ export class CookieJar {
    * @param callback - A function to call after the `Set-Cookie` header strings have been created.
    */
   getSetCookieStrings(
-    url: string,
+    url: string | URL,
     options: GetCookiesOptions,
     callback: Callback<string[] | undefined>,
   ): void
@@ -1160,14 +1158,14 @@ export class CookieJar {
    * @param options - Configuration settings to use when retrieving the cookies.
    */
   getSetCookieStrings(
-    url: string,
+    url: string | URL,
     options?: GetCookiesOptions,
   ): Promise<string[] | undefined>
   /**
    * @internal No doc because this is an overload that supports the implementation
    */
   getSetCookieStrings(
-    url: string,
+    url: string | URL,
     options: GetCookiesOptions,
     callback?: Callback<string[] | undefined>,
   ): unknown
@@ -1175,7 +1173,7 @@ export class CookieJar {
    * @internal No doc because this is the overload implementation
    */
   getSetCookieStrings(
-    url: string,
+    url: string | URL,
     options?: GetCookiesOptions | Callback<string[] | undefined>,
     callback?: Callback<string[] | undefined>,
   ): unknown {
@@ -1214,7 +1212,7 @@ export class CookieJar {
    * @param options - Configuration settings to use when retrieving the cookies.
    */
   getSetCookieStringsSync(
-    url: string,
+    url: string | URL,
     options: GetCookiesOptions = {},
   ): string[] {
     return (

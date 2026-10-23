@@ -4,7 +4,7 @@
 
 ## parseDate() function
 
-Parse a cookie date string into a [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date)<!-- -->. Parses according to [RFC6265 - Section 5.1.1](https://www.rfc-editor.org/rfc/rfc6265.html#section-5.1.1)<!-- -->, not [Date.parse()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse)<!-- -->.
+Parse a cookie date string into a [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date)<!-- -->. Parses according to[RFC6265 - Section 5.1.1](https://www.rfc-editor.org/rfc/rfc6265.html#section-5.1.1)<!-- -->, not[Date.parse()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse)<!-- -->.
 
 **Signature:**
 
@@ -56,7 +56,7 @@ Date if valid, undefined if invalid
 
 ## Remarks
 
-This implementation is compliant with RFC6265 Section 5.1.1 and incorporates [RFC6265 Erratum 4148 - Grammar Fixed](https://www.rfc-editor.org/errata/eid4148) which corrects the ABNF grammar for day-of-month, year, and time to make trailing non-digit characters optional (changing `( )` to `[ ]`<!-- -->).
+This implementation is compliant with RFC6265 Section 5.1.1 and incorporates[RFC6265 Erratum 4148 - Grammar Fixed](https://www.rfc-editor.org/errata/eid4148) which corrects the ABNF grammar for day-of-month, year, and time to make trailing non-digit characters optional (changing `( )` to `[ ]`<!-- -->).
 
 Also compatible with [draft-ietf-httpbis-rfc6265bis-21](https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-21) which maintains the same date parsing algorithm with additional clarifications.
 
