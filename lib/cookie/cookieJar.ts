@@ -1339,7 +1339,9 @@ export class CookieJar {
     for (const json of cookies) {
       const cookie = Cookie.fromJSON(json)
       if (cookie) {
-        await this.store.putCookie(cookie)
+        const promiseCallback = createPromiseCallback<never>()
+        this.store.putCookie(cookie, promiseCallback.callback)
+        await promiseCallback.promise
       }
     }
   }

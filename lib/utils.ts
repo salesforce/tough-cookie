@@ -66,7 +66,9 @@ export const safeToString = (val: unknown): string => safeToStringImpl(val)
 /** Utility object for promise/callback interop. */
 export interface PromiseCallback<T> {
   promise: Promise<T>
-  callback: Callback<T>
+  // `ErrorCallback` and `Callback<never>` are not the same type,
+  // even though they effectively behave the same at runtime
+  callback: [T] extends [never] ? ErrorCallback : Callback<T>
   resolve: (value: T) => Promise<T>
   reject: (error: Error) => Promise<T>
 }
