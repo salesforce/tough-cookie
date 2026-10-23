@@ -4,7 +4,7 @@
 
 ## MemoryCookieStore class
 
-An in-memory [Store](./tough-cookie.store.md) implementation for [CookieJar](./tough-cookie.cookiejar.md)<!-- -->. This is the default implementation used by [CookieJar](./tough-cookie.cookiejar.md) and supports both async and sync operations. Also supports serialization, getAllCookies, and removeAllCookies.
+An in-memory [Store](./tough-cookie.store.md) implementation for [CookieJar](./tough-cookie.cookiejar.md)<!-- -->. This is the default implementation used by[CookieJar](./tough-cookie.cookiejar.md) and supports both async and sync operations. Also supports serialization, getAllCookies, and removeAllCookies.
 
 **Signature:**
 
@@ -151,7 +151,7 @@ Callback takes an error and the resulting Cookie object. If no cookie is found t
 
 Locates all [Cookie](./tough-cookie.cookie.md) values matching the given `domain` and `path`<!-- -->.
 
-The resulting list is checked for applicability to the current request according to the RFC (`domain-match`<!-- -->, `path-match`<!-- -->, `http-only-flag`<!-- -->, `secure-flag`<!-- -->, `expiry`<!-- -->, and so on), so it's OK to use an optimistic search algorithm when implementing this method. However, the search algorithm used SHOULD try to find cookies that [domainMatch()](./tough-cookie.domainmatch.md) the `domain` and [pathMatch()](./tough-cookie.pathmatch.md) the `path` in order to limit the amount of checking that needs to be done.
+The resulting list is checked for applicability to the current request according to the RFC (`domain-match`<!-- -->, `path-match`<!-- -->,`http-only-flag`<!-- -->, `secure-flag`<!-- -->, `expiry`<!-- -->, and so on), so it's OK to use an optimistic search algorithm when implementing this method. However, the search algorithm used SHOULD try to find cookies that [domainMatch()](./tough-cookie.domainmatch.md) the `domain` and[pathMatch()](./tough-cookie.pathmatch.md) the `path` in order to limit the amount of checking that needs to be done.
 
 
 </td></tr>
@@ -167,7 +167,7 @@ The resulting list is checked for applicability to the current request according
 
 Locates all [Cookie](./tough-cookie.cookie.md) values matching the given `domain` and `path`<!-- -->.
 
-The resulting list is checked for applicability to the current request according to the RFC (`domain-match`<!-- -->, `path-match`<!-- -->, `http-only-flag`<!-- -->, `secure-flag`<!-- -->, `expiry`<!-- -->, and so on), so it's OK to use an optimistic search algorithm when implementing this method. However, the search algorithm used SHOULD try to find cookies that [domainMatch()](./tough-cookie.domainmatch.md) the `domain` and [pathMatch()](./tough-cookie.pathmatch.md) the `path` in order to limit the amount of checking that needs to be done.
+The resulting list is checked for applicability to the current request according to the RFC (`domain-match`<!-- -->, `path-match`<!-- -->,`http-only-flag`<!-- -->, `secure-flag`<!-- -->, `expiry`<!-- -->, and so on), so it's OK to use an optimistic search algorithm when implementing this method. However, the search algorithm used SHOULD try to find cookies that [domainMatch()](./tough-cookie.domainmatch.md) the `domain` and[pathMatch()](./tough-cookie.pathmatch.md) the `path` in order to limit the amount of checking that needs to be done.
 
 
 </td></tr>
@@ -209,7 +209,7 @@ Gets all the cookies in the store.
 
 </td><td>
 
-Adds a new [Cookie](./tough-cookie.cookie.md) to the store. The implementation SHOULD replace any existing cookie with the same `domain`<!-- -->, `path`<!-- -->, and `key` properties.
+Adds a new [Cookie](./tough-cookie.cookie.md) to the store. The implementation SHOULD replace any existing cookie with the same `domain`<!-- -->,`path`<!-- -->, and `key` properties.
 
 
 </td></tr>
@@ -223,7 +223,7 @@ Adds a new [Cookie](./tough-cookie.cookie.md) to the store. The implementation S
 
 </td><td>
 
-Adds a new [Cookie](./tough-cookie.cookie.md) to the store. The implementation SHOULD replace any existing cookie with the same `domain`<!-- -->, `path`<!-- -->, and `key` properties.
+Adds a new [Cookie](./tough-cookie.cookie.md) to the store. The implementation SHOULD replace any existing cookie with the same `domain`<!-- -->,`path`<!-- -->, and `key` properties.
 
 
 </td></tr>
@@ -321,7 +321,7 @@ Removes matching cookies from the store. The `path` parameter is optional and if
 
 </td><td>
 
-Update an existing [Cookie](./tough-cookie.cookie.md)<!-- -->. The implementation MUST update the `value` for a cookie with the same `domain`<!-- -->, `path`<!-- -->, and `key`<!-- -->. The implementation SHOULD check that the old value in the store is equivalent to oldCookie - how the conflict is resolved is up to the store.
+Update an existing [Cookie](./tough-cookie.cookie.md)<!-- -->. The implementation MUST update the `value` for a cookie with the same `domain`<!-- -->,`path`<!-- -->, and `key`<!-- -->. The implementation SHOULD check that the old value in the store is equivalent to oldCookie - how the conflict is resolved is up to the store.
 
 
 </td></tr>
@@ -335,7 +335,7 @@ Update an existing [Cookie](./tough-cookie.cookie.md)<!-- -->. The implementatio
 
 </td><td>
 
-Update an existing [Cookie](./tough-cookie.cookie.md)<!-- -->. The implementation MUST update the `value` for a cookie with the same `domain`<!-- -->, `path`<!-- -->, and `key`<!-- -->. The implementation SHOULD check that the old value in the store is equivalent to oldCookie - how the conflict is resolved is up to the store.
+Update an existing [Cookie](./tough-cookie.cookie.md)<!-- -->. The implementation MUST update the `value` for a cookie with the same `domain`<!-- -->,`path`<!-- -->, and `key`<!-- -->. The implementation SHOULD check that the old value in the store is equivalent to oldCookie - how the conflict is resolved is up to the store.
 
 
 </td></tr>

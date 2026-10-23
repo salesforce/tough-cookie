@@ -4,7 +4,7 @@
 
 ## CookieJar.getCookieString() method
 
-Accepts the same options as `.getCookies()` but returns a string suitable for a `Cookie` header rather than an Array.
+Accepts the same options as `.getCookies()` but returns a string suitable for a`Cookie` header rather than an Array.
 
 **Signature:**
 
