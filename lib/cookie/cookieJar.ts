@@ -33,17 +33,7 @@ const defaultSetCookieOptions: SetCookieOptions = {
   http: true,
 }
 
-type StoreMethod =
-  | 'findCookie'
-  | 'findCookies'
-  | 'putCookie'
-  | 'updateCookie'
-  | 'removeCookie'
-  | 'removeCookies'
-  | 'removeAllCookies'
-  | 'getAllCookies'
-
-type StoreCallback<T> = Callback<T>
+type StoreOperation = (...args: never[]) => unknown
 
 function asResultCallback(callback: ErrorCallback): Callback<undefined> {
   function adapted(error: Error, result?: never): void
@@ -56,9 +46,9 @@ function asResultCallback(callback: ErrorCallback): Callback<undefined> {
 
 function callStore<T>(
   store: Store,
-  method: StoreMethod,
+  operation: StoreOperation,
   args: unknown[],
-  callback: StoreCallback<T>,
+  callback: Callback<T>,
 ): void {
   let settled = false
   function once(error: Error, result?: never): void
@@ -70,8 +60,7 @@ function callStore<T>(
     else callback(null, result as T)
   }
 
-  const operation = store[method].bind(store) as (...args: unknown[]) => unknown
-  const returned = operation(...args, once)
+  const returned = Reflect.apply(operation, store, [...args, once]) as unknown
 
   if (
     returned === null ||
@@ -815,7 +804,7 @@ export class CookieJar {
           // Step 11.4 (delete cookie) is implied by just setting the new one:
           callStore<undefined>(
             store,
-            'updateCookie',
+            store.updateCookie.bind(store),
             [oldCookie, cookie],
             asResultCallback(next),
           ) // step 12
@@ -825,7 +814,7 @@ export class CookieJar {
           cookie.creation = cookie.lastAccessed = now
           callStore<undefined>(
             store,
-            'putCookie',
+            store.putCookie.bind(store),
             [cookie],
             asResultCallback(next),
           ) // step 12
@@ -836,7 +825,7 @@ export class CookieJar {
     // TODO: Refactor to avoid using a callback
     callStore<Cookie | undefined>(
       store,
-      'findCookie',
+      store.findCookie.bind(store),
       [cookie.domain, cookie.path, cookie.key],
       withCookie,
     )
@@ -1050,7 +1039,7 @@ export class CookieJar {
       if (expireCheck && expiryTime != undefined && expiryTime <= now) {
         callStore<undefined>(
           store,
-          'removeCookie',
+          store.removeCookie.bind(store),
           [c.domain, c.path, c.key],
           asResultCallback(() => {}),
         ) // result ignored
@@ -1062,7 +1051,7 @@ export class CookieJar {
 
     callStore<Cookie[]>(
       store,
-      'findCookies',
+      store.findCookies.bind(store),
       [host, allPaths ? null : path, this.allowSpecialUseDomain],
       (err, cookies): void => {
         if (err) {
@@ -1349,29 +1338,34 @@ export class CookieJar {
       )
     }
 
-    callStore<Cookie[]>(this.store, 'getAllCookies', [], (err, cookies) => {
-      if (err) {
-        promiseCallback.callback(err)
-        return
-      }
+    callStore<Cookie[]>(
+      this.store,
+      this.store.getAllCookies.bind(this.store),
+      [],
+      (err, cookies) => {
+        if (err) {
+          promiseCallback.callback(err)
+          return
+        }
 
-      if (cookies == null) {
+        if (cookies == null) {
+          promiseCallback.callback(null, serialized)
+          return
+        }
+
+        serialized.cookies = cookies.map((cookie) => {
+          // convert to serialized 'raw' cookies
+          const serializedCookie = cookie.toJSON()
+
+          // Remove the index so new ones get assigned during deserialization
+          delete serializedCookie.creationIndex
+
+          return serializedCookie
+        })
+
         promiseCallback.callback(null, serialized)
-        return
-      }
-
-      serialized.cookies = cookies.map((cookie) => {
-        // convert to serialized 'raw' cookies
-        const serializedCookie = cookie.toJSON()
-
-        // Remove the index so new ones get assigned during deserialization
-        delete serializedCookie.creationIndex
-
-        return serializedCookie
-      })
-
-      promiseCallback.callback(null, serialized)
-    })
+      },
+    )
 
     return promiseCallback.promise
   }
@@ -1445,7 +1439,7 @@ export class CookieJar {
 
         callStore<undefined>(
           this.store,
-          'putCookie',
+          this.store.putCookie.bind(this.store),
           [cookie],
           asResultCallback(putNext),
         )
@@ -1615,52 +1609,59 @@ export class CookieJar {
     ) {
       // `Callback<undefined>` and `ErrorCallback` are *technically* incompatible, but for the
       // standard implementation `cb = (err, result) => {}`, they're essentially the same.
-      callStore<undefined>(store, 'removeAllCookies', [], cb)
+      callStore<undefined>(store, store.removeAllCookies.bind(store), [], cb)
       return promiseCallback.promise
     }
 
-    callStore<Cookie[]>(store, 'getAllCookies', [], (err, cookies): void => {
-      if (err) {
-        cb(err)
-        return
-      }
-
-      if (!cookies) {
-        cookies = []
-      }
-
-      if (cookies.length === 0) {
-        cb(null, undefined)
-        return
-      }
-
-      let completedCount = 0
-      const removeErrors: Error[] = []
-
-      // TODO: Refactor to avoid using callback
-      const removeCookieCb: ErrorCallback = function removeCookieCb(removeErr) {
-        if (removeErr) {
-          removeErrors.push(removeErr)
-        }
-
-        completedCount++
-
-        if (completedCount === cookies.length) {
-          if (removeErrors[0]) cb(removeErrors[0])
-          else cb(null, undefined)
+    callStore<Cookie[]>(
+      store,
+      store.getAllCookies.bind(store),
+      [],
+      (err, cookies): void => {
+        if (err) {
+          cb(err)
           return
         }
-      }
 
-      cookies.forEach((cookie) => {
-        callStore<undefined>(
-          store,
-          'removeCookie',
-          [cookie.domain, cookie.path, cookie.key],
-          asResultCallback(removeCookieCb),
-        )
-      })
-    })
+        if (!cookies) {
+          cookies = []
+        }
+
+        if (cookies.length === 0) {
+          cb(null, undefined)
+          return
+        }
+
+        let completedCount = 0
+        const removeErrors: Error[] = []
+
+        // TODO: Refactor to avoid using callback
+        const removeCookieCb: ErrorCallback = function removeCookieCb(
+          removeErr,
+        ) {
+          if (removeErr) {
+            removeErrors.push(removeErr)
+          }
+
+          completedCount++
+
+          if (completedCount === cookies.length) {
+            if (removeErrors[0]) cb(removeErrors[0])
+            else cb(null, undefined)
+            return
+          }
+        }
+
+        cookies.forEach((cookie) => {
+          callStore<undefined>(
+            store,
+            store.removeCookie.bind(store),
+            [cookie.domain, cookie.path, cookie.key],
+            asResultCallback(removeCookieCb),
+          )
+        })
+      },
+    )
 
     return promiseCallback.promise
   }
