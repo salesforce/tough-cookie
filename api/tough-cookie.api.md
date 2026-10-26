@@ -127,7 +127,7 @@ export interface CreateCookieJarOptions {
     allowSecureOnLocal?: boolean | undefined;
     allowSpecialUseDomain?: boolean | undefined;
     looseMode?: boolean | undefined;
-    prefixSecurity?: 'strict' | 'silent' | 'unsafe-disabled' | undefined;
+    prefixSecurity?: PrefixSecurityMode | undefined;
     rejectPublicSuffixes?: boolean | undefined;
 }
 
@@ -251,6 +251,9 @@ export const PrefixSecurityEnum: {
     readonly STRICT: "strict";
     readonly DISABLED: "unsafe-disabled";
 };
+
+// @public
+export type PrefixSecurityMode = (typeof PrefixSecurityEnum)[keyof typeof PrefixSecurityEnum];
 
 // @public
 export type SameSiteLevel = 'strict' | 'lax' | 'none';

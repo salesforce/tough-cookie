@@ -24,6 +24,18 @@ export const PrefixSecurityEnum = {
 } as const
 Object.freeze(PrefixSecurityEnum)
 
+/**
+ * Prefix security enforcement mode for a CookieJar per RFC 6265bis.
+ *
+ * - `'silent'` - Enable cookie prefix checking but silently ignores the cookie if conditions are not met. Default.
+ * - `'strict'` - Enables cookie prefix checking and will raise an error if conditions are not met.
+ * - `'unsafe-disabled'` - Disables cookie prefix checking.
+ *
+ * @public
+ */
+export type PrefixSecurityMode =
+  (typeof PrefixSecurityEnum)[keyof typeof PrefixSecurityEnum]
+
 const IP_V6_REGEX = `
 \\[?(?:
 (?:[a-fA-F\\d]{1,4}:){7}(?:[a-fA-F\\d]{1,4}|:)|
