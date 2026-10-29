@@ -174,6 +174,50 @@ describe('cookieJar serialization', () => {
       expect(clonedJar.store).toEqual(jar.store)
     })
 
+    it('should preserve enforceSecureOriginOnStorage when cloned', async () => {
+      const insecureJar = new CookieJar(null, {
+        enforceSecureOriginOnStorage: false,
+      })
+
+      const clonedJar = await insecureJar.clone()
+      await clonedJar.setCookie('secure=foo; Secure', 'http://example.com/')
+      const cookies = await clonedJar.getCookies('https://example.com/')
+      expect(cookies.map((c) => c.key)).toContain('secure')
+    })
+
+    it('should preserve enforceSecureOriginOnStorage through serialization', () => {
+      const insecureJar = new CookieJar(null, {
+        enforceSecureOriginOnStorage: false,
+      })
+
+      const serializedJar = insecureJar.serializeSync()
+      expect(serializedJar?.enforceSecureOriginOnStorage).toBe(false)
+
+      const deserializedJar = CookieJar.deserializeSync(
+        JSON.stringify(serializedJar),
+      )
+      deserializedJar.setCookieSync('secure=foo; Secure', 'http://example.com/')
+      const cookies = deserializedJar.getCookiesSync('https://example.com/')
+      expect(cookies.map((c) => c.key)).toContain('secure')
+    })
+
+    it('should default enforceSecureOriginOnStorage to true when missing from a serialized jar', () => {
+      const serializedJar = new CookieJar(null, {
+        enforceSecureOriginOnStorage: false,
+      }).serializeSync()
+      delete serializedJar?.enforceSecureOriginOnStorage
+
+      const deserializedJar = CookieJar.deserializeSync(
+        JSON.stringify(serializedJar),
+      )
+      expect(() =>
+        deserializedJar.setCookieSync(
+          'secure=foo; Secure',
+          'http://example.com/',
+        ),
+      ).toThrow('Cookie is Secure but this is not a secure connection')
+    })
+
     it('should raise an error when attempting to synchronously clone to an async store', () => {
       const newStore = new MemoryCookieStore()
       newStore.synchronous = false

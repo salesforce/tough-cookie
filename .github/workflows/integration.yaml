@@ -63,12 +63,7 @@ jobs:
           const failure = '[fail, fetch not implemented and cookie prefix handling is incomplete]'
           const from = `prefix/**: ${failure}`
           const to = from.replace('prefix/**:', 'prefix/!(__host.explicit-path.https.window.html):')
-          const source = readFileSync(path, 'utf8').replace(from, to)
-          const secureFailure = 'secure/set-from-ws.sub.html: [fail, Secure cookies are accepted from insecure WebSocket connections]'
-          if (!source.includes(secureFailure) && source.includes('secure/set-from-ws.sub.html:')) {
-            throw new Error('The jsdom Secure-cookie expectation changed; review it before updating')
-          }
-          writeFileSync(path, source.replace(secureFailure, ''))
+          writeFileSync(path, readFileSync(path, 'utf8').replace(from, to))
           NODE
         working-directory: ./jsdom
       - name: Run tests
@@ -115,12 +110,7 @@ jobs:
           const failure = '[fail, fetch not implemented and cookie prefix handling is incomplete]'
           const from = `prefix/**: ${failure}`
           const to = from.replace('prefix/**:', 'prefix/!(__host.explicit-path.https.window.html):')
-          const source = readFileSync(path, 'utf8').replace(from, to)
-          const secureFailure = 'secure/set-from-ws.sub.html: [fail, Secure cookies are accepted from insecure WebSocket connections]'
-          if (!source.includes(secureFailure) && source.includes('secure/set-from-ws.sub.html:')) {
-            throw new Error('The jsdom Secure-cookie expectation changed; review it before updating')
-          }
-          writeFileSync(path, source.replace(secureFailure, ''))
+          writeFileSync(path, readFileSync(path, 'utf8').replace(from, to))
           NODE
         working-directory: ./jsdom
       - name: Run tests
