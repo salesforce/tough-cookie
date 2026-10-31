@@ -184,6 +184,7 @@ describe('Same-Site Cookies', function () {
 
   describe('Canonicalized Strings', () => {
     it('garbage in = garbage out', () => {
+      // @ts-expect-error deliberately test invalid input from JavaScript callers
       garbage.sameSite = 'GaRbAGe'
       expect(garbage.toString()).toBe(
         'garbageIn=treatedAsNone; SameSite=GaRbAGe',
@@ -212,6 +213,7 @@ describe('Same-Site Cookies', function () {
           key: 'cross',
           value: 'allowed',
           secure: true,
+          // @ts-expect-error exercise mixed-case values from JavaScript callers
           sameSite,
         })
         expect(cookie.toString()).toBe('cross=allowed; Secure; SameSite=None')

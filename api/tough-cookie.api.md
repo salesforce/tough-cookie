@@ -39,7 +39,7 @@ export class Cookie {
     static parse(str: string, options?: ParseCookieOptions): Cookie | undefined;
     path: string | null;
     pathIsDefault: boolean | null;
-    sameSite: string | undefined;
+    sameSite: SameSiteLevel | undefined;
     // @internal (undocumented)
     static sameSiteCanonical: {
         readonly strict: "Strict";
@@ -145,7 +145,7 @@ export interface CreateCookieOptions {
     maxAge?: number | 'Infinity' | '-Infinity' | null;
     path?: string | null;
     pathIsDefault?: boolean | null;
-    sameSite?: string | undefined;
+    sameSite?: SameSiteLevel | undefined;
     secure?: boolean;
     value?: string;
 }
@@ -173,7 +173,7 @@ export interface GetCookiesOptions {
     allPaths?: boolean | undefined;
     expire?: boolean | undefined;
     http?: boolean | undefined;
-    sameSiteContext?: 'none' | 'lax' | 'strict' | undefined;
+    sameSiteContext?: SameSiteLevel | undefined;
     sort?: boolean | undefined;
 }
 
@@ -257,6 +257,9 @@ export const PrefixSecurityEnum: {
 export type PrefixSecurityMode = (typeof PrefixSecurityEnum)[keyof typeof PrefixSecurityEnum];
 
 // @public
+export type SameSiteLevel = 'strict' | 'lax' | 'none';
+
+// @public
 export type SerializedCookie = {
     key?: string;
     value?: string;
@@ -278,7 +281,7 @@ export interface SetCookieOptions {
     ignoreError?: boolean | undefined;
     loose?: boolean | undefined;
     now?: Date | undefined;
-    sameSiteContext?: 'strict' | 'lax' | 'none' | undefined;
+    sameSiteContext?: SameSiteLevel | undefined;
 }
 
 // @public
