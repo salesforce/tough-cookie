@@ -114,18 +114,14 @@ describe('cookieJar serialization', () => {
 
     it('should serialize synchronously', () => {
       const serializedJar = jar.serializeSync()
-      if (!serializedJar) {
-        throw new Error('This should not be undefined')
-      }
+      expect(serializedJar).toBeDefined()
       expectDataToMatchSerializationSchema(serializedJar)
       expect(serializedJar.cookies.length).toBe(2)
     })
 
     it('should deserialize synchronously', () => {
       const serializedJar = jar.serializeSync()
-      if (!serializedJar) {
-        throw new Error('This should not be undefined')
-      }
+      expect(serializedJar).toBeDefined()
       const deserializedJar = CookieJar.deserializeSync(serializedJar)
       expect(jar.store).toEqual(deserializedJar.store)
     })
@@ -168,9 +164,7 @@ describe('cookieJar serialization', () => {
 
     it('should contain the same contents when cloned synchronously', () => {
       const clonedJar = jar.cloneSync(new MemoryCookieStore())
-      if (!clonedJar) {
-        throw new Error('This should not be undefined')
-      }
+      expect(clonedJar).toBeDefined()
       expect(clonedJar.store).toEqual(jar.store)
     })
 
