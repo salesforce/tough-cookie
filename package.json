@@ -137,7 +137,7 @@
     "genversion": "^3.2.0",
     "globals": "^17.4.0",
     "prettier": "^3.5.3",
-    "tsup": "^8.5.0",
+    "tsup": "^9.0.0",
     "typescript": "5.5.3",
     "typescript-eslint": "^8.46.3",
     "vitest": "^5.0.5"
