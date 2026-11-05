@@ -2,4 +2,4 @@
  * The version of `tough-cookie`
  * @public
  */
-export const version = '6.0.2'
+export const version = '6.1.0'
