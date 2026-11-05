@@ -8,6 +8,8 @@
     /* Modules */
     "module": "Node16",
     "rootDir": "./lib/",
+    // TypeScript 6 no longer auto-includes @types/* packages, so @types/node must be listed explicitly
+    "types": ["node"],
     /* Emit */
     "declaration": true,
     "outDir": "./dist/",
