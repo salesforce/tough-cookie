@@ -9,5 +9,5 @@ The version of `tough-cookie`
 **Signature:**
 
 ```typescript
-version = "6.0.2"
+version = "6.1.0"
 ```
