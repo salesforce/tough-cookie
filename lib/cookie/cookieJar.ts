@@ -19,6 +19,7 @@ import {
   IP_V6_REGEX_OBJECT,
   PrefixSecurityEnum,
   type PrefixSecurityMode,
+  SameSiteLevel,
   SerializedCookieJar,
 } from './constants.js'
 import { defaultPath } from './defaultPath.js'
@@ -66,7 +67,7 @@ export interface SetCookieOptions {
    * - It is highly recommended that you read {@link https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-02##section-8.8 | RFC6265bis - Section 8.8}
    *    which discusses security considerations and defence on SameSite cookies in depth.
    */
-  sameSiteContext?: 'strict' | 'lax' | 'none' | undefined
+  sameSiteContext?: SameSiteLevel | undefined
   /**
    * Silently ignore things like parse errors and invalid domains. Store errors aren't ignored by this option.
    *
@@ -146,7 +147,7 @@ export interface GetCookiesOptions {
    * - It is highly recommended that you read {@link https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-02##section-8.8 | RFC6265bis - Section 8.8}
    *    which discusses security considerations and defence on SameSite cookies in depth.
    */
-  sameSiteContext?: 'none' | 'lax' | 'strict' | undefined
+  sameSiteContext?: SameSiteLevel | undefined
   /**
    * Flag to indicate if the returned cookies should be sorted or not.
    *
@@ -272,7 +273,6 @@ function getCookieContext(url: unknown): UrlContext {
   }
 }
 
-type SameSiteLevel = keyof (typeof Cookie)['sameSiteLevel']
 function checkSameSiteContext(value: string): SameSiteLevel | undefined {
   const context = value.toLowerCase()
   if (context === 'none' || context === 'lax' || context === 'strict') {

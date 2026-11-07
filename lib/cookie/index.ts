@@ -13,6 +13,7 @@ export { canonicalDomain } from './canonicalDomain.js'
 export {
   PrefixSecurityEnum,
   type PrefixSecurityMode,
+  type SameSiteLevel,
   type SerializedCookie,
   type SerializedCookieJar,
 } from './constants.js'
