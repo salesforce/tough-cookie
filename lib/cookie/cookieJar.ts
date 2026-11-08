@@ -283,32 +283,42 @@ function checkSameSiteContext(value: string): SameSiteLevel | undefined {
 }
 
 /**
- *  If the cookie-name begins with a case-sensitive match for the
+ *  If the cookie-name begins with a case-insensitive match for the
  *  string "__Secure-", abort these steps and ignore the cookie
  *  entirely unless the cookie's secure-only-flag is true.
+ *
+ *  {@link https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-22#section-5.4 | RFC6265bis draft -22, Section 5.4}
+ *  requires user agents to match the prefix case-insensitively, even though
+ *  servers are only asked to spell it canonically.
  * @param cookie
  * @returns boolean
  */
 function isSecurePrefixConditionMet(cookie: Cookie): boolean {
   const startsWithSecurePrefix =
-    typeof cookie.key === 'string' && cookie.key.startsWith('__Secure-')
+    typeof cookie.key === 'string' &&
+    cookie.key.toLowerCase().startsWith('__secure-')
   return !startsWithSecurePrefix || cookie.secure
 }
 
 /**
- *  If the cookie-name begins with a case-sensitive match for the
+ *  If the cookie-name begins with a case-insensitive match for the
  *  string "__Host-", abort these steps and ignore the cookie
  *  entirely unless the cookie meets all the following criteria:
  *    1.  The cookie's secure-only-flag is true.
  *    2.  The cookie's host-only-flag is true.
  *    3.  The cookie-attribute-list contains an attribute with an
  *        attribute-name of "Path", and the cookie's path is "/".
+ *
+ *  {@link https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-22#section-5.4 | RFC6265bis draft -22, Section 5.4}
+ *  requires user agents to match the prefix case-insensitively, even though
+ *  servers are only asked to spell it canonically.
  * @param cookie
  * @returns boolean
  */
 function isHostPrefixConditionMet(cookie: Cookie): boolean {
   const startsWithHostPrefix =
-    typeof cookie.key === 'string' && cookie.key.startsWith('__Host-')
+    typeof cookie.key === 'string' &&
+    cookie.key.toLowerCase().startsWith('__host-')
   return (
     !startsWithHostPrefix ||
     Boolean(
