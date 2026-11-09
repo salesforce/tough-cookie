@@ -1554,6 +1554,43 @@ it('should accept URL objects in all cookie retrieval methods', async () => {
   expect(jar.getSetCookieStringsSync(url)).toEqual(['foo=bar; Path=/'])
 })
 
+// a request host that is itself a special-use domain
+describe.each(['local', 'example', 'test'])(
+  'when the request host is %s',
+  (specialUseDomain) => {
+    it('should return no cookies from an empty jar instead of throwing', async () => {
+      const cookieJar = new CookieJar()
+      await expect(
+        cookieJar.getCookies(`http://${specialUseDomain}/`),
+      ).resolves.toEqual([])
+      expect(cookieJar.getCookiesSync(`http://${specialUseDomain}/`)).toEqual(
+        [],
+      )
+    })
+
+    it('should return a host-only cookie set for that host', async () => {
+      const cookieJar = new CookieJar()
+      const cookie = await cookieJar.setCookie(
+        'hostOnly=true; Path=/',
+        `http://${specialUseDomain}/`,
+      )
+      expect(cookie?.hostOnly).toBe(true)
+      const cookies = await cookieJar.getCookies(`http://${specialUseDomain}/`)
+      expect(cookies).toEqual([cookie])
+    })
+
+    it('should return no cookies when allowSpecialUseDomain is false', async () => {
+      const cookieJar = new CookieJar(new MemoryCookieStore(), {
+        rejectPublicSuffixes: true,
+        allowSpecialUseDomain: false,
+      })
+      await expect(
+        cookieJar.getCookies(`http://dev.${specialUseDomain}/`),
+      ).resolves.toEqual([])
+    })
+  },
+)
+
 // special use domains under a sub-domain
 describe.each(['local', 'example', 'invalid', 'localhost', 'test'])(
   'when special use domain is dev.%s',

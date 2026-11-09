@@ -18,8 +18,12 @@ export function permuteDomain(
   domain: string,
   allowSpecialUseDomain?: boolean,
 ): string[] | undefined {
+  // This is a lookup helper, so it never throws: a host that is itself a
+  // special-use domain (e.g. "local", "test") has no public suffix, and the
+  // caller falls back to the host itself.
   const pubSuf = getPublicSuffix(domain, {
     allowSpecialUseDomain: allowSpecialUseDomain,
+    ignoreError: true,
   })
 
   if (!pubSuf) {
