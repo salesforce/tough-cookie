@@ -4,6 +4,11 @@
 
 ## defaultPath() function
 
+> Warning: This API is now obsolete.
+> 
+> This function will be removed in a future version of tough-cookie. If you rely on this function, please open an issue to discuss why it should remain public.
+> 
+
 Given a current request/response path, gives the path appropriate for storing in a cookie. This is basically the "directory" of a "file" in the path, but is specified by [RFC6265 - Section 5.1.4](https://www.rfc-editor.org/rfc/rfc6265.html#section-5.1.4)<!-- -->.
 
 **Signature:**
