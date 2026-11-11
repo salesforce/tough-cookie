@@ -4,10 +4,9 @@ import { Cookie } from '../cookie/cookie.js'
 describe('Cookie.toString()', () => {
   const parse = (cookieString: string): Cookie => {
     const cookie = Cookie.parse(cookieString)
-    if (!cookie) {
-      throw new Error('This should have parsed')
-    }
-    return cookie
+    expect(cookie).toBeDefined()
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return cookie!
   }
 
   it('should produce a string from a simple cookie', () => {
