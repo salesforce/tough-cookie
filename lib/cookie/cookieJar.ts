@@ -1290,6 +1290,7 @@ export class CookieJar {
       rejectPublicSuffixes: this.rejectPublicSuffixes,
       enableLooseMode: this.enableLooseMode,
       allowSpecialUseDomain: this.allowSpecialUseDomain,
+      allowSecureOnLocal: this.allowSecureOnLocal,
       enforceSecureOriginOnStorage: this.enforceSecureOriginOnStorage,
       prefixSecurity: getNormalizedPrefixSecurity(this.prefixSecurity),
 
@@ -1748,6 +1749,7 @@ export class CookieJar {
       rejectPublicSuffixes: readSerializedBoolean('rejectPublicSuffixes'),
       looseMode: readSerializedBoolean('enableLooseMode'),
       allowSpecialUseDomain: readSerializedBoolean('allowSpecialUseDomain'),
+      allowSecureOnLocal: readSerializedBoolean('allowSecureOnLocal'),
       enforceSecureOriginOnStorage: readSerializedBoolean(
         'enforceSecureOriginOnStorage',
       ),
@@ -1811,6 +1813,7 @@ export class CookieJar {
       rejectPublicSuffixes: readSerializedBoolean('rejectPublicSuffixes'),
       looseMode: readSerializedBoolean('enableLooseMode'),
       allowSpecialUseDomain: readSerializedBoolean('allowSpecialUseDomain'),
+      allowSecureOnLocal: readSerializedBoolean('allowSecureOnLocal'),
       enforceSecureOriginOnStorage: readSerializedBoolean(
         'enforceSecureOriginOnStorage',
       ),
