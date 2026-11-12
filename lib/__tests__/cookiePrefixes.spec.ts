@@ -350,6 +350,109 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
     })
   })
 
+  describe('prefix matching is case-insensitive', () => {
+    describe.each(['__Secure-', '__SECURE-', '__secure-', '__sEcUrE-'])(
+      '%s',
+      (prefix) => {
+        it('is rejected in strict mode without the Secure attribute', async () => {
+          const jar = new CookieJar(null, { prefixSecurity: 'strict' })
+          await expect(
+            jar.setCookie(`${prefix}SID=12345`, insecureUrl, {}),
+          ).rejects.toThrow(
+            'Cookie has __Secure prefix but Secure attribute is not set',
+          )
+        })
+
+        it('is silently dropped in silent mode without the Secure attribute', async () => {
+          const jar = new CookieJar(null, { prefixSecurity: 'silent' })
+          await jar.setCookie(`${prefix}SID=12345`, insecureUrl, {})
+          expect(await jar.getCookies(secureUrl)).toEqual([])
+        })
+
+        it('is stored with the Secure attribute over https', async () => {
+          const jar = new CookieJar(null, { prefixSecurity: 'strict' })
+          await jar.setCookie(`${prefix}SID=12345; Secure`, secureUrl, {})
+          expect(await jar.getCookies(secureUrl)).toEqual([
+            expect.objectContaining({ key: `${prefix}SID`, value: '12345' }),
+          ])
+        })
+      },
+    )
+
+    describe.each(['__Host-', '__HOST-', '__host-', '__hOsT-'])(
+      '%s',
+      (prefix) => {
+        it('is rejected in strict mode with a Domain attribute', async () => {
+          const jar = new CookieJar(null, { prefixSecurity: 'strict' })
+          await expect(
+            jar.setCookie(
+              `${prefix}SID=12345; Secure; Path=/; Domain=example.com`,
+              secureUrl,
+              {},
+            ),
+          ).rejects.toThrow(
+            `Cookie has __Host prefix but either Secure or HostOnly attribute is not set or Path is not '/'`,
+          )
+        })
+
+        it('is silently dropped in silent mode with a Domain attribute', async () => {
+          const jar = new CookieJar(null, { prefixSecurity: 'silent' })
+          await jar.setCookie(
+            `${prefix}SID=12345; Secure; Path=/; Domain=example.com`,
+            secureUrl,
+            {},
+          )
+          expect(await jar.getCookies(secureUrl)).toEqual([])
+        })
+
+        it('is silently dropped in silent mode when set over http', async () => {
+          const jar = new CookieJar(null, { prefixSecurity: 'silent' })
+          await jar.setCookie(
+            `${prefix}SID=12345; Domain=example.com`,
+            'http://example.com/',
+            {},
+          )
+          expect(await jar.getCookies('https://example.com/')).toEqual([])
+        })
+
+        it('is stored with Secure, Path=/ and no Domain over https', async () => {
+          const jar = new CookieJar(null, { prefixSecurity: 'strict' })
+          await jar.setCookie(
+            `${prefix}SID=12345; Secure; Path=/`,
+            secureUrl,
+            {},
+          )
+          expect(await jar.getCookies(secureUrl)).toEqual([
+            expect.objectContaining({ key: `${prefix}SID`, value: '12345' }),
+          ])
+        })
+      },
+    )
+
+    it('drops mixed-case prefixed cookies set over http with the default mode', async () => {
+      const jar = new CookieJar()
+      await jar.setCookie('__SECURE-a=1', 'http://example.com/')
+      await jar.setCookie(
+        '__host-b=2; Domain=example.com',
+        'http://example.com/',
+      )
+      expect(await jar.getCookieString('https://example.com/')).toBe('')
+      expect(await jar.getCookieString('https://www.example.com/')).toBe('')
+    })
+
+    it('does not enforce mixed-case prefixes when unsafe-disabled', async () => {
+      const jar = new CookieJar(null, { prefixSecurity: 'unsafe-disabled' })
+      await jar.setCookie('__SECURE-a=1', 'http://example.com/')
+      await jar.setCookie(
+        '__host-b=2; Domain=example.com',
+        'http://example.com/',
+      )
+      expect(await jar.getCookieString('http://example.com/')).toBe(
+        '__SECURE-a=1; __host-b=2',
+      )
+    })
+  })
+
   describe('PrefixSecurityMode type and configuration', () => {
     it('types CookieJar.prefixSecurity as PrefixSecurityMode', () => {
       const jar = new CookieJar()
