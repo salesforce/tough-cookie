@@ -350,6 +350,74 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
     })
   })
 
+  describe('case-insensitive prefix matching', () => {
+    it('silently rejects a mixed-case __Secure- cookie without Secure', async () => {
+      const jar = new CookieJar(null, { prefixSecurity: 'silent' })
+      await jar.setCookie(
+        '__SECURE-SID=12345; Domain=example.com',
+        insecureUrl,
+        {},
+      )
+      const cookies = await jar.getCookies(insecureUrl)
+      expect(cookies).toEqual([])
+    })
+
+    it('silently rejects a mixed-case __Host- cookie with a Domain', async () => {
+      const jar = new CookieJar(null, { prefixSecurity: 'silent' })
+      await jar.setCookie(
+        '__HOST-SID=12345; Secure; Domain=example.com; Path=/',
+        secureUrl,
+        {},
+      )
+      const cookies = await jar.getCookies(secureUrl)
+      expect(cookies).toEqual([])
+    })
+
+    it('rejects a mixed-case __Secure- cookie in strict mode', async () => {
+      const jar = new CookieJar(null, { prefixSecurity: 'strict' })
+      await expect(
+        jar.setCookie(
+          '__secure-SID=12345; Domain=example.com',
+          insecureUrl,
+          {},
+        ),
+      ).rejects.toThrow(
+        'Cookie has __Secure prefix but Secure attribute is not set',
+      )
+    })
+
+    it('accepts a mixed-case __Host- cookie that meets every condition', async () => {
+      const jar = new CookieJar(null, { prefixSecurity: 'strict' })
+      await jar.setCookie('__HOST-SID=12345; Secure; Path=/', secureUrl, {})
+      const cookies = await jar.getCookies(secureUrl)
+      expect(cookies).toEqual([
+        expect.objectContaining({ key: '__HOST-SID', value: '12345' }),
+      ])
+    })
+
+    it('does not enforce mixed-case prefixes when prefix security is disabled', async () => {
+      const jar = new CookieJar(null, { prefixSecurity: 'unsafe-disabled' })
+      await jar.setCookie(
+        '__secure-SID=12345; Domain=example.com',
+        insecureUrl,
+        {},
+      )
+      const cookies = await jar.getCookies(insecureUrl)
+      expect(cookies).toEqual([
+        expect.objectContaining({ key: '__secure-SID', value: '12345' }),
+      ])
+    })
+
+    it('keeps the mixed-case prefixed cookies of the issue repro out of the jar', async () => {
+      const jar = new CookieJar()
+      const insecure = 'http://example.com/'
+      await jar.setCookie('__HOST-sid=evil; Domain=example.com', insecure, {})
+      await jar.setCookie('__secure-id=evil', insecure, {})
+      expect(await jar.getCookieString('https://www.example.com/')).toBe('')
+      expect(await jar.getCookieString('https://example.com/')).toBe('')
+    })
+  })
+
   describe('PrefixSecurityMode type and configuration', () => {
     it('types CookieJar.prefixSecurity as PrefixSecurityMode', () => {
       const jar = new CookieJar()
