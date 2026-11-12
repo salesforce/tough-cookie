@@ -218,6 +218,56 @@ describe('cookieJar serialization', () => {
       ).toThrow('Cookie is Secure but this is not a secure connection')
     })
 
+    it('should preserve allowSecureOnLocal when cloned', async () => {
+      const localJar = new CookieJar(null, { allowSecureOnLocal: false })
+      await localJar.setCookie('secure=foo; Secure', 'https://localhost/')
+
+      const clonedJar = await localJar.clone()
+      const cookies = await clonedJar.getCookies('http://localhost/')
+      expect(cookies.map((c) => c.key)).not.toContain('secure')
+    })
+
+    it('should preserve allowSecureOnLocal when cloned synchronously', () => {
+      const localJar = new CookieJar(null, { allowSecureOnLocal: false })
+      localJar.setCookieSync('secure=foo; Secure', 'https://localhost/')
+
+      const clonedJar = localJar.cloneSync()
+      const cookies = clonedJar?.getCookiesSync('http://localhost/')
+      expect(cookies?.map((c) => c.key)).not.toContain('secure')
+    })
+
+    it('should preserve allowSecureOnLocal through serialization', async () => {
+      const localJar = new CookieJar(null, { allowSecureOnLocal: false })
+      localJar.setCookieSync('secure=foo; Secure', 'https://localhost/')
+
+      const serializedJar = localJar.serializeSync()
+      expect(serializedJar?.allowSecureOnLocal).toBe(false)
+
+      const json = JSON.stringify(serializedJar)
+      for (const deserializedJar of [
+        CookieJar.deserializeSync(json),
+        await CookieJar.deserialize(json),
+      ]) {
+        const insecure = deserializedJar.getCookiesSync('http://localhost/')
+        expect(insecure.map((c) => c.key)).not.toContain('secure')
+        const secure = deserializedJar.getCookiesSync('https://localhost/')
+        expect(secure.map((c) => c.key)).toContain('secure')
+      }
+    })
+
+    it('should default allowSecureOnLocal to true when missing from a serialized jar', () => {
+      const localJar = new CookieJar(null, { allowSecureOnLocal: false })
+      localJar.setCookieSync('secure=foo; Secure', 'https://localhost/')
+      const serializedJar = localJar.serializeSync()
+      delete serializedJar?.allowSecureOnLocal
+
+      const deserializedJar = CookieJar.deserializeSync(
+        JSON.stringify(serializedJar),
+      )
+      const cookies = deserializedJar.getCookiesSync('http://localhost/')
+      expect(cookies.map((c) => c.key)).toContain('secure')
+    })
+
     it('should raise an error when attempting to synchronously clone to an async store', () => {
       const newStore = new MemoryCookieStore()
       newStore.synchronous = false
