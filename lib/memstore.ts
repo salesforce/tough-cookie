@@ -197,7 +197,14 @@ export class MemoryCookieStore extends Store {
       }
     }
 
-    const domains = permuteDomain(domain, allowSpecialUseDomain) || [domain]
+    let domains = permuteDomain(domain, allowSpecialUseDomain) || [domain]
+    // permuteDomain() drops a trailing dot, but cookies set from a host like
+    // "www.example.com." are indexed under domains that keep it
+    if (domain.endsWith('.')) {
+      domains = domains.map((curDomain) =>
+        curDomain.endsWith('.') ? curDomain : `${curDomain}.`,
+      )
+    }
     const idx = this.idx
     domains.forEach((curDomain) => {
       const domainIndex = idx[curDomain]

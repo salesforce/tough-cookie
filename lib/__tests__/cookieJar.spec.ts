@@ -1324,6 +1324,24 @@ it('should allow cookies with the same name under different domains and/or paths
   ])
 })
 
+it('should retrieve cookies set from a host with a trailing dot', async () => {
+  const cookieJar = new CookieJar()
+  const url = 'http://www.example.com./'
+
+  await cookieJar.setCookie('hostOnly=1', url)
+  await cookieJar.setCookie('domain=2; Domain=example.com.', url)
+
+  expect(await cookieJar.getCookieString(url)).toBe('hostOnly=1; domain=2')
+  expect(await cookieJar.getCookieString('http://sub.example.com./')).toBe(
+    'domain=2',
+  )
+  expect(await cookieJar.getCookieString('http://example.com./')).toBe(
+    'domain=2',
+  )
+  // a trailing dot makes it a different host
+  expect(await cookieJar.getCookieString('http://www.example.com/')).toBe('')
+})
+
 describe('setCookie errors', () => {
   it('should allow and retrieve a cookie set with an explicit IPv4 Domain attribute', async () => {
     const cookieJar = new CookieJar()
