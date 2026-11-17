@@ -321,6 +321,29 @@ function isHostPrefixConditionMet(cookie: Cookie): boolean {
   )
 }
 
+/**
+ *  If the cookie-name is empty and either of the following conditions are
+ *  true, abort these steps and ignore the cookie entirely:
+ *    - the cookie-value begins with a case-insensitive match for the
+ *      string "__Secure-"
+ *    - the cookie-value begins with a case-insensitive match for the
+ *      string "__Host-"
+ *
+ *  A nameless cookie is serialized as just its value, so without this check
+ *  `__Host-SID` (accepted in loose mode) would be sent as if it were a
+ *  `__Host-` cookie.
+ *  See https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-22#section-5.7 step 22.
+ * @param cookie
+ * @returns boolean
+ */
+function isNamelessPrefixConditionMet(cookie: Cookie): boolean {
+  if (cookie.key !== '' || typeof cookie.value !== 'string') {
+    return true
+  }
+  const value = cookie.value.toLowerCase()
+  return !value.startsWith('__secure-') && !value.startsWith('__host-')
+}
+
 function getNormalizedPrefixSecurity(
   prefixSecurity: string,
 ): PrefixSecurityMode {
@@ -721,6 +744,10 @@ export class CookieJar {
         errorFound = true
         errorMsg =
           "Cookie has __Host prefix but either Secure or HostOnly attribute is not set or Path is not '/'"
+      } else if (!isNamelessPrefixConditionMet(cookie)) {
+        errorFound = true
+        errorMsg =
+          'Cookie has no name but its value starts with __Secure- or __Host-'
       }
       if (errorFound) {
         return options?.ignoreError || ignoreErrorForPrefixSecurity
