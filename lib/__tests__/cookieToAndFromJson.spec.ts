@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+import { afterAll, assert, beforeAll, describe, expect, it, vi } from 'vitest'
 import { Cookie } from '../cookie/cookie.js'
 
 beforeAll(() => vi.useFakeTimers())
@@ -9,9 +9,8 @@ describe('Cookie.toJSON()', () => {
     const cookie = Cookie.parse(
       'alpha=beta; Domain=example.com; Path=/foo; Expires=Tue, 19 Jan 2038 03:14:07 GMT; HttpOnly',
     )
-    expect(cookie).toBeInstanceOf(Cookie)
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    expect(cookie!.toJSON()).toEqual({
+    assert.instanceOf(cookie, Cookie)
+    expect(cookie.toJSON()).toEqual({
       // Sometimes we roll over a millisecond, so we need to check both
 
       creation: new Date().toISOString(),
@@ -62,9 +61,7 @@ describe('Cookie.fromJSON()', () => {
       lastAccessed: 'Infinity',
     })
     const cookie = Cookie.fromJSON(json)
-    if (!cookie) {
-      throw new Error('This should not be null')
-    }
+    assert.exists(cookie)
     expect(cookie.expires).toBe('Infinity')
     expect(cookie.creation).toBe('Infinity')
     expect(cookie.lastAccessed).toBe('Infinity')

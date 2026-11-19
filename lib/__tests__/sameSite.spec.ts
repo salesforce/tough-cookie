@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { assert, beforeEach, describe, expect, it } from 'vitest'
 import { Cookie } from '../cookie/cookie.js'
 import { CookieJar } from '../cookie/cookieJar.js'
 
@@ -13,9 +13,7 @@ describe('Same-Site Cookies', function () {
 
   const parse = (cookieString: string): Cookie => {
     const result = Cookie.parse(cookieString)
-    if (!result) {
-      throw new Error('This should not be undefined')
-    }
+    assert.exists(result)
     return result
   }
 

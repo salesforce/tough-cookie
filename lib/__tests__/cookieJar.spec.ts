@@ -34,6 +34,7 @@
 
 import {
   afterAll,
+  assert,
   beforeAll,
   beforeEach,
   describe,
@@ -74,9 +75,7 @@ describe('CookieJar', () => {
             'foo=bar',
             'http://example.com',
             (_error, result) => {
-              if (result == null) {
-                throw new Error('Result should not have been undefined')
-              }
+              expect(result).toBeDefined()
               cookie = result
               done()
             },
@@ -90,9 +89,7 @@ describe('CookieJar', () => {
             'foo=bar',
             'http://example.com',
           )
-          if (result == null) {
-            throw new Error('Result should not have been undefined')
-          }
+          expect(result).toBeDefined()
           cookie = result
         },
       },
@@ -173,9 +170,8 @@ describe('CookieJar', () => {
     })
 
     it('should set a timestamp when storing or retrieving a cookie', async () => {
-      // We know that we're passing a valid cookie, so we can use the non-null assertion
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      cookie = Cookie.parse('a=b; Domain=example.com; Path=/')!
+      cookie = Cookie.parse('a=b; Domain=example.com; Path=/')
+      assert.exists(cookie)
       const t0 = new Date()
 
       expect(cookie).toEqual(
@@ -785,12 +781,9 @@ describe('CookieJar', () => {
         {
           callbackStyle(done) {
             cookieJar.getCookieString('http://example.com', (_err, result) => {
-              if (typeof result === 'string') {
-                cookieString = result
-                done()
-              } else {
-                throw new Error('Result should not have been undefined')
-              }
+              assert.exists(result)
+              cookieString = result
+              done()
             })
           },
           async asyncStyle() {
@@ -885,9 +878,7 @@ describe('CookieJar', () => {
             cookieJar.getSetCookieStrings(
               'http://example.com',
               (_error, result) => {
-                if (!result) {
-                  throw new Error('Result should not have been undefined')
-                }
+                expect(result).toBeDefined()
                 cookieHeaders = result
                 done()
               },
@@ -1019,9 +1010,7 @@ describe('CookieJar', () => {
       {
         callbackStyle(done) {
           cookieJar.serialize((_error, result) => {
-            if (!result) {
-              throw new Error()
-            }
+            assert.exists(result)
             data = result
             done()
           })
@@ -1329,8 +1318,8 @@ describe('setCookie errors', () => {
       'foo=bar; Domain=127.0.0.1; Path=/',
       'http://127.0.0.1/',
     )
-    expect(cookie).toBeDefined()
-    expect(cookie?.domain).toBe('127.0.0.1')
+    assert.exists(cookie)
+    expect(cookie.domain).toBe('127.0.0.1')
     const cookies = await cookieJar.getCookies('http://127.0.0.1/')
     expect(cookies).toHaveLength(1)
     expect(cookies[0]?.key).toBe('foo')
@@ -1816,9 +1805,7 @@ function createCookie(
   } = {},
 ): Cookie {
   const cookie = Cookie.parse(cookieString)
-  if (!cookie) {
-    throw new Error('This should not be undefined')
-  }
+  assert.exists(cookie)
   if (options.hostOnly) {
     cookie.hostOnly = options.hostOnly
   }

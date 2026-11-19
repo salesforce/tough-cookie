@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { assert, describe, expect, it, vi } from 'vitest'
 import type { Cookie } from '../cookie/cookie.js'
 import { CookieJar } from '../cookie/cookieJar.js'
 import { MemoryCookieStore } from '../memstore.js'
@@ -142,9 +142,7 @@ class StoreWithoutRemoveAll extends Store {
     _key: string,
     callback?: Callback<Cookie | undefined>,
   ): unknown {
-    if (!callback) {
-      throw new Error('This should not be undefined')
-    }
+    assert.exists(callback)
     callback(null, undefined)
     return
   }
@@ -166,9 +164,7 @@ class StoreWithoutRemoveAll extends Store {
     _allowSpecialUseDomain: boolean,
     callback?: Callback<Cookie[]>,
   ): unknown {
-    if (!callback) {
-      throw new Error('This should not be undefined')
-    }
+    assert.exists(callback)
     callback(null, [])
     return
   }
@@ -178,9 +174,7 @@ class StoreWithoutRemoveAll extends Store {
   override putCookie(cookie: Cookie, callback?: ErrorCallback): unknown {
     this.stats.put++
     this.cookies.push(cookie)
-    if (!callback) {
-      throw new Error('This should not be undefined')
-    }
+    assert.exists(callback)
     callback(null)
     return
   }
@@ -189,9 +183,7 @@ class StoreWithoutRemoveAll extends Store {
   override getAllCookies(callback: Callback<Cookie[]>): void
   override getAllCookies(callback?: Callback<Cookie[]>): unknown {
     this.stats.getAll++
-    if (!callback) {
-      throw new Error('This should not be undefined')
-    }
+    assert.exists(callback)
     callback(null, this.cookies.slice())
     return
   }
@@ -214,9 +206,7 @@ class StoreWithoutRemoveAll extends Store {
     callback?: ErrorCallback,
   ): unknown {
     this.stats.remove++
-    if (!callback) {
-      throw new Error('This should not be undefined')
-    }
+    assert.exists(callback)
     callback(null)
     return
   }
@@ -238,9 +228,7 @@ class MemoryStoreExtension extends MemoryCookieStore {
   override getAllCookies(callback: Callback<Cookie[]>): void
   override getAllCookies(callback?: Callback<Cookie[]>): unknown {
     this.stats.getAll++
-    if (!callback) {
-      throw new Error('This should not be undefined')
-    }
+    assert.exists(callback)
     super.getAllCookies(callback)
     return
   }
@@ -263,9 +251,7 @@ class MemoryStoreExtension extends MemoryCookieStore {
     callback?: ErrorCallback,
   ): unknown {
     this.stats.remove++
-    if (!callback) {
-      throw new Error('This should not be undefined')
-    }
+    assert.exists(callback)
     super.removeCookie(domain, path, key, callback)
     return
   }
@@ -274,9 +260,7 @@ class MemoryStoreExtension extends MemoryCookieStore {
   override removeAllCookies(callback: ErrorCallback): void
   override removeAllCookies(callback?: ErrorCallback): unknown {
     this.stats.removeAll++
-    if (!callback) {
-      throw new Error('This should not be undefined')
-    }
+    assert.exists(callback)
     super.removeAllCookies(callback)
     return
   }

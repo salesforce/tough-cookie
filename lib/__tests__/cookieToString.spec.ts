@@ -1,12 +1,10 @@
-import { describe, expect, it } from 'vitest'
+import { assert, describe, expect, it } from 'vitest'
 import { Cookie } from '../cookie/cookie.js'
 
 describe('Cookie.toString()', () => {
   const parse = (cookieString: string): Cookie => {
     const cookie = Cookie.parse(cookieString)
-    if (!cookie) {
-      throw new Error('This should have parsed')
-    }
+    assert.exists(cookie)
     return cookie
   }
 
