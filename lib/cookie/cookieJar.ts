@@ -225,6 +225,9 @@ const SAME_SITE_CONTEXT_VAL_ERR =
 type UrlContext = {
   hostname: string
   pathname: string
+  // The request path before percent-decoding, so percent-encoded cookie paths
+  // can still path-match it (GH-683).
+  rawPathname: string
   protocol: string
 }
 
@@ -250,6 +253,7 @@ function getCookieContext(url: unknown): UrlContext {
     return {
       hostname: url.hostname,
       pathname,
+      rawPathname: url.pathname,
       protocol: url.protocol,
     }
   } else if (typeof url === 'string') {
@@ -265,6 +269,7 @@ function getCookieContext(url: unknown): UrlContext {
     return {
       hostname: parsed.hostname,
       pathname,
+      rawPathname: parsed.pathname,
       protocol: parsed.protocol,
     }
   } else {
@@ -933,6 +938,7 @@ export class CookieJar {
 
     const host = canonicalDomain(context.hostname)
     const path = context.pathname || '/'
+    const rawPath = context.rawPathname || '/'
 
     // https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-19#section-5.8.3-2.1.2.3.2
     // deliberately expects the user agent to determine the notion of a "secure" connection,
@@ -980,7 +986,14 @@ export class CookieJar {
       }
 
       // "The request-uri's path path-matches the cookie's path."
-      if (!allPaths && typeof c.path === 'string' && !pathMatch(path, c.path)) {
+      // The path is matched both percent-decoded and as sent, so a cookie with
+      // a percent-encoded Path still matches the URL it was set for.
+      if (
+        !allPaths &&
+        typeof c.path === 'string' &&
+        !pathMatch(path, c.path) &&
+        !pathMatch(rawPath, c.path)
+      ) {
         return false
       }
 
@@ -1023,9 +1036,11 @@ export class CookieJar {
       return true
     }
 
+    // The store can only path-match a single path, so when the decoded and raw
+    // paths differ, fetch every path for the domain and path-match above.
     store.findCookies(
       host,
-      allPaths ? null : path,
+      allPaths || rawPath !== path ? null : path,
       this.allowSpecialUseDomain,
       (err, cookies): void => {
         if (err) {

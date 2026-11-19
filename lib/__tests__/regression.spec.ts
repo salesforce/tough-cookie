@@ -65,6 +65,24 @@ describe('Regression Tests', () => {
     expect(viaUrl).toBe(viaString)
   })
 
+  it('should match a percent-encoded cookie Path against the same encoded request path (GH-683)', async () => {
+    const cookieJar = new CookieJar()
+    await cookieJar.setCookie(
+      'a=1; Path=/caf%C3%A9',
+      'https://example.com/caf%C3%A9/login',
+    )
+    await cookieJar.setCookie('b=2; Path=/my%20app', 'https://example.com/')
+    await expect(
+      cookieJar.getCookieString('https://example.com/caf%C3%A9/menu'),
+    ).resolves.toBe('a=1')
+    await expect(
+      cookieJar.getCookieString('https://example.com/my%20app/page'),
+    ).resolves.toBe('b=2')
+    await expect(
+      cookieJar.getCookieString(new URL('https://example.com/my%20app/page')),
+    ).resolves.toBe('b=2')
+  })
+
   it('should allow setCookie (without options) callback works even if it is not instanceof Function (GH-158/GH-175)', () => {
     expect.assertions(2)
     const cookieJar = new CookieJar()
