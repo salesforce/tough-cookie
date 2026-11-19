@@ -185,7 +185,7 @@ describe('cookieJar serialization', () => {
       })
 
       const serializedJar = insecureJar.serializeSync()
-      expect(serializedJar?.enforceSecureOriginOnStorage).toBe(false)
+      expect(serializedJar.enforceSecureOriginOnStorage).toBe(false)
 
       const deserializedJar = CookieJar.deserializeSync(
         JSON.stringify(serializedJar),
@@ -199,7 +199,7 @@ describe('cookieJar serialization', () => {
       const serializedJar = new CookieJar(null, {
         enforceSecureOriginOnStorage: false,
       }).serializeSync()
-      delete serializedJar?.enforceSecureOriginOnStorage
+      delete serializedJar.enforceSecureOriginOnStorage
 
       const deserializedJar = CookieJar.deserializeSync(
         JSON.stringify(serializedJar),

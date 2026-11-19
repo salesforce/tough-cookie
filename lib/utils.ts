@@ -66,16 +66,14 @@ export const safeToString = (val: unknown): string => safeToStringImpl(val)
 /** Utility object for promise/callback interop. */
 export interface PromiseCallback<T> {
   promise: Promise<T>
-  // `ErrorCallback` and `Callback<never>` are not the same type,
-  // even though they effectively behave the same at runtime
-  callback: [T] extends [never] ? ErrorCallback : Callback<T>
+  callback: Callback<T> & ErrorCallback
   resolve: (value: T) => Promise<T>
   reject: (error: Error) => Promise<T>
 }
 
 /** Converts a callback into a utility object where either a callback or a promise can be used. */
 export function createPromiseCallback<T>(cb?: Callback<T>): PromiseCallback<T> {
-  let callback: Callback<T>
+  let callback: Callback<T> & ErrorCallback
   let resolve: (result: T) => void
   let reject: (error: Error) => void
 
@@ -85,7 +83,7 @@ export function createPromiseCallback<T>(cb?: Callback<T>): PromiseCallback<T> {
   })
 
   if (typeof cb === 'function') {
-    callback = (err, result): void => {
+    callback = (err: Error | null, result?: T): void => {
       try {
         if (err) cb(err)
         // If `err` is null, we know `result` must be `T`
@@ -97,7 +95,7 @@ export function createPromiseCallback<T>(cb?: Callback<T>): PromiseCallback<T> {
       }
     }
   } else {
-    callback = (err, result): void => {
+    callback = (err: Error | null, result?: T): void => {
       try {
         // If `err` is null, we know `result` must be `T`
         // The assertion isn't *strictly* correct, as `T` could be nullish, but, ehh, good enough...

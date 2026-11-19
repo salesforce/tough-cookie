@@ -1566,9 +1566,7 @@ export class CookieJar {
       typeof store.removeAllCookies === 'function' &&
       store.removeAllCookies !== Store.prototype.removeAllCookies
     ) {
-      // `Callback<undefined>` and `ErrorCallback` are *technically* incompatible, but for the
-      // standard implementation `cb = (err, result) => {}`, they're essentially the same.
-      store.removeAllCookies(cb as ErrorCallback)
+      store.removeAllCookies(cb)
       return promiseCallback.promise
     }
 
