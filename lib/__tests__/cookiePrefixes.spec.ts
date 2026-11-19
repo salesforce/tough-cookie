@@ -350,6 +350,79 @@ describe('When `prefixSecurity` is enabled for `CookieJar`', () => {
     })
   })
 
+  // RFC 6265bis-22 S5.7 step 22: a nameless cookie is serialized as just its
+  // value, so a value starting with __Secure- or __Host- must be rejected.
+  describe('nameless cookie with a prefixed value (loose mode)', () => {
+    const prefixedValues = [
+      '__Host-SID',
+      '__Secure-SID',
+      '__HOST-SID',
+      '__secure-SID',
+      '__Host-',
+    ]
+
+    describe.each(prefixedValues)('%s', (value) => {
+      it.each([
+        [value, insecureUrl],
+        [`=${value}`, insecureUrl],
+        [`${value}; Domain=example.com`, insecureUrl],
+        [`${value}; Secure; Path=/`, secureUrl],
+      ])('drops %j set on %s in silent mode', async (setCookieHeader, url) => {
+        const jar = new CookieJar(null, {
+          prefixSecurity: 'silent',
+          looseMode: true,
+        })
+        await jar.setCookie(setCookieHeader, url, {})
+        expect(await jar.getCookies(secureUrl)).toEqual([])
+        expect(await jar.getCookieString(secureUrl)).toBe('')
+      })
+
+      it('is rejected in strict mode', async () => {
+        const jar = new CookieJar(null, {
+          prefixSecurity: 'strict',
+          looseMode: true,
+        })
+        await expect(jar.setCookie(value, insecureUrl, {})).rejects.toThrow(
+          'Cookie has no name but its value starts with __Secure- or __Host-',
+        )
+      })
+
+      it('is stored when prefix security is unsafe-disabled', async () => {
+        const jar = new CookieJar(null, {
+          prefixSecurity: 'unsafe-disabled',
+          looseMode: true,
+        })
+        await jar.setCookie(value, insecureUrl, {})
+        expect(await jar.getCookieString(insecureUrl)).toBe(value)
+      })
+    })
+
+    it('still stores nameless cookies without a prefixed value', async () => {
+      const jar = new CookieJar(null, {
+        prefixSecurity: 'strict',
+        looseMode: true,
+      })
+      await jar.setCookie('SID', insecureUrl, {})
+      await jar.setCookie('x__Host-SID; Path=/x', insecureUrl, {})
+      await jar.setCookie('_Secure-SID; Path=/y', insecureUrl, {})
+      expect(await jar.getCookieString(`${insecureUrl}/x/y`)).toBe(
+        'x__Host-SID; SID',
+      )
+      expect(await jar.getCookieString(`${insecureUrl}/y`)).toBe(
+        '_Secure-SID; SID',
+      )
+    })
+
+    it('still stores named cookies whose value starts with a prefix', async () => {
+      const jar = new CookieJar(null, { prefixSecurity: 'strict' })
+      await jar.setCookie('a=__Host-SID', insecureUrl, {})
+      await jar.setCookie('b=__Secure-SID', insecureUrl, {})
+      expect(await jar.getCookieString(insecureUrl)).toBe(
+        'a=__Host-SID; b=__Secure-SID',
+      )
+    })
+  })
+
   describe('PrefixSecurityMode type and configuration', () => {
     it('types CookieJar.prefixSecurity as PrefixSecurityMode', () => {
       const jar = new CookieJar()
