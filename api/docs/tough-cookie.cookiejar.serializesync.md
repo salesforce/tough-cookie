@@ -11,9 +11,9 @@ Serialize the CookieJar if the underlying store supports `.getAllCookies`<!-- --
 **Signature:**
 
 ```typescript
-serializeSync(): SerializedCookieJar | undefined;
+serializeSync(): SerializedCookieJar;
 ```
 **Returns:**
 
-[SerializedCookieJar](./tough-cookie.serializedcookiejar.md) \| undefined
+[SerializedCookieJar](./tough-cookie.serializedcookiejar.md)
 

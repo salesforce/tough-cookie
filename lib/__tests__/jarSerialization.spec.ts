@@ -46,6 +46,7 @@ import type {
 } from '../cookie/constants.js'
 import { MemoryCookieStore } from '../memstore.js'
 import { Store } from '../store.js'
+import type { ErrorCallback } from '../utils.js'
 import { version } from '../version.js'
 
 beforeAll(() => vi.useFakeTimers())
@@ -83,6 +84,31 @@ describe('cookieJar serialization', () => {
     })
   })
 
+  describe('a synchronous store that fails to put a cookie', () => {
+    class FailingSyncStore extends MemoryCookieStore {
+      override putCookie(cookie: Cookie): Promise<void>
+      override putCookie(cookie: Cookie, callback: ErrorCallback): void
+      override putCookie(_cookie: Cookie, callback?: ErrorCallback): unknown {
+        const error = new Error('putCookie failed')
+        if (callback) {
+          callback(error)
+          return
+        }
+        return Promise.reject(error)
+      }
+    }
+
+    it('should throw from deserializeSync', () => {
+      const jar = new CookieJar()
+      jar.setCookieSync('a=1', 'https://example.com/')
+      const serialized = jar.serializeSync()
+
+      expect(() =>
+        CookieJar.deserializeSync(serialized, new FailingSyncStore()),
+      ).toThrow('putCookie failed')
+    })
+  })
+
   describe('for async stores', () => {
     it('cannot call toJSON', () => {
       const store = new MemoryCookieStore()
@@ -114,18 +140,14 @@ describe('cookieJar serialization', () => {
 
     it('should serialize synchronously', () => {
       const serializedJar = jar.serializeSync()
-      if (!serializedJar) {
-        throw new Error('This should not be undefined')
-      }
+      expect(serializedJar).toBeDefined()
       expectDataToMatchSerializationSchema(serializedJar)
       expect(serializedJar.cookies.length).toBe(2)
     })
 
     it('should deserialize synchronously', () => {
       const serializedJar = jar.serializeSync()
-      if (!serializedJar) {
-        throw new Error('This should not be undefined')
-      }
+      expect(serializedJar).toBeDefined()
       const deserializedJar = CookieJar.deserializeSync(serializedJar)
       expect(jar.store).toEqual(deserializedJar.store)
     })
@@ -168,9 +190,7 @@ describe('cookieJar serialization', () => {
 
     it('should contain the same contents when cloned synchronously', () => {
       const clonedJar = jar.cloneSync(new MemoryCookieStore())
-      if (!clonedJar) {
-        throw new Error('This should not be undefined')
-      }
+      expect(clonedJar).toBeDefined()
       expect(clonedJar.store).toEqual(jar.store)
     })
 
@@ -191,7 +211,7 @@ describe('cookieJar serialization', () => {
       })
 
       const serializedJar = insecureJar.serializeSync()
-      expect(serializedJar?.enforceSecureOriginOnStorage).toBe(false)
+      expect(serializedJar.enforceSecureOriginOnStorage).toBe(false)
 
       const deserializedJar = CookieJar.deserializeSync(
         JSON.stringify(serializedJar),
@@ -205,7 +225,7 @@ describe('cookieJar serialization', () => {
       const serializedJar = new CookieJar(null, {
         enforceSecureOriginOnStorage: false,
       }).serializeSync()
-      delete serializedJar?.enforceSecureOriginOnStorage
+      delete serializedJar.enforceSecureOriginOnStorage
 
       const deserializedJar = CookieJar.deserializeSync(
         JSON.stringify(serializedJar),
