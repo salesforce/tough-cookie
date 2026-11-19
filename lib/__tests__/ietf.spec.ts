@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { describe, expect, it } from 'vitest'
+import { assert, describe, expect, it } from 'vitest'
 import url from 'url'
 import parserData from './data/parser.js'
 import bsdExampleDates from './data/dates/bsd-examples.js'
@@ -60,9 +60,9 @@ describe('IETF http state tests', () => {
       expect(actual.length).toBe(expected.length)
       actual.forEach((actualCookie, idx) => {
         const expectedCookie = expected[idx]
-        expect(expectedCookie).toBeDefined()
-        expect(actualCookie.key).toBe(expectedCookie?.name)
-        expect(actualCookie.value).toBe(expectedCookie?.value)
+        assert.exists(expectedCookie)
+        expect(actualCookie.key).toBe(expectedCookie.name)
+        expect(actualCookie.value).toBe(expectedCookie.value)
       })
     })
   })

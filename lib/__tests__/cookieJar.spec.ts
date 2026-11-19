@@ -34,6 +34,7 @@
 
 import {
   afterAll,
+  assert,
   beforeAll,
   beforeEach,
   describe,
@@ -88,7 +89,7 @@ describe('CookieJar', () => {
             'foo=bar',
             'http://example.com',
           )
-          expect(cookie).toBeDefined()
+          expect(result).toBeDefined()
           cookie = result
         },
       },
@@ -169,9 +170,8 @@ describe('CookieJar', () => {
     })
 
     it('should set a timestamp when storing or retrieving a cookie', async () => {
-      // We know that we're passing a valid cookie, so we can use the non-null assertion
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      cookie = Cookie.parse('a=b; Domain=example.com; Path=/')!
+      cookie = Cookie.parse('a=b; Domain=example.com; Path=/')
+      assert.exists(cookie)
       const t0 = new Date()
 
       expect(cookie).toEqual(
@@ -781,9 +781,8 @@ describe('CookieJar', () => {
         {
           callbackStyle(done) {
             cookieJar.getCookieString('http://example.com', (_err, result) => {
-              expect(result).toBeTypeOf('string')
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              cookieString = result!
+              assert.exists(result)
+              cookieString = result
               done()
             })
           },
@@ -1011,9 +1010,8 @@ describe('CookieJar', () => {
       {
         callbackStyle(done) {
           cookieJar.serialize((_error, result) => {
-            expect(result).toBeDefined()
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            data = result!
+            assert.exists(result)
+            data = result
             done()
           })
         },
@@ -1320,8 +1318,8 @@ describe('setCookie errors', () => {
       'foo=bar; Domain=127.0.0.1; Path=/',
       'http://127.0.0.1/',
     )
-    expect(cookie).toBeDefined()
-    expect(cookie?.domain).toBe('127.0.0.1')
+    assert.exists(cookie)
+    expect(cookie.domain).toBe('127.0.0.1')
     const cookies = await cookieJar.getCookies('http://127.0.0.1/')
     expect(cookies).toHaveLength(1)
     expect(cookies[0]?.key).toBe('foo')
@@ -1806,10 +1804,8 @@ function createCookie(
     hostOnly?: boolean
   } = {},
 ): Cookie {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const cookie = Cookie.parse(cookieString)!
-  expect(cookie).toBeDefined()
-
+  const cookie = Cookie.parse(cookieString)
+  assert.exists(cookie)
   if (options.hostOnly) {
     cookie.hostOnly = options.hostOnly
   }

@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { assert, describe, expect, it, vi } from 'vitest'
 import type { Cookie } from '../cookie/cookie.js'
 import { CookieJar } from '../cookie/cookieJar.js'
 import { MemoryCookieStore } from '../memstore.js'
@@ -109,8 +109,6 @@ describe('store removeAllCookies API', () => {
   })
 })
 
-// These classes are only used inside tests
-/* eslint-disable vitest/no-standalone-expect */
 class StoreWithoutRemoveAll extends Store {
   stats: {
     put: number
@@ -144,9 +142,8 @@ class StoreWithoutRemoveAll extends Store {
     _key: string,
     callback?: Callback<Cookie | undefined>,
   ): unknown {
-    expect(callback).toBeDefined()
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    callback!(null, undefined)
+    assert.exists(callback)
+    callback(null, undefined)
     return
   }
 
@@ -167,9 +164,8 @@ class StoreWithoutRemoveAll extends Store {
     _allowSpecialUseDomain: boolean,
     callback?: Callback<Cookie[]>,
   ): unknown {
-    expect(callback).toBeDefined()
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    callback!(null, [])
+    assert.exists(callback)
+    callback(null, [])
     return
   }
 
@@ -178,9 +174,8 @@ class StoreWithoutRemoveAll extends Store {
   override putCookie(cookie: Cookie, callback?: ErrorCallback): unknown {
     this.stats.put++
     this.cookies.push(cookie)
-    expect(callback).toBeDefined()
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    callback!(null)
+    assert.exists(callback)
+    callback(null)
     return
   }
 
@@ -188,9 +183,8 @@ class StoreWithoutRemoveAll extends Store {
   override getAllCookies(callback: Callback<Cookie[]>): void
   override getAllCookies(callback?: Callback<Cookie[]>): unknown {
     this.stats.getAll++
-    expect(callback).toBeDefined()
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    callback!(null, this.cookies.slice())
+    assert.exists(callback)
+    callback(null, this.cookies.slice())
     return
   }
 
@@ -212,9 +206,8 @@ class StoreWithoutRemoveAll extends Store {
     callback?: ErrorCallback,
   ): unknown {
     this.stats.remove++
-    expect(callback).toBeDefined()
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    callback!(null)
+    assert.exists(callback)
+    callback(null)
     return
   }
 }
@@ -235,9 +228,8 @@ class MemoryStoreExtension extends MemoryCookieStore {
   override getAllCookies(callback: Callback<Cookie[]>): void
   override getAllCookies(callback?: Callback<Cookie[]>): unknown {
     this.stats.getAll++
-    expect(callback).toBeDefined()
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    super.getAllCookies(callback!)
+    assert.exists(callback)
+    super.getAllCookies(callback)
     return
   }
 
@@ -259,9 +251,8 @@ class MemoryStoreExtension extends MemoryCookieStore {
     callback?: ErrorCallback,
   ): unknown {
     this.stats.remove++
-    expect(callback).toBeDefined()
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    super.removeCookie(domain, path, key, callback!)
+    assert.exists(callback)
+    super.removeCookie(domain, path, key, callback)
     return
   }
 
@@ -269,9 +260,8 @@ class MemoryStoreExtension extends MemoryCookieStore {
   override removeAllCookies(callback: ErrorCallback): void
   override removeAllCookies(callback?: ErrorCallback): unknown {
     this.stats.removeAll++
-    expect(callback).toBeDefined()
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    super.removeAllCookies(callback!)
+    assert.exists(callback)
+    super.removeAllCookies(callback)
     return
   }
 }

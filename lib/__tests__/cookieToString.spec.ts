@@ -1,12 +1,11 @@
-import { describe, expect, it } from 'vitest'
+import { assert, describe, expect, it } from 'vitest'
 import { Cookie } from '../cookie/cookie.js'
 
 describe('Cookie.toString()', () => {
   const parse = (cookieString: string): Cookie => {
     const cookie = Cookie.parse(cookieString)
-    expect(cookie).toBeDefined()
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return cookie!
+    assert.exists(cookie)
+    return cookie
   }
 
   it('should produce a string from a simple cookie', () => {
