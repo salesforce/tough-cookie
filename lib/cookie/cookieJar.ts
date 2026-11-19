@@ -283,7 +283,7 @@ function checkSameSiteContext(value: string): SameSiteLevel | undefined {
 }
 
 /**
- *  If the cookie-name begins with a case-sensitive match for the
+ *  If the cookie-name begins with a case-insensitive match for the
  *  string "__Secure-", abort these steps and ignore the cookie
  *  entirely unless the cookie's secure-only-flag is true.
  * @param cookie
@@ -291,12 +291,13 @@ function checkSameSiteContext(value: string): SameSiteLevel | undefined {
  */
 function isSecurePrefixConditionMet(cookie: Cookie): boolean {
   const startsWithSecurePrefix =
-    typeof cookie.key === 'string' && cookie.key.startsWith('__Secure-')
+    typeof cookie.key === 'string' &&
+    cookie.key.toLowerCase().startsWith('__secure-')
   return !startsWithSecurePrefix || cookie.secure
 }
 
 /**
- *  If the cookie-name begins with a case-sensitive match for the
+ *  If the cookie-name begins with a case-insensitive match for the
  *  string "__Host-", abort these steps and ignore the cookie
  *  entirely unless the cookie meets all the following criteria:
  *    1.  The cookie's secure-only-flag is true.
@@ -308,7 +309,8 @@ function isSecurePrefixConditionMet(cookie: Cookie): boolean {
  */
 function isHostPrefixConditionMet(cookie: Cookie): boolean {
   const startsWithHostPrefix =
-    typeof cookie.key === 'string' && cookie.key.startsWith('__Host-')
+    typeof cookie.key === 'string' &&
+    cookie.key.toLowerCase().startsWith('__host-')
   return (
     !startsWithHostPrefix ||
     Boolean(
