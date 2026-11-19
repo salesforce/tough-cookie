@@ -390,7 +390,9 @@ export class CookieJar {
     this.store = store ?? new MemoryCookieStore()
   }
 
-  private callSync<T>(fn: (this: CookieJar, callback: Callback<T>) => void): T {
+  private callSync<T>(
+    fn: (this: CookieJar, callback: Callback<T> & ErrorCallback) => void,
+  ): T {
     if (!this.store.synchronous) {
       throw new Error(
         'CookieJar store is not synchronous; use async API instead.',
@@ -1410,10 +1412,9 @@ export class CookieJar {
     for (const json of cookies) {
       const cookie = Cookie.fromJSON(json)
       if (cookie) {
-        // `this.store` is validated as synchronous before calling this method,
-        // so we know there's no need to wait for the promise
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.store.putCookie(cookie)
+        this.callSync<undefined>((callback) => {
+          this.store.putCookie(cookie, callback)
+        })
       }
     }
   }
@@ -1633,9 +1634,7 @@ export class CookieJar {
    */
   removeAllCookiesSync(): void {
     this.callSync<undefined>((callback) => {
-      // `Callback<undefined>` and `ErrorCallback` are *technically* incompatible, but for the
-      // standard implementation `cb = (err, result) => {}`, they're essentially the same.
-      this.removeAllCookies(callback as ErrorCallback)
+      this.removeAllCookies(callback)
     })
   }
 

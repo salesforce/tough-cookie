@@ -46,6 +46,7 @@ import type {
 } from '../cookie/constants.js'
 import { MemoryCookieStore } from '../memstore.js'
 import { Store } from '../store.js'
+import type { ErrorCallback } from '../utils.js'
 import { version } from '../version.js'
 
 beforeAll(() => vi.useFakeTimers())
@@ -80,6 +81,31 @@ describe('cookieJar serialization', () => {
       expect(() => jar.toJSON()).toThrow(
         'getAllCookies is not implemented (therefore jar cannot be serialized)',
       )
+    })
+  })
+
+  describe('a synchronous store that fails to put a cookie', () => {
+    class FailingSyncStore extends MemoryCookieStore {
+      override putCookie(cookie: Cookie): Promise<void>
+      override putCookie(cookie: Cookie, callback: ErrorCallback): void
+      override putCookie(_cookie: Cookie, callback?: ErrorCallback): unknown {
+        const error = new Error('putCookie failed')
+        if (callback) {
+          callback(error)
+          return
+        }
+        return Promise.reject(error)
+      }
+    }
+
+    it('should throw from deserializeSync', () => {
+      const jar = new CookieJar()
+      jar.setCookieSync('a=1', 'https://example.com/')
+      const serialized = jar.serializeSync()
+
+      expect(() =>
+        CookieJar.deserializeSync(serialized, new FailingSyncStore()),
+      ).toThrow('putCookie failed')
     })
   })
 
