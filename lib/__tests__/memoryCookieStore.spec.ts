@@ -28,4 +28,30 @@ describe('MemoryCookieStore', () => {
     expect(memoryCookieStore.removeAllCookies()).toBeInstanceOf(Promise)
     expect(memoryCookieStore.getAllCookies()).toBeInstanceOf(Promise)
   })
+
+  it('should keep a trailing dot when finding cookies', async () => {
+    const memoryCookieStore = new MemoryCookieStore()
+    for (const domain of [
+      'example.com',
+      'www.example.com',
+      'example.com.',
+      'www.example.com.',
+    ]) {
+      await memoryCookieStore.putCookie(
+        new Cookie({ key: 'key', value: domain, domain, path: '/' }),
+      )
+    }
+
+    const dotted = await memoryCookieStore.findCookies('www.example.com.', '/')
+    expect(dotted.map((cookie) => cookie.value)).toEqual([
+      'example.com.',
+      'www.example.com.',
+    ])
+
+    const plain = await memoryCookieStore.findCookies('www.example.com', '/')
+    expect(plain.map((cookie) => cookie.value)).toEqual([
+      'example.com',
+      'www.example.com',
+    ])
+  })
 })
