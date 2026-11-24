@@ -1846,3 +1846,22 @@ interface ApiVariants {
   asyncStyle: PromiseApiVariant
   syncStyle: SyncApiVariant
 }
+
+it.each([
+  { host: 'local', allowSpecialUseDomain: true },
+  { host: 'test', allowSpecialUseDomain: true },
+  { host: 'localhost', allowSpecialUseDomain: false },
+  { host: 'printer.local', allowSpecialUseDomain: false },
+  { host: 'dev.example', allowSpecialUseDomain: false },
+  { host: 'x.invalid', allowSpecialUseDomain: false },
+])(
+  'should return the host-only cookie stored for $host when allowSpecialUseDomain is $allowSpecialUseDomain',
+  async ({ host, allowSpecialUseDomain }) => {
+    const cookieJar = new CookieJar(null, { allowSpecialUseDomain })
+    const url = `http://${host}/`
+    await cookieJar.setCookie('a=1', url)
+    expect(await cookieJar.getCookieString(url)).toBe('a=1')
+    expect(cookieJar.getCookieStringSync(url)).toBe('a=1')
+    expect(cookieJar.getCookieStringSync('http://other.example.com/')).toBe('')
+  },
+)

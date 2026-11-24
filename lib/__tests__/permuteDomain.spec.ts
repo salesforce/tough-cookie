@@ -26,4 +26,19 @@ describe('permuteDomain', () => {
   ])('permuteDomain("%s", %s") => %o', ({ domain, permutations }) => {
     expect(permuteDomain(domain)).toEqual(permutations)
   })
+
+  it.each([
+    { domain: 'local', allowSpecialUseDomain: true, permutations: undefined },
+    { domain: 'local', allowSpecialUseDomain: false, permutations: undefined },
+    {
+      domain: 'printer.local',
+      allowSpecialUseDomain: false,
+      permutations: ['printer.local'],
+    },
+  ])(
+    'permuteDomain("$domain", $allowSpecialUseDomain) => $permutations',
+    ({ domain, allowSpecialUseDomain, permutations }) => {
+      expect(permuteDomain(domain, allowSpecialUseDomain)).toEqual(permutations)
+    },
+  )
 })
