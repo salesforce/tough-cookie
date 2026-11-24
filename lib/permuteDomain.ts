@@ -20,6 +20,7 @@ export function permuteDomain(
 ): string[] | undefined {
   const pubSuf = getPublicSuffix(domain, {
     allowSpecialUseDomain: allowSpecialUseDomain,
+    ignoreError: true,
   })
 
   if (!pubSuf) {
