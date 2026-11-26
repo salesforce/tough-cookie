@@ -34,6 +34,7 @@ import { inOperator } from '../utils.js'
 
 import { formatDate } from './formatDate.js'
 import { CookieName } from './cookieName.js'
+import { CookieValue } from './cookieValue.js'
 import { parseDate } from './parseDate.js'
 import { canonicalDomain } from './canonicalDomain.js'
 import {
@@ -41,10 +42,6 @@ import {
   IP_V6_REGEX_OBJECT,
   type SerializedCookie,
 } from './constants.js'
-
-// From RFC6265 S4.1.1
-// note that it excludes \x3B ";"
-const COOKIE_OCTETS = /^[\x21\x23-\x2B\x2D-\x3A\x3C-\x5B\x5D-\x7E]+$/
 
 // RFC6265 S4.1.1 defines path value as 'any CHAR except CTLs or ";"'
 // Note ';' is \x3B
@@ -667,7 +664,7 @@ export class Cookie {
     if (CookieName.parse(this.key) === undefined) {
       return false
     }
-    if (!this.value || !COOKIE_OCTETS.test(this.value)) {
+    if (!this.value || CookieValue.parse(this.value) === undefined) {
       return false
     }
     if (
