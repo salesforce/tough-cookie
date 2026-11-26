@@ -104,7 +104,7 @@ Defaults to `true` if not provided.
 
 </td><td>
 
-'none' \| 'lax' \| 'strict' \| undefined
+[SameSiteLevel](./tough-cookie.samesitelevel.md) \| undefined
 
 
 </td><td>

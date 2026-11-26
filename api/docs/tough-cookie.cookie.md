@@ -309,7 +309,7 @@ A boolean flag indicating if a cookie had no 'Path' attribute and the default pa
 
 </td><td>
 
-string \| undefined
+[SameSiteLevel](./tough-cookie.samesitelevel.md) \| undefined
 
 
 </td><td>
