@@ -324,7 +324,10 @@ function fromJSON(str: unknown): Cookie | undefined {
             typeof val === 'string' ||
             val instanceof Date
           ) {
-            c[prop] = obj[prop] == 'Infinity' ? 'Infinity' : new Date(val)
+            c[prop] =
+              !(val instanceof Date) && val == 'Infinity'
+                ? 'Infinity'
+                : new Date(val)
           } else if (val === null) {
             c[prop] = null
           }
@@ -599,7 +602,9 @@ export class Cookie {
             val instanceof Date
           ) {
             obj[prop] =
-              val == 'Infinity' ? 'Infinity' : new Date(val).toISOString()
+              !(val instanceof Date) && val == 'Infinity'
+                ? 'Infinity'
+                : new Date(val).toISOString()
           } else if (val === null) {
             obj[prop] = null
           }
@@ -671,8 +676,8 @@ export class Cookie {
       return false
     }
     if (
-      this.expires != 'Infinity' &&
       !(this.expires instanceof Date) &&
+      this.expires != 'Infinity' &&
       !parseDate(this.expires)
     ) {
       return false
@@ -760,10 +765,8 @@ export class Cookie {
   toString(): string {
     let str = this.cookieString()
 
-    if (this.expires != 'Infinity') {
-      if (this.expires instanceof Date) {
-        str += `; Expires=${formatDate(this.expires)}`
-      }
+    if (this.expires instanceof Date) {
+      str += `; Expires=${formatDate(this.expires)}`
     }
 
     if (this.maxAge != null && this.maxAge != Infinity) {
